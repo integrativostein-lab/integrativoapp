@@ -15,15 +15,15 @@ router.post('/', autenticar, async (req, res) => {
   const v = await db.query('SELECT valor_online, valor_presencial, valor_domicilio, duracao_minutos FROM profissional_valores WHERE usuario_id = $1 LIMIT 1', [profissional_id]);
   if (v.rows.length === 0) return res.status(400).json({ erro: 'Profissional sem valores' });
   
-  const valor = modalidade, tipo_sessao === 'online' ? v.rows[0].valor_online : (modalidade, tipo_sessao === 'domicilio' ? v.rows[0].valor_domicilio : v.rows[0].valor_presencial);
+  const valor = modalidade === 'online' ? v.rows[0].valor_online : (modalidade === 'domicilio' ? v.rows[0].valor_domicilio : v.rows[0].valor_presencial);
   const duracao = v.rows[0].duracao_minutos || 60;
   const [h, m] = horario_inicio.split(':').map(Number);
   const totalMin = h * 60 + m + duracao;
   const fim = `${String(Math.floor(totalMin / 60)).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
 
   const r = await db.query(
-    'INSERT INTO agendamentos (paciente_id, profissional_id, data_agendamento, horario_inicio, horario_fim, modalidade, tipo_sessao, valor) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
-    [req.usuario.id, profissional_id, data_agendamento, horario_inicio, fim, modalidade, tipo_sessao, valor]
+    'INSERT INTO agendamentos (paciente_id, profissional_id, data_agendamento, horario_inicio, horario_fim, modalidade, valor, tipo_sessao) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id',
+    [req.usuario.id, profissional_id, data_agendamento, horario_inicio, fim, modalidade, valor, tipo_sessao || 'consulta']
   );
   res.status(201).json({ mensagem: 'Agendado!', id: r.rows[0].id });
 });
@@ -34,15 +34,12 @@ router.get('/meus', autenticar, async (req, res) => {
   res.json(r.rows);
 });
 
-// Rota para cancelar agendamento (com multa automática)
 router.put('/:id/cancelar', autenticar, async (req, res) => {
   try {
     const agendamento = await db.query('SELECT * FROM agendamentos WHERE id = $1 AND paciente_id = $2', [req.params.id, req.usuario.id]);
     if (agendamento.rows.length === 0) return res.status(404).json({ erro: 'Agendamento não encontrado' });
 
     const ag = agendamento.rows[0];
-    
-    // Buscar regras do profissional
     const regras = await db.query('SELECT * FROM profissional_regras_agendamento WHERE usuario_id = $1', [ag.profissional_id]);
     
     if (regras.rows.length > 0) {
@@ -54,21 +51,16 @@ router.put('/:id/cancelar', autenticar, async (req, res) => {
       let multa = 0;
       let mensagem = 'Agendamento cancelado!';
       
-      // Se cancelou fora do prazo, aplica multa
       if (diffHoras < r.prazo_cancelamento_horas && r.multa_falta_valor > 0) {
         multa = r.multa_falta_valor;
         mensagem = `Agendamento cancelado. Multa de R$ ${multa.toFixed(2)} aplicada conforme regras do profissional.`;
-        
-        // Registrar a multa como pagamento
         await db.query("INSERT INTO pagamentos (usuario_id, agendamento_id, tipo, valor, forma_pagamento, status) VALUES ($1, $2, 'multa_cancelamento', $3, 'pendente', 'pendente')", [req.usuario.id, req.params.id, multa]);
       }
       
       await db.query("UPDATE agendamentos SET status = 'cancelado', data_cancelamento = NOW(), cancelado_por = 'paciente' WHERE id = $1", [req.params.id]);
-      
       return res.json({ mensagem, multa });
     }
     
-    // Se o profissional não tem regras, cancela sem multa
     await db.query("UPDATE agendamentos SET status = 'cancelado', data_cancelamento = NOW(), cancelado_por = 'paciente' WHERE id = $1", [req.params.id]);
     res.json({ mensagem: 'Agendamento cancelado!', multa: 0 });
 
@@ -78,7 +70,6 @@ router.put('/:id/cancelar', autenticar, async (req, res) => {
   }
 });
 
-// Rota para remarcar (também verifica multa)
 router.put('/:id/remarcar', autenticar, async (req, res) => {
   try {
     const { data_agendamento, horario_inicio } = req.body;
@@ -88,8 +79,6 @@ router.put('/:id/remarcar', autenticar, async (req, res) => {
     if (agendamento.rows.length === 0) return res.status(404).json({ erro: 'Agendamento não encontrado' });
 
     const ag = agendamento.rows[0];
-    
-    // Buscar regras do profissional
     const regras = await db.query('SELECT * FROM profissional_regras_agendamento WHERE usuario_id = $1', [ag.profissional_id]);
     
     let multa = 0;
@@ -101,7 +90,6 @@ router.put('/:id/remarcar', autenticar, async (req, res) => {
       const dataHoraAgendamento = new Date(`${ag.data_agendamento}T${ag.horario_inicio}`);
       const diffHoras = (dataHoraAgendamento - agora) / (1000 * 60 * 60);
       
-      // Verifica limite de reagendamentos no mês
       const mesAtual = new Date().toISOString().substring(0, 7);
       const reagendamentosMes = await db.query("SELECT COUNT(*) as total FROM agendamentos WHERE paciente_id = $1 AND status = 'reagendado' AND data_cancelamento LIKE $2", [req.usuario.id, mesAtual + '%']);
       
@@ -125,19 +113,9 @@ router.put('/:id/remarcar', autenticar, async (req, res) => {
   }
 });
 
-router.put('/:id/remarcar', autenticar, async (req, res) => {
-  const { data_agendamento, horario_inicio } = req.body;
-  if (!data_agendamento || !horario_inicio) return res.status(400).json({ erro: 'Data e horário obrigatórios' });
-  await db.query("UPDATE agendamentos SET data_agendamento = $1, horario_inicio = $2, status = 'reagendado' WHERE id = $3 AND paciente_id = $4", [data_agendamento, horario_inicio, req.params.id, req.usuario.id]);
-  res.json({ mensagem: 'Agendamento remarcado!' });
-});
-
-// Rota para agendar um retorno gratuito
 router.post('/retorno', autenticar, async (req, res) => {
   try {
     const { paciente_id, data_limite, consulta_original_id } = req.body;
-    
-    // Verifica se o profissional tem vínculo com o paciente
     const consulta = await db.query('SELECT * FROM agendamentos WHERE id = $1 AND profissional_id = $2', [consulta_original_id, req.usuario.id]);
     if (consulta.rows.length === 0) return res.status(404).json({ erro: 'Consulta original não encontrada' });
 
@@ -145,10 +123,6 @@ router.post('/retorno', autenticar, async (req, res) => {
       'INSERT INTO retornos (paciente_id, profissional_id, consulta_original_id, data_limite, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
       [paciente_id, req.usuario.id, consulta_original_id, data_limite, 'pendente']
     );
-    
-    // Aqui você pode adicionar a notificação para o paciente (WhatsApp)
-    console.log(`Retorno agendado para paciente ${paciente_id} até ${data_limite}`);
-    
     res.status(201).json({ mensagem: 'Retorno agendado! O paciente será notificado.', id: r.rows[0].id });
   } catch (e) {
     console.error(e);
@@ -156,7 +130,6 @@ router.post('/retorno', autenticar, async (req, res) => {
   }
 });
 
-// Rota para editar a data limite de um retorno existente
 router.put('/retorno/:id', autenticar, async (req, res) => {
   try {
     const { data_limite } = req.body;
