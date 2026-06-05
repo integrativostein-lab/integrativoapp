@@ -1,0 +1,26 @@
+[Profissional no prontuário]
+        │
+        ├── Clica em "Referências Cruzadas"
+        ├── Digita: "Ansiedade"
+        │
+        └── [Sistema busca em TODAS as terapias]
+                │
+                ├── 🌿 Fitoterapia (sua especialidade) ⭐
+                │       └── Camomila, Valeriana, Maracujá
+                │
+                ├── 🕉️ Ayurveda
+                │       └── Ashwagandha, Brahmi, Shirodhara
+                │
+                ├── 🏮 MTC
+                │       └── Xiao Yao San, ponto Yintang
+                │
+                ├── 🧘 Yoga
+                │       └── Nadi Shodhana, Balasana
+                │
+                ├── 🧴 Aromaterapia
+                │       └── Lavanda, Olíbano, Bergamota
+                │
+                ├── 🌸 Florais de Bach
+                │       └── Rock Rose, Mimulus, Rescue Remedy
+                │
+                └── [Adicionar ao prontuário] / [Ver detalhes]

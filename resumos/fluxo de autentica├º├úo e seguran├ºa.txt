@@ -1,0 +1,21 @@
+[Usuário acessa Login]
+        │
+        ├── Email + Senha
+        │       │
+        │       ├── [Senha correta] → Token JWT gerado → Acesso liberado
+        │       │
+        │       └── [Senha errada]
+        │               ├── Tentativa 1-4: "Email ou senha incorretos"
+        │               └── Tentativa 5: Conta bloqueada por 15 minutos
+        │
+        ├── [Esqueci minha senha]
+        │       ├── Informa email
+        │       ├── Recebe link de recuperação (válido por 30 min)
+        │       └── Redefine senha
+        │
+        ├── [Login Social]
+        │       ├── Entrar com Google
+        │       └── Entrar com Apple
+        │
+        └── [2FA] (para acessar prontuários)
+                └── Código enviado por WhatsApp/Email

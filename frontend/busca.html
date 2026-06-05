@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Profissionais — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .busca-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .filtros { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .filtros .form-grupo { margin-bottom: 0; flex: 1; min-width: 150px; }
+    .resultado-card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+    .resultado-card h3 { color: var(--azul-escuro); margin-bottom: 4px; }
+    .resultado-card p { color: var(--texto-medio); font-size: 13px; }
+    .sem-resultados { text-align: center; padding: 40px; color: var(--texto-medio); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu">
+      <a href="index.html">Início</a>
+      <a href="cadastro.html">Cadastro</a>
+      <a href="login.html">Entrar</a>
+    </div>
+  </nav>
+
+  <div class="busca-container">
+    <h2 style="margin-bottom:20px;">Buscar Profissionais</h2>
+
+    <div class="filtros">
+      <div class="form-grupo">
+        <label>Especialidade</label>
+        <select id="filtro-especialidade">
+          <option value="">Todas (30 especialidades)</option>
+        </select>
+      </div>
+      <div class="form-grupo">
+        <label>Modalidade</label>
+        <select id="filtro-modalidade">
+          <option value="">Todas</option>
+          <option value="online">Online</option>
+          <option value="presencial">Presencial</option>
+        </select>
+      </div>
+      <div class="form-grupo">
+        <label>CEP</label>
+        <input type="text" id="filtro-cep" placeholder="01310-100">
+      </div>
+      <button class="btn btn-primario" onclick="buscar()">Buscar</button>
+    </div>
+
+    <div id="resultados"></div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    var select = document.getElementById('filtro-especialidade');
+    CONFIG.ESPECIALIDADES.forEach(function(esp) {
+      var opt = document.createElement('option');
+      opt.value = esp;
+      opt.textContent = esp;
+      select.appendChild(opt);
+    });
+
+    async function buscar() {
+      var esp = document.getElementById('filtro-especialidade').value;
+      var mod = document.getElementById('filtro-modalidade').value;
+      var cep = document.getElementById('filtro-cep').value;
+      var params = new URLSearchParams();
+      if (esp) params.append('especialidade', esp);
+      if (mod) params.append('modalidade', mod);
+      if (cep) params.append('cep', cep);
+
+      var r = await fetch(`${CONFIG.API_URL}/profissionais/buscar?${params.toString()}`);
+      var dados = await r.json();
+      var div = document.getElementById('resultados');
+
+      if (dados.length === 0) {
+        div.innerHTML = '<div class="sem-resultados">Nenhum profissional encontrado.</div>';
+        return;
+      }
+
+      div.innerHTML = dados.map(function(p) {
+        return `
+        <div class="resultado-card">
+          <div>
+            <h3>${p.nome}</h3>
+            <p>${p.especialidades_lista ? p.especialidades_lista.join(', ') : 'Não informado'}</p>
+            <p>${p.cidade || ''} ${p.estado || ''}</p>
+            <p>🟢 Online: ${p.atende_online ? 'Sim' : 'Não'} | 📍 Presencial: ${p.atende_presencial ? 'Sim' : 'Não'}</p>
+          </div>
+          <a href="agendamento.html?prof=${p.id}" class="btn btn-primario" style="font-size:13px;">Agendar</a>
+        </div>`;
+      }).join('');
+    }
+    buscar();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>⚙️ Admin</h3>
+      <nav>
+        <a href="#" class="ativo" onclick="mostrarSecao('dashboard')">📊 Dashboard</a>
+        <a href="#" onclick="mostrarSecao('usuarios')">👥 Usuários</a>
+        <a href="#" onclick="mostrarSecao('convidar')">📨 Convidar</a>
+        <a href="#" onclick="mostrarSecao('logs')">📋 Logs</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+    <div class="painel-conteudo" id="conteudo">
+      <h2>Dashboard</h2>
+      <p style="color:var(--texto-medio);">Bem-vindo ao painel de administração.</p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px;">
+        <div class="card"><h3>Profissionais</h3><p style="font-size:28px;" id="adm-prof">-</p></div>
+        <div class="card"><h3>Pacientes</h3><p style="font-size:28px;" id="adm-pac">-</p></div>
+        <div class="card"><h3>Faturamento</h3><p style="font-size:28px;" id="adm-fat">-</p></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+    
+    function mostrarSecao(secao) {
+      var c = document.getElementById('conteudo');
+      if (secao === 'usuarios') {
+        c.innerHTML = '<h2>Usuários</h2><div id="lista-usuarios">Carregando...</div>';
+        carregarUsuarios();
+      } else if (secao === 'convidar') {
+        c.innerHTML = `
+          <h2>📨 Convidar Usuário Interno</h2>
+          <p style="color:var(--texto-medo);margin-bottom:20px;">Crie perfis de acesso para sua equipe. Eles <strong>não pagam assinatura</strong> — fazem parte do seu plano.</p>
+          <div class="form-grupo"><label>Email do convidado</label><input type="email" id="conv-email" placeholder="email@exemplo.com"></div>
+          <div class="form-grupo"><label>Nome</label><input type="text" id="conv-nome" placeholder="Nome completo"></div>
+          <div class="form-grupo"><label>Tipo de Acesso</label>
+            <select id="conv-tipo">
+              <option value="recepcionista">Recepcionista</option>
+              <option value="rh">RH</option>
+              <option value="financeiro">Financeiro</option>
+              <option value="contador">Contador</option>
+            </select>
+          </div>
+          <p style="font-size:12px;color:var(--texto-medo);margin-bottom:12px;">
+            📋 <strong>Recepcionista:</strong> Check-in, caixa, loja física<br>
+            🏢 <strong>RH:</strong> Folha de pagamento, guias, funcionários<br>
+            💰 <strong>Financeiro:</strong> Contas, NF, relatórios<br>
+            🧾 <strong>Contador:</strong> Auditoria fiscal (somente leitura)
+          </p>
+          <button class="btn btn-primario" onclick="convidar()">Enviar Convite</button>
+          <div id="conv-msg" style="margin-top:12px;"></div>
+        `;
+      } else {
+        c.innerHTML = '<h2>Dashboard</h2><p style="color:var(--texto-medio);">Bem-vindo ao painel de administração.</p>';
+      }
+    }
+
+    async function carregarUsuarios() {
+      var token = localStorage.getItem('integra_token');
+      var r = await fetch(`${CONFIG.API_URL}/admin/usuarios`, { headers: { 'Authorization': `Bearer ${token}` } });
+      var d = await r.json();
+      document.getElementById('lista-usuarios').innerHTML = d.map(function(u) {
+        return '<div style="background:var(--branco);padding:10px;border-radius:8px;margin-bottom:6px;"><strong>' + u.nome + '</strong> — ' + u.email + ' — ' + u.tipo + ' — ' + u.plano + '</div>';
+      }).join('');
+    }
+
+    async function convidar() {
+      var token = localStorage.getItem('integra_token');
+      var email = document.getElementById('conv-email').value;
+      var nome = document.getElementById('conv-nome').value;
+      var tipo = document.getElementById('conv-tipo').value;
+      if (!email || !nome) { document.getElementById('conv-msg').innerHTML = '<span style="color:#E53E3E;">Preencha todos os campos.</span>'; return; }
+      
+      var r = await fetch(`${CONFIG.API_URL}/admin/convidar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ email: email, nome: nome, tipo: tipo })
+      });
+      var d = await r.json();
+      if (r.ok) {
+        document.getElementById('conv-msg').innerHTML = '<span style="color:#38A169;">✅ Convite enviado para ' + email + '!</span>';
+      } else {
+        document.getElementById('conv-msg').innerHTML = '<span style="color:#E53E3E;">Erro: ' + (d.erro || 'Tente novamente.') + '</span>';
+      }
+    }
+  </script>
+  <script src="js/popup-sus.js"></script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mensagens — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🌿 Integrativo.App</h3>
+      <nav>
+        <a href="painel-terapeuta.html">📊 Dashboard</a>
+        <a href="#">📅 Agenda</a>
+        <a href="#">👥 Pacientes</a>
+        <a href="#">🛒 Minha Loja</a>
+        <a href="painel-blog.html">✍️ Blog</a>
+        <a href="painel-mensagens.html" class="ativo">📱 Mensagens</a>
+        <a href="painel-revenda.html">🔐 Revenda</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+    <div class="painel-conteudo">
+      <h2>📱 Templates de Mensagens</h2>
+      <p style="color:var(--texto-medio);margin-bottom:20px;">Personalize as mensagens automáticas enviadas aos seus pacientes.</p>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <h3>Lembrete 24h antes</h3>
+          <p style="font-size:12px;color:var(--texto-medio);">Enviado 1 dia antes da consulta</p>
+          <textarea style="width:100%;height:80px;margin-top:8px;">Olá {nome_paciente}! Sua consulta com {profissional} é amanhã às {horario}.</textarea>
+          <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
+        </div>
+        <div class="card">
+          <h3>Lembrete 1h antes</h3>
+          <p style="font-size:12px;color:var(--texto-medio);">Enviado 1 hora antes da consulta</p>
+          <textarea style="width:100%;height:80px;margin-top:8px;">Olá {nome_paciente}! Sua consulta começa em 1 hora. Link: {link_sala}</textarea>
+          <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
+        </div>
+        <div class="card">
+          <h3>Confirmação de Agendamento</h3>
+          <p style="font-size:12px;color:var(--texto-medio);">Enviado após agendamento</p>
+          <textarea style="width:100%;height:80px;margin-top:8px;">✅ {nome_paciente}, sua consulta foi agendada! 📅 {data} às {horario}.</textarea>
+          <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
+        </div>
+        <div class="card">
+          <h3>Cancelamento</h3>
+          <p style="font-size:12px;color:var(--texto-medio);">Enviado quando a consulta é cancelada</p>
+          <textarea style="width:100%;height:80px;margin-top:8px;">⚠️ {nome_paciente}, a consulta do dia {data} foi cancelada.</textarea>
+          <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
+        </div>
+      </div>
+      <p style="margin-top:16px;font-size:11px;color:var(--texto-medio);">Variáveis: {nome_paciente}, {data}, {horario}, {profissional}, {link_sala}</p>
+    </div>
+  </div>
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html

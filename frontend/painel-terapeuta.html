@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Profissional — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .dash-card { background: var(--branco); padding: 20px; border-radius: var(--raio-borda); box-shadow: var(--sombra); text-align: center; }
+    .dash-card h3 { font-size: 14px; color: var(--texto-medio); margin-bottom: 6px; }
+    .dash-card .valor { font-size: 28px; font-weight: 700; color: var(--azul-escuro); }
+    .lista-agenda { background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); padding: 20px; }
+    .agenda-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #E2E8F0; cursor: pointer; transition: background 0.2s; }
+    .agenda-item:hover { background: var(--cinza-claro); margin: 0 -20px; padding: 12px 20px; }
+    .agenda-item:last-child { border-bottom: none; }
+    .agenda-item .paciente-nome { font-weight: 600; color: var(--azul-escuro); }
+    .agenda-item .paciente-info { font-size: 12px; color: var(--texto-medio); }
+    .btn-teleconsulta { background: var(--verde-suave); color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; text-decoration: none; }
+    .upsell-banner { background: var(--laranja-claro); border: 1px solid var(--laranja); border-radius: var(--raio-borda); padding: 16px 20px; margin-top: 20px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🌿 Integrativo</h3>
+      <nav>
+        <a href="#" class="ativo" onclick="mostrarSecao('dashboard')">📊 Dashboard</a>
+        <a href="#" id="menu-agenda" onclick="mostrarSecao('agenda')">📅 Agenda</a>
+        <a href="#" id="menu-pacientes" onclick="mostrarSecao('pacientes')">👥 Pacientes</a>
+        <a href="#" id="menu-loja" onclick="mostrarSecao('loja')">🛒 Minha Loja</a>
+        <a href="#" id="menu-blog" onclick="mostrarSecao('blog')">✍️ Blog</a>
+        <a href="#" id="menu-whatsapp" onclick="mostrarSecao('whatsapp')">📱 WhatsApp</a>
+        <a href="#" id="menu-dominio" onclick="mostrarSecao('dominio')">🌐 Domínio/Email</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+    <div class="painel-conteudo" id="conteudo">
+      <!-- DASHBOARD -->
+      <div id="secao-dashboard">
+        <h2>Dashboard</h2>
+        <p style="color:var(--texto-medio);margin-bottom:20px;">Bem-vindo(a), <span id="nome-profissional">Profissional</span>!</p>
+        
+        <div class="dashboard-grid">
+          <div class="dash-card"><h3>Consultas Hoje</h3><div class="valor" id="dash-hoje">-</div></div>
+          <div class="dash-card"><h3>Pacientes Ativos</h3><div class="valor" id="dash-pacientes">-</div></div>
+          <div class="dash-card"><h3>Faturamento Mês</h3><div class="valor" id="dash-fat">-</div></div>
+        </div>
+
+        <div class="lista-agenda">
+          <h3>📅 Próximos Agendamentos</h3>
+          <div id="lista-proximos"></div>
+        </div>
+
+        <div id="upsell-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+    
+    var token = localStorage.getItem('integra_token');
+    if (!token) { window.location.href = 'login.html'; }
+
+    // Carregar nome do profissional
+    var usuario = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
+    if (usuario.nome) document.getElementById('nome-profissional').textContent = usuario.nome;
+
+    // Carregar dashboard
+    async function carregarDashboard() {
+      var r = await fetch(`${CONFIG.API_URL}/agendamentos/meus`, { headers: { 'Authorization': `Bearer ${token}` } });
+      var dados = await r.json();
+      var hoje = new Date().toISOString().split('T')[0];
+      var deHoje = dados.filter(function(a) { return a.data_agendamento === hoje; });
+      document.getElementById('dash-hoje').textContent = deHoje.length;
+      document.getElementById('dash-pacientes').textContent = dados.length > 0 ? new Set(dados.map(function(a) { return a.paciente_id; })).size : 0;
+
+      var total = dados.filter(function(a) { return a.status === 'realizado'; }).reduce(function(s, a) { return s + (a.valor || 0); }, 0);
+      document.getElementById('dash-fat').textContent = 'R$ ' + total.toFixed(2);
+
+      var html = '';
+      dados.slice(0, 5).forEach(function(a) {
+        html += '<div class="agenda-item" onclick="abrirPaciente(' + a.paciente_id + ')">';
+        html += '<div><div class="paciente-nome">' + (a.profissional_nome || 'Paciente') + '</div>';
+        html += '<div class="paciente-info">' + a.data_agendamento + ' às ' + a.horario_inicio + ' — ' + a.status + '</div></div>';
+        if (a.modalidade === 'online' && a.status === 'agendado') {
+          html += '<a href="#" class="btn-teleconsulta" onclick="event.stopPropagation(); iniciarTeleconsulta(' + a.id + ')">🎥 Consulta</a>';
+        }
+        html += '</div>';
+      });
+      document.getElementById('lista-proximos').innerHTML = html || '<p style="color:var(--texto-medio);">Nenhum agendamento.</p>';
+
+      // Upsell Freemium
+      if (usuario.plano === 'freemium') {
+        var limites = CONFIG.PLANOS.freemium;
+        var usados = dados.length;
+        var pct = Math.round((usados / limites.max_agendamentos) * 100);
+        var msg = '';
+        if (pct >= 100) msg = '🎯 Você atingiu o limite de agendamentos! Libere mais com o plano Pro.';
+        else if (pct >= 90) msg = '📈 Você está quase no limite (' + pct + '%). Evite surpresas — migre para o Pro.';
+        else if (pct >= 75) msg = '📊 ' + pct + '% dos agendamentos usados. Já pensou no plano Pro?';
+        else if (pct >= 50) msg = '💡 Você já usou metade do seu plano gratuito. Conheça o Pro.';
+        if (msg) {
+          document.getElementById('upsell-container').innerHTML = '<div class="upsell-banner">' + msg + ' <a href="checkout.html?plano=pro" style="color:var(--azul-escuro);font-weight:700;">Assinar Pro →</a></div>';
+        }
+      }
+    }
+
+    function abrirPaciente(id) {
+      alert('Abrir prontuário do paciente #' + id + ' (funcionalidade completa em breve)');
+    }
+
+    function iniciarTeleconsulta(id) {
+      alert('Iniciar teleconsulta #' + id + ' (funcionalidade completa em breve)');
+    }
+
+    carregarDashboard();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

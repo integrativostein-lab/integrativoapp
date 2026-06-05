@@ -1,0 +1,14 @@
+[30 dias antes do vencimento]
+        │
+        ├── Plano Mensal: Renovação automática
+        │
+        └── Plano Semestral/Anual:
+                │
+                ├── Popup diário (últimos 15 dias)
+                │       ├── "Sua assinatura expira em X dias"
+                │       └── [Renovar] / [Lembrar Depois]
+                │
+                └── Se não renovar:
+                        ├── Acesso suspenso
+                        ├── Dados disponíveis por 60 dias
+                        └── Após 60 dias: exclusão permanente

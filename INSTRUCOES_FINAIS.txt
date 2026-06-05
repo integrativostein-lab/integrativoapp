@@ -1,0 +1,36 @@
+🌿 INTEGRATIVO.APP — INSTRUÇÕES DE INSTALAÇÃO E TESTES
+=====================================================
+
+1. ESTRUTURA DO PROJETO
+-------------------------------------
+- /frontend: Subir para a Vercel.
+- /backend: Subir para o Render (ou servidor similar).
+
+2. CONFIGURAÇÕES NECESSÁRIAS
+-------------------------------------
+- No BACKEND, o arquivo .env já contém suas chaves do Supabase e Dropbox.
+- Ao baixar, entre na pasta /backend e rode: npm install
+- No FRONTEND, verifique o arquivo /js/config.js para garantir que a URL da API aponta para seu servidor Render.
+
+3. GATEWAYS DE PAGAMENTO
+-------------------------------------
+- O sistema está pronto para receber as chaves de: Ton, PagSeguro, MercadoPago, PagBank, Asaas, Efí Bank, Cielo e Stone.
+- Configure as chaves no Painel do Profissional -> Configurações de Pagamento.
+
+4. TELECONSULTA E TELEAULA
+-------------------------------------
+- O sistema usa Plug-n-Meet.
+- Configure a URL da sua CPU dedicada no arquivo backend/config-infra.js ou via variáveis de ambiente.
+
+5. COMANDO DE VOZ (STT)
+-------------------------------------
+- Já está ativo via Web Speech API (Custo Zero).
+- Funciona em Blogs, Fichas de Anamnese e Prontuários.
+
+6. DADOS DA EMPRESA
+-------------------------------------
+- CNPJ: 48.893.405/0001-22 incluído em todos os rodapés.
+- Marca Registrada (INPI) identificada.
+
+Boa sorte com os testes!
+Equipe Integrativo.App

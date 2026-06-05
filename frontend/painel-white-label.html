@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>White Label — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .wl-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .wl-card { background: var(--branco); padding: 28px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 24px; }
+    .wl-card h3 { color: var(--azul-escuro); margin-bottom: 16px; border-bottom: 2px solid var(--laranja); padding-bottom: 8px; }
+    .msg-box { background: var(--cinza-claro); padding: 16px; border-radius: 8px; margin-bottom: 16px; }
+    .msg-box textarea { width: 100%; height: 100px; padding: 10px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 13px; resize: vertical; }
+    .variaveis { font-size: 12px; color: var(--texto-medio); margin: 8px 0; }
+    .variaveis span { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin: 2px; display: inline-block; cursor: pointer; }
+    .variaveis span:hover { background: var(--azul-escuro); color: #FFF; }
+    .limite { font-size: 12px; color: var(--texto-medio); text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🎨 White Label</h3>
+      <nav>
+        <a href="#" class="ativo">📱 Mensagens Personalizadas</a>
+        <a href="#">🎨 Logo e Cores</a>
+        <a href="#">📅 Mensagens Automáticas</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+
+    <div class="painel-conteudo">
+      <div class="wl-container">
+        
+        <div class="wl-card">
+          <h3>📱 Mensagens Personalizadas (WhatsApp)</h3>
+          <p style="color:var(--texto-medio);margin-bottom:16px;">
+            Crie até <strong>3 mensagens personalizadas</strong> que serão enviadas via WhatsApp.
+            Use as variáveis abaixo para personalizar cada mensagem com os dados do paciente.
+          </p>
+
+          <div class="variaveis">
+            <strong>Variáveis disponíveis:</strong><br>
+            <span onclick="inserirVariavel(1, '{nome_paciente}')">{nome_paciente}</span>
+            <span onclick="inserirVariavel(1, '{data_aniversario}')">{data_aniversario}</span>
+            <span onclick="inserirVariavel(1, '{ultima_consulta}')">{ultima_consulta}</span>
+            <span onclick="inserirVariavel(1, '{proxima_consulta}')">{proxima_consulta}</span>
+            <span onclick="inserirVariavel(1, '{nome_profissional}')">{nome_profissional}</span>
+            <span onclick="inserirVariavel(1, '{nome_clinica}')">{nome_clinica}</span>
+          </div>
+
+          <!-- Mensagem 1 -->
+          <div class="msg-box">
+            <div class="form-grupo">
+              <label>Título da Mensagem 1</label>
+              <input type="text" id="msg1-titulo" placeholder="Ex: Feliz Aniversário! 🎂" maxlength="50">
+            </div>
+            <div class="form-grupo">
+              <label>Quando enviar?</label>
+              <select id="msg1-gatilho">
+                <option value="">Manual (você escolhe quando)</option>
+                <option value="aniversario">No aniversário do paciente</option>
+                <option value="natal">25 de Dezembro (Natal)</option>
+                <option value="ano_novo">01 de Janeiro (Ano Novo)</option>
+                <option value="pascoa">Domingo de Páscoa</option>
+                <option value="ferias">Quando você marcar férias</option>
+                <option value="1_mes_sem_consulta">1 mês sem consulta</option>
+                <option value="3_meses_sem_consulta">3 meses sem consulta</option>
+              </select>
+            </div>
+            <div class="form-grupo">
+              <label>Mensagem</label>
+              <textarea id="msg1-texto" placeholder="Olá {nome_paciente}! Hoje é um dia especial..."></textarea>
+              <p class="limite" id="msg1-limite">0/500 caracteres</p>
+            </div>
+          </div>
+
+          <!-- Mensagem 2 -->
+          <div class="msg-box">
+            <div class="form-grupo">
+              <label>Título da Mensagem 2</label>
+              <input type="text" id="msg2-titulo" placeholder="Ex: Boas Festas! 🎄" maxlength="50">
+            </div>
+            <div class="form-grupo">
+              <label>Quando enviar?</label>
+              <select id="msg2-gatilho">
+                <option value="">Manual (você escolhe quando)</option>
+                <option value="aniversario">No aniversário do paciente</option>
+                <option value="natal">25 de Dezembro (Natal)</option>
+                <option value="ano_novo">01 de Janeiro (Ano Novo)</option>
+                <option value="pascoa">Domingo de Páscoa</option>
+                <option value="ferias">Quando você marcar férias</option>
+                <option value="1_mes_sem_consulta">1 mês sem consulta</option>
+                <option value="3_meses_sem_consulta">3 meses sem consulta</option>
+              </select>
+            </div>
+            <div class="form-grupo">
+              <label>Mensagem</label>
+              <textarea id="msg2-texto" placeholder="Olá {nome_paciente}! Desejo a você..."></textarea>
+              <p class="limite" id="msg2-limite">0/500 caracteres</p>
+            </div>
+          </div>
+
+          <!-- Mensagem 3 -->
+          <div class="msg-box">
+            <div class="form-grupo">
+              <label>Título da Mensagem 3</label>
+              <input type="text" id="msg3-titulo" placeholder="Ex: Volta às Aulas! 📚" maxlength="50">
+            </div>
+            <div class="form-grupo">
+              <label>Quando enviar?</label>
+              <select id="msg3-gatilho">
+                <option value="">Manual (você escolhe quando)</option>
+                <option value="aniversario">No aniversário do paciente</option>
+                <option value="natal">25 de Dezembro (Natal)</option>
+                <option value="ano_novo">01 de Janeiro (Ano Novo)</option>
+                <option value="pascoa">Domingo de Páscoa</option>
+                <option value="ferias">Quando você marcar férias</option>
+                <option value="1_mes_sem_consulta">1 mês sem consulta</option>
+                <option value="3_meses_sem_consulta">3 meses sem consulta</option>
+              </select>
+            </div>
+            <div class="form-grupo">
+              <label>Mensagem</label>
+              <textarea id="msg3-texto" placeholder="Olá {nome_paciente}! As aulas..."></textarea>
+              <p class="limite" id="msg3-limite">0/500 caracteres</p>
+            </div>
+          </div>
+
+          <button class="btn btn-primario" onclick="salvarMensagens()" style="width:100%;">Salvar Mensagens</button>
+          <p id="msg-salvo" style="text-align:center;margin-top:12px;font-size:14px;"></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    // Contador de caracteres
+    for (var i = 1; i <= 3; i++) {
+      document.getElementById('msg' + i + '-texto').addEventListener('input', function(e) {
+        var id = e.target.id.replace('msg', '').replace('-texto', '');
+        var len = e.target.value.length;
+        document.getElementById('msg' + id + '-limite').textContent = len + '/500 caracteres';
+        if (len > 500) {
+          document.getElementById('msg' + id + '-limite').style.color = 'var(--vermelho)';
+        } else {
+          document.getElementById('msg' + id + '-limite').style.color = 'var(--texto-medio)';
+        }
+      });
+    }
+
+    function inserirVariavel(num, variavel) {
+      var textarea = document.getElementById('msg' + num + '-texto');
+      textarea.value += variavel;
+      textarea.dispatchEvent(new Event('input'));
+    }
+
+    async function salvarMensagens() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) return;
+
+      var mensagens = [];
+      for (var i = 1; i <= 3; i++) {
+        mensagens.push({
+          titulo: document.getElementById('msg' + i + '-titulo').value,
+          gatilho: document.getElementById('msg' + i + '-gatilho').value,
+          texto: document.getElementById('msg' + i + '-texto').value
+        });
+      }
+
+      var r = await fetch(`${CONFIG.API_URL}/mensagens`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ tipo: 'personalizada', mensagens: mensagens })
+      });
+
+      var d = await r.json();
+      var msg = document.getElementById('msg-salvo');
+      if (r.ok) {
+        msg.textContent = '✅ Mensagens salvas com sucesso!';
+        msg.style.color = 'var(--verde-suave)';
+      } else {
+        msg.textContent = '❌ Erro ao salvar. Tente novamente.';
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

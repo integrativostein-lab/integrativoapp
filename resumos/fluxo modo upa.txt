@@ -1,0 +1,22 @@
+[Paciente chega na UPA]
+        │
+        ├── [Recepção]
+        │       ├── Cadastro rápido (ou busca por CPF/CNS)
+        │       └── Classificação de risco (Manchester)
+        │               ├── Vermelho (emergência)
+        │               ├── Laranja (muito urgente)
+        │               ├── Amarelo (urgente)
+        │               ├── Verde (pouco urgente)
+        │               └── Azul (não urgente)
+        │
+        ├── [Painel de urgência do médico]
+        │       ├── Sinais vitais
+        │       ├── Alergias (puxadas do histórico da UBS)
+        │       ├── Medicamentos em uso
+        │       └── Formulário de conduta rápida
+        │
+        └── [Desfecho]
+                ├── Alta
+                ├── Observação
+                ├── Transferência
+                └── Internação

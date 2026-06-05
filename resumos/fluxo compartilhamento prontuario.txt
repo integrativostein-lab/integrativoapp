@@ -1,0 +1,29 @@
+[Paciente agenda com novo profissional]
+        │
+        ├── [Sistema detecta]
+        │       └── "Você já tem histórico com outro(s) profissional(is)"
+        │
+        ├── [Pergunta ao paciente]
+        │       ├── "Deseja compartilhar seu histórico anterior?"
+        │       ├── ○ Sim, compartilhar
+        │       └── ○ Não, começar do zero
+        │
+        ├── [Se SIM]
+        │       ├── Novo profissional recebe:
+        │       │       ├── Datas das consultas anteriores
+        │       │       ├── Anamneses (Parte 1 e 2)
+        │       │       ├── Evoluções clínicas
+        │       │       ├── Prescrições/recomendações
+        │       │       └── Resultados de exames
+        │       │
+        │       └── NÃO são compartilhados:
+        │               ├── Nomes dos profissionais anteriores
+        │               ├── Assinaturas
+        │               ├── Notas internas
+        │               └── Valores cobrados
+        │
+        └── [Paciente sempre pode]
+                ├── Ver seu histórico completo
+                ├── Baixar cópia (PDF)
+                ├── Revogar compartilhamento
+                └── Excluir dados antigos (LGPD)

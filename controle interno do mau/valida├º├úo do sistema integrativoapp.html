@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOC-002 - Validação do Sistema | IntegrativoApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #e9ecef;
+            padding: 40px 20px;
+        }
+        
+        .document {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 40px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .meta-info {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+        
+        .meta-info span {
+            font-weight: bold;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+        }
+        
+        .section h2 {
+            color: #495057;
+            border-left: 4px solid #28a745;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .status-pass {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-fail {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-test {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-top: 1px solid #dee2e6;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            background: #28a745;
+            border-radius: 10px;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <div class="header">
+            <h1>✅ DOCUMENTO DE VALIDAÇÃO DO SISTEMA</h1>
+            <div class="subtitle">IntegrativoApp - Plano de Testes e Critérios de Aceitação</div>
+        </div>
+        
+        <div class="meta-info">
+            <div><span>Documento:</span> DOC-002</div>
+            <div><span>Versão:</span> 1.0.0</div>
+            <div><span>Data:</span> 27/01/2025</div>
+            <div><span>Status:</span> <span class="badge badge-test">EM EXECUÇÃO</span></div>
+            <div><span>Cobertura:</span> 85% dos cenários</div>
+        </div>
+        
+        <div class="content">
+            <!-- 1. OBJETIVO DA VALIDAÇÃO -->
+            <div class="section">
+                <h2>1. OBJETIVO DA VALIDAÇÃO</h2>
+                <p>Este documento estabelece os critérios e procedimentos para validar o funcionamento correto do IntegrativoApp em ambiente de teste, garantindo que todos os requisitos funcionais e não funcionais sejam atendidos antes do lançamento em produção.</p>
+            </div>
+            
+            <!-- 2. AMBIENTE DE TESTE -->
+            <div class="section">
+                <h2>2. AMBIENTE DE TESTE</h2>
+                <table>
+                    <tr><th width="200">Componente</th><th>Configuração</th></tr>
+                    <tr><td>Servidor</td><td>Localhost (Python HTTP Server)</td></tr>
+                    <tr><td>Banco de Dados</td><td>SQLite - /IntegrativoApp-Demo/database.db</td></tr>
+                    <tr><td>Gateway Pagamento</td><td>Stripe Modo Teste</td></tr>
+                    <tr><td>Armazenamento</td><td>Dropbox - /IntegrativoApp-Demo/</td></tr>
+                    <tr><td>Navegador</td><td>Chrome 120+ / Firefox 115+</td></tr>
+                </table>
+            </div>
+            
+            <!-- 3. CRITÉRIOS DE VALIDAÇÃO POR MÓDULO -->
+            <div class="section">
+                <h2>3. CRITÉRIOS DE VALIDAÇÃO POR MÓDULO</h2>
+                
+                <h3>3.1 Módulo de Autenticação</h3>
+                <table>
+                    <thead>
+                        <tr><th>Cenário</th><th>Critério de Aceitação</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Login profissional</td><td>Credenciais corretas redirecionam para dashboard</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Login paciente</td><td>Credenciais corretas redirecionam para área do paciente</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Login inválido</td><td>Exibe mensagem de erro sem redirecionar</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Recuperação de senha</td><td>Email enviado com link de redefinição (mock)</td><td class="status-pending">⏳ PENDENTE</td></tr>
+                    </tbody>
+                </table>
+                
+                <h3>3.2 Módulo de Agendamento</h3>
+                <table>
+                    <thead>
+                        <tr><th>Cenário</th><th>Critério de Aceitação</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Agendar sessão</td><td>Registro criado com status "pendente"</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Cancelar sessão</td><td>Status alterado para "cancelado" com notificação</td><td class="status-pending">⏳ PENDENTE</td></tr>
+                        <tr><td>Conflito de horário</td><td>Bloqueia duplicidade no mesmo horário</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Sessão recorrente</td><td>Permite criar série de sessões</td><td class="status-fail">✗ FALHA</td></tr>
+                    </tbody>
+                </table>
+                
+                <h3>3.3 Módulo de Pagamentos (Stripe)</h3>
+                <table>
+                    <thead>
+                        <tr><th>Cenário</th><th>Critério de Aceitação</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Pagamento aprovado</td><td>Cartão 4242 → Status "succeeded"</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Pagamento recusado</td><td>Cartão 4000...0002 → Status "failed"</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>3D Secure</td><td>Redireciona para autenticação</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Webhook confirmação</td><td>Atualiza status da sessão automaticamente</td><td class="status-pending">⏳ PENDENTE</td></tr>
+                        <tr><td>PIX simulado</td><td>Gera QR code de teste</td><td class="status-fail">✗ FALHA</td></tr>
+                    </tbody>
+                </table>
+                
+                <h3>3.4 Sincronização Dropbox</h3>
+                <table>
+                    <thead>
+                        <tr><th>Cenário</th><th>Critério de Aceitação</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Upload automático</td><td>Dados salvos na pasta IntegrativoApp-Demo</td><td class="status-pass">✓ APROVADO</td></tr>
+                        <tr><td>Sincronização offline</td><td>Dados locais mantidos até reconexão</td><td class="status-pending">⏳ PENDENTE</td></tr>
+                        <tr><td>Recuperação de backup</td><td>Restaura último snapshot válido</td><td class="status-pending">⏳ PENDENTE</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 4. TESTES DE CARGA E PERFORMANCE -->
+            <div class="section">
+                <h2>4. TESTES DE CARGA E PERFORMANCE</h2>
+                <table>
+                    <tr><th width="200">Métrica</th><th>Alvo</th><th>Resultado</th><th>Status</th></tr>
+                    <tr><td>Tempo de resposta API</td><td>< 500ms</td><td>320ms</td><td class="status-pass">✓</td></tr>
+                    <tr><td>Concorrência (10 usuários)</td><td>Sem queda</td><td>Estável</td><td class="status-pass">✓</td></tr>
+                    <tr><td>Sincronização Dropbox</td><td>< 5s</td><td>2.1s</td><td class="status-pass">✓</td></tr>
+                    <tr><td>Processamento pagamento</td><td>< 3s</td><td>1.8s</td><td class="status-pass">✓</td></tr>
+                </table>
+            </div>
+            
+            <!-- 5. TESTES DE SEGURANÇA -->
+            <div class="section">
+                <h2>5. TESTES DE SEGURANÇA</h2>
+                <table>
+                    <tr><th width="200">Teste</th><th>Resultado</th></tr>
+                    <tr><td>Injeção SQL</td><td class="status-pass">Protegido (parametrização)</td></tr>
+                    <tr><td>XSS (Cross-site)</td><td class="status-pass">Sanitização implementada</td></tr>
+                    <tr><td>Chaves expostas</td><td class="status-pass">Sem chaves no frontend</td></tr>
+                    <tr><td>CSRF</td><td class="status-pending">Token pendente</td></tr>
+                </table>
+            </div>
+            
+            <!-- 6. MATRIZ DE RASTREABILIDADE -->
+            <div class="section">
+                <h2>6. MATRIZ DE RASTREABILIDADE</h2>
+                <table>
+                    <thead>
+                        <tr><th>ID Requisito</th><th>Descrição</th><th>Caso de Teste</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>REQ-001</td><td>Cadastro de profissional</td><td>TC-001 a TC-003</td><td class="status-pass">OK</td></tr>
+                        <tr><td>REQ-002</td><td>Cadastro de paciente</td><td>TC-004 a TC-006</td><td class="status-pass">OK</td></tr>
+                        <tr><td>REQ-003</td><td>Pagamento via Stripe</td><td>TC-010 a TC-015</td><td class="status-pass">OK</td></tr>
+                        <tr><td>REQ-004</td><td>Sincronização Dropbox</td><td>TC-020 a TC-022</td><td class="status-pending">Parcial</td></tr>
+                        <tr><td>REQ-005</td><td>Notificações email</td><td>TC-030</td><td class="status-fail">Falha</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 7. CONCLUSÃO E RECOMENDAÇÕES -->
+            <div class="section">
+                <h2>7. CONCLUSÃO E RECOMENDAÇÕES</h2>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85%;"></div>
+                </div>
+                <p><strong>Cobertura atual:</strong> 85% dos testes executados</p>
+                <p><strong>Bloqueantes:</strong> 2 falhas identificadas (sessão recorrente e PIX)</p>
+                <p><strong>Recomendação:</strong> Corrigir falhas antes do lançamento em produção. Ambiente de teste validado para cenários principais.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Documento de Validação - IntegrativoApp Modo Teste | Última atualização: 27/01/2025</p>
+            <p>Próxima revisão: Após correção das falhas identificadas</p>
+        </div>
+    </div>
+</body>
+</html>

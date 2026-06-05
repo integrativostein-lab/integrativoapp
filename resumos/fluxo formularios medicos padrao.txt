@@ -1,0 +1,15 @@
+[Profissional acessa Formulários]
+        │
+        ├── 📋 Formulários disponíveis:
+        │       ├── Termo de Consentimento Informado
+        │       ├── Ficha de Evolução Clínica
+        │       ├── Atestado Médico
+        │       ├── Declaração de Comparecimento
+        │       ├── Solicitação de Exame (profissionais com conselho)
+        │       └── Sugestão de Exame (terapeutas sem conselho)
+        │
+        └── [Preenchimento automático]
+                ├── Dados do profissional (nome, registro, CRM)
+                ├── Dados do paciente (nome, CPF)
+                ├── Data atual
+                └── Assinatura digital (se tiver certificado)

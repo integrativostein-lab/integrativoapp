@@ -1,0 +1,10 @@
+[Profissional agenda reunião]
+        │
+        ├── Convida participantes (até 20)
+        ├── Define pauta
+        │
+        └── [Durante a reunião]
+                ├── Videoconferência (WebRTC)
+                ├── Compartilhamento de tela
+                ├── Chat coletivo
+                └── Gravação (se autorizada por todos)

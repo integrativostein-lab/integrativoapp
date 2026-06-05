@@ -1,0 +1,12 @@
+[ACS no celular (PWA)]
+        │
+        ├── [Visita domiciliar]
+        │       ├── Escaneia QR Code da família
+        │       ├── Preenche formulário rápido (offline)
+        │       ├── Anexa foto (se necessário)
+        │       └── [Salvar]
+        │
+        └── [De volta à UBS (com WiFi)]
+                ├── Sincronização automática
+                ├── Dados vão para o prontuário do paciente
+                └── Relatório de cobertura disponível para a prefeitura

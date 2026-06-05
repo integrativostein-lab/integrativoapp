@@ -1,0 +1,18 @@
+[Profissional cria contrato]
+        │
+        ├── Define: Modalidade (Yoga/Massagem)
+        ├── Define: Nome do plano, sessões, valor
+        ├── Define: Tipo de pagamento (à vista / parcelado)
+        ├── Define: Cláusulas adicionais
+        │
+        └── [Gerar Contrato]
+                │
+                ├── [Paciente recebe]
+                │       ├── Link para aceite eletrônico
+                │       └── [Aceitar] / [Recusar]
+                │
+                └── [Após aceite]
+                        ├── Contrato salvo no financeiro
+                        ├── Sessões descontadas automaticamente
+                        ├── Notificações de vencimento
+                        └── Relatório de sessões restantes

@@ -1,0 +1,36 @@
+[Painel do Criador]
+        │
+        ├── 📊 Dashboard Geral
+        │       ├── Total de profissionais
+        │       ├── Total de pacientes
+        │       ├── Assinaturas ativas
+        │       ├── Faturamento total
+        │       └── Cupons usados
+        │
+        ├── 👥 Usuários
+        │       ├── Listar todos
+        │       ├── Alterar plano
+        │       └── Ativar/Desativar
+        │
+        ├── 📨 Convites
+        │       ├── Convidar profissional
+        │       ├── Definir plano, isenções, especialidades
+        │       └── Enviar convite
+        │
+        ├── 💰 Vendas
+        │       ├── Listar todas
+        │       ├── Filtrar por período
+        │       └── Exportar CSV
+        │
+        ├── 🌍 Doações
+        │       ├── Solicitações pendentes
+        │       ├── Revisar documentação
+        │       └── [Liberar] / [Rejeitar]
+        │
+        ├── 🎟️ Cupons
+        │
+        ├── 📋 Logs de auditoria
+        │
+        └── 💾 Backup
+                ├── Fazer backup manual
+                └── Histórico de backups

@@ -1,0 +1,12 @@
+[Backup Automático]
+        │
+        ├── Freemium/Pro/Premium: Semanal
+        ├── Enterprise/Coworking: Diário
+        │
+        └── [Profissional acessa]
+                ├── ⚙️ Configurações → Backup
+                ├── Lista de backups disponíveis
+                ├── [Baixar último backup]
+                └── [Restaurar backup]
+                        ├── Aviso: "Isso substituirá seus dados atuais"
+                        └── Confirmação necessária

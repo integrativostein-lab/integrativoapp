@@ -1,0 +1,18 @@
+[Paciente acessa a Landing Page]
+        │
+        ├── [Buscar Profissionais]
+        │       ├── Filtro: Especialidade (30 opções)
+        │       ├── Filtro: CEP / Cidade
+        │       ├── Filtro: Modalidade (Online / Presencial)
+        │       └── [Ver Resultados]
+        │               │
+        │               ├── Lista de profissionais
+        │               │       ├── Nome, especialidades, cidade
+        │               │       ├── Selos: 🟢 Verificado, ⭐ Premium, 🟡 ABRATH
+        │               │       ├── Valores: Online R$ X / Presencial R$ Y
+        │               │       └── Próxima vaga disponível
+        │               │
+        │               └── [Agendar] → Fluxo de Agendamento
+        │
+        └── [Sem comissão para o profissional]
+                └── Diferente de Doctoralia (15-30%) e Zenklub (20-25%)

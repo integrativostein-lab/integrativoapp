@@ -1,0 +1,17 @@
+[Semanalmente]
+        │
+        ├── Sistema verifica fontes oficiais:
+        │       ├── ANVISA (novos registros, restrições)
+        │       ├── RENISUS (novas plantas)
+        │       ├── PubMed (novos estudos)
+        │       └── DOU (resoluções dos conselhos)
+        │
+        ├── [Se houver novidade]
+        │       ├── Adiciona ao banco de dados
+        │       ├── Notifica profissionais da especialidade
+        │       └── Aparece no Quadro de Novidades
+        │
+        └── [Se houver restrição]
+                ├── Alerta no painel do profissional
+                ├── Produto marcado como RESTRITO
+                └── Profissional pode solicitar liberação (se habilitado)

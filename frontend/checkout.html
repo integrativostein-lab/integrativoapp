@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .checkout-container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
+    .checkout-card { background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .checkout-card h2 { margin-bottom: 8px; }
+    .resumo { background: var(--cinza-claro); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; }
+    .resumo span { float: right; font-weight: 600; }
+    .cupom { margin: 16px 0; }
+    .cupom input { padding: 10px; border: 2px solid #E2E8F0; border-radius: 8px; width: 60%; }
+    .cupom button { padding: 10px 16px; background: var(--azul-escuro); color: #FFF; border: none; border-radius: 8px; cursor: pointer; }
+    .desconto-pix { background: #C6F6D5; padding: 12px; border-radius: 8px; margin: 12px 0; font-size: 14px; color: #22543D; font-weight: 600; }
+    .parcelas-select { display: none; margin: 12px 0; }
+    .parcelas-select select { padding: 10px; border: 2px solid #E2E8F0; border-radius: 8px; width: 100%; }
+  </style>
+</head>
+<body>
+  
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a></div>
+  </nav>
+
+  <div class="checkout-container">
+    <div class="checkout-card">
+      <h2>Finalizar Assinatura</h2>
+      <p style="color:var(--texto-medio);">Plano escolhido: <strong id="plano-nome">Pro</strong></p>
+
+      <div class="resumo">
+        <p>Ciclo: <strong id="resumo-ciclo">Mensal</strong></p>
+        <p>Valor base: <span id="resumo-valor-base">R$ 89,90</span></p>
+        <p id="resumo-desconto-pix" style="display:none;">Desconto PIX (5%): <span id="desconto-valor" style="color:#22543D;">-R$ 0,00</span></p>
+        <p>Valor final: <span id="resumo-valor-final" style="font-size:18px;font-weight:700;">R$ 89,90</span></p>
+      </div>
+
+      <div class="form-grupo">
+        <label>Forma de Pagamento</label>
+        <select id="forma-pagamento" onchange="atualizarResumo()">
+          <option value="cartao_credito">Cartão de Crédito</option>
+          <option value="pix">PIX (5% de desconto)</option>
+        </select>
+      </div>
+
+      <div class="form-grupo parcelas-select" id="grupo-parcelas">
+        <label>Parcelas (sem juros)</label>
+        <select id="parcelas" onchange="atualizarResumo()">
+          <option value="1">1x</option>
+          <option value="2">2x</option>
+          <option value="3">3x</option>
+          <option value="4">4x</option>
+        </select>
+      </div>
+
+      <div class="cupom">
+        <label>Cupom de desconto</label><br>
+        <input type="text" id="cupom" placeholder="PRESENTEDOMAU">
+        <button onclick="aplicarCupom()">Aplicar</button>
+        <p id="msg-cupom" style="font-size:12px;margin-top:4px;"></p>
+      </div>
+
+      <div class="form-grupo">
+        <label>☐ Sou associado ABRATH (15% off)</label>
+        <div id="grupo-abrath" style="display:none;">
+          <input type="text" id="abrath-registro" placeholder="Nº de registro ABRATH">
+          <input type="text" id="abrath-nome" placeholder="Nome completo" style="margin-top:8px;">
+          <button onclick="verificarABRATH()" style="margin-top:8px;">Confirmar</button>
+          <p id="msg-abrath" style="font-size:12px;margin-top:4px;"></p>
+        </div>
+      </div>
+
+      <button class="btn btn-primario" onclick="finalizar()" style="width:100%;margin-top:10px;">Finalizar Pagamento</button>
+    </div>
+  </div>
+
+  <footer style="text-align:center;padding:20px;font-size:12px;color:var(--texto-medio);">
+    <a href="manual.html">📖 Manual de Uso</a>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>
+    var plano = 'pro';
+    var ciclo = 'mensal';
+    var valorBase = CONFIG.PLANOS[plano].valor_mensal;
+    var descontoABRATH = false;
+
+    document.getElementById('resumo-valor-base').textContent = 'R$ ' + valorBase.toFixed(2).replace('.', ',');
+    document.getElementById('resumo-valor-final').textContent = 'R$ ' + valorBase.toFixed(2).replace('.', ',');
+
+    function atualizarResumo() {
+      var forma = document.getElementById('forma-pagamento').value;
+      var parcelas = parseInt(document.getElementById('parcelas').value);
+      var valorFinal = valorBase;
+      var desconto = 0;
+
+      // Desconto PIX
+      if (forma === 'pix') {
+        desconto = valorBase * 0.05;
+        valorFinal = valorBase - desconto;
+        document.getElementById('resumo-desconto-pix').style.display = 'block';
+        document.getElementById('desconto-valor').textContent = '-R$ ' + desconto.toFixed(2).replace('.', ',');
+        document.getElementById('grupo-parcelas').style.display = 'none';
+      } else {
+        document.getElementById('resumo-desconto-pix').style.display = 'none';
+        document.getElementById('grupo-parcelas').style.display = 'block';
+      }
+
+      document.getElementById('resumo-valor-final').textContent = 'R$ ' + valorFinal.toFixed(2).replace('.', ',');
+    }
+
+    function aplicarCupom() {
+      var cod = document.getElementById('cupom').value.toUpperCase();
+      var msg = document.getElementById('msg-cupom');
+      if (cod === 'PRESENTEDOMAU' && plano === 'premium') {
+        msg.textContent = '✅ Cupom aplicado! Acesso vitalício.';
+        msg.style.color = 'var(--verde-suave)';
+        document.getElementById('resumo-valor-base').textContent = 'R$ 0,00';
+        document.getElementById('resumo-valor-final').textContent = 'R$ 0,00 (vitalício)';
+      } else {
+        msg.textContent = '❌ Cupom inválido para este plano.';
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+
+    function verificarABRATH() {
+      // Simulação da verificação ABRATH
+      var registro = document.getElementById('abrath-registro').value;
+      var nome = document.getElementById('abrath-nome').value;
+      var msg = document.getElementById('msg-abrath');
+
+      // No início do script, verificar se o plano é Coworking
+      if (plano === 'coworking') {
+    document.getElementById('grupo-abrath').style.display = 'none';
+}
+ 
+      
+      if (registro && nome) {
+        descontoABRATH = true;
+        msg.textContent = '✅ Registro ABRATH confirmado! 15% off aplicado.';
+        msg.style.color = 'var(--verde-suave)';
+        valorBase = valorBase * 0.85;
+        document.getElementById('resumo-valor-base').textContent = 'R$ ' + valorBase.toFixed(2).replace('.', ',');
+        atualizarResumo();
+      } else {
+        msg.textContent = '❌ Preencha todos os campos.';
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+
+    async function finalizar() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { alert('Faça login primeiro.'); return; }
+      
+      var forma = document.getElementById('forma-pagamento').value;
+      var parcelas = parseInt(document.getElementById('parcelas').value);
+      var cupom = document.getElementById('cupom').value.toUpperCase();
+      
+      var body = {
+        plano: plano,
+        tipo_ciclo: ciclo,
+        parcelas: forma === 'pix' ? 1 : parcelas,
+        codigo_cupom: cupom === 'PRESENTEDOMAU' ? cupom : '',
+        abrath_registro: descontoABRATH ? document.getElementById('abrath-registro').value : null,
+        abrath_nome: descontoABRATH ? document.getElementById('abrath-nome').value : null
+      };
+
+      var r = await fetch(`${CONFIG.API_URL}/financeiro/renovar-assinatura`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(body)
+      });
+      
+      var d = await r.json();
+      if (r.ok) { 
+        alert('✅ Assinatura ativada!'); 
+        window.location.href = 'boas-vindas.html'; 
+      } else { 
+        alert('Erro: ' + (d.erro || 'Tente novamente.')); 
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

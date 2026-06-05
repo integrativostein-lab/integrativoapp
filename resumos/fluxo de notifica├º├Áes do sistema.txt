@@ -1,0 +1,15 @@
+[Notificações para o profissional]
+        │
+        ├── 📅 Lembrete de consulta (24h antes, 1h antes)
+        ├── 💰 Pagamento recebido
+        ├── ⚠️ Pagamento pendente
+        ├── 📋 Nova avaliação/artigo publicado
+        ├── 🔄 Renovação de assinatura (30 dias antes)
+        ├── 📚 Novidade no banco de dados
+        ├── 🚨 Restrição de produto (ANVISA)
+        │
+        └── [Canais]
+                ├── WhatsApp (Evolution API)
+                ├── Email
+                ├── Push (PWA)
+                └── No sistema (sino 🔔 no topo)

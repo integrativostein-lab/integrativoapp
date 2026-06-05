@@ -1,0 +1,22 @@
+[Visitante acessa a Landing Page de Pacientes]
+        │
+        ├── Ícone 🔇 no canto inferior esquerdo
+        ├── Som começa DESLIGADO
+        │
+        └── [Visitante clica no ícone]
+                │
+                ├── Ativa o som ambiente
+                ├── Ícone muda para 🔊
+                │
+                └── [Playlist em loop suave]
+                        │
+                        ├── 🔔 Sinos tibetanos (45s)
+                        ├── 🌊 Água/Oceano (45s)
+                        ├── 🕉️ Mrityunjaya Mantra (60s)
+                        ├── 🕊️ Pássaros (45s)
+                        ├── 🧘 Om Mani Padme Hum (45s)
+                        └── 💨 Vento entre árvores (45s)
+                        │
+                        ├── Intervalos variáveis (30s-90s)
+                        ├── Volume bem baixo (quase subliminar)
+                        └── Para automaticamente ao trocar de aba

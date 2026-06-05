@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .form-cadastro { max-width: 500px; margin: 40px auto; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .form-cadastro h2 { text-align: center; margin-bottom: 24px; }
+    .msg { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
+    .msg.sucesso { background: #C6F6D5; color: #22543D; display: block; }
+    .msg.erro { background: #FED7D7; color: #9B2C2C; display: block; }
+    .senha-wrapper { position: relative; }
+    .senha-wrapper input { width: 100%; padding-right: 40px; }
+    .senha-wrapper .olhinho { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; background: none; border: none; }
+    .espec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; font-size: 12px; }
+    .espec-grid label { font-weight: 400; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a></div>
+  </nav>
+
+  <div class="form-cadastro">
+    <h2>Criar Conta</h2>
+    <div id="msg" class="msg"></div>
+    
+    <div class="form-grupo">
+      <label>Nome Completo *</label>
+      <input type="text" id="nome" placeholder="Seu nome completo" required>
+    </div>
+    <div class="form-grupo">
+      <label>Email de Contato *</label>
+      <input type="email" id="email" placeholder="contato@exemplo.com" required>
+      <p style="font-size:11px;color:var(--texto-medio);">Este email será visível para pacientes.</p>
+    </div>
+        <div class="form-grupo">
+      <label>Email Profissional (aparecerá para seus pacientes)</label>
+      <input type="email" id="email_profissional" placeholder="contato@suaclinica.com.br">
+      <p style="font-size:11px;color:var(--texto-medio);margin-top:4px;">
+        Use um email com domínio próprio (Zoho - grátis). Transmite mais credibilidade. 
+        Se não tiver, repita o email de cadastro.
+      </p>
+    </div>
+    <div class="form-grupo">
+      <label>Email de Cadastro *</label>
+      <input type="email" id="email-cadastro" placeholder="login@exemplo.com" required>
+      <p style="font-size:11px;color:var(--texto-medio);">Use um email diferente para login. Pode ser do seu domínio (Zoho).</p>
+    </div>
+    <div class="form-grupo">
+      <label>Senha * (mínimo 8 caracteres)</label>
+      <div class="senha-wrapper">
+        <input type="password" id="senha" placeholder="Mínimo 8 caracteres" required>
+        <button class="olhinho" onclick="toggleSenha()" type="button">👁️</button>
+      </div>
+    </div>
+    <div class="form-grupo">
+      <label>Tipo de Conta *</label>
+      <select id="tipo">
+        <option value="paciente">Paciente</option>
+        <option value="profissional">Profissional</option>
+      </select>
+      <p style="font-size:11px;color:var(--texto-medio);margin-top:4px;">Recepcionista, RH e Financeiro são criados internamente pelo Admin da clínica.</p>
+    </div>
+    <div class="form-grupo" id="grupo-especialidades" style="display:none;">
+      <label>Especialidades (marque as que atua)</label>
+      <div class="espec-grid" id="espec-grid"></div>
+    </div>
+
+    <button class="btn btn-primario" onclick="cadastrar()" style="width:100%;margin-top:10px;">Criar Conta</button>
+    <p style="text-align:center;margin-top:16px;font-size:13px;">Já tem conta? <a href="login.html">Faça login</a></p>
+  </div>
+
+  var emailProf = document.getElementById('email_profissional').value.trim();
+if (!emailProf) emailProf = email; // Se não preencher, usa o mesmo email de cadastro
+
+var body = { 
+  nome: nome, 
+  email: email, 
+  email_profissional: emailProf, 
+  senha: senha, 
+  tipo: tipo, 
+  lgpd_consentimento: 1 
+};
+
+  <script src="js/config.js"></script>
+  <script>
+    function toggleSenha() {
+      var s = document.getElementById('senha');
+      var btn = document.querySelector('.olhinho');
+      if (s.type === 'password') { s.type = 'text'; btn.textContent = '🙈'; }
+      else { s.type = 'password'; btn.textContent = '👁️'; }
+    }
+
+    document.getElementById('tipo').addEventListener('change', function() {
+      var grupo = document.getElementById('grupo-especialidades');
+      if (this.value === 'profissional') {
+        grupo.style.display = 'block';
+        if (document.getElementById('espec-grid').children.length === 0) {
+          var html = '';
+          CONFIG.ESPECIALIDADES.forEach(function(esp) {
+            html += '<label><input type="checkbox" class="espec-check" value="' + esp + '"> ' + esp + '</label>';
+          });
+          document.getElementById('espec-grid').innerHTML = html;
+        }
+      } else {
+        grupo.style.display = 'none';
+      }
+    });
+
+    async function cadastrar() {
+      var msg = document.getElementById('msg');
+      msg.style.display = 'block';
+      msg.className = 'msg';
+      msg.textContent = 'Enviando...';
+      msg.style.background = '#EBF4FF';
+      msg.style.color = '#1A365D';
+
+      var nome = document.getElementById('nome').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var emailCadastro = document.getElementById('email-cadastro').value.trim();
+      var senha = document.getElementById('senha').value.trim();
+      var tipo = document.getElementById('tipo').value;
+
+      if (!nome || !email || !emailCadastro || !senha) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Preencha todos os campos.';
+        return;
+      }
+
+      if (senha.length < 8) {
+        msg.className = 'msg erro';
+        msg.textContent = 'A senha deve ter no mínimo 8 caracteres.';
+        return;
+      }
+
+      var body = { nome: nome, email: email, email_cadastro: emailCadastro, senha: senha, tipo: tipo, lgpd_consentimento: 1 };
+
+      if (tipo === 'profissional') {
+        body.atende_online = 1;
+        body.atende_presencial = 1;
+        var checks = document.querySelectorAll('.espec-check:checked');
+        var especs = [];
+        checks.forEach(function(c) { especs.push(c.value); });
+        if (especs.length > 0) body.especialidades = JSON.stringify(especs);
+      }
+
+      try {
+        var r = await fetch(`${CONFIG.API_URL}/auth/cadastro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        var d = await r.json();
+
+        if (r.ok) {
+          localStorage.setItem('integra_token', d.token);
+          localStorage.setItem('integra_usuario', JSON.stringify(d.usuario));
+          msg.className = 'msg sucesso';
+          msg.innerHTML = '✅ Cadastro realizado! <a href="busca.html" style="color:#22543D;text-decoration:underline;">Buscar profissionais</a>';
+        } else {
+          msg.className = 'msg erro';
+          msg.textContent = d.erro || 'Erro ao cadastrar.';
+        }
+      } catch(e) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Erro de conexão. O servidor está rodando?';
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

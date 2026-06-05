@@ -1,0 +1,25 @@
+[Visitante acessa a Landing Page]
+        │
+        ├── Vê o banner: "📱 Baixe nosso App grátis"
+        │
+        ├── [Clica em "Instalar App"]
+        │       │
+        │       ├── [Android/Chrome]
+        │       │       └── Abre prompt nativo: "Adicionar à tela inicial"
+        │       │
+        │       ├── [iOS/Safari]
+        │       │       └── Exibe tutorial animado:
+        │       │               │
+        │       │               ├── "1. Toque em Compartilhar (☐→)"
+        │       │               ├── "2. Role e toque em 'Adicionar à Tela de Início'"
+        │       │               └── "3. Pronto! Ícone aparece na sua tela"
+        │       │
+        │       └── [Desktop]
+        │               └── Abre prompt de instalação na barra de endereço
+        │
+        └── [App instalado]
+                ├── Ícone na tela inicial (como app nativo)
+                ├── Abre em tela cheia (sem barra de navegação)
+                ├── Funciona offline (Service Worker)
+                ├── Notificações Push
+                └── Atualização automática (sem loja de apps)

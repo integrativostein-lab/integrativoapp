@@ -1,0 +1,19 @@
+[Profissional/Admin acessa Relatórios]
+        │
+        ├── Faturamento por período
+        │       ├── Diário, semanal, mensal, anual
+        │       └── Gráfico de barras/linha
+        │
+        ├── Faturamento por tipo
+        │       ├── Consultas, Loja, Assinaturas
+        │       └── Gráfico de pizza
+        │
+        ├── Comparativo entre profissionais (Admin)
+        │       └── Quem mais faturou no mês
+        │
+        ├── Projeção de receita
+        │       └── Baseado na média dos últimos 3 meses
+        │
+        └── [Exportar]
+                ├── PDF
+                └── CSV

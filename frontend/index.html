@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Integrativo.App — Saúde Integrativa ao seu alcance.">
+  <title>Integrativo.App — Saúde Integrativa</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .hero-moderno { 
+      padding: 120px 60px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      max-width: 1200px; 
+      margin: 0 auto;
+      gap: 40px;
+    }
+    .hero-texto-novo { flex: 1; }
+    .hero-texto-novo h1 { font-size: 56px; line-height: 1.1; margin-bottom: 24px; color: var(--azul-profundo); font-weight: 800; letter-spacing: -2px; }
+    .hero-texto-novo p { font-size: 20px; color: var(--texto-suave); margin-bottom: 40px; line-height: 1.5; }
+    
+    .hero-imagem { 
+      flex: 1; 
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+    .hero-imagem img { 
+      width: 100%; 
+      max-width: 500px; 
+      border-radius: 24px; 
+      box-shadow: var(--sombra-elevada);
+    }
+
+    .especialidades-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+    
+    .tag-plano {
+      display: inline-block;
+      padding: 6px 12px;
+      background: var(--verde-menta);
+      color: var(--verde-destaque);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 968px) {
+      .hero-moderno { flex-direction: column; text-align: center; padding: 60px 24px; }
+      .hero-texto-novo h1 { font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu">
+      <a href="#como-funciona">Como Funciona</a>
+      <a href="blog.html">Blog</a>
+      <a href="profissionais.html">Especialistas</a>
+      <a href="login.html" class="btn btn-primario">Entrar</a>
+    </div>
+  </nav>
+
+  <header class="hero-moderno">
+    <div class="hero-texto-novo fade-in">
+      <span class="tag-plano">Inovação em Saúde</span>
+      <h1>Saúde Integrativa na palma da sua mão</h1>
+      <p>Conecte-se com os melhores especialistas em Ayurveda, Yoga, MTC e mais de 30 áreas terapêuticas. Atendimento online, presencial ou a domicílio.</p>
+      <div style="display: flex; gap: 16px; justify-content: flex-start;" class="mobile-center">
+        <a href="busca.html" class="btn btn-primario" style="padding: 16px 32px; font-size: 16px;">Encontrar Especialista</a>
+        <a href="cadastro.html" class="btn" style="color: var(--azul-profundo); font-weight: 700;">Criar Conta Grátis</a>
+      </div>
+    </div>
+    <div class="hero-imagem fade-in">
+      <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80" alt="Bem-estar">
+    </div>
+  </header>
+
+  <section class="secao secao-branca" id="como-funciona">
+    <div class="container" style="text-align: center;">
+      <h2 style="margin-bottom: 40px;">Simples, Humano e Eficiente</h2>
+      <div class="cards">
+        <div class="card">
+          <div style="font-size: 40px; margin-bottom: 20px;">🔍</div>
+          <h3>Busca Inteligente</h3>
+          <p>Encontre exatamente o que você precisa filtrando por especialidade, preço e localização.</p>
+        </div>
+        <div class="card">
+          <div style="font-size: 40px; margin-bottom: 20px;">📅</div>
+          <h3>Agendamento Real</h3>
+          <p>Escolha horários disponíveis em tempo real, sem espera ou burocracia.</p>
+        </div>
+        <div class="card">
+          <div style="font-size: 40px; margin-bottom: 20px;">📱</div>
+          <h3>Teleaula & Consulta</h3>
+          <p>Ambiente seguro e de alta qualidade para seus atendimentos e aprendizados.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao-menta">
+    <div class="container" style="text-align: center;">
+      <h2>Um ecossistema completo</h2>
+      <p class="subtitulo" style="margin: 0 auto 60px;">Desenvolvido para profissionais que buscam excelência e pacientes que buscam resultados reais.</p>
+      <div class="especialidades-grid">
+        <!-- Especialidades serão carregadas aqui via JS -->
+      </div>
+      <a href="profissionais.html" class="btn btn-primario" style="margin-top: 40px;">Ver Todas as Especialidades</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div style="margin-bottom: 40px;">
+        <a href="termos.html">Termos</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="etica.html">Ética Profissional</a>
+        <a href="missao.html">Nossa Missão</a>
+      </div>
+      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
+      <p>&copy; 2026 Todos os direitos reservados.</p>
+      <p style="margin-top: 24px; font-size: 12px; opacity: 0.6;">Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

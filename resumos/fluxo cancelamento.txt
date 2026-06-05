@@ -1,0 +1,15 @@
+[Cancelar Assinatura]
+        │
+        ├── Plano Mensal:
+        │       ├── Sem multa
+        │       └── Acesso até o fim do ciclo
+        │
+        ├── Plano Semestral/Anual:
+        │       ├── Multa de 20% sobre valor restante
+        │       ├── Cálculo automático do estorno
+        │       └── Mensagem acolhedora de despedida
+        │
+        └── Após cancelamento:
+                ├── 60 dias para download dos dados
+                ├── Após 60 dias: exclusão permanente
+                └── Convite para retornar com mesmas condições

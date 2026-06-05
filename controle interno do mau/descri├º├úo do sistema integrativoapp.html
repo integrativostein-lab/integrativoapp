@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOC-001 - Descrição do Sistema | IntegrativoApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #e9ecef;
+            padding: 40px 20px;
+        }
+        
+        .document {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .meta-info {
+            background: #f8f9fa;
+            padding: 15px 40px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+        
+        .meta-info span {
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 35px;
+        }
+        
+        .section h2 {
+            color: #495057;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .section h3 {
+            color: #6c757d;
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+        }
+        
+        .table-info {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .table-info td, .table-info th {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        
+        .table-info th {
+            background: #f8f9fa;
+            font-weight: 600;
+            width: 200px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-version {
+            background: #28a745;
+            color: white;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-top: 1px solid #dee2e6;
+            font-size: 12px;
+            color: #6c757d;
+            text-align: center;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+            .badge-version {
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <div class="header">
+            <h1>📋 DOCUMENTO DE DESCRIÇÃO DO SISTEMA</h1>
+            <div class="subtitle">IntegrativoApp - Plataforma de Gestão para Profissionais da Saúde</div>
+        </div>
+        
+        <div class="meta-info">
+            <div><span>Documento:</span> DOC-001</div>
+            <div><span>Versão:</span> 1.0.0</div>
+            <div><span>Data:</span> 27/01/2025</div>
+            <div><span>Status:</span> <span class="badge badge-version">EM TESTE</span></div>
+            <div><span>Classificação:</span> Pública</div>
+        </div>
+        
+        <div class="content">
+            <!-- 1. IDENTIFICAÇÃO -->
+            <div class="section">
+                <h2>1. IDENTIFICAÇÃO DO SISTEMA</h2>
+                <table class="table-info">
+                    <tr><th>Nome do Sistema:</th><td>IntegrativoApp</td></tr>
+                    <tr><th>Sigla:</th><td>IAPP</td></tr>
+                    <tr><th>Plataforma:</th><td>Web / Desktop / Mobile (Responsivo)</td></tr>
+                    <tr><th>Idiomas:</th><td>Português (Brasil)</td></tr>
+                    <tr><th>Moeda:</th><td>Real Brasileiro (R$)</td></tr>
+                </table>
+            </div>
+            
+            <!-- 2. OBJETIVO GERAL -->
+            <div class="section">
+                <h2>2. OBJETIVO GERAL</h2>
+                <p>O IntegrativoApp é uma plataforma digital que conecta profissionais da saúde (psicólogos, terapeutas, coaches) a seus pacientes, permitindo o agendamento de sessões online, gestão financeira e armazenamento seguro de prontuários em nuvem (Dropbox).</p>
+            </div>
+            
+            <!-- 3. ESCOPO FUNCIONAL -->
+            <div class="section">
+                <h2>3. ESCOPO FUNCIONAL</h2>
+                
+                <h3>3.1 Módulo de Profissionais</h3>
+                <ul style="margin-left: 25px; margin-bottom: 15px;">
+                    <li>Cadastro e autenticação de profissionais</li>
+                    <li>Configuração de agenda (horários disponíveis)</li>
+                    <li>Definição de preço por sessão</li>
+                    <li>Gestão de pacientes ativos</li>
+                    <li>Dashboard financeiro (receitas, pagamentos pendentes)</li>
+                </ul>
+                
+                <h3>3.2 Módulo de Pacientes</h3>
+                <ul style="margin-left: 25px; margin-bottom: 15px;">
+                    <li>Cadastro e autenticação</li>
+                    <li>Agendamento de sessões</li>
+                    <li>Histórico de atendimentos</li>
+                    <li>Prontuário digital (acesso controlado)</li>
+                </ul>
+                
+                <h3>3.3 Módulo de Pagamentos</h3>
+                <ul style="margin-left: 25px; margin-bottom: 15px;">
+                    <li>Integração com Stripe (modo teste/produção)</li>
+                    <li>Suporte a cartão de crédito e PIX</li>
+                    <li>Webhooks para confirmação automática</li>
+                    <li>Histórico de transações</li>
+                    <li>Notificações por email (mock)</li>
+                </ul>
+                
+                <h3>3.4 Armazenamento em Nuvem</h3>
+                <ul style="margin-left: 25px;">
+                    <li>Sincronização com Dropbox</li>
+                    <li>Backup automático de dados</li>
+                    <li>Acesso offline com sincronização posterior</li>
+                </ul>
+            </div>
+            
+            <!-- 4. USUÁRIOS ENVOLVIDOS -->
+            <div class="section">
+                <h2>4. USUÁRIOS ENVOLVIDOS</h2>
+                <table class="table-info">
+                    <thead>
+                        <tr><th>Perfil</th><th>Descrição</th><th>Quantidade (Estimada)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Profissional</td><td>Psicólogos, terapeutas, coaches</td><td>100+</td></tr>
+                        <tr><td>Paciente</td><td>Clientes em acompanhamento</td><td>500+</td></tr>
+                        <tr><td>Administrador</td><td>Gestão da plataforma</td><td>2</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 5. TECNOLOGIAS UTILIZADAS -->
+            <div class="section">
+                <h2>5. TECNOLOGIAS UTILIZADAS</h2>
+                <table class="table-info">
+                    <tr><th>Frontend:</th><td>HTML5, CSS3, JavaScript (Vanilla)</td></tr>
+                    <tr><th>Backend:</th><td>Python 3.9+ (Flask)</td></tr>
+                    <tr><th>Banco de Dados:</th><td>SQLite (embarcado) + Dropbox Sync</td></tr>
+                    <tr><th>Gateway Pagamento:</th><td>Stripe API v2025-01-27</td></tr>
+                    <tr><th>Armazenamento:</th><td>Dropbox API v2</td></tr>
+                </table>
+            </div>
+            
+            <!-- 6. DEPENDÊNCIAS EXTERNAS -->
+            <div class="section">
+                <h2>6. DEPENDÊNCIAS EXTERNAS</h2>
+                <ul style="margin-left: 25px;">
+                    <li>Conta ativa no Dropbox (para sincronização)</li>
+                    <li>Conta ativa no Stripe (para processamento de pagamentos)</li>
+                    <li>Conexão com internet para sincronização inicial</li>
+                    <li>Navegador atualizado (Chrome, Firefox, Edge)</li>
+                </ul>
+            </div>
+            
+            <!-- 7. RESTRIÇÕES E PREMISSAS -->
+            <div class="section">
+                <h2>7. RESTRIÇÕES E PREMISSAS</h2>
+                <h3>Restrições:</h3>
+                <ul style="margin-left: 25px; margin-bottom: 15px;">
+                    <li>Versão de teste não processa pagamentos reais</li>
+                    <li>Requisições Stripe limitadas a 100/teste/dia</li>
+                    <li>Armazenamento Dropbox limitado ao plano gratuito (2GB)</li>
+                </ul>
+                <h3>Premissas:</h3>
+                <ul style="margin-left: 25px;">
+                    <li>Usuários possuem conhecimento básico de navegação web</li>
+                    <li>Dispositivos com suporte a JavaScript</li>
+                    <li>Email válido para notificações</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Documento elaborado por IntegrativoApp Team | Conteúdo sujeito a alterações sem aviso prévio</p>
+            <p>Este documento descreve o sistema em MODO DE TESTE - Nenhuma transação financeira real é processada</p>
+        </div>
+    </div>
+</body>
+</html>

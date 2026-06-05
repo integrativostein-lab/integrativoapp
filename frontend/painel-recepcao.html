@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel da Recepção - Integra</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🛎️ Recepção</h3>
+      <nav>
+        <a href="#" class="ativo">📋 Check-in</a>
+        <a href="#">💰 Caixa</a>
+        <a href="#">🛒 Loja Física</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+    <div class="painel-conteudo">
+      <h2>Check-in de Pacientes</h2>
+      <p style="color:var(--texto-medio);margin-bottom:20px;">Confirme a chegada dos pacientes.</p>
+      <div id="lista-checkin" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    async function carregar() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+      var hoje = new Date().toISOString().split('T')[0];
+      var r = await fetch(`${CONFIG.API_URL}/agendamentos/meus`, { headers: { 'Authorization': `Bearer ${token}` } });
+      var dados = await r.json();
+      var deHoje = dados.filter(a => a.data_agendamento === hoje);
+      document.getElementById('lista-checkin').innerHTML = deHoje.map(a => `
+        <div style="background:var(--branco);padding:14px;border-radius:var(--raio-borda);box-shadow:var(--sombra);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+          <span>${a.horario_inicio} — ${a.profissional_nome || 'N/A'} — ${a.status}</span>
+          ${a.status === 'agendado' ? '<button class="btn btn-primario" style="font-size:12px;padding:6px 14px;" onclick="checkin('+a.id+')">Check-in</button>' : '<span class="badge badge-success">Confirmado</span>'}
+        </div>
+      `).join('') || '<p>Nenhum agendamento hoje.</p>';
+    }
+
+    async function checkin(id) {
+      var token = localStorage.getItem('integra_token');
+      await fetch(`${CONFIG.API_URL}/yoga/checkin`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ agendamento_id: id }) });
+      carregar();
+    }
+    carregar();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

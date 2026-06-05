@@ -1,0 +1,21 @@
+[Super Admin cria cupom]
+        │
+        ├── Código: "LANÇAMENTO20"
+        ├── Desconto: 20%
+        ├── Planos válidos: Pro, Premium, Enterprise
+        ├── Validade: até 31/12/2026
+        ├── Uso: ilimitado ou limitado a X usos
+        │
+        └── [Profissional usa cupom]
+                │
+                ├── No checkout, insere o código
+                ├── Sistema valida:
+                │       ├── Cupom existe?
+                │       ├── Está na validade?
+                │       ├── Plano é elegível?
+                │       └── Atingiu limite de usos?
+                │
+                └── [Se válido]
+                        ├── Desconto aplicado
+                        ├── Cumulativo com desconto do plano (semestral/anual)
+                        └── NÃO cumulativo com ABRATH (vigora o maior)

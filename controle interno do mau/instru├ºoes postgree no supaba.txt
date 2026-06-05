@@ -1,0 +1,24 @@
+ COMO CONFIGURAR (5 MINUTOS)
+Acesse https://supabase.com
+
+Clique em "Start your project"
+
+Faça login com GitHub
+
+Crie um novo projeto:
+
+Nome: integra
+
+Senha do banco: crie_uma_senha_forte
+
+Região: South America (São Paulo) — melhor latência
+
+Clique em "Create project"
+
+Aguarde 2 minutos
+
+Vá em Settings → Database → Connection string
+
+Copie a URI (começa com postgresql://)
+
+Cole no seu .env:

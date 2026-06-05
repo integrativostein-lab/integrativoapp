@@ -1,0 +1,107 @@
+[Landing Page Profissionais]
+        │
+        ├── [Ver Planos]
+        │       │
+        │       └── [Escolher Plano]
+        │               │
+        │               └── [Cadastro]
+        │                       │
+        │                       ├── Nome, Email, Senha
+        │                       ├── Tipo: Profissional
+        │                       ├── Especialidades (checkboxes)
+        │                       └── [Continuar para Pagamento]
+        │                               │
+        │                               └── [Checkout]
+        │                                       │
+        │                                       ├── Ciclo: Mensal / Semestral / Anual
+        │                                       ├── À vista (5% off) / Parcelado
+        │                                       ├── Cupom / ABRATH
+        │                                       ├── Módulos extras (certificado, domínio)
+        │                                       └── [Finalizar Pagamento]
+        │                                               │
+        │                                               └── [Boas-Vindas]
+        │                                                       │
+        │                                                       ├── Manual
+        │                                                       ├── Código de Ética
+        │                                                       ├── Termos de Uso
+        │                                                       └── [Ir para o Painel]
+        │
+        └── [Painel do Profissional]
+                │
+                ├── 📊 Dashboard
+                │       ├── Consultas do dia
+                │       ├── Faturamento do mês
+                │       ├── Próximos agendamentos
+                │       └── 📰 Quadro de Novidades
+                │
+                ├── 📅 Agenda
+                │       ├── Configurar horários
+                │       ├── Regras de agendamento
+                │       └── Bloqueios (férias, feriados)
+                │
+                ├── 👥 Pacientes
+                │       ├── Lista de pacientes
+                │       ├── Prontuário individual
+                │       │       ├── Anamnese Parte 1 (paciente)
+                │       │       ├── Anamnese Parte 2 (profissional)
+                │       │       ├── Evoluções
+                │       │       ├── Prescrições
+                │       │       └── Anexos (exames, documentos)
+                │       └── Agendar Retorno
+                │
+                ├── 💰 Financeiro
+                │       ├── Dashboard financeiro
+                │       ├── Transações
+                │       ├── Notas Fiscais
+                │       ├── Conciliação bancária
+                │       └── Repasses (se clínica)
+                │
+                ├── 🛒 Loja
+                │       ├── Ativar/Desativar
+                │       ├── Cadastrar produtos
+                │       ├── Vendas (virtual)
+                │       └── Vendas (balcão)
+                │
+                ├── ✍️ Blog
+                │       ├── Novo artigo
+                │       ├── Meus artigos
+                │       └── Análise de SEO
+                │
+                ├── 🧘 Yoga / 💆 Massagens
+                │       ├── Criar planos
+                │       ├── Aulas avulsas
+                │       ├── Lista de alunos
+                │       └── Relatórios de presença
+                │
+                ├── 📄 Contratos
+                │       ├── Novo contrato
+                │       ├── Modelos personalizados
+                │       └── Histórico
+                │
+                ├── 📚 Bancos Terapêuticos
+                │       ├── Consultar (30 especialidades)
+                │       ├── Copiar para banco pessoal
+                │       └── Editar banco pessoal
+                │
+                ├── 🔐 Revenda
+                │       ├── Comprar certificado digital
+                │       └── Comprar domínio
+                │
+                ├── 🔌 APIs e Integrações
+                │       ├── Gateways de pagamento
+                │       ├── WhatsApp (Evolution)
+                │       ├── Google Calendar
+                │       ├── Zoho Mail
+                │       └── Prescrição digital (Memed, etc.)
+                │
+                ├── 🎨 White Label
+                │       ├── Logo
+                │       ├── Cores
+                │       └── Nome da clínica
+                │
+                └── ⚙️ Configurações
+                        ├── Perfil
+                        ├── Senha
+                        ├── Notificações
+                        ├── Sugestões do sistema (ligar/desligar)
+                        └── Backup dos meus dados

@@ -1,0 +1,10 @@
+[Profissional envia mensagem para o suporte]
+        │
+        ├── [Chatbot responde]
+        │       ├── FAQ: "Como emitir NF?", "Como cancelar?"
+        │       ├── Busca no manual
+        │       └── Responde com trechos relevantes
+        │
+        └── [Se o bot não souber]
+                ├── Transfere para WhatsApp do Super Admin
+                └── Notificação: "Cliente precisa de ajuda"

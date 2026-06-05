@@ -1,0 +1,17 @@
+[Profissional acessa Conciliação]
+        │
+        ├── [Upload de extrato bancário]
+        │       ├── Formatos aceitos: OFX, CSV
+        │       └── Seleciona arquivo
+        │
+        ├── [Sistema processa]
+        │       ├── Lê o extrato
+        │       ├── Compara com pagamentos registrados
+        │       │       ├── ✅ Encontrados (conciliados)
+        │       │       ├── ⚠️ Não encontrados (pendentes)
+        │       │       └── ❌ Divergências (valores diferentes)
+        │       └── Gera relatório de conciliação
+        │
+        └── [Ações]
+                ├── Marcar como conferido
+                └── Exportar relatório

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Definitivo INPI - IntegrativoApp</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --secondary: #0f172a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #334155;
+            --border: #e2e8f0;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --code-bg: #1e293b;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--secondary), #1e293b);
+            color: white;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            margin: 10px 0 0 0;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            background-color: var(--accent);
+            color: var(--secondary);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        h2 {
+            color: var(--secondary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            margin-top: 40px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+
+        .step-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        ol, ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .copy-box {
+            background-color: #f1f5f9;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            font-family: monospace;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            color: #1e293b;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .alert {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .btn-link {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 12px;
+            font-size: 0.95rem;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 4px rgb(0 0 0 / 0.1);
+        }
+
+        .btn-link:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-link.secondary-btn {
+            background-color: #475569;
+        }
+        
+        .btn-link.secondary-btn:hover {
+            background-color: #334155;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .folder-tree {
+            background-color: var(--code-bg);
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin: 15px 0;
+        }
+
+        .folder-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Manual Definitivo: INTEGRATIVOAPP</h1>
+        <p>Guia mestre de marcas, registro de software e organização de código para MEI</p>
+        <div class="badge">Links Oficiais e Ferramentas Prontas</div>
+    </header>
+
+    <div class="alert">
+        <strong>💡 Informação de Login:</strong> Como você é MEI, use a sua conta Gov.br pessoal (CPF). O portal do INPI identificará automaticamente o seu vínculo com o CNPJ do MEI durante o preenchimento, aplicando os valores promocionais.
+    </div>
+
+    <h2>🔑 ETAPA 0: Nível de Conta Prata ou Ouro (Obrigatório)</h2>
+    <p>Necessário para realizar assinaturas eletrônicas gratuitas e válidas no envio do seu software.</p>
+    <div class="card">
+        <div class="step-title">Verificar ou Subir o Nível da Conta</div>
+        <p>Acesse o painel central do Gov.br. Se sua conta for Bronze, clique em "Aumentar nível" e faça a validação facial pelo aplicativo do celular ou faça login integrado com as credenciais do seu banco.</p>
+        <a href="https://acesso.gov.br" target="_blank" class="btn-link">Entrar no Painel do Gov.br ↗</a>
+    </div>
+
+    <h2>🏷️ PARTE 1: Registro do Nome (Marca)</h2>
+    <p>Garante a propriedade e exclusividade do nome do aplicativo na categoria <strong>Nominativa</strong>.</p>
+
+    <div class="card">
+        <div class="step-title">Passo 1: Emitir Guia de Pagamento (GRU)</div>
+        <p>Entre no portal de Custas, faça login com o Gov.br (CPF) e preencha o formulário de custas selecionando o perfil de <strong>Pessoa Jurídica</strong> para carregar os descontos de MEI:</p>
+        <ul>
+            <li><strong>Código do Serviço:</strong> 389 (Pedido de registro de marca com especificação pré-aprovada).</li>
+            <li><strong>Valor para MEI:</strong> R$ 220,00 por classe (Gere duas guias se puder proteger a Classe 42 e a Classe 35).</li>
+        </ul>
+        <a href="https://inpi.gov.br" target="_blank" class="btn-link">Emitir GRU de Marca (Portal Pag-INPI) ↗</a>
+    </div>
+
+    <div class="card">
+        <div class="step-title">Passo 2: Protocolar no e-Marcas</div>
+        <p>Após 24 horas do pagamento (compensação bancária), acesse o sistema e-Marcas, insira o número da GRU paga e preencha os dados:</p>
+        
+        <p><strong>Nome da Marca (Copie e cole sem espaços extras):</strong></p>
+        <div class="copy-box">INTEGRATIVOAPP</div>
+
+        <p><strong>Forma de Apresentação:</strong> Selecione "Nominativa".</p>
+        <a href="https://inpi.gov.br" target="_blank" class="btn-link secondary-btn">Acessar Sistema e-Marcas ↗</a>
+    </div>
+
+    <div class="card">
+        <div class="step-title">Passo 3: Seleção das Classes Pré-Aprovadas</div>
+        <p>Marque os seguintes termos exatos dentro do formulário para cobrir todas as funções de teleatendimento e gestão:</p>
+        <div class="grid">
+            <div>
+                <strong>Classe 42 (O Aplicativo e SaaS)</strong>
+                <ul>
+                    <li>Software como serviço [SaaS]</li>
+                    <li>Hospedagem de plataformas na internet</li>
+                </ul>
+            </div>
+            <div>
+                <strong>Classe 35 (O Marketplace e Agendamento)</strong>
+                <ul>
+                    <li>Serviços de intermediação comercial [marketplace]</li>
+                    <li>Agendamento online de consultas [serviços administrativos]</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <h2>💻 PARTE 2: Registro do Código-Fonte (Software)</h2>
+    <p>Garante os direitos autorais da programação estruturada do seu sistema contra clonagens.</p>
+
+    <div class="card">
+        <div class="step-title">Passo 1: Preparação, Limpeza e Estrutura das Pastas</div>
+        <p>O INPI não exige (e não recomenda) que você envie banco de dados, chaves de API secretas ou arquivos pesados de imagens. O foco é proteger a <strong>arquitetura lógica da sua programação</strong> (Back-end e Front-end).</p>
+        
+        <p><strong>O que DEVE ser removido antes de zipar:</strong></p>
+        <ul>
+            <li>❌ Pastas de dependências pesadas (Ex: <code>node_modules/</code>, <code>vendor/</code>, <code>.venv/</code>).</li>
+            <li>❌ Arquivos de configuração com senhas reais (Ex: arquivos <code>.env</code> com chaves de produção).</li>
+            <li>❌ Pastas de mídia pesadas (Ex: imagens grandes, vídeos de tutoriais ou assets de design).</li>
+        </ul>
+
+        <p><strong>Exemplo de Estrutura Limpa Ideal para Enviar:</strong></p>
+        <div class="folder-tree">
+            integrativoapp-source/ <br>
+            ├── src/ <span class="folder-comment">(Arquivos de código originais)</span><br>
+            │   ├── controllers/<br>
+            │   ├── models/<br>
+            │   └── views/ / components/<br>
+            ├── package.json / requirements.txt <span class="folder-comment">(Apenas a lista de dependências)</span><br>
+            ├── README.md <span class="folder-comment">(Instruções básicas do sistema)</span><br>

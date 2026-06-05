@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Estratégico · Integrativo.App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #EFF5F2;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem 1rem;
+            color: #1C2F28;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0B3B2F, #2F9B7C);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .header p {
+            color: #2C6A57;
+            margin-top: 0.5rem;
+        }
+
+        .grid-tables {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.5rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+            border: 1px solid #D9E8E2;
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #145C4A;
+            border-left: 5px solid #2F9B7C;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .badge-prioridade {
+            display: inline-block;
+            background: #E0F0EA;
+            color: #1C6B56;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.8rem 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid #E4EFEA;
+            vertical-align: top;
+        }
+
+        th {
+            background: #F4FBF8;
+            font-weight: 600;
+            color: #145C4A;
+            font-size: 0.8rem;
+        }
+
+        .checkbox-col {
+            width: 30px;
+            text-align: center;
+        }
+
+        .checkbox-col input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .status-prazo {
+            font-size: 0.75rem;
+            color: #5A8979;
+            font-weight: 500;
+        }
+
+        .obs-text {
+            font-size: 0.75rem;
+            color: #6E8F82;
+            margin-top: 0.2rem;
+        }
+
+        .btn-reset {
+            background: #2F9B7C;
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .btn-reset:hover {
+            background: #1F6E5C;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #5A8979;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 700px) {
+            th, td { font-size: 0.7rem; padding: 0.5rem 0.3rem; }
+            .card h2 { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📋 Checklist Estratégico · Integrativo.App</h1>
+        <p>Ordem de prioridade · prazos aproximados · LinkedIn · YouTube · MEI ativo</p>
+    </div>
+
+    <div class="grid-tables">
+        <!-- TABELA 1: PRESENÇA DIGITAL (REDES) -->
+        <div class="card">
+            <h2>🌐 Presença digital e autoridade pessoal <span class="badge-prioridade">urgente / antes da campanha</span></h2>
+            <button class="btn-reset" id="resetPresenca">✔️ Desmarcar todos (presença)</button>
+            <table id="tablePresenca">
+                <thead>
+                    <tr><th></th><th>Ação</th><th>Como / Onde fazer</th><th>Prazo aproximado</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="presenca-check"></td><td><strong>Reativar LinkedIn pessoal</strong><div class="obs-text">Mauricio Stein · terapeuta ayurvédico em formação · propósito ODS</div></td><td>Adicionar foto profissional, banner com ODS, resumo sobre o Integrativo.App e campanha futura. Conectar com profissionais de saúde integrativa.</td><td class="status-prazo">1-2 dias</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="presenca-check"></td><td><strong>Criar página do Integrativo.App no LinkedIn</strong><div class="obs-text">página empresa / produto</div></td><td>Página "Produto" ou "Empresa" . Postar 2x/semana: propósito, ODS, bastidores (sem código finalizado).</td><td class="status-prazo">3 dias (criação) + contínuo</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="presenca-check"></td><td><strong>Criar Instagram profissional (@integrativo.app)</strong><div class="obs-text">perfil comercial</div></td><td>Bio com link de coleta de e-mails (Mailchimp/Google Forms). Postar 3-5x/semana: história, ODS, ayurveda, PICs.</td><td class="status-prazo">imediato (primeiros posts hoje)</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="presenca-check"></td><td><strong>Criar página Facebook Integrativo.App</strong></td><td>Mesmo nome, logo, ativar botão "seguir". Compartilhar posts do Instagram automaticamente.</td><td class="status-prazo">2 dias</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="presenca-check"></td><td><strong>Criar canal no YouTube (pessoal + do app)</strong><div class="obs-text">recomendado: canal único do Integrativo.App</div></td><td>Vídeos curtos (2-4 min): apresentação pessoal, propósito, ODS, ayurveda, tecnologia. Frequência: 1 vídeo/semana.</td><td class="status-prazo">criar agora / primeiros vídeos em 2 semanas</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="presenca-check"></td><td><strong>Grupos de WhatsApp/Telegram (pré-campanha)</strong></td><td>Criar grupo "Pré-lançamento Integrativo.App" com amigos, professores, colegas da faculdade ayurvédica.</td><td class="status-prazo">1 semana</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TABELA 2: COMUNIDADE E LISTA DE EMAILS (PRÉ-CAMPANHA) -->
+        <div class="card">
+            <h2>📬 Base de apoiadores & lista de e-mails <span class="badge-prioridade">alta · imediatamente</span></h2>
+            <button class="btn-reset" id="resetEmail">✔️ Desmarcar todos (e-mails)</button>
+            <table id="tableEmail">
+                <thead><tr><th></th><th>Ação</th><th>Como / Onde fazer</th><th>Prazo aproximado</th></tr></thead>
+                <tbody>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="email-check"></td><td><strong>Landing page de coleta de e-mails</strong></td><td>Google Forms (grátis) ou Mailchimp. Título: "Quero saber quando o Integrativo.App for lançado". Link na bio do Instagram.</td><td class="status-prazo">2 dias</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="email-check"></td><td><strong>Conteúdo para atrair e-mails</strong></td><td>Oferecer "Guia sobre Práticas Integrativas no SUS" (PDF simples) em troca do e-mail.</td><td class="status-prazo">1 semana</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="email-check"></td><td><strong>Interação em grupos do Facebook (ayurveda/PICs)</strong></td><td>Comentar, ajudar, sem spam. Compartilhar sua jornada quando relevante.</td><td class="status-prazo">contínuo (2-3x/semana)</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="email-check"></td><td><strong>Parceria com influenciadores/instrutores ayurvédicos</strong></td><td>Contatar professores do Instituto Naradeva, Vida Veda, Satya (pedir divulgação em troca de acesso gratuito vitalício).</td><td class="status-prazo">iniciar em 2 semanas</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TABELA 3: DESENVOLVIMENTO TÉCNICO E TESTES (SOLO) -->
+        <div class="card">
+            <h2>🛠️ Desenvolvimento & infraestrutura <span class="badge-prioridade">paralelo · urgência média</span></h2>
+            <button class="btn-reset" id="resetDev">✔️ Desmarcar todos (dev)</button>
+            <table id="tableDev">
+                <thead><tr><th></th><th>Ação</th><th>Como / Onde fazer</th><th>Prazo aproximado</th></tr></thead>
+                <tbody>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="dev-check"></td><td><strong>Finalizar MVP (agenda + prontuário + teleconsulta básica)</strong></td><td>Foco em funcionalidades essenciais. Deixe FHIR/TISS para depois da campanha.</td><td class="status-prazo">3-5 semanas</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="dev-check"></td><td><strong>Testes manuais (você mesmo)</strong></td><td>Criar checklist de fluxos: cadastro, agendamento, teleconsulta simulada.</td><td class="status-prazo">paralelo, 1-2 semanas após MVP</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="dev-check"></td><td><strong>Contratar servidores GPU (somente após MVP estável)</strong></td><td>Provedores: BH Servers ou UCloud (Brasil). Iniciar com 8 vCPU / 16GB + GPU (R$ ~800-1200/mês).</td><td class="status-prazo">após testes estáveis (estimado +4 semanas)</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="dev-check"></td><td><strong>Prontuário FHIR + TISS (básico)</strong></td><td>Implementar apenas Patient/Encounter/Condition e Guia de Consulta (prioridade 2).</td><td class="status-prazo">pós-campanha ou última etapa pré-campanha</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TABELA 4: TESTADORES REAIS (VALIDAÇÃO) -->
+        <div class="card">
+            <h2>👥 Testadores (primeiros usuários) <span class="badge-prioridade">só após MVP estável</span></h2>
+            <button class="btn-reset" id="resetTesters">✔️ Desmarcar todos (testadores)</button>
+            <table id="tableTesters">
+                <thead><tr><th></th><th>Ação</th><th>Como / Onde fazer</th><th>Prazo aproximado</th></tr></thead>
+                <tbody>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="tester-check"></td><td><strong>Convidar 3-5 profissionais para testar (gratuito)</strong><div class="obs-text">amigos terapeutas, professores, colegas ayurvédicos</div></td><td>Enviar acesso manual, pedir feedback estruturado (formulário simples).</td><td class="status-prazo">após MVP + servidores (estimado 4 semanas)</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="tester-check"></td><td><strong>Grupo de WhatsApp exclusivo para testadores</strong></td><td>Coletar bugs e sugestões em tempo real.</td><td class="status-prazo">simultâneo com testes</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="tester-check"></td><td><strong>Gravar depoimentos em vídeo (para campanha)</strong></td><td>Com autorização, usar trechos na página de crowdfunding.</td><td class="status-prazo">após testes positivos</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TABELA 5: CAMPANHA DE RECOMPENSA (R$40K) -->
+        <div class="card">
+            <h2>💰 Campanha de crowdfunding (recompensa) <span class="badge-prioridade">fase final (pré-lançamento)</span></h2>
+            <button class="btn-reset" id="resetCrowd">✔️ Desmarcar todos (crowdfunding)</button>
+            <table id="tableCrowd">
+                <thead><tr><th></th><th>Ação</th><th>Como / Onde fazer</th><th>Prazo aproximado</th></tr></thead>
+                <tbody>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="crowd-check"></td><td><strong>Escolher plataforma (Benfeitoria ou Catarse)</strong></td><td>Comparar taxas, modelo flexível (keep-what-you-raise).</td><td class="status-prazo">2 semanas antes do lançamento</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="crowd-check"></td><td><strong>Gravar vídeo da campanha</strong><div class="obs-text">mostrar sistema funcionando (mesmo que com testadores) + sua história</div></td><td>Use imagens reais do sistema, depoimentos, telas.</td><td class="status-prazo">após testadores validarem</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="crowd-check"></td><td><strong>Página de recompensas (R$10 a R$5.000+)</strong></td><td>Incluir adesivo digital, planos grátis, consultoria, acesso vitalício.</td><td class="status-prazo">pré-lançamento (1 semana)</td></tr>
+                    <tr><td class="checkbox-col"><input type="checkbox" class="crowd-check"></td><td><strong>Disparo para lista de e-mails + grupos</strong></td><td>Enviar link no primeiro dia da campanha.</td><td class="status-prazo">dia 1 da campanha</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer">
+        🧘 Mauricio Stein · MEI ativo · estratégia realista para quem desenvolve sozinho · prioridades ajustadas ao estágio atual.
+    </div>
+</div>
+
+<script>
+    // funções para resetar checkboxes por categoria
+    function resetCheckboxes(className) {
+        const checkboxes = document.querySelectorAll(`.${className}`);
+        checkboxes.forEach(cb => cb.checked = false);
+    }
+
+    document.getElementById('resetPresenca').addEventListener('click', () => resetCheckboxes('presenca-check'));
+    document.getElementById('resetEmail').addEventListener('click', () => resetCheckboxes('email-check'));
+    document.getElementById('resetDev').addEventListener('click', () => resetCheckboxes('dev-check'));
+    document.getElementById('resetTesters').addEventListener('click', () => resetCheckboxes('tester-check'));
+    document.getElementById('resetCrowd').addEventListener('click', () => resetCheckboxes('crowd-check'));
+</script>
+</body>
+</html>

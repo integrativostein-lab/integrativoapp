@@ -1,0 +1,11 @@
+[Profissional configura Email]
+        │
+        ├── ⚙️ Configurações → Integrações → Email
+        │
+        ├── [Se tem domínio próprio]
+        │       ├── Sistema conecta via Zoho Mail API
+        │       └── Cria contato@minhalinica.com.br
+        │
+        └── [Se não tem domínio]
+                ├── Alerta: "É necessário um domínio para email profissional"
+                └── Link para comprar domínio (revenda)

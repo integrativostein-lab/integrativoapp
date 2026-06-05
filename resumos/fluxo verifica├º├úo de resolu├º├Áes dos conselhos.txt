@@ -1,0 +1,16 @@
+[Profissional tenta prescrever]
+        │
+        ├── Sistema verifica:
+        │       ├── Conselho do profissional (CRM, CREFITO, CRN...)
+        │       ├── Resolução vigente permite essa prescrição?
+        │       └── Produto tem restrição da ANVISA?
+        │
+        ├── [Se OK]
+        │       └── Prescrição liberada
+        │
+        ├── [Se restrição]
+        │       ├── Alerta: "Resolução XXX/20XX restringe esta prescrição"
+        │       └── Profissional pode assumir responsabilidade
+        │
+        └── [Se proibido]
+                └── Prescrição bloqueada com justificativa legal

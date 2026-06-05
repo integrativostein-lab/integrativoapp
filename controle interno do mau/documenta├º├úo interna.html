@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Técnico · Integrativo.App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #F3F4F6;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 2rem 1rem;
+            color: #111827;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        /* header com gradiente natural */
+        .hero {
+            background: linear-gradient(135deg, #0B2B40 0%, #1A5F5C 100%);
+            padding: 3rem 2.5rem;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            padding: 0.2rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            width: fit-content;
+            margin-top: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 1.5rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.3rem;
+        }
+
+        /* conteúdo principal */
+        .content {
+            padding: 2rem 2.5rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-left: 5px solid #1A5F5C;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+            color: #0B2B40;
+        }
+
+        .badge {
+            background: #E6F7F5;
+            color: #1A5F5C;
+            padding: 0.2rem 0.6rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 0.8rem;
+        }
+
+        .feature-card {
+            background: #F9FAFB;
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            border: 1px solid #E5E7EB;
+            transition: all 0.2s;
+        }
+
+        .feature-card strong {
+            color: #0B2B40;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .missing-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #FFFFFF;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .missing-table th {
+            background: #F1F5F9;
+            text-align: left;
+            padding: 0.9rem 1rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1E293B;
+        }
+
+        .missing-table td {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #E2E8F0;
+            font-size: 0.85rem;
+            vertical-align: top;
+        }
+
+        .priority-high {
+            background: #FEF2F2;
+            color: #B91C1C;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .priority-medium {
+            background: #FFFBEB;
+            color: #B45309;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .priority-low {
+            background: #ECFDF5;
+            color: #065F46;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .roadmap-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .phase {
+            min-width: 90px;
+            font-weight: 700;
+            color: #1A5F5C;
+        }
+
+        .footer-note {
+            background: #FEF9E6;
+            padding: 1.5rem;
+            border-radius: 1.2rem;
+            margin-top: 2rem;
+            border: 1px solid #FDE68A;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 700px) {
+            .content {
+                padding: 1.5rem;
+            }
+            .hero {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1>🌿 Integrativo.App <span style="font-weight: 400; font-size: 1.4rem;">· Relatório de Auditoria Técnica</span></h1>
+        <div class="hero-badge">análise completa · abril 2026 · visão executiva</div>
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-number">~22.900</div><div class="stat-label">linhas entregues (front/back/scripts)</div></div>
+            <div class="stat-card"><div class="stat-number">+5.670</div><div class="stat-label">linhas necessárias (produção final)</div></div>
+            <div class="stat-card"><div class="stat-number">80%</div><div class="stat-label">completude do núcleo funcional</div></div>
+            <div class="stat-card"><div class="stat-number">30</div><div class="stat-label">especialidades / 781 registros terapêuticos</div></div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- BREVE RELATO DO SISTEMA -->
+        <div class="section">
+            <div class="section-title">📌 O Ecossistema Integrativo.App</div>
+            <p style="margin-bottom: 1.2rem; line-height: 1.5;">Plataforma <strong>código aberto, ética e acessível</strong> para gestão de saúde integrativa. Atende profissionais (terapeutas, clínicas, espaços coworking), pacientes, prefeituras e ONGs. Com 30 especialidades, 781 registros em bancos terapêuticos, agenda inteligente, teleconsulta WebRTC, loja híbrida, módulo financeiro, yoga, massagens, emissão fiscal, RH, White Label e doação humanitária global.</p>
+            <div class="feature-grid">
+                <div class="feature-card"><strong>🧘 Agenda inteligente</strong> Regras de agendamento, multas, tolerância e lembrete whatsapp automático.</div>
+                <div class="feature-card"><strong>📚 Banco terapêutico</strong> Fitoterapia, Ayurveda, MTC, Aromaterapia, Florais e mais – com referência cruzada.</div>
+                <div class="feature-card"><strong>🩺 Teleconsulta + prescrição</strong> Sala própria (WebRTC), receitas, controle especial, assinatura digital.</div>
+                <div class="feature-card"><strong>🛒 Loja virtual/física</strong> Estoque unificado, NF automática, vendas no balcão da recepção.</div>
+                <div class="feature-card"><strong>💳 8 gateways + PIX</strong> PagSeguro, Asaas, Ton, Stripe (modo teste) + desconto 5% PIX.</div>
+                <div class="feature-card"><strong>🎨 White Label + API</strong> Própria identidade visual, domínio personalizado e API para sistemas externos.</div>
+                <div class="feature-card"><strong>🏛️ Doação humanitária</strong> Prefeituras (&le;45k hab), ONGs, Cruz Vermelha, MSF e países em desenvolvimento.</div>
+                <div class="feature-card"><strong>📊 RH + Folha + Fiscal</strong> Funcionários, guias DAS/GPS/FGTS, previdência complementar, conciliação bancária.</div>
+            </div>
+        </div>
+
+        <!-- ARQUIVOS ENTREGUES (resumo) -->
+        <div class="section">
+            <div class="section-title">📦 Base de código já entregue (front/back/scripts)</div>
+            <div style="background: #F8FAFC; padding: 1rem; border-radius: 1rem; font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                <span class="badge">29 telas HTML</span> <span class="badge">+30 rotas API</span> <span class="badge">31 tabelas PostgreSQL</span> <span class="badge">scripts de população</span> <span class="badge">PWA + service worker</span> <span class="badge">i18n (9 idiomas)</span> <span class="badge">30 fluxos documentados</span>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #2D3748;">✅ O <strong>coração do sistema</strong> está pronto: cadastro, agendamentos, prontuário, prescrições, financeiro básico, loja, yoga, massagens, painéis de admin, RH, fiscal, White Label, cupons, integração mock com gateways e WhatsApp. O backend já possui toda estrutura de autenticação JWT, logs, auditoria e tabelas relacionais.</p>
+        </div>
+
+        <!-- O QUE FALTA (FALTANTES + PRIORIDADES) -->
+        <div class="section">
+            <div class="section-title">⚠️ Arquivos & componentes faltantes · prioridade para produção</div>
+            <table class="missing-table">
+                <thead><tr><th>Componente / Serviço</th><th>Status atual</th><th>Prioridade</th><th>Estimativa (linhas)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Serviços reais (Stripe, Evolution API, Asaas)</strong></td><td>Mocks / simulações</td><td><span class="priority-high">CRÍTICA</span></td><td>~650</td></tr>
+                    <tr><td><strong>Integração efetiva WhatsApp (Evolution)</strong></td><td>Apenas citado nos templates</td><td><span class="priority-high">ALTA</span></td><td>~200</td></tr>
+                    <tr><td><strong>Certificado digital & emissão NF real</strong></td><td>Estrutura pronta, mas sem API real de autoridade certificadora</td><td><span class="priority-high">ALTA</span></td><td>~200</td></tr>
+                    <tr><td><strong>Middleware de segurança (blacklist JWT, criptografia dados sensíveis)</strong></td><td>Logs existem, mas dados sensíveis não criptografados</td><td><span class="priority-high">ALTA</span></td><td>~140</td></tr>
+                    <tr><td><strong>Tabelas auxiliares (entidades, reunioes, gravacoes, fila_whatsapp)</strong></td><td>Referenciadas, mas não criadas</td><td><span class="priority-medium">MÉDIA</span></td><td>~300</td></tr>
+                    <tr><td><strong>Testes automatizados (unitário + integração)</strong></td><td>Nenhum arquivo de teste</td><td><span class="priority-medium">MÉDIA</span></td><td>~1000</td></tr>
+                    <tr><td><strong>Documentação Swagger/OpenAPI</strong></td><td>Inexistente</td><td><span class="priority-medium">MÉDIA</span></td><td>~500</td></tr>
+                    <tr><td><strong>CI/CD + Docker + produção (deploy scripts)</strong></td><td>Ambiente manual (Vercel / Render)</td><td><span class="priority-low">BAIXA (mas estratégica)</span></td><td>~200</td></tr>
+                    <tr><td><strong>Webhook de conciliação real (extratos OFX/CSV)</strong></td><td>Endpoint mock</td><td><span class="priority-low">BAIXA</span></td><td>~150</td></tr>
+                </tbody>
+            </table>
+            <div class="footer-note" style="margin-top: 1.2rem;">
+                💡 <strong>Observação crítica:</strong> a base está sólida e executável em ambiente de demonstração. Para homologação em produção com pagamentos reais, envio de notificações em larga escala e conformidade plena com LGPD/GDPR, é necessário implementar os serviços listados como prioridade ALTA.
+            </div>
+        </div>
+
+        <!-- O QUE É NECESSÁRIO FAZER (roadmap) -->
+        <div class="section">
+            <div class="section-title">🚀 Roteiro de conclusão · próximas ações</div>
+            <div class="roadmap-item">
+                <div class="phase">FASE 1 (2 semanas)</div>
+                <div><strong>🔐 Conectar gateways reais + WhatsApp + certificado digital</strong><br>Substituir mocks por SDK oficiais (Stripe, PagSeguro, Evolution API). Implementar webhooks de confirmação e fila de notificações. Habilitar emissão de NF com certificado A1 (ICP-Brasil).</div>
+            </div>
+            <div class="roadmap-item">
+                <div class="phase">FASE 2 (1 semana)</div>
+                <div><strong>🛡️ Segurança e auditoria completa</strong><br>Criptografar dados sensíveis (CPF, CNS, histórico de saúde) com AES-256. Adicionar blacklist de tokens JWT e rate limiting granular. Revisar permissões nos endpoints críticos.</div>
+            </div>
+            <div class="roadmap-item">
+                <div class="phase">FASE 3 (2 semanas)</div>
+                <div><strong>🧪 Testes e documentação</strong><br>Construir suite de testes (Jest/supertest) para rotas de assinatura, agendamento e financeiro. Gerar documentação OpenAPI interativa. Criar script de backup automático criptografado.</div>
+            </div>
+            <div class="roadmap-item">
+                <div class="phase">FASE 4 (1 semana)</div>
+                <div><strong>🐳 Preparação para produção escalável</strong><br>Dockerfile + docker-compose, health checks, variáveis de ambiente seguras, workflow GitHub Actions para deploy contínuo. Configurar ambiente de staging.</div>
+            </div>
+        </div>
+
+        <!-- RESUMO TÉCNICO FINAL -->
+        <div class="section">
+            <div class="section-title">📈 Resumo executivo</div>
+            <div style="background: #F0F9F4; border-left: 6px solid #1A5F5C; padding: 1rem 1.5rem; border-radius: 1rem;">
+                <p style="margin-bottom: 0.5rem;">✔️ <strong>22.900 linhas</strong> de software funcional já escritas (HTML, CSS, JS, Node, SQL, documentação de fluxo).<br>
+                ✔️ Arquitetura modular, 30 especialidades, 781 registros, painel de admin, RH, fiscal, White Label, PWA off-line.<br>
+                ✔️ Faltam <strong>~5.670 linhas</strong> (sendo ~1.200 de prioridade crítica) para atingir produção bancária/conformidade plena.<br>
+                ✔️ <strong>Prazo estimado para finalização (equipe 2 devs): 4 a 6 semanas</strong> – integrações reais + segurança + testes.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">🎯 Com os acréscimos, o Integrativo.App se torna uma solução enterprise-ready com market share global, suporte a múltiplos países, certificação ICP/eIDAS e pronta para atender centenas de clínicas e governos.</p>
+            </div>
+        </div>
+
+        <!-- NOTA FINAL -->
+        <div style="border-top: 1px solid #E2E8F0; margin-top: 1rem; padding-top: 1.2rem; text-align: center; font-size: 0.75rem; color: #5B677B;">
+            Relatório gerado com base nos 60+ arquivos originais do sistema Integrativo.App (frontend + backend + documentação).<br>
+            ✅ Núcleo funcional completo. ⚙️ Foco imediato: integrar gateways e garantir segurança dos dados.
+        </div>
+    </div>
+</div>
+</body>
+</html>

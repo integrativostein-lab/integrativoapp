@@ -1,0 +1,23 @@
+[Detecção de idioma]
+        │
+        ├── navegador.language
+        │
+        └── Carrega interface no idioma:
+                ├── 🇧🇷 PT-BR
+                ├── 🇺🇸 EN
+                ├── 🇪🇸 ES
+                ├── 🇫🇷 FR
+                ├── 🇷🇺 RU
+                ├── 🇮🇳 HI
+                ├── 🇨🇳 ZH
+                ├── 🇿🇦 AF
+                └── 🇿🇦 ZU
+
+[Detecção de país]
+        │
+        ├── Via IP (aproximado)
+        │
+        └── Define:
+                ├── Legislação aplicável (LGPD, GDPR, HIPAA)
+                ├── Certificação digital (ICP-Brasil, eIDAS, etc.)
+                └── Elegibilidade para doação (IDH, renda per capita)

@@ -1,0 +1,23 @@
+[Painel do Admin]
+        │
+        ├── 📊 Dashboard
+        │       ├── Profissionais ativos
+        │       ├── Pacientes
+        │       └── Faturamento geral
+        │
+        ├── 👥 Usuários
+        │       ├── Lista de profissionais
+        │       ├── Lista de pacientes
+        │       └── [Convidar]
+        │               ├── Recepcionista
+        │               ├── RH
+        │               ├── Financeiro
+        │               └── Contador
+        │
+        ├── 💰 Financeiro (visão geral)
+        │
+        ├── 📊 Relatórios
+        │
+        ├── 🎨 White Label
+        │
+        └── ⚙️ Configurações da clínica

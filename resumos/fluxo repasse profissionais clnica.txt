@@ -1,0 +1,17 @@
+[Admin da Clínica acessa Financeiro → Repasses]
+        │
+        ├── Sistema calcula automaticamente:
+        │       ├── Consultas realizadas por cada profissional
+        │       ├── Percentual definido (ex: 70% para o profissional)
+        │       └── Total a repassar
+        │
+        ├── [Admin visualiza]
+        │       ├── Profissional: Dra. Ana
+        │       ├── Consultas no mês: 25
+        │       ├── Valor total: R$ 3.750
+        │       └── Repasse (70%): R$ 2.625
+        │
+        └── [Admin registra pagamento]
+                ├── [Registrar Baixa]
+                ├── Profissional vê no painel: "Repasse recebido"
+                └── Histórico de repasses disponível

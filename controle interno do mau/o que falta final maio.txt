@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integrativo.App — Plano de Conclusão</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #F5F0E8 0%, #E8F0E8 100%);
+      color: #1A202C;
+      line-height: 1.5;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .logo {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      color: #1A365D;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header .sub {
+      color: #4A5568;
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1A365D;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+
+    /* Cards de métricas */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .metric-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .metric-number {
+      font-size: 42px;
+      font-weight: 800;
+      color: #1A365D;
+    }
+
+    .metric-label {
+      color: #4A5568;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .metric-complete {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 12px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    .complete-high { background: #C6F6D5; color: #22543D; }
+    .complete-mid { background: #FEEBC8; color: #C05621; }
+    .complete-low { background: #FED7D7; color: #9B2C2C; }
+
+    /* Seções */
+    .section {
+      background: white;
+      border-radius: 24px;
+      margin-bottom: 32px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .section-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1A365D;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .priority {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .priority-p0 { background: #FED7D7; color: #9B2C2C; }
+    .priority-p1 { background: #FEEBC8; color: #C05621; }
+    .priority-p2 { background: #FEFCBF; color: #975A16; }
+    .priority-p3 { background: #E2E8F0; color: #4A5568; }
+
+    .section-content {
+      padding: 24px 28px;
+    }
+
+    /* Tabelas */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .file-table th {
+      text-align: left;
+      padding: 12px 8px;
+      background: #F7FAFC;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A365D;
+      border-bottom: 2px solid #E2E8F0;
+    }
+
+    .file-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #EDF2F7;
+      font-size: 14px;
+    }
+
+    .file-table td:first-child {
+      font-family: 'SF Mono', 'Menlo', monospace;
+      font-size: 13px;
+      color: #2C5282;
+    }
+
+    .status-missing {
+      color: #E53E3E;
+      font-weight: 600;
+    }
+
+    .status-partial {
+      color: #DD6B20;
+      font-weight: 600;
+    }
+
+    .status-done {
+      color: #38A169;
+      font-weight: 600;
+    }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .timeline-icon {
+      width: 40px;
+      height: 40px;
+      background: #1A365D;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .timeline-icon.p0 { background: #E53E3E; }
+    .timeline-icon.p1 { background: #DD6B20; }
+    .timeline-icon.p2 { background: #3182CE; }
+    .timeline-icon.p3 { background: #718096; }
+
+    .timeline-content {
+      flex: 1;
+    }
+
+    .timeline-title {
+      font-weight: 700;
+      color: #1A202C;
+    }
+
+    .timeline-desc {
+      font-size: 13px;
+      color: #4A5568;
+      margin-top: 4px;
+    }
+
+    .timeline-time {
+      font-size: 12px;
+      color: #38A169;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px;
+      color: #4A5568;
+      font-size: 13px;
+      border-top: 1px solid #E2E8F0;
+      margin-top: 32px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .file-table th, .file-table td {
+        font-size: 11px;
+        padding: 8px 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">🌿</div>
+    <h1>Integrativo.App</h1>
+    <div class="sub">Plano de Conclusão — O que falta para ir ao ar</div>
+    <div class="badge">📊 Relatório Técnico • Maio 2026</div>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="metric-number">~22.900</div>
+      <div class="metric-label">Linhas entregues</div>
+      <span class="metric-complete complete-high">✅ 80% completo</span>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">~5.670</div>
+      <div class="metric-label">Linhas faltantes</div>
+      <span class="metric-complete complete-mid">⚠️ 20% pendente</span>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">32</div>
+      <div class="metric-label">Arquivos faltantes</div>
+      <span class="metric-complete complete-low">📦 a implementar</span>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">~20h</div>
+      <div class="metric-label">Tempo estimado (dev pleno)</div>
+      <span class="metric-complete complete-mid">⏱️ 2-3 dias</span>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 1: ARQUIVOS FALTANTES POR CATEGORIA -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📁 1. Serviços e APIs — Implementação Real</h2>
+      <span class="priority priority-p1">PRIORIDADE P1</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead>
+          <tr><th>Arquivo</th><th>Status atual</th><th>O que falta fazer</th><th>Estimativa</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>servicos/stripe.js</td><td class="status-partial">Apenas referenciado</td><td>Criar PaymentIntent, webhooks, confirmação</td><td>~250 linhas</td></tr>
+          <tr><td>servicos/evolution-api.js</td><td class="status-partial">Mencionado no manual</td><td>Conexão real com Evolution API, envio de msgs</td><td>~200 linhas</td></tr>
+          <tr><td>servicos/whatsapp.js</td><td class="status-missing">Não existe</td><td>Wrapper para fila de envio e templates</td><td>~150 linhas</td></tr>
+          <tr><td>servicos/abrath.js</td><td class="status-partial">Mock (sempre true)</td><td>Consultar API/site real da ABRATH</td><td>~80 linhas</td></tr>
+          <tr><td>servicos/anvisa-api.js</td><td class="status-missing">Não existe</td><td>Consultar registros de fitoterápicos</td><td>~150 linhas</td></tr>
+          <tr><td>servicos/pubmed-api.js</td><td class="status-missing">Não existe</td><td>Buscar artigos via NCBI/E-utilities</td><td>~120 linhas</td></tr>
+          <tr><td>servicos/ibge-api.js</td><td class="status-missing">Mencionado</td><td>Buscar população por código IBGE</td><td>~80 linhas</td></tr>
+          <tr><td>servicos/receitaws-api.js</td><td class="status-missing">Mencionado</td><td>Validar CNPJ de prefeituras</td><td>~60 linhas</td></tr>
+          <tr><td>servicos/certificados.js</td><td class="status-partial">Só padrões</td><td>Emissão via Certisign/Soluti</td><td>~200 linhas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>🔌 2. Integrações Externas</h2>
+      <span class="priority priority-p1">PRIORIDADE P1</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Arquivo</th><th>Status</th><th>O que falta</th><th>Estimativa</th></tr></thead>
+        <tbody>
+          <tr><td>rotas/google-calendar.js</td><td class="status-partial">Mock</td><td>OAuth2 real, sync bidirecional</td><td>~200 linhas</td></tr>
+          <tr><td>rotas/zoho.js</td><td class="status-partial">Mock</td><td>Criar caixas postais reais</td><td>~150 linhas</td></tr>
+          <tr><td>rotas/gateways.js</td><td class="status-partial">Mock</td><td>Checkout real (PagSeguro/Asaas)</td><td>~550 linhas</td></tr>
+          <tr><td>integrations/memed.js</td><td class="status-missing">Não existe</td><td>Prescrição digital</td><td>~150 linhas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>🗄️ 3. Tabelas de Banco de Dados Faltantes</h2>
+      <span class="priority priority-p2">PRIORIDADE P2</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Tabela</th><th>Referência</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>entidades</td><td>criador.js (entidades/cadastro)</td><td class="status-missing">❌ Não criada</td></tr>
+          <tr><td>chat_mensagens</td><td>reuniao.html</td><td class="status-missing">❌ Não criada</td></tr>
+          <tr><td>reunioes</td><td>reuniao.html</td><td class="status-missing">❌ Não criada</td></tr>
+          <tr><td>gravacoes</td><td>reuniao.html</td><td class="status-missing">❌ Não criada</td></tr>
+          <tr><td>sugestoes_usuarios</td><td>fluxo de sugestões</td><td class="status-missing">❌ Não criada</td></tr>
+          <tr><td>fila_whatsapp</td><td>para envio assíncrono</td><td class="status-missing">❌ Não criada</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>🔐 4. Segurança e Middlewares</h2>
+      <span class="priority priority-p2">PRIORIDADE P2</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Arquivo</th><th>Status</th><th>O que falta</th></tr></thead>
+        <tbody>
+          <tr><td>middleware/rate-limiter.js</td><td class="status-partial">Só global</td><td>Limites por rota (login mais restrito)</td></tr>
+          <tr><td>middleware/audit-log.js</td><td class="status-missing">Não existe</td><td>Logar ações importantes automaticamente</td></tr>
+          <tr><td>utils/encryption.js</td><td class="status-missing">Não existe</td><td>AES-256 para dados sensíveis (CPF, CNS)</td></tr>
+          <tr><td>utils/jwt-blacklist.js</td><td class="status-missing">Não existe</td><td>Invalidar tokens no logout</td></tr>
+          <tr><td>cron/jobs.js</td><td class="status-missing">Não existe</td><td>Backups, atualização ANVISA, lembretes</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>🧪 5. Testes (Nenhum entregue)</h2>
+      <span class="priority priority-p3">PRIORIDADE P3</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Arquivo</th><th>Tipo</th><th>Estimativa</th></tr></thead>
+        <tbody>
+          <tr><td>tests/unit/api.test.js</td><td>Unitário (Jest)</td><td>~400 linhas</td></tr>
+          <tr><td>tests/integration/fluxo.test.js</td><td>Integração</td><td>~300 linhas</td></tr>
+          <tr><td>tests/e2e/agendamento.spec.js</td><td>E2E (Cypress)</td><td>~300 linhas</td></tr>
+          <tr><td>tests/load/k6-script.js</td><td>Carga (k6)</td><td>~100 linhas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>📚 6. Documentação Faltante</h2>
+      <span class="priority priority-p3">PRIORIDADE P3</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Arquivo</th><th>Descrição</th></tr></thead>
+        <tbody>
+          <tr><td>docs/API_REFERENCE.md</td><td>Swagger/OpenAPI de todas as rotas (~500 linhas)</td></tr>
+          <tr><td>docs/DEPLOYMENT.md</td><td>Guia de deploy Vercel + Render (~200 linhas)</td></tr>
+          <tr><td>docs/TROUBLESHOOTING.md</td><td>Problemas comuns e soluções (~150 linhas)</td></tr>
+          <tr><td>.env.example</td><td>Exemplo de variáveis de ambiente (~30 linhas)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>🚀 7. Produção e DevOps</h2>
+      <span class="priority priority-p2">PRIORIDADE P2</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Arquivo</th><th>Descrição</th></tr></thead>
+        <tbody>
+          <tr><td>Dockerfile</td><td>Containerizar o backend (~30 linhas)</td></tr>
+          <tr><td>docker-compose.yml</td><td>Backend + Postgres local (~40 linhas)</td></tr>
+          <tr><td>.github/workflows/deploy.yml</td><td>CI/CD GitHub Actions (~50 linhas)</td></tr>
+          <tr><td>vercel.json</td><td>Configuração do front-end (~20 linhas)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SEÇÃO: PLANO DE AÇÃO PRIORIZADO -->
+  <div class="section">
+    <div class="section-header">
+      <h2>⏱️ 8. Plano de Ação — Por Onde Começar</h2>
+      <span class="priority priority-p0">URGENTE</span>
+    </div>
+    <div class="section-content">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-icon p0">P0</div>
+          <div class="timeline-content">
+            <div class="timeline-title">📄 Criar arquivo .env com todas as variáveis</div>
+            <div class="timeline-desc">DATABASE_URL, JWT_SECRET, STRIPE_SECRET, EVOLUTION_API_URL, ZOHO_CLIENT_ID...</div>
+            <div class="timeline-time">⏱️ 10 minutos • CRÍTICO</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-icon p0">P0</div>
+          <div class="timeline-content">
+            <div class="timeline-title">🐘 Migrar database.js para Supabase/Render</div>
+            <div class="timeline-desc">Executar script SQL, verificar conexão, testar queries principais</div>
+            <div class="timeline-time">⏱️ 30 minutos • CRÍTICO</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-icon p0">P0</div>
+          <div class="timeline-content">
+            <div class="timeline-title">🐛 Corrigir rota de agendamento (valor do profissional)</div>
+            <div class="timeline-desc">Usuário demo não consegue agendar — verificar profissional_valores</div>
+            <div class="timeline-time">⏱️ 1 hora • BLOQUEANTE</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-icon p1">P1</div>
+          <div class="timeline-content">
+            <div class="timeline-title">📧 Implementar envio real de email (Zoho/SendGrid)</div>
+            <div class="timeline-desc">Recuperação de senha, boas-vindas, notificações</div>
+            <div class="timeline-time">⏱️ 2 horas • IMPORTANTE</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-icon p1">P1</div>
+          <div class="timeline-content">
+            <div class="timeline-title">📱 Implementar WhatsApp real (Evolution API)</div>
+            <div class="timeline-desc">Lembretes de consulta, confirmações, notificações</div>
+            <div class="timeline-time">⏱️ 2 horas • IMPORTANTE</div>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-icon p1">P1</div>
+          <div class="timeline-content">
+            <div class="timeline-title">💳 Implementar pagamento real (Stripe/PagSeguro)</div>
+            <div class="timeline-desc">Checkout funcional, webhooks, assinaturas</div>
+            <div class="timeline-time">⏱️ 3 horas • IMPORTANTE</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST FINAL -->
+  <div class="section">
+    <div class="section-header">
+      <h2>✅ Checklist de Lançamento</h2>
+      <span class="priority priority-p0">PRÉ-GO-LIVE</span>
+    </div>
+    <div class="section-content">
+      <table class="file-table">
+        <thead><tr><th>Item</th><th>Status</th><th>Responsável</th></tr></thead>
+        <tbody>
+          <tr><td>Backend rodando em produção (Render)</td><td class="status-partial">🟡 Homologação</td><td>DevOps</td></tr>
+          <tr><td>Frontend rodando em produção (Vercel)</td><td class="status-partial">🟡 Homologação</td><td>DevOps</td></tr>
+          <tr><td>Banco de dados PostgreSQL (Supabase)</td><td class="status-partial">🟡 Pendente migração</td><td>DevOps</td></tr>
+          <tr><td>Variáveis de ambiente configuradas</td><td class="status-missing">🔴 Pendente</td><td>DevOps</td></tr>
+          <tr><td>SSL/TLS configurado</td><td class="status-done">🟢 Automático (Vercel/Render)</td><td>Plataforma</td></tr>
+          <tr><td>Backup automático do banco</td><td class="status-missing">🔴 Pendente</td><td>DevOps</td></tr>
+          <tr><td>Rate limiting configurado</td><td class="status-partial">🟡 Básico, refinar</td><td>Backend</td></tr>
+          <tr><td>Logs de auditoria ativos</td><td class="status-missing">🔴 Pendente</td><td>Backend</td></tr>
+          <tr><td>Testes de integração passando</td><td class="status-missing">🔴 Não implementados</td><td>QA</td></tr>
+          <tr><td>Documentação da API disponível</td><td class="status-missing">🔴 Pendente</td><td>Tech Writer</td></tr>
+          <tr><td>Monitoramento (Uptime Robot / Better Stack)</td><td class="status-missing">🔴 Pendente</td><td>DevOps</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <p>🌿 Integrativo.App — Saúde Integrativa</p>
+  </div>
+
+</div>
+</body>
+</html>

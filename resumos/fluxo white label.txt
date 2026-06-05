@@ -1,0 +1,11 @@
+[Profissional/Admin acessa White Label]
+        │
+        ├── Upload da logo (substitui logo do Integrativo.App)
+        ├── Escolher cor primária (substitui azul padrão)
+        ├── Definir nome da clínica (substitui "Integrativo.App")
+        │
+        └── [Salvar]
+                │
+                ├── Todas as telas do painel refletem a nova identidade
+                ├── Pacientes veem a marca da clínica
+                └── Disponível para: Pro, Premium, Enterprise, Coworking

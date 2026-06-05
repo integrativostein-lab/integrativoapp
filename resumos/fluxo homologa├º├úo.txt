@@ -1,0 +1,26 @@
+[Prefeitura instala o sistema]
+        │
+        ├── [Sistema inicia em Modo de Homologação]
+        │       │
+        │       ├── Tarja amarela: "AMBIENTE DE HOMOLOGAÇÃO"
+        │       ├── NF bloqueada (tarja "Inválida")
+        │       ├── DATASUS bloqueado (exportação desabilitada)
+        │       ├── Assinatura digital bloqueada
+        │       └── Banco de dados volátil (opcional)
+        │
+        ├── [Prefeitura assina Termo de Cessão]
+        │       │
+        │       ├── [Com certificado digital]
+        │       │       └── Assinatura online, liberação imediata
+        │       │
+        │       └── [Sem certificado digital]
+        │               ├── Download do termo
+        │               ├── Reconhece firma em cartório
+        │               └── Upload do documento escaneado
+        │
+        └── [Super Admin libera]
+                │
+                └── [Modo Produção ativado]
+                        ├── Todas as restrições removidas
+                        ├── Sistema 100% funcional
+                        └── Certificado A1 da prefeitura ativado

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prescrição — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .prescricao-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .prescricao-card { background: var(--branco); padding: 28px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 24px; }
+    .prescricao-card h3 { color: var(--azul-escuro); margin-bottom: 12px; }
+    .aviso-conselho { background: var(--laranja-claro); padding: 16px; border-radius: 8px; margin: 16px 0; border-left: 4px solid var(--laranja); }
+    .link-conselho { display: inline-block; margin-top: 8px; color: var(--azul-escuro); font-weight: 600; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>📋 Prescrição</h3>
+      <nav>
+        <a href="#" class="ativo">Nova Prescrição</a>
+        <a href="#">Histórico</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+
+    <div class="painel-conteudo">
+      <div class="prescricao-container">
+        
+        <!-- AVISO PARA PROFISSIONAIS SEM CONSELHO -->
+        <div class="prescricao-card" id="aviso-sem-conselho" style="display:none;">
+          <h3>⚠️ Atenção</h3>
+          <p>Você não possui registro em conselho de classe. Sua prescrição será emitida como <strong>Solicitação/Recomendação</strong>.</p>
+          <p style="font-size:14px;color:var(--texto-medio);">Este documento não substitui uma prescrição médica ou de profissional regulamentado.</p>
+        </div>
+
+        <!-- AVISO PARA PROFISSIONAIS COM CONSELHO -->
+        <div class="prescricao-card" id="aviso-com-conselho" style="display:none;">
+          <h3>✅ Prescrição Oficial</h3>
+          <p>Você possui registro no <strong id="conselho-nome"></strong>.</p>
+          <p>Sua prescrição terá validade jurídica com assinatura digital ICP-Brasil.</p>
+        </div>
+
+        <!-- FORMULÁRIO DE PRESCRIÇÃO -->
+        <div class="prescricao-card">
+          <h3>Nova Prescrição</h3>
+          
+          <div class="form-grupo">
+            <label>Paciente</label>
+            <select id="paciente-id">
+              <option value="">Selecione o paciente...</option>
+            </select>
+          </div>
+
+          <div class="form-grupo">
+            <label>Tipo</label>
+            <select id="tipo-prescricao">
+              <option value="prescricao">Prescrição</option>
+              <option value="solicitacao">Solicitação / Recomendação</option>
+              <option value="controle_especial">Controle Especial (Receita Branca - 2 vias)</option>
+            </select>
+          </div>
+
+          <div class="form-grupo">
+            <label>Itens (medicamentos, ervas, orientações)</label>
+            <textarea id="itens-prescricao" rows="4" placeholder="Ex: Unha de Gato 500mg — 1 cápsula 2x ao dia por 30 dias"></textarea>
+          </div>
+
+          <div class="form-grupo">
+            <label>Observações</label>
+            <textarea id="obs-prescricao" rows="2" placeholder="Orientações adicionais..."></textarea>
+          </div>
+
+          <button class="btn btn-primario" onclick="emitirPrescricao()" style="width:100%;">Emitir</button>
+          <p id="msg-prescricao" style="text-align:center;margin-top:12px;"></p>
+        </div>
+
+        <!-- LINK PARA O PORTAL DO CONSELHO -->
+        <div class="prescricao-card" id="link-conselho" style="display:none;">
+          <div class="aviso-conselho">
+            <strong>📄 Portal oficial do seu conselho</strong>
+            <p style="font-size:13px;margin-top:4px;">Alguns conselhos exigem que a prescrição seja emitida diretamente em seu portal oficial.</p>
+            <a href="#" id="link-conselho-url" class="link-conselho" target="_blank">Acessar Portal do Conselho →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    async function carregar() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      // Buscar perfil do profissional
+      var r = await fetch(`${CONFIG.API_URL}/usuarios/perfil`, { headers: { 'Authorization': `Bearer ${token}` } });
+      var dados = await r.json();
+
+      // Verificar se tem conselho
+      if (dados.conselho_classe) {
+        document.getElementById('aviso-com-conselho').style.display = 'block';
+        document.getElementById('conselho-nome').textContent = dados.conselho_classe;
+        
+        // Mostrar link do portal do conselho
+        var links = {
+          'CRM': 'https://portal.cfm.org.br',
+          'CREFITO': 'https://www.crefito.org.br',
+          'CRN': 'https://www.cfn.org.br',
+          'CRF': 'https://www.cff.org.br',
+          'CRO': 'https://cfo.org.br',
+          'COREN': 'https://www.portalcoren.com.br',
+          'CRP': 'https://site.cfp.org.br'
+        };
+        
+        if (links[dados.conselho_classe]) {
+          document.getElementById('link-conselho').style.display = 'block';
+          document.getElementById('link-conselho-url').href = links[dados.conselho_classe];
+        }
+      } else {
+        document.getElementById('aviso-sem-conselho').style.display = 'block';
+        document.getElementById('tipo-prescricao').value = 'solicitacao';
+        document.getElementById('tipo-prescricao').querySelector('option[value="prescricao"]').disabled = true;
+        document.getElementById('tipo-prescricao').querySelector('option[value="controle_especial"]').disabled = true;
+      }
+    }
+
+    async function emitirPrescricao() {
+      var token = localStorage.getItem('integra_token');
+      var paciente = document.getElementById('paciente-id').value;
+      var tipo = document.getElementById('tipo-prescricao').value;
+      var itens = document.getElementById('itens-prescricao').value;
+      var obs = document.getElementById('obs-prescricao').value;
+
+      if (!paciente || !itens) {
+        document.getElementById('msg-prescricao').textContent = 'Preencha paciente e itens.';
+        document.getElementById('msg-prescricao').style.color = 'var(--vermelho)';
+        return;
+      }
+
+      var r = await fetch(`${CONFIG.API_URL}/prescricoes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          paciente_id: parseInt(paciente),
+          itens: itens.split('\n'),
+          observacoes: obs,
+          tipo_controlado: tipo === 'controle_especial'
+        })
+      });
+
+      var d = await r.json();
+      var msg = document.getElementById('msg-prescricao');
+      if (r.ok) {
+        msg.textContent = '✅ ' + d.mensagem;
+        msg.style.color = 'var(--verde-suave)';
+      } else {
+        msg.textContent = '❌ ' + (d.erro || 'Erro ao emitir.');
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+
+    carregar();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

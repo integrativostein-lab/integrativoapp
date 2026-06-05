@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Integrativo.App — Calculadora do Terapeuta. Compare o custo real de planos. Todos os planos pagos incluem todas as especialidades. A menor taxa do mercado.">
+    <title>Integrativo.App — Planos para Profissionais com Calculadora Comparativa</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <style>
+        .hero-prof { background: linear-gradient(rgba(26,54,93,0.82), rgba(26,54,93,0.82)), url('https://images.unsplash.com/photo-1507652313519-d4e9174996dd?w=1400&h=800&fit=crop'); background-size: cover; background-position: center; color: #FFF; padding: 80px 30px; text-align: center; }
+        .hero-prof h1 { font-size: 38px; margin-bottom: 10px; font-weight: 300; }
+        .hero-prof p { font-size: 16px; opacity: 0.85; max-width: 600px; margin: 0 auto 24px; }
+        .app-banner { background: rgba(255,255,255,0.10); border-radius: 14px; padding: 14px 24px; max-width: 420px; margin: 20px auto 0; backdrop-filter: blur(6px); display: flex; align-items: center; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+        .facilidades-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 25px 0; }
+        .facilidade-item { background: #FFF; padding: 14px 8px; border-radius: 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: transform 0.2s; }
+        .facilidade-item:hover { transform: translateY(-2px); }
+        .facilidade-item .icone { font-size: 22px; margin-bottom: 2px; }
+        .facilidade-item .titulo { font-weight: 600; color: #1B4332; font-size: 13px; }
+
+        .tabela-planos { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 14px; background: #1A365D; color: #FFF; border-radius: 12px; overflow: hidden; }
+        .tabela-planos th { background: #0F2440; color: #F4A261; padding: 12px 10px; text-align: center; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-size: 15px; }
+        .tabela-planos th:first-child { text-align: left; }
+        .tabela-planos td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: center; color: #FFF; font-size: 14px; }
+        .tabela-planos td:first-child { text-align: left; font-weight: 500; color: #F4A261; }
+        .tabela-planos tr:hover { background: rgba(255,255,255,0.04); }
+        .tabela-planos .check { color: #F4A261; font-weight: 700; font-size: 16px; }
+        .tabela-planos .dash { color: rgba(255,255,255,0.25); }
+        .tabela-planos .preco { font-weight: 700; color: #F4A261; font-size: 16px; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+        .tabela-planos .btn-assinar { display: inline-block; padding: 8px 18px; border-radius: 20px; font-weight: 600; font-size: 13px; text-decoration: none; cursor: pointer; border: 1px solid #F4A261; background: transparent; color: #F4A261; margin-top: 5px; transition: all 0.2s; }
+        .tabela-planos .btn-assinar:hover { background: #F4A261; color: #1A365D; }
+
+        .calculadora { background: #FFF; padding: 25px; border-radius: 12px; box-shadow: var(--sombra); margin: 25px 0; text-align: center; }
+        .calculadora h3 { color: var(--azul-escuro); margin-bottom: 15px; }
+        .calc-inputs { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end; }
+        .calc-inputs .form-grupo { margin-bottom: 0; min-width: 140px; }
+        .resultado-calc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-top: 20px; }
+        .resultado-item { background: var(--cinza-claro); padding: 15px; border-radius: 8px; text-align: center; }
+        .resultado-item .custo { font-size: 20px; font-weight: 700; }
+        .resultado-item .custo.integrativo { color: var(--verde-suave); }
+        .resultado-item .custo.concorrente { color: var(--vermelho); }
+        .resultado-item .nome { font-size: 13px; color: var(--texto-medio); margin-bottom: 4px; }
+        .resultado-item .detalhe { font-size: 11px; color: var(--texto-medio); margin-top: 4px; }
+        .resultado-item .economia { font-size: 13px; color: var(--verde-suave); font-weight: 600; }
+
+        .motivacao { background: #F5F0E8; padding: 30px; text-align: center; border-radius: 12px; margin: 20px 0; }
+        .carrossel-cit { overflow: hidden; max-width: 700px; margin: 20px auto; background: #E8F0E8; padding: 25px; border-radius: 12px; }
+        .carrossel-cit blockquote { font-size: 16px; font-style: italic; color: #1A365D; margin: 0; }
+        .carrossel-cit cite { display: block; margin-top: 10px; font-size: 13px; color: #4A5568; font-style: normal; }
+        .carrossel-cit .dots { text-align: center; margin-top: 14px; }
+        .carrossel-cit .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #CBD5E0; margin: 0 4px; }
+        .carrossel-cit .dot.ativo { background: #DD6B20; }
+
+        @media (max-width: 768px) {
+            .facilidades-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-prof h1 { font-size: 28px; }
+            .resultado-calc { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+        <div class="menu">
+            <a href="index.html">Para Pacientes</a>
+            <a href="#planos">Planos</a>
+            <a href="blog.html">Blog</a>
+            <a href="login.html">Entrar</a>
+            <a href="cadastro.html" class="btn btn-primario" style="padding:8px 20px;font-size:13px;">Teste Grátis</a>
+        </div>
+    </nav>
+
+    <section class="hero-prof">
+        <h1>Quanto você pagaria nos outros sistemas?</h1>
+        <p>Compare o custo real. Todos os planos incluem todas as especialidades. A menor taxa do mercado.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+            <a href="#calculadora" class="btn btn-primario" style="font-size:15px;padding:14px 30px;">Calcular Agora</a>
+            <a href="cadastro.html" class="btn btn-secundario" style="font-size:15px;padding:14px 30px;">Teste Grátis</a>
+        </div>
+        <div class="app-banner">
+            <span style="font-size:28px;">📱</span>
+            <p>Baixe nosso App grátis. Gerencie sua clínica pelo celular.</p>
+            <a href="#" class="btn btn-secundario" style="padding:8px 18px;font-size:13px;" onclick="alert('App instalado! (PWA)')">Instalar App</a>
+        </div>
+    </section>
+
+    <section class="secao seca-branca">
+        <div class="container">
+            <h2>Tudo que você precisa. Agora com Prescrição Digital.</h2>
+            <div class="facilidades-grid">
+                <div class="facilidade-item"><div class="icone">🎥</div><div class="titulo">Teleconsulta 1 clique</div></div>
+                <div class="facilidade-item"><div class="icone">📅</div><div class="titulo">Agenda Inteligente</div></div>
+                <div class="facilidade-item"><div class="icone">🛒</div><div class="titulo">Loja Virtual + Física</div></div>
+                <div class="facilidade-item"><div class="icone">📱</div><div class="titulo">WhatsApp Grátis</div></div>
+                <div class="facilidade-item"><div class="icone">🧾</div><div class="titulo">Nota Fiscal Integrada</div></div>
+                <div class="facilidade-item"><div class="icone">📊</div><div class="titulo">Financeiro + Conciliação</div></div>
+                <div class="facilidade-item"><div class="icone">📋</div><div class="titulo">Anamnese Personalizável</div></div>
+                <div class="facilidade-item"><div class="icone">📚</div><div class="titulo">30 Bancos Terapêuticos</div></div>
+                <div class="facilidade-item"><div class="icone">🧘</div><div class="titulo">Yoga com Assinatura</div></div>
+                <div class="facilidade-item"><div class="icone">💆</div><div class="titulo">Massagens com Pacotes</div></div>
+                <div class="facilidade-item"><div class="icone">🏢</div><div class="titulo">Módulo RH + Folha</div></div>
+                <div class="facilidade-item"><div class="icone">✍️</div><div class="titulo">Blog Profissional</div></div>
+                <div class="facilidade-item"><div class="icone">📄</div><div class="titulo">Contratos Personalizáveis</div></div>
+                <div class="facilidade-item"><div class="icone">🔄</div><div class="titulo">Migração Automática</div></div>
+                <div class="facilidade-item"><div class="icone">🌐</div><div class="titulo">9 Idiomas</div></div>
+                <div class="facilidade-item"><div class="icone">💳</div><div class="titulo">8 Gateways</div></div>
+                <div class="facilidade-item"><div class="icone">🎙️</div><div class="titulo">Entrada por Voz</div></div>
+                <div class="facilidade-item"><div class="icone">🔐</div><div class="titulo">Revenda Certificado</div></div>
+                <div class="facilidade-item"><div class="icone">🏪</div><div class="titulo">Marketplace Pacientes</div></div>
+                <div class="facilidade-item"><div class="icone">🎁</div><div class="titulo">Cert. Grátis (Enterprise)</div></div>
+                <div class="facilidade-item"><div class="icone">🏛️</div><div class="titulo">Doação Prefeituras</div></div>
+                <div class="facilidade-item"><div class="icone">🌍</div><div class="titulo">Doação Humanitária</div></div>
+                <div class="facilidade-item"><div class="icone">🔒</div><div class="titulo">LGPD + GDPR + HIPAA</div></div>
+                <div class="facilidade-item"><div class="icone">📜</div><div class="titulo">Código de Ética</div></div>
+                <div class="facilidade-item"><div class="icone">📝</div><div class="titulo">Prescrição Digital</div></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="secao seca-azul" id="calculadora">
+        <div class="container">
+            <div class="calculadora">
+                <h3>🧮 CALCULADORA DO TERAPEUTA</h3>
+                <p style="color:var(--texto-medio);margin-bottom:15px;">Veja o custo real em cada plataforma e quanto você economiza por ano.</p>
+                
+                <div class="calc-inputs">
+                    <div class="form-grupo">
+                        <label>Plano</label>
+                        <select id="calc-plano">
+                            <option value="pro">Pro</option>
+                            <option value="premium">Premium</option>
+                            <option value="enterprise">Enterprise</option>
+                            <option value="coworking">Coworking</option>
+                        </select>
+                    </div>
+                    <div class="form-grupo">
+                        <label>Consultas por mês</label>
+                        <input type="number" id="calc-consultas" value="20" min="1">
+                    </div>
+                    <div class="form-grupo">
+                        <label>Ticket Médio (R$)</label>
+                        <input type="number" id="calc-ticket" value="150" min="1">
+                    </div>
+                    <div class="form-grupo">
+                        <label>Forma de Pagamento</label>
+                        <select id="calc-forma-pagamento">
+                            <option value="cartao">Cartão de Crédito</option>
+                            <option value="pix">PIX (5% off)</option>
+                        </select>
+                    </div>
+                    <div class="form-grupo" style="display:flex;align-items:center;gap:8px;min-width:auto;padding-top:24px;">
+                        <input type="checkbox" id="calc-abrath">
+                        <label for="calc-abrath" style="margin-bottom:0;">ABRATH (15% off)</label>
+                    </div>
+                </div>
+
+                <div class="resultado-calc" id="resultado-calc">
+                    <div class="resultado-item">
+                        <div class="nome">🌿 Integrativo.App</div>
+                        <div class="custo integrativo" id="calc-integrativo">R$ 0</div>
+                        <div class="detalhe">Assinatura + 5% taxa</div>
+                    </div>
+                    <div class="resultado-item">
+                        <div class="nome">💼 Doctoralia</div>
+                        <div class="custo concorrente" id="calc-doctoralia">R$ 0</div>
+                        <div class="detalhe">Assinatura + 20% comissão</div>
+                    </div>
+                    <div class="resultado-item">
+                        <div class="nome">🧘 Zenklub</div>
+                        <div class="custo concorrente" id="calc-zenklub">R$ 0</div>
+                        <div class="detalhe">Assinatura + 22% comissão</div>
+                    </div>
+                    <div class="resultado-item">
+                        <div class="nome">📊 Genérico (Só Comissão)</div>
+                        <div class="custo concorrente" id="calc-generico">R$ 0</div>
+                        <div class="detalhe">30% de comissão</div>
+                    </div>
+                </div>
+                <div class="economia" id="calc-economia" style="margin-top:15px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="secao seca-cinza" id="planos">
+        <div class="container">
+            <h2>Planos</h2>
+            <table class="tabela-planos">
+                <tr><th>Benefício</th><th>🆓 Freemium</th><th>⭐ Pro</th><th>💎 Premium</th><th>🏢 Enterprise</th><th>🏗️ Coworking</th></tr>
+                <tr><td>Ideal para</td><td>Começando</td><td>Individual</td><td>Clínicas</td><td>Redes</td><td>Espaços</td></tr>
+                <tr><td>Profissionais</td><td>1</td><td>1</td><td>10</td><td>Ilimitado</td><td>Ilimitado</td></tr>
+                <tr><td>Teleconsultas/mês</td><td>30</td><td>150</td><td>Ilimitadas</td><td>Ilimitadas</td><td>Ilimitadas</td></tr>
+                <tr><td>Agendamentos/mês</td><td>70</td><td>500</td><td>Ilimitados</td><td>Ilimitados</td><td>Ilimitados</td></tr>
+                <tr><td>WhatsApp/mês</td><td>30</td><td>1.000</td><td>Ilimitado</td><td>Ilimitado</td><td>Ilimitado</td></tr>
+                <tr><td>Pacientes</td><td>50</td><td>300</td><td>1.000</td><td>Ilimitado</td><td>Ilimitado</td></tr>
+                <tr><td>Recepcionistas</td><td class="dash">—</td><td>1</td><td>3</td><td>Ilimitado</td><td>Ilimitado</td></tr>
+                <tr><td>Especialidades</td><td>1</td><td class="check">30</td><td class="check">30</td><td class="check">30</td><td class="check">30</td></tr>
+                <tr><td>White Label</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>API White Label</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                <tr><td>Cert. A1 Grátis</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓ (Anual)</td><td class="check">✓</td></tr>
+                <tr><td>Desconto ABRATH</td><td class="dash">—</td><td class="check">✓ 15%</td><td class="check">✓ 15%</td><td class="check">✓ 15%</td><td class="dash">—</td></tr>
+                <tr><td>Preço Mensal</td><td class="preco">Grátis</td><td class="preco">R$ 89,90</td><td class="preco">R$ 479,90</td><td class="preco">R$ 999,90</td><td class="preco">R$ 1.599,90</td></tr>
+                <tr><td>Preço Anual (-20%)</td><td class="dash">—</td><td class="preco">R$ 863,04</td><td class="preco">R$ 4.607,04</td><td class="preco">R$ 9.599,04</td><td class="dash">—</td></tr>
+                <tr><td></td><td><a href="cadastro.html" class="btn-assinar">Começar</a></td><td><a href="cadastro.html?plano=pro" class="btn-assinar">Assinar</a></td><td><a href="cadastro.html?plano=premium" class="btn-assinar">Assinar</a></td><td><a href="cadastro.html?plano=enterprise" class="btn-assinar">Assinar</a></td><td><a href="cadastro.html?plano=coworking" class="btn-assinar">Assinar</a></td></tr>
+            </table>
+        </div>
+    </section>
+
+    <section class="secao seca-cinza">
+        <div class="container motivacao">
+            <h3>🌿 Nossa Motivação</h3>
+            <p style="max-width:700px;margin:0 auto;color:#4A5568;">O Integrativo.App não nasceu de uma planilha de lucros. Nasceu da escuta ativa de terapeutas que precisavam de um sistema completo, mas não encontravam nada acessível.</p>
+            <p style="margin-top:12px;">🌱 Freemium vitalício &nbsp;|&nbsp; 🟡 ABRATH 15% off &nbsp;|&nbsp; 💚 5% — a menor do mercado &nbsp;|&nbsp; 🌍 Doação humanitária global</p>
+        </div>
+    </section>
+
+    <section class="secao seca-branca">
+        <div class="container">
+            <div class="carrossel-cit" id="carrosselCit">
+                <blockquote id="cit-texto"></blockquote>
+                <cite id="cit-autor"></cite>
+                <div class="dots" id="cit-dots"></div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background:#EBF4FF; padding:60px 40px; text-align:center;">
+        <h2>Baixe nosso App</h2>
+        <p style="color:#4A5568;">Gerencie sua clínica pelo celular. Instale em segundos, funciona offline e está sempre atualizado.</p>
+        <a href="#" class="btn btn-primario" style="font-size:16px;padding:14px 32px;margin-top:16px;" onclick="alert('App instalado! (PWA)')">Instalar App Grátis</a>
+    </section>
+
+    <footer>
+        <p>🌿 Integrativo.App — Saúde Integrativa &copy; 2026</p>
+        <p style="margin-top:8px;font-size:12px;">
+            <a href="termos.html">Termos</a> &nbsp;|&nbsp;
+            <a href="privacidade.html">Privacidade</a> &nbsp;|&nbsp;
+            <a href="etica.html">Ética</a> &nbsp;|&nbsp;
+            <a href="missao.html">Missão</a> &nbsp;|&nbsp;
+            <a href="manual.html">Manual</a>
+        </p>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script>
+        // Calculadora do Terapeuta
+        function calcular() {
+            var plano = document.getElementById('calc-plano').value;
+            var consultas = parseInt(document.getElementById('calc-consultas').value) || 0;
+            var ticket = parseInt(document.getElementById('calc-ticket').value) || 0;
+            var faturamento = consultas * ticket;
+            var planoPreco = CONFIG.PLANOS[plano].valor_mensal || 0;
+            var formaPagamento = document.getElementById('calc-forma-pagamento').value;
+
+            // Aplica desconto PIX de 5%
+            if (formaPagamento === 'pix') {
+                planoPreco = planoPreco * 0.95;
+            }
+
+            // Verifica se é Coworking (não tem desconto ABRATH)
+            var isCoworking = plano === 'coworking';
+            var temAbrath = document.getElementById('calc-abrath').checked && !isCoworking;
+
+            // Aplica desconto ABRATH 15%
+            if (temAbrath) {
+                planoPreco = planoPreco * 0.85;
+            }
+
+            // Custos totais mensais
+            var precoIntegrativo = planoPreco + (faturamento * 0.05);
+            var precoDoctoralia = 150 + (faturamento * 0.20);
+            var precoZenklub = 80 + (faturamento * 0.22);
+            var precoGenerico = faturamento * 0.30;
+
+            // Atualiza os valores na tela
+            document.getElementById('calc-integrativo').textContent = 'R$ ' + precoIntegrativo.toFixed(2).replace('.', ',');
+            document.getElementById('calc-doctoralia').textContent = 'R$ ' + precoDoctoralia.toFixed(2).replace('.', ',');
+            document.getElementById('calc-zenklub').textContent = 'R$ ' + precoZenklub.toFixed(2).replace('.', ',');
+            document.getElementById('calc-generico').textContent = 'R$ ' + precoGenerico.toFixed(2).replace('.', ',');
+
+            var economiaAnual = (precoDoctoralia - precoIntegrativo) * 12;
+            document.getElementById('calc-economia').textContent = '💰 Com o Integrativo.App você economiza até R$ ' + economiaAnual.toFixed(2).replace('.', ',') + ' por ano em relação ao Doctoralia.';
+        }
+
+        // Aguarda o DOM carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('calc-plano').addEventListener('change', calcular);
+            document.getElementById('calc-consultas').addEventListener('input', calcular);
+            document.getElementById('calc-ticket').addEventListener('input', calcular);
+            document.getElementById('calc-forma-pagamento').addEventListener('change', calcular);
+            document.getElementById('calc-abrath').addEventListener('change', calcular);
+            calcular();
+        });
+
+        // Carrossel de Citações
+        var citacoes = [
+            { texto: "A medicina ayurvédica não trata a doença — trata o doente.", autor: "Dr. Vasant Lad" },
+            { texto: "A saúde é o estado de equilíbrio entre o corpo, a mente e a consciência.", autor: "Charaka Samhita" },
+            { texto: "O corpo é a harpa da alma.", autor: "Khalil Gibran" },
+            { texto: "A natureza é a grande curadora.", autor: "Helena Blavatsky" },
+            { texto: "O que cura é o afeto. O que cura é o cuidado.", autor: "Dra. Nise da Silveira" }
+        ];
+        var citIdx = 0;
+        var dotsHtml = '';
+        for (var i = 0; i < citacoes.length; i++) { dotsHtml += '<span class="dot' + (i === 0 ? ' ativo' : '') + '"></span>'; }
+        document.getElementById('cit-dots').innerHTML = dotsHtml;
+        document.getElementById('cit-texto').textContent = '"' + citacoes[0].texto + '"';
+        document.getElementById('cit-autor').textContent = '— ' + citacoes[0].autor;
+        setInterval(function() {
+            citIdx = (citIdx + 1) % citacoes.length;
+            document.getElementById('cit-texto').textContent = '"' + citacoes[citIdx].texto + '"';
+            document.getElementById('cit-autor').textContent = '— ' + citacoes[citIdx].autor;
+            var dots = document.querySelectorAll('#cit-dots .dot');
+            for (var j = 0; j < dots.length; j++) { dots[j].classList.toggle('ativo', j === citIdx); }
+        }, 5000);
+    </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

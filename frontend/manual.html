@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manual completo do Integrativo.App — aprenda a usar todas as funcionalidades do sistema.">
+  <title>Manual de Uso — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .manual { max-width: 900px; margin: 40px auto; padding: 40px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .manual h1 { color: var(--azul-escuro); text-align: center; margin-bottom: 10px; }
+    .manual h2 { color: var(--azul-escuro); margin-top: 40px; border-bottom: 2px solid var(--laranja); padding-bottom: 8px; }
+    .manual h3 { color: var(--azul-medio); margin-top: 24px; }
+    .manual p, .manual li { color: var(--texto-escuro); line-height: 1.8; }
+    .manual .dica { background: var(--laranja-claro); padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; border-left: 4px solid var(--laranja); }
+    .manual .alerta { background: #FED7D7; padding: 14px 18px; border-radius: 8px; margin: 14px 0; font-size: 14px; border-left: 4px solid var(--vermelho); }
+    .manual table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    .manual th { background: var(--azul-escuro); color: var(--branco); padding: 10px 14px; text-align: left; font-size: 13px; }
+    .manual td { padding: 10px 14px; border-bottom: 1px solid #E2E8F0; font-size: 13px; }
+    .pesquisa { margin-bottom: 30px; }
+    .pesquisa input { width: 100%; padding: 14px 18px; border: 2px solid #E2E8F0; border-radius: 30px; font-size: 16px; }
+    .pesquisa input:focus { outline: none; border-color: var(--azul-escuro); }
+    .sumario { background: var(--cinza-claro); padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+    .sumario a { color: var(--azul-escuro); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a> <a href="login.html">Entrar</a></div>
+  </nav>
+
+  <div class="manual" id="manual-conteudo">
+    <h1>📖 Manual de Uso do Integrativo.App</h1>
+    <p style="text-align:center;color:var(--texto-medio);">"Porque até o sistema mais completo do mundo é inútil se você não souber onde clicar."</p>
+
+    <div class="pesquisa">
+      <input type="text" id="busca-manual" placeholder="🔍 Pesquisar no manual... (ex: nota fiscal, yoga, whatsapp)" oninput="pesquisar()">
+    </div>
+
+    <div class="sumario">
+      <h3>📑 Sumário</h3>
+      <ol>
+        <li><a href="#cadastro">Cadastro e Primeiro Acesso</a></li>
+        <li><a href="#perfil">Configurando seu Perfil</a></li>
+        <li><a href="#valores">Valores e Agenda</a></li>
+        <li><a href="#pagamentos">Pagamentos e Gateways</a></li>
+        <li><a href="#whatsapp">WhatsApp Integrado</a></li>
+        <li><a href="#nf">Nota Fiscal</a></li>
+        <li><a href="#loja">Loja Virtual e Física</a></li>
+        <li><a href="#especialidades">30 Bancos Terapêuticos</a></li>
+        <li><a href="#modulos">Módulos Extras</a></li>
+        <li><a href="#yoga-massagens">Yoga e Massagens</a></li>
+        <li><a href="#retornos">Retornos Gratuitos</a></li>
+        <li><a href="#contratos">Contratos de Assinatura</a></li>
+        <li><a href="#rh">RH, Recepcionista e Financeiro</a></li>
+        <li><a href="#revenda">Revenda de Certificado e Domínio</a></li>
+        <li><a href="#beneficios">Benefícios de Primeira Assinatura</a></li>
+        <li><a href="#prefeituras">Prefeituras e ONGs</a></li>
+      </ol>
+    </div>
+
+    <h2 id="cadastro">1. Cadastro e Primeiro Acesso</h2>
+    <p>Para usar o Integrativo.App, você precisa criar uma conta. O cadastro é simples e leva menos de 2 minutos.</p>
+    <h3>Passo a passo</h3>
+    <ol>
+      <li>Acesse a página de <strong>Cadastro</strong></li>
+      <li>Preencha nome completo, email e senha (mínimo 8 caracteres)</li>
+      <li>Escolha o tipo de conta: <strong>Paciente</strong> (para agendar consultas) ou <strong>Profissional</strong> (para atender pacientes)</li>
+      <li>Se for Profissional, marque suas especialidades (até 30 disponíveis)</li>
+      <li>Clique em <strong>Criar Conta</strong></li>
+    </ol>
+    <div class="dica">💡 Use o ícone 👁️ ao lado da senha para ver o que está digitando.</div>
+    <div class="alerta">⚠️ <strong>Recepcionista, RH e Financeiro</strong> NÃO são criados pelo cadastro público. Esses perfis são criados internamente pelo Admin da clínica. Eles não pagam assinatura — fazem parte do plano da clínica.</div>
+
+    <h2 id="perfil">2. Configurando seu Perfil</h2>
+    <p>Acesse <strong>⚙️ Configurações</strong> no menu lateral e preencha:</p>
+    <ul>
+      <li><strong>Registro profissional:</strong> CRM, CREFITO, CRN, etc. (se tiver conselho de classe)</li>
+      <li><strong>Registro ABRATH:</strong> Se for terapeuta holístico (opcional, mas dá 15% de desconto vitalício)</li>
+      <li><strong>Cidade e Estado:</strong> Para aparecer nas buscas por CEP</li>
+      <li><strong>Modalidades de atendimento:</strong> Online, Presencial, Domiciliar</li>
+    </ul>
+    <div class="alerta">⚠️ Massoterapia, Quiropraxia e Acupuntura só permitem atendimento Presencial. O sistema bloqueia automaticamente.</div>
+
+    <h2 id="valores">3. Valores e Agenda</h2>
+    <p><strong>💰 Valores:</strong> Defina o preço da consulta online, presencial e domiciliar para cada especialidade.<br>
+    <strong>📅 Agenda:</strong> Configure seus dias e horários disponíveis, além das regras de agendamento (antecedência mínima, prazo de cancelamento, tolerância de atraso).</p>
+    <div class="dica">💡 Você pode cobrar valores diferentes para online, presencial e domiciliar. O sistema mostra os três preços na busca.</div>
+
+    <h2 id="pagamentos">4. Pagamentos e Gateways</h2>
+    <p>O Integrativo.App oferece <strong>8 gateways de pagamento</strong>. Você escolhe qual usar:</p>
+    <table>
+      <tr><th>Gateway</th><th>Taxa Cartão</th><th>Taxa PIX</th></tr>
+      <tr><td>PagSeguro</td><td>3,99%</td><td>1,99%</td></tr>
+      <tr><td>PagBank</td><td>3,99%</td><td>1,99%</td></tr>
+      <tr><td>Asaas</td><td>2,99%</td><td>1,99%</td></tr>
+      <tr><td>Ton</td><td>1,99%</td><td>0,99%</td></tr>
+      <tr><td>Mercado Pago</td><td>3,99%</td><td>1,99%</td></tr>
+      <tr><td>Efi Bank</td><td>1,99%</td><td>1,99%</td></tr>
+      <tr><td>Cielo</td><td>Variável</td><td>1,99%</td></tr>
+      <tr><td>Stone</td><td>Variável</td><td>1,99%</td></tr>
+    </table>
+    <p>Acesse <strong>⚙️ Configurações → Gateways</strong>, escolha os que deseja usar, cole o token de cada um e salve.</p>
+    <div class="dica">💡 Pagamento via PIX tem 5% de desconto automaticamente. O sistema já aplica.</div>
+
+    <h2 id="whatsapp">5. WhatsApp Integrado</h2>
+    <p>Usamos a <strong>Evolution API</strong>, uma solução gratuita que não cobra por mensagem.</p>
+    <h3>Como configurar</h3>
+    <ol>
+      <li>Acesse o painel da Evolution API (fornecido pelo Integrativo.App)</li>
+      <li>Crie uma instância com seu número de WhatsApp</li>
+      <li>Escaneie o QR Code com seu celular</li>
+      <li>Copie o token gerado</li>
+      <li>No Integrativo.App: <strong>⚙️ Configurações → Integrações → WhatsApp</strong></li>
+      <li>Cole o token e salve</li>
+    </ol>
+    <div class="dica">💡 Depois de configurado, o sistema envia lembretes automáticos de consulta. Você não precisa fazer nada.</div>
+
+    <h2 id="nf">6. Nota Fiscal</h2>
+    <p><strong>Loja Virtual:</strong> NF é emitida automaticamente.<br>
+    <strong>Consultas:</strong> Você escolhe em <strong>⚙️ Configurações → Nota Fiscal</strong> se a emissão é automática ou manual (você clica para autorizar).</p>
+    <div class="alerta">⚠️ Para emitir NF, você precisa de um <strong>Certificado Digital</strong> (A1 ou A3). Compre na nossa revenda (menu 🔐 Revenda) ou em qualquer Autoridade Certificadora. Sem venda casada.</div>
+
+    <h2 id="loja">7. Loja Virtual e Física</h2>
+    <ol>
+      <li>Ative em <strong>⚙️ Configurações → Loja</strong></li>
+      <li>Cadastre produtos em <strong>🛒 Minha Loja</strong></li>
+      <li>Defina frete grátis a partir de um valor mínimo</li>
+      <li>Para venda presencial, use o <strong>Painel da Recepção</strong></li>
+    </ol>
+    <div class="dica">💡 Se não quiser usar a loja, deixe desativada. O paciente nem vê essa opção.</div>
+
+    <h2 id="especialidades">8. 30 Bancos Terapêuticos</h2>
+    <p>O Integrativo.App possui <strong>30 bibliotecas</strong> com <strong>781 registros</strong> baseados em fontes oficiais (OMS, PNPIC, Cochrane, textos clássicos).</p>
+    <p>Todos os planos pagos (Pro, Premium, Enterprise e Coworking) incluem acesso às <strong>30 especialidades</strong>. O plano Freemium inclui 1 especialidade (a sua).</p>
+  
+    <h2 id="yoga-massagens">10. Yoga e Massagens</h2>
+    <p>Crie planos de assinatura ou aulas/sessões avulsas. Presença automática na teleconsulta. Faltas geram reposição em 30 dias sem aviso prévio.</p>
+
+    <h2 id="retornos">11. Retornos Gratuitos</h2>
+    <p>No prontuário, clique em <strong>Agendar Retorno</strong>. Defina um prazo máximo. O paciente recebe notificação. O sistema identifica automaticamente se é retorno (grátis) ou consulta nova (paga).</p>
+
+    <h2 id="contratos">12. Contratos de Assinatura</h2>
+    <p>Crie contratos para Yoga, Massagens e outras modalidades. Defina nome, sessões, valor e forma de pagamento. O paciente assina eletronicamente.</p>
+
+    <h2 id="rh">13. RH, Recepcionista e Financeiro</h2>
+    <p>Esses <strong>não são assinantes separados</strong>. São <strong>perfis de acesso internos</strong> da clínica, criados pelo Admin no painel de administração.</p>
+    <table>
+      <tr><th>Perfil</th><th>O que faz</th><th>Quem paga?</th></tr>
+      <tr><td>Recepcionista</td><td>Check-in, caixa, loja física</td><td>A clínica (incluso)</td></tr>
+      <tr><td>RH</td><td>Folha de pagamento, guias, funcionários</td><td>A clínica (incluso)</td></tr>
+      <tr><td>Financeiro</td><td>Contas, NF, relatórios</td><td>A clínica (incluso)</td></tr>
+      <tr><td>Contador</td><td>Auditoria fiscal (somente leitura)</td><td>A clínica (incluso)</td></tr>
+    </table>
+    <div class="dica">💡 O Admin da clínica cria esses perfis em <strong>👥 Usuários → Convidar</strong>. O convidado recebe um link por email para criar a senha.</div>
+
+    <h2 id="revenda">14. Revenda de Certificado e Domínio</h2>
+    <p>Compre certificado digital (A1 ou A3) e domínio (.com.br ou .com) diretamente pelo painel. Preços atualizados automaticamente. Você pode comprar em qualquer fornecedor — não há venda casada.</p>
+
+    <h2 id="beneficios">15. Benefícios de Primeira Assinatura</h2>
+    <div class="dica">🎁 <strong>Semestral:</strong> 10 consultas livres de comissão (5%).<br><strong>Anual:</strong> 1 mês com todas as 30 bibliotecas liberadas + 1 mês sem comissão sobre consultas.</div>
+    <div class="alerta">⚠️ Válido apenas na <strong>primeira assinatura</strong>. Não se aplica a renovações.</div>
+
+    <h2 id="prefeituras">16. Prefeituras e ONGs</h2>
+    <p>Prefeituras com até 45.000 habitantes, ONGs, Cruz Vermelha e Médicos Sem Fronteiras têm acesso <strong>totalmente gratuito</strong> ao sistema, com código aberto e soberania digital.</p>
+    <p>O acesso é solicitado pela página <strong>Governo e Projetos Sociais</strong> na landing page de planos.</p>
+
+    <p style="text-align:center;margin-top:40px;color:var(--texto-medio);">Dúvidas? <strong>suporte@integrativo.app</strong></p>
+  </div>
+
+  <footer>
+    <p>🌿 Integrativo.App &copy; 2026 | <a href="termos.html">Termos</a> | <a href="privacidade.html">Privacidade</a> | <a href="etica.html">Ética</a> | <a href="missao.html">Missão</a></p>
+  </footer>
+
+  <script>
+    function normalizar(t) { return t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(); }
+    function pesquisar() {
+      var termo = normalizar(document.getElementById('busca-manual').value);
+      var secoes = document.querySelectorAll('.manual h2');
+      document.querySelectorAll('.manual h2').forEach(function(s) { s.style.background = ''; });
+      if (!termo) return;
+      secoes.forEach(function(s) {
+        var bloco = s.nextElementSibling;
+        var texto = normalizar(s.textContent + (bloco ? bloco.textContent : ''));
+        if (texto.includes(termo)) {
+          s.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          s.style.background = '#FEFCBF';
+          setTimeout(function() { s.style.background = ''; }, 3000);
+        }
+      });
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

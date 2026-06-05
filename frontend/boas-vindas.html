@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bem-vindo ao Integrativo.App!</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .boas-vindas { max-width: 800px; margin: 40px auto; padding: 40px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); text-align: center; }
+    .boas-vindas h1 { color: var(--azul-escuro); margin-bottom: 8px; }
+    .boas-vindas .funcionalidades { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin: 30px 0; }
+    .boas-vindas .funcionalidades li { list-style: "✅ "; padding: 4px 0; color: var(--texto-medio); font-size: 14px; }
+    .boas-vindas .aviso { background: var(--laranja-claro); padding: 18px; border-radius: 8px; margin: 24px 0; font-size: 15px; border-left: 4px solid var(--laranja); }
+    .boas-vindas .modulos-banner { background: #EBF4FF; padding: 18px; border-radius: 8px; margin: 24px 0; border-left: 4px solid var(--azul-escuro); }
+    .boas-vindas .convite-info { background: #C6F6D5; padding: 18px; border-radius: 8px; margin: 24px 0; border-left: 4px solid var(--verde-suave); }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a> <a href="login.html">Entrar</a></div>
+  </nav>
+
+  <div class="boas-vindas">
+    <h1>🎉 Bem-vindo ao Integrativo.App, <span id="nome-cliente">Profissional</span>!</h1>
+    <p style="color:var(--texto-medio);font-size:16px;margin-top:8px;" id="msg-assinatura">Sua assinatura foi confirmada com sucesso.</p>
+
+    <!-- CONVITE (se aplicável) -->
+    <div class="convite-info" id="info-convite" style="display:none;">
+      <strong>🎁 Convite Especial</strong>
+      <p style="margin-top:8px;" id="convite-detalhes"></p>
+    </div>
+
+    <!-- MÓDULOS EXTRAS -->
+    <div class="modulos-banner">
+      <strong>📚 Expanda seus conhecimentos</strong>
+      <p style="margin-top:8px;">Seu plano inclui <strong id="modulos-inclusos">4</strong> especialidades. Você pode adicionar mais com <strong>50% off nos 3 primeiros meses</strong>.</p>
+      <p style="font-size:13px;color:var(--texto-medio);margin-top:4px;">30 bibliotecas disponíveis — de R$ 9,90 a R$ 29,90/mês.</p>
+      <a href="painel-terapeuta.html#modulos" style="display:inline-block;margin-top:10px;font-weight:600;color:var(--azul-escuro);">Ver Módulos Disponíveis →</a>
+    </div>
+
+    <h3 style="margin-top:28px;color:var(--azul-escuro);">Com seu plano, você tem acesso a:</h3>
+    <div class="funcionalidades" id="lista-funcionalidades">
+      <ul>
+        <li>Agenda inteligente com agendamento pelo paciente</li>
+        <li>Teleconsulta com 1 clique (sem app externo)</li>
+        <li>Loja virtual e física integradas</li>
+        <li>Emissão de Notas Fiscais</li>
+        <li>Lembretes automáticos via WhatsApp (grátis)</li>
+      </ul>
+      <ul>
+        <li>Prontuário digital com anamnese personalizável</li>
+        <li>30 bancos de dados terapêuticos (781 registros)</li>
+        <li>Entrada de dados por voz (sem gravar áudio)</li>
+        <li>Gestão financeira com relatórios</li>
+        <li>Conformidade total com LGPD, GDPR e HIPAA</li>
+      </ul>
+    </div>
+
+    <div class="aviso">
+      <strong>📖 Primeiro acesso?</strong> Recomendamos a leitura do manual para configurar tudo sem dificuldades. Você pode voltar a ele a qualquer momento.
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="manual.html" class="btn btn-primario" style="font-size:16px;padding:16px 36px;">📖 Manual de Uso</a>
+      <a href="etica.html" class="btn btn-outline" style="font-size:16px;padding:16px 36px;">📜 Código de Ética</a>
+    </div>
+    <p style="margin-top:16px;"><a href="login.html" style="color:var(--texto-medio);">Ir para o painel</a></p>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    var usuario = localStorage.getItem('integra_usuario');
+    if (usuario) {
+      try { usuario = JSON.parse(usuario); } catch(e) {}
+      document.getElementById('nome-cliente').textContent = usuario.nome || 'Profissional';
+      
+      var plano = usuario.plano || 'freemium';
+      var inclusas = CONFIG.PLANOS[plano]?.especialidades_inclusas || 1;
+      document.getElementById('modulos-inclusos').textContent = inclusas;
+
+      // Verificar se veio de convite
+      var urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('convite') === 'sim') {
+        document.getElementById('info-convite').style.display = 'block';
+        document.getElementById('convite-detalhes').textContent = 'Você recebeu condições especiais do Super Admin. Verifique os benefícios no seu painel.';
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

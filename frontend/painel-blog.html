@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .blog-editor { max-width: 800px; margin: 40px auto; padding: 30px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .blog-editor h2 { margin-bottom: 20px; }
+    .seo-info { background: #EBF4FF; padding: 14px; border-radius: 8px; margin: 12px 0; font-size: 13px; }
+    .seo-info .ok { color: var(--verde-suave); }
+    .seo-info .warn { color: var(--laranja); }
+    .ref-cruzada { background: var(--laranja-claro); padding: 14px; border-radius: 8px; margin: 12px 0; font-size: 13px; border-left: 4px solid var(--laranja); }
+    .ref-cruzada button { background: var(--azul-escuro); color: #FFF; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 8px; }
+    .campo-voz { width: 100%; padding: 10px 36px 10px 14px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="painel-terapeuta.html">Painel</a> <a href="manual.html">Manual</a></div>
+  </nav>
+
+  <div class="blog-editor">
+    <h2>✍️ Novo Artigo</h2>
+
+    <div class="form-grupo">
+      <label>Título *</label>
+      <input type="text" id="titulo" placeholder="Título do artigo" class="campo-voz" oninput="analisarSEO()">
+    </div>
+
+    <div class="form-grupo">
+      <label>Palavras-chave * (separadas por vírgula)</label>
+      <input type="text" id="palavras-chave" placeholder="ansiedade, fitoterapia, camomila" class="campo-voz" oninput="analisarSEO()">
+    </div>
+
+    <div class="form-grupo">
+      <label>Meta Description * (até 160 caracteres)</label>
+      <textarea id="meta-desc" rows="2" placeholder="Resumo do artigo para Google..." class="campo-voz" oninput="analisarSEO()"></textarea>
+      <span style="font-size:11px;color:var(--texto-medio);" id="meta-contador">0/160</span>
+    </div>
+
+    <!-- ANÁLISE DE SEO -->
+    <div class="seo-info" id="seo-info" style="display:none;"></div>
+
+    <div class="form-grupo">
+      <label>Conteúdo *</label>
+      <textarea id="conteudo" rows="12" placeholder="Escreva seu artigo..." class="campo-voz" oninput="analisarSEO(); buscarReferencias()"></textarea>
+    </div>
+
+    <!-- REFERÊNCIAS CRUZADAS -->
+    <div class="ref-cruzada" id="ref-cruzada" style="display:none;">
+      <strong>💡 Sugestões para enriquecer seu texto:</strong>
+      <div id="ref-lista"></div>
+    </div>
+
+    <div class="form-grupo">
+      <label>Fonte Bibliográfica *</label>
+      <textarea id="fonte-bib" rows="3" placeholder="Referências usadas no artigo (livros, artigos, links) — obrigatório" class="campo-voz"></textarea>
+    </div>
+
+    <div class="form-grupo">
+      <label>Imagem de capa (recomendada)</label>
+      <input type="text" id="imagem-url" placeholder="URL da imagem">
+    </div>
+
+    <button class="btn btn-primario" onclick="publicar()" style="width:100%;margin-top:10px;">Publicar</button>
+    <button class="btn btn-outline" onclick="salvarRascunho()" style="width:100%;margin-top:6px;">Salvar Rascunho</button>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/voz.js"></script>
+  <script>
+    function analisarSEO() {
+      var info = document.getElementById('seo-info');
+      var titulo = document.getElementById('titulo').value;
+      var meta = document.getElementById('meta-desc').value;
+      var conteudo = document.getElementById('conteudo').value;
+      var palavras = document.getElementById('palavras-chave').value;
+      
+      document.getElementById('meta-contador').textContent = meta.length + '/160';
+
+      var dicas = [];
+      if (titulo.length < 50) dicas.push('<span class="warn">⚠️ Título curto (menos de 50 caracteres)</span>');
+      else dicas.push('<span class="ok">✅ Título: ' + titulo.length + ' caracteres — ideal</span>');
+      
+      if (meta.length < 50) dicas.push('<span class="warn">⚠️ Meta description curta</span>');
+      else if (meta.length > 160) dicas.push('<span class="warn">⚠️ Meta description longa (máx. 160)</span>');
+      else dicas.push('<span class="ok">✅ Meta description: ' + meta.length + '/160 — ideal</span>');
+
+      if (palavras && !conteudo.toLowerCase().includes(palavras.split(',')[0]?.trim().toLowerCase())) {
+        dicas.push('<span class="warn">⚠️ Palavra-chave não aparece no texto</span>');
+      }
+
+      var h2 = (conteudo.match(/\n/g) || []).length;
+      if (conteudo.length > 500 && h2 < 3) dicas.push('<span class="warn">⚠️ Use mais subtítulos (H2) para melhorar a leitura</span>');
+
+      if (dicas.length > 0) {
+        info.style.display = 'block';
+        info.innerHTML = '<strong>📊 Análise de SEO:</strong><br>' + dicas.join('<br>');
+      }
+    }
+
+    function buscarReferencias() {
+      var texto = document.getElementById('conteudo').value.toLowerCase();
+      if (texto.length < 30) return;
+
+      // Simular busca no banco de dados
+      var refs = [];
+      var bancoSimulado = {
+        'camomila': { tipo: '🌿 Fitoterapia', texto: 'Camomila (Matricaria chamomilla) — Ficha completa do banco de dados.', fonte: 'Farmacopeia Brasileira, 6ª Ed.' },
+        'ansiedade': { tipo: '🧠 Saúde Mental', texto: 'Abordagens integrativas para ansiedade — revisão de 2025.', fonte: 'JAMA Psychiatry, 2025' },
+        'ashwagandha': { tipo: '🕉️ Ayurveda', texto: 'Ashwagandha (Withania somnifera) — Ficha ayurvédica completa.', fonte: 'Charaka Samhita, Chikitsasthana 1.34' },
+        'acupuntura': { tipo: '📍 Acupuntura', texto: 'Acupuntura para dor crônica — revisão sistemática.', fonte: 'Cochrane Database, 2024' },
+        'yoga': { tipo: '🧘 Yoga', texto: 'Yoga e saúde mental — 5 estudos que comprovam os benefícios.', fonte: 'Lancet Psychiatry, 2025' }
+      };
+
+      Object.keys(bancoSimulado).forEach(function(chave) {
+        if (texto.includes(chave)) {
+          refs.push(bancoSimulado[chave]);
+        }
+      });
+
+      if (refs.length > 0) {
+        var refDiv = document.getElementById('ref-cruzada');
+        refDiv.style.display = 'block';
+        document.getElementById('ref-lista').innerHTML = refs.map(function(r) {
+          return '<p style="margin:6px 0;">' + r.tipo + ': ' + r.texto + ' <br><small style="color:var(--texto-medio);">📚 ' + r.fonte + '</small> <button onclick="inserirRef(\'' + r.texto.replace(/'/g, "\\'") + '\')">Inserir</button></p>';
+        }).join('');
+      }
+    }
+
+    function inserirRef(texto) {
+      var conteudo = document.getElementById('conteudo');
+      conteudo.value += '\n\n' + texto;
+      analisarSEO();
+    }
+
+    async function publicar() {
+      var titulo = document.getElementById('titulo').value;
+      var conteudo = document.getElementById('conteudo').value;
+      var fonte = document.getElementById('fonte-bib').value;
+
+      if (!titulo || !conteudo || !fonte) {
+        alert('Preencha título, conteúdo e fonte bibliográfica.');
+        return;
+      }
+
+      var token = localStorage.getItem('integra_token');
+      var r = await fetch(`${CONFIG.API_URL}/blog`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({
+          titulo: titulo,
+          conteudo: conteudo,
+          imagem_url: document.getElementById('imagem-url').value,
+          publicado: 1
+        })
+      });
+      var d = await r.json();
+      if (r.ok) {
+        alert('✅ Artigo publicado!');
+        window.location.href = 'blog.html';
+      } else {
+        alert('Erro: ' + (d.erro || 'Tente novamente.'));
+      }
+    }
+
+    async function salvarRascunho() {
+      alert('📝 Rascunho salvo! (Em produção, salvaria no banco)');
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

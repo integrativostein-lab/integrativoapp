@@ -1,0 +1,24 @@
+[Profissional emite NF]
+        │
+        ├── [Loja Virtual]
+        │       └── NF automática (sem necessidade de autorização)
+        │
+        ├── [Consultas/Serviços]
+        │       │
+        │       ├── [Se configurado como Automático]
+        │       │       └── NF emitida automaticamente
+        │       │
+        │       └── [Se configurado como Manual]
+        │               ├── Sistema prepara a NF
+        │               ├── Profissional clica em "Autorizar"
+        │               └── NF é emitida
+        │
+        ├── [Sem certificado digital]
+        │       ├── Popup: "Certificado necessário"
+        │       ├── Link para comprar (revenda)
+        │       └── Link para portal manual da prefeitura
+        │
+        └── [Com certificado digital]
+                ├── NF assinada digitalmente
+                ├── PDF e XML gerados
+                └── Armazenada no histórico

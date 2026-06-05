@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot de Suporte — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .chat-container { max-width: 600px; margin: 20px auto; }
+    .chat-box { background: #FFF; border-radius: 12px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); min-height: 400px; }
+    .chat-mensagem { margin: 8px 0; padding: 10px 14px; border-radius: 12px; max-width: 80%; }
+    .chat-bot { background: #F7FAFC; margin-right: auto; }
+    .chat-user { background: #1A365D; color: #FFF; margin-left: auto; }
+    .chat-input { display: flex; gap: 10px; margin-top: 12px; }
+    .chat-input input { flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #E2E8F0; }
+    .faq-lista { margin-top: 16px; }
+    .faq-item { padding: 8px; cursor: pointer; border-radius: 6px; }
+    .faq-item:hover { background: #F7FAFC; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a></div>
+  </nav>
+
+  <div class="chat-container">
+    <h2>🤖 Suporte via WhatsApp</h2>
+    <p style="color:#4A5568;margin-bottom:16px;">Respostas automáticas 24/7. Escala para humano quando necessário.</p>
+
+    <div class="chat-box" id="chat-box">
+      <div class="chat-mensagem chat-bot">👋 Olá! Sou o assistente virtual do Integrativo.App. Como posso ajudar?</div>
+      <div class="chat-mensagem chat-bot">Você pode perguntar sobre:<br>• Como emitir Nota Fiscal<br>• Como configurar o WhatsApp<br>• Planos e preços<br>• Cancelamento e reembolso<br>• Certificado digital</div>
+    </div>
+
+    <div class="faq-lista">
+      <h4>📋 Perguntas Frequentes</h4>
+      <div class="faq-item" onclick="perguntar('Como emito uma Nota Fiscal?')">🧾 Como emito uma Nota Fiscal?</div>
+      <div class="faq-item" onclick="perguntar('Como configuro o WhatsApp?')">📱 Como configuro o WhatsApp?</div>
+      <div class="faq-item" onclick="perguntar('Quais são os planos e preços?')">💰 Quais são os planos e preços?</div>
+      <div class="faq-item" onclick="perguntar('Como cancelo minha assinatura?')">❌ Como cancelo minha assinatura?</div>
+      <div class="faq-item" onclick="perguntar('Preciso de certificado digital?')">🔐 Preciso de certificado digital?</div>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="pergunta" placeholder="Digite sua dúvida...">
+      <button class="btn btn-primario" onclick="perguntar()">Enviar</button>
+    </div>
+  </div>
+
+  <script>
+    var respostas = {
+      'nota fiscal': '🧾 Acesse 💰 Financeiro, clique na transação e em "Emitir NF". Loja Virtual: automática. Consultas: você escolhe (automática ou manual). Requer certificado digital.',
+      'whatsapp': '📱 Acesse ⚙️ Configurações → Integrações → WhatsApp. Cole o token da Evolution API e salve. O sistema envia lembretes automáticos sem custo por mensagem.',
+      'planos': '💰 Planos: Freemium (grátis), Pro (R$ 79,90/mês), Premium (R$ 399,90/mês), Enterprise (R$ 799,90/mês), Coworking (R$ 1.499,90/mês).',
+      'cancelar': '❌ Acesse ⚙️ Configurações → Assinatura → Cancelar. Planos mensais: sem multa. Semestrais e anuais: multa de 20% sobre valor restante.',
+      'certificado': '🔐 Sim, para emitir NF automática. Compre na nossa revenda (menu 🔐 Revenda) ou em qualquer Autoridade Certificadora. Sem venda casada.'
+    };
+
+    function perguntar(msg) {
+      var texto = msg || document.getElementById('pergunta').value;
+      if (!texto) return;
+      
+      var box = document.getElementById('chat-box');
+      box.innerHTML += '<div class="chat-mensagem chat-user">' + texto + '</div>';
+      
+      var resposta = '🤔 Não entendi. Tente perguntar sobre: Nota Fiscal, WhatsApp, Planos, Cancelamento ou Certificado Digital. Se precisar de ajuda humana, digite "atendente".';
+      
+      for (var chave in respostas) {
+        if (texto.toLowerCase().includes(chave)) { resposta = respostas[chave]; break; }
+      }
+      if (texto.toLowerCase().includes('atendente')) { resposta = '👨‍💼 Vou transferir para um atendente humano. Em breve alguém entrará em contato pelo WhatsApp.'; }
+      
+      setTimeout(function() { box.innerHTML += '<div class="chat-mensagem chat-bot">' + resposta + '</div>'; box.scrollTop = box.scrollHeight; }, 500);
+      document.getElementById('pergunta').value = '';
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

@@ -1,0 +1,15 @@
+[Profissional ativa a Loja]
+        │
+        ├── ⚙️ Configurações → Loja → Ativar
+        │
+        ├── [Loja Virtual]
+        │       ├── Cadastrar produtos (nome, preço, estoque, imagem)
+        │       ├── Produtos digitais (e-books, cursos)
+        │       ├── Frete grátis a partir de R$ X
+        │       └── Paciente compra → NF automática → Produto enviado
+        │
+        └── [Loja Física / Balcão]
+                ├── Recepção acessa no painel
+                ├── Seleciona produto → Quantidade → Pagamento
+                ├── Aceita: PIX, Cartão, Dinheiro
+                └── Estoque unificado (virtual + físico)

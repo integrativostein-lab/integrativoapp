@@ -1,0 +1,9 @@
+[Profissional conecta Google Calendar]
+        │
+        ├── ⚙️ Configurações → Integrações → Google Calendar
+        ├── [Conectar] → Login Google → Autorizar
+        │
+        └── [Sincronização]
+                ├── Agendamentos do Integrativo.App → Google Calendar
+                ├── Cancelamentos e reagendamentos → Atualizados
+                └── Bidirecional (opcional)

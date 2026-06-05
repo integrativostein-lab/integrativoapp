@@ -1,0 +1,13 @@
+[Painel da Recepção]
+        │
+        ├── 📋 Check-in
+        │       ├── Lista de agendamentos do dia
+        │       └── Confirmar chegada
+        │
+        ├── 💰 Caixa
+        │       ├── Receber pagamentos (PIX, Cartão, Dinheiro)
+        │       └── Fechamento de caixa
+        │
+        └── 🛒 Loja Física
+                ├── Vender produtos
+                └── Estoque

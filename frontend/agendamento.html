@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agendar Consulta - Integra</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .form-agendamento { max-width: 500px; margin: 40px auto; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .msg { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
+    .msg.sucesso { background: #C6F6D5; color: #22543D; display: block; }
+    .msg.erro { background: #FED7D7; color: #9B2C2C; display: block; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">🌿 Integra<span>.</span></div>
+    <div class="menu"><a href="busca.html">Busca</a> <a href="index.html">Início</a></div>
+  </nav>
+
+  <div class="form-agendamento">
+    <h2>Agendar Consulta</h2>
+    <div id="msg" class="msg"></div>
+
+    <div class="form-grupo">
+      <label>ID do Profissional</label>
+      <input type="number" id="profissional_id" placeholder="Ex: 4" required>
+    </div>
+    <div class="form-grupo">
+      <label>Data</label>
+      <input type="date" id="data" required>
+    </div>
+    <div class="form-grupo">
+      <label>Horário</label>
+      <input type="time" id="horario" required>
+    </div>
+    <div class="form-grupo">
+      <label>Modalidade</label>
+      <select id="modalidade">
+        <option value="online">Online</option>
+        <option value="presencial">Presencial</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primario" onclick="agendar()" style="width:100%;margin-top:10px;">Agendar</button>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    async function agendar() {
+      const msg = document.getElementById('msg');
+      msg.className = 'msg';
+      msg.textContent = '';
+
+      const token = localStorage.getItem('integra_token');
+      if (!token) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Faça login primeiro.';
+        return;
+      }
+
+      const profissional_id = document.getElementById('profissional_id').value;
+      const data_agendamento = document.getElementById('data').value;
+      const horario_inicio = document.getElementById('horario').value;
+      const modalidade = document.getElementById('modalidade').value;
+
+      if (!profissional_id || !data_agendamento || !horario_inicio) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Preencha todos os campos.';
+        return;
+      }
+
+      const r = await fetch(`${CONFIG.API_URL}/agendamentos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ profissional_id: parseInt(profissional_id), data_agendamento, horario_inicio, modalidade })
+      });
+      const d = await r.json();
+
+      if (r.ok) {
+        msg.className = 'msg sucesso';
+        msg.textContent = '✅ Agendamento realizado com sucesso!';
+      } else {
+        msg.className = 'msg erro';
+        msg.textContent = d.erro || 'Erro ao agendar.';
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

@@ -1,0 +1,18 @@
+[Profissional acessa Migração]
+        │
+        ├── [Upload de pacientes (CSV/JSON)]
+        │       ├── Seleciona arquivo
+        │       ├── Sistema mostra pré-visualização
+        │       │       ├── Quantos pacientes serão importados
+        │       │       └── Possíveis conflitos (emails duplicados)
+        │       └── [Confirmar Importação]
+        │
+        ├── [Upload de prontuários (PDF)]
+        │       ├── Seleciona múltiplos arquivos
+        │       ├── Nomeia como Nome_Sobrenome.pdf
+        │       └── Sistema vincula automaticamente ao paciente
+        │
+        └── [Relatório pós-importação]
+                ├── Registros importados: 87
+                ├── Registros ignorados: 3 (motivo)
+                └── PDFs vinculados: 63

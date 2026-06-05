@@ -1,0 +1,13 @@
+🌿 INTEGRATIVO.APP — DEMO
+
+Acesse o sistema: https://integra-saude-psi.vercel.app
+
+Contas de Teste:
+  • Profissional: profissional@demo.com / demo123
+  • Paciente: paciente@demo.com / demo123
+  • Admin: admin@integra.com / admin123
+
+O profissional tem acesso a TODAS as 30 especialidades.
+O paciente já tem 3 consultas simuladas para testar.
+
+Dúvidas? Fale com o Maurício.

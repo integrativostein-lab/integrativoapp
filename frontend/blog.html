@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .blog-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .artigo-card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .artigo-card h2 { color: var(--azul-escuro); margin-bottom: 8px; }
+    .artigo-card .meta { font-size: 12px; color: var(--texto-medio); margin-bottom: 12px; }
+    .artigo-card .resumo { color: var(--texto-escuro); }
+    .artigo-card .ler-mais { color: var(--laranja); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu">
+      <a href="index.html">Início</a>
+      <a href="busca.html">Buscar Profissionais</a>
+      <a href="login.html">Entrar</a>
+    </div>
+  </nav>
+
+  <div class="blog-container">
+    <h2>📰 Blog de Saúde Integrativa</h2>
+    <p style="color:var(--texto-medio);margin-bottom:30px;">Artigos escritos por profissionais da nossa comunidade.</p>
+    <div id="lista-artigos"></div>
+  </div>
+
+  <footer>
+    <p>🌿 Integrativo.App — Saúde Integrativa &copy; 2026</p>
+    <p style="margin-top:8px;font-size:12px;">
+      <a href="termos.html">Termos</a> &nbsp;|&nbsp;
+      <a href="privacidade.html">Privacidade</a> &nbsp;|&nbsp;
+      <a href="etica.html">Ética</a> &nbsp;|&nbsp;
+      <a href="missao.html">Missão</a> &nbsp;|&nbsp;
+      <a href="manual.html">Manual</a>
+    </p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script>
+    async function carregarArtigos() {
+      try {
+        const r = await fetch(`${CONFIG.API_URL}/blog`);
+        const dados = await r.json();
+        const div = document.getElementById('lista-artigos');
+
+        if (dados.length === 0) {
+          div.innerHTML = '<p style="text-align:center;color:var(--texto-medio);">Nenhum artigo publicado ainda.</p>';
+          return;
+        }
+
+        div.innerHTML = dados.map(a => `
+          <div class="artigo-card">
+            <h2>${a.titulo}</h2>
+            <p class="meta">Por ${a.autor} | ${new Date(a.criado_em).toLocaleDateString('pt-BR')}</p>
+            <p class="resumo">${a.conteudo ? a.conteudo.substring(0, 200) + '...' : 'Sem descrição.'}</p>
+            <a href="#" class="ler-mais" onclick="alert('Em breve: página completa do artigo')">Ler mais →</a>
+          </div>
+        `).join('');
+      } catch (e) {
+        document.getElementById('lista-artigos').innerHTML = '<p style="text-align:center;color:var(--texto-medio);">Erro ao carregar artigos.</p>';
+      }
+    }
+    carregarArtigos();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

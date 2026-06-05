@@ -1,0 +1,20 @@
+[Profissional inicia teleconsulta]
+        │
+        ├── Sistema gera link único da sala (WebRTC)
+        ├── Paciente recebe link por WhatsApp/Email
+        │
+        ├── [Paciente entra na sala]
+        │       │
+        │       ├── Presença detectada automaticamente
+        │       └── Status: "Em andamento"
+        │
+        ├── [Durante a consulta]
+        │       ├── Chat em tempo real
+        │       ├── Acesso ao prontuário
+        │       ├── Prescrição durante a consulta
+        │       └── Gravação (se autorizada pelo paciente)
+        │
+        └── [Fim da consulta]
+                ├── Status: "Realizado"
+                ├── Gravação disponível por 30 dias (se autorizada)
+                └── NF disponível para emissão

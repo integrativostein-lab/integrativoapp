@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrativo.App · Campanha de Arrecadação | Saúde Integrativa com Propósito</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #F4FBF8 0%, #E6F0EC 100%);
+            font-family: 'Inter', sans-serif;
+            color: #1C2F28;
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .hero {
+            background: linear-gradient(135deg, #0B3B2F, #1F6E5C);
+            border-radius: 2.5rem;
+            padding: 2.5rem 2rem;
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.15);
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .hero .badge {
+            background: rgba(255,255,220,0.18);
+            display: inline-block;
+            padding: 0.3rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+
+        .meta-box {
+            background: #FEFBEF;
+            border-radius: 2rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+            border: 1px solid #E2DCC8;
+        }
+
+        .goal-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #1F6E5C;
+        }
+
+        .progress-bar {
+            background: #E2E2DC;
+            border-radius: 40px;
+            height: 20px;
+            width: 100%;
+            max-width: 500px;
+            margin: 1rem auto;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #2F9B7C;
+            width: 0%;
+            height: 100%;
+            border-radius: 40px;
+        }
+
+        .ods-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+            margin: 2rem 0;
+        }
+
+        .ods-item {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 0.8rem 1rem;
+            text-align: center;
+            width: 100px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .ods-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .ods-item p {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            color: #1F6E5C;
+        }
+
+        .rewards-table {
+            background: white;
+            border-radius: 1.5rem;
+            overflow-x: auto;
+            margin: 2rem 0;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+        }
+
+        .rewards-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .rewards-table th, .rewards-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #D9E8E2;
+        }
+
+        .rewards-table th {
+            background: #F0F7F4;
+            color: #145C4A;
+        }
+
+        .btn-donate {
+            background: #2F9B7C;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 3rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-donate:hover {
+            background: #1F6E5C;
+            transform: scale(1.02);
+        }
+
+        .investimento-card {
+            background: #F9FEFB;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 6px solid #E8B341;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #5A8979;
+            margin-top: 3rem;
+            border-top: 1px solid #C8E0D8;
+            padding-top: 1.5rem;
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 1.6rem; }
+            .goal-value { font-size: 2rem; }
+            .ods-item { width: 70px; }
+            .ods-item img { width: 45px; height: 45px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- cabeçalho com ODS -->
+    <div class="hero">
+        <h1>🌿 Integrativo.App · Saúde Integrativa para Todos</h1>
+        <div class="badge">Campanha de financiamento coletivo · tecnologia com propósito</div>
+        <div class="ods-grid">
+            <div class="ods-item"><img src="https://ods.pt/wp-content/uploads/2019/01/ODS3-1024x1024.png" alt="ODS 3"><p>Saúde</p></div>
+            <div class="ods-item"><img src="https://ods.pt/wp-content/uploads/2019/01/ODS4-1024x1024.png" alt="ODS 4"><p>Educação</p></div>
+            <div class="ods-item"><img src="https://ods.pt/wp-content/uploads/2019/01/ODS8-1024x1024.png" alt="ODS 8"><p>Trabalho decente</p></div>
+            <div class="ods-item"><img src="https://ods.pt/wp-content/uploads/2019/01/ODS9-1024x1024.png" alt="ODS 9"><p>Inovação</p></div>
+            <div class="ods-item"><img src="https://ods.pt/wp-content/uploads/2019/01/ODS10-1024x1024.png" alt="ODS 10"><p>Igualdade</p></div>
+            <div class="ods-item"><img src="https://ods.pt/wp-content/uploads/2019/01/ODS17-1024x1024.png" alt="ODS 17"><p>Parcerias</p></div>
+        </div>
+        <p style="margin-top: 1rem; max-width: 700px; margin-inline: auto; opacity: 0.9;">Comissão 3% · GPU desde o início · Doação para prefeituras · Freemium vitalício</p>
+    </div>
+
+    <!-- Quem sou eu + investimento já realizado -->
+    <div style="background: white; border-radius: 2rem; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 6px 14px rgba(0,0,0,0.03);">
+        <h2 style="color: #145C4A; margin-bottom: 1rem;">🧘 Mauricio Stein · fundador & criador</h2>
+        <p style="margin-bottom: 1rem;">Terapeuta ayurvédico em formação, estudioso das filosofias orientais desde 1986, 55 anos. Neurodiverso (TEA, TDAH e AH/SD). Cada linha de código nasceu da necessidade real: sistemas acessíveis, interfaces claras e comissões justas.</p>
+        <div class="investimento-card">
+            <strong>💰 Investimento já realizado (do meu bolso):</strong><br>
+            ▶ CPU para testes: R$ 2.500<br>
+            ▶ Domínio .app: R$ 55<br>
+            ▶ Registro de marca (INPI): R$ 440<br>
+            ▶ Registro de software (INPI): R$ 440<br>
+            ▶ Ferramentas/licenças: R$ 1.130<br>
+            <span style="display: inline-block; margin-top: 8px; background: #145C4A20; padding: 4px 12px; border-radius: 30px; font-weight: 700;">Total investido: R$ 4.565,00</span>
+        </div>
+        <p style="margin-top: 0.5rem;">✅ Sistema desenvolvido em 8 meses · Prontuário FHIR/TISS · Teleconsulta com GPU · pronto para uso.</p>
+    </div>
+
+    <!-- Meta e barra de progresso (simulação) -->
+    <div class="meta-box">
+        <h3>🎯 Meta da campanha</h3>
+        <div class="goal-value">R$ 40.000,00</div>
+        <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+        <p style="margin-top: 0.8rem;">✅ Custear servidores GPU + marketing pelos próximos 12 meses · reserva técnica</p>
+        <button class="btn-donate" id="fakeDonateBtn" onclick="simulateDonation()">✨ Apoiar campanha (simular doação)</button>
+        <p style="font-size: 0.7rem; margin-top: 0.6rem;">Clique para ver a barra de progresso animada (simulação de doação)</p>
+    </div>
+
+    <!-- Tabela de recompensas (incluindo menores valores) -->
+    <div class="rewards-table">
+        <table>
+            <thead>
+                <tr><th>💚 Doação (R$)</th><th>🎁 Recompensa</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>10</td><td>Agradecimento nominal no site + lista de apoiadores</td></tr>
+                <tr><td>20</td><td>+ wallpaper digital exclusivo Integrativo.App</td></tr>
+                <tr><td>30</td><td>+ 1 mês de Plano Pro grátis (após lançamento)</td></tr>
+                <tr><td>35</td><td>+ adesivo digital "Apoio a Saúde Integrativa"</td></tr>
+                <tr><td>50</td><td>+ newsletter mensal com bastidores</td></tr>
+                <tr><td>100</td><td>Acesso beta antecipado + nome na página de apoiadores</td></tr>
+                <tr><td>250</td><td>6 meses de Plano Pro grátis + certificado digital</td></tr>
+                <tr><td>500</td><td>1 ano de Plano Premium grátis + suporte prioritário 6 meses</td></tr>
+                <tr><td>1.000</td><td>Acesso vitalício ao Plano Pro + 1h de consultoria com Mauricio</td></tr>
+                <tr><td>2.000</td><td>2 anos de Plano Enterprise grátis (clínicas) + nome em destaque + placa virtual</td></tr>
+                <tr><td>5.000+</td><td>Apoiador Master · acesso vitalício a todos os planos futuros + reconhecimento em eventos</td></tr>
+            </tbody>
+        </table>
+        <div style="padding: 1rem; text-align: center; font-size: 0.8rem; background: #F0F7F4;">💡 Cada real nos aproxima de uma teleconsulta estável e de um terapeuta mais preparado.</div>
+    </div>
+
+    <!-- Para onde vai o dinheiro + custos GPU -->
+    <div style="background: white; border-radius: 2rem; padding: 1.8rem; margin-bottom: 2rem;">
+        <h3 style="color: #145C4A;">📊 Para onde vai o dinheiro (12 meses)</h3>
+        <ul style="margin-top: 1rem; margin-left: 1.2rem;">
+            <li><strong>Servidor GPU (teleconsulta)</strong> · R$ 14.400 (latência mínima, NVENC)</li>
+            <li><strong>Servidor API central</strong> · R$ 1.200</li>
+            <li><strong>Marketing e divulgação</strong> · R$ 12.000 (indicações, conteúdo gratuito, redes)</li>
+            <li><strong>Ferramentas/básicos</strong> · R$ 1.200</li>
+            <li><strong>Reserva para imprevistos</strong> · R$ 6.635</li>
+            <li><strong>Plataforma (taxa ~13%)</strong> · R$ 5.765</li>
+        </ul>
+        <div style="background: #EFFAF7; border-radius: 1rem; padding: 1rem; margin-top: 1rem;">
+            ✅ <strong>Compromisso:</strong> prestação de contas mensal (notas fiscais, prints dos servidores).<br>
+            🌍 <strong>ODS em ação:</strong> doação do sistema para prefeituras ≤45k habitantes, bolsas de estudo (5% do lucro), código aberto para ONGs humanitárias.
+        </div>
+    </div>
+
+    <!-- diferencial GPU + chamada final -->
+    <div style="background: linear-gradient(120deg, #FEF8E7, #FFFCF5); border-radius: 2rem; padding: 2rem; text-align: center;">
+        <h2 style="color: #8A6E2C;">🎥 Por que servidores GPU desde o início?</h2>
+        <p style="max-width: 700px; margin: 1rem auto;">NVENC (NVIDIA) reduz latência de encoding para menos de 10ms por frame. Teleconsulta fluida, mesmo com vários participantes. <strong>Sem travamentos.</strong></p>
+        <div style="margin-top: 1.2rem;">
+            <a href="#" id="donateRedirect" style="background: #2F9B7C; color: white; text-decoration: none; padding: 0.8rem 2rem; border-radius: 3rem; font-weight: 700; display: inline-block; margin-top: 0.5rem;">✨ Apoiar agora · qualquer valor (R$ 10, 35, 50, …)</a>
+        </div>
+        <p style="margin-top: 1.2rem; font-size: 0.8rem;">🔁 Compartilhe essa campanha com amigos, pacientes e grupos de ayurveda. Cada compartilhamento fortalece a saúde integrativa.</p>
+    </div>
+
+    <footer>
+        🌿 Integrativo.App · CNPJ em processo · Campanha de financiamento coletivo<br>
+        📧 contato@integrativo.app · Transparência total · Selos ODS oficiais da ONU
+    </footer>
+</div>
+
+<script>
+    // simulação de doação para demonstrar a barra de progresso e o impacto
+    let currentGoal = 0;
+    const goalTotal = 40000;
+    const progressFill = document.querySelector('.progress-fill');
+    const goalValueDiv = document.querySelector('.goal-value');
+
+    function updateProgressBar(value) {
+        let percent = Math.min(100, (value / goalTotal) * 100);
+        progressFill.style.width = percent + '%';
+        goalValueDiv.innerHTML = `R$ ${value.toFixed(2).replace('.', ',')} <span style="font-size:0.9rem;">de R$ 40.000</span>`;
+    }
+
+    window.simulateDonation = function() {
+        let newValue = currentGoal + 350; // simula doações variadas
+        if (newValue > goalTotal) newValue = goalTotal;
+        currentGoal = newValue;
+        updateProgressBar(currentGoal);
+        if (currentGoal === goalTotal) {
+            alert('🎉 Meta atingida! Muito obrigado pelo apoio simbólico. (Simulação)');
+        } else {
+            alert(`💚 Doação simulada de R$ 350! Agora arrecadamos R$ ${currentGoal.toFixed(2).replace('.', ',')}. Cada real conta.`);
+        }
+    };
+
+    // redirecionamento simbólico para a plataforma (Benfeitoria / Catarse)
+    document.getElementById('donateRedirect').addEventListener('click', function(e) {
+        e.preventDefault();
+        alert('🔗 Esta é uma demonstração da página da campanha. Na vida real, você seria direcionado para a plataforma de crowdfunding (Benfeitoria, Catarse, etc.) com opções de pagamento. Obrigado por apoiar a saúde integrativa!');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+[Painel do Coworking]
+        │
+        ├── 📊 Dashboard
+        │
+        ├── 🏠 Salas
+        │       ├── Cadastrar sala
+        │       ├── Agenda por sala
+        │       └── Valores de aluguel
+        │
+        ├── 👥 Profissionais vinculados
+        │       ├── Convidar
+        │       ├── Contratos de locação
+        │       └── Ficha de vistoria
+        │
+        ├── 💰 Financeiro
+        │       ├── Aluguéis recebidos
+        │       ├── Repasses
+        │       └── NF (CNPJ do espaço)
+        │
+        ├── 🛎️ Recepção unificada
+        │
+        └── 📊 Relatórios de ocupação

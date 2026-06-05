@@ -1,0 +1,16 @@
+[Profissional acessa ⚙️ Configurações → Sugestões]
+        │
+        ├── 🧾 Sugestões do Banco Terapêutico: ☑️ ON / ☐ OFF
+        │       └── Explicação: "O sistema sugerirá plantas e fórmulas durante a consulta"
+        │
+        ├── 🔄 Referências Cruzadas: ☑️ ON / ☐ OFF
+        │       └── Explicação: "Mostrará conexões com outras terapias"
+        │
+        ├── 🍽️ Sugestões de Ahara: ☑️ ON / ☐ OFF
+        │       └── Explicação: "Sugerirá alimentos que potencializam o tratamento"
+        │
+        ├── 🔮 Sugestões de Jyotish: ☐ ON / ☑️ OFF
+        │       └── Explicação: "Exibirá referências astrológicas como informação complementar"
+        │
+        └── 🏗️ Sugestões de Vastu: ☐ ON / ☑️ OFF
+                └── Explicação: "Sugerirá orientações espaciais como referência"

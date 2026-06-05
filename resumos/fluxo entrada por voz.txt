@@ -1,0 +1,10 @@
+[Profissional no prontuário]
+        │
+        ├── Clica no ícone 🎙️
+        ├── Fala o que quer registrar
+        │       ├── Transcrição em tempo real (Web Speech API)
+        │       └── Texto aparece no campo, editável
+        │
+        └── [Salvar]
+                ├── Texto salvo no prontuário
+                └── Áudio NÃO é armazenado

@@ -1,0 +1,28 @@
+[Escolher Plano]
+        │
+        └── [Cadastro]
+                │
+                └── [Checkout]
+                        │
+                        ├── Ciclo: Mensal / Semestral / Anual
+                        │
+                        ├── [Se Semestral/Anual]
+                        │       ├── À vista (5% off)
+                        │       └── Parcelado (até 3x semestral / 4x anual)
+                        │
+                        ├── ☐ Sou ABRATH
+                        │       ├── Nº registro
+                        │       └── [Confirmar] (verificação automática)
+                        │
+                        ├── Cupom
+                        │
+                        ├── 🔐 Módulos extras
+                        │
+                        └── [Finalizar Pagamento]
+                                │
+                                └── [Boas-Vindas]
+                                        │
+                                        ├── Manual
+                                        ├── Ética
+                                        ├── Termos
+                                        └── [Ir para o Painel]

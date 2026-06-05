@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurar Anamnese — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .config-container { max-width: 700px; margin: 40px auto; padding: 30px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .campo-lista { margin: 16px 0; }
+    .campo-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #E2E8F0; }
+    .campo-item label { flex: 1; font-size: 14px; }
+    .campo-item input[type="checkbox"] { width: 18px; height: 18px; }
+    .btn-salvar { width: 100%; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="painel-terapeuta.html">Painel</a> <a href="manual.html">Manual</a></div>
+  </nav>
+
+  <div class="config-container">
+    <h2>⚙️ Personalizar Anamnese — Parte 1</h2>
+    <p style="color:var(--texto-medio);margin-bottom:20px;">Escolha quais campos o paciente preencherá. Campos em branco serão destacados para você complementar na Parte 2.</p>
+
+    <div class="form-grupo">
+      <label>Especialidade</label>
+      <select id="especialidade" onchange="carregarConfig()">
+        <option value="">Selecione...</option>
+      </select>
+    </div>
+
+    <div id="lista-campos" class="campo-lista"></div>
+
+    <div style="background:var(--laranja-claro);padding:14px;border-radius:8px;margin-top:16px;">
+      <strong>💡 Dica:</strong> Campos não preenchidos pelo paciente aparecerão em destaque na Parte 2 para você complementar durante a consulta.
+    </div>
+
+    <button class="btn btn-primario btn-salvar" onclick="salvar()">Salvar Configuração</button>
+    <button class="btn btn-outline btn-salvar" onclick="restaurar()">Restaurar Padrão</button>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/voz.js"></script>
+  <script>
+    var camposPadrao = [
+      { id: 'altura', nome: 'Altura (cm)', categoria: 'Dados Básicos' },
+      { id: 'peso', nome: 'Peso (kg)', categoria: 'Dados Básicos' },
+      { id: 'tipo_sanguineo', nome: 'Tipo Sanguíneo', categoria: 'Dados Básicos' },
+      { id: 'sono', nome: 'Sono (horas/noite)', categoria: 'Hábitos' },
+      { id: 'apetite', nome: 'Apetite', categoria: 'Hábitos' },
+      { id: 'exercicios', nome: 'Exercícios físicos', categoria: 'Hábitos' },
+      { id: 'fumante', nome: 'Fumante', categoria: 'Hábitos' },
+      { id: 'bebidas', nome: 'Consumo de bebidas', categoria: 'Hábitos' },
+      { id: 'doencas_cronicas', nome: 'Doenças crônicas', categoria: 'Histórico' },
+      { id: 'cirurgias', nome: 'Cirurgias prévias', categoria: 'Histórico' },
+      { id: 'medicamentos_uso', nome: 'Medicamentos em uso', categoria: 'Histórico' },
+      { id: 'alergias', nome: 'Alergias', categoria: 'Histórico' },
+      { id: 'menstruacao', nome: 'Menstruação (se feminino)', categoria: 'Saúde Feminina' },
+      { id: 'gravidez', nome: 'Gravidez (se feminino)', categoria: 'Saúde Feminina' },
+      { id: 'queixa_principal', nome: 'Queixa principal', categoria: 'Queixas' },
+      { id: 'nivel_dor', nome: 'Nível de dor (0-10)', categoria: 'Queixas' },
+      { id: 'expectativa', nome: 'O que espera do tratamento', categoria: 'Expectativas' }
+    ];
+
+    // Preencher especialidades
+    var sel = document.getElementById('especialidade');
+    CONFIG.ESPECIALIDADES.forEach(function(esp) {
+      var opt = document.createElement('option');
+      opt.value = esp;
+      opt.textContent = esp;
+      sel.appendChild(opt);
+    });
+
+    function carregarConfig() {
+      var html = '';
+      var categorias = {};
+      camposPadrao.forEach(function(c) {
+        if (!categorias[c.categoria]) categorias[c.categoria] = [];
+        categorias[c.categoria].push(c);
+      });
+
+      Object.keys(categorias).forEach(function(cat) {
+        html += '<h3 style="color:var(--azul-escuro);margin-top:16px;">' + cat + '</h3>';
+        categorias[cat].forEach(function(c) {
+          html += '<div class="campo-item"><input type="checkbox" id="campo_' + c.id + '" checked><label for="campo_' + c.id + '">' + c.nome + '</label><label style="font-size:12px;color:var(--texto-medio);"><input type="checkbox" class="obrig-' + c.id + '"> Obrigatório</label></div>';
+        });
+      });
+
+      document.getElementById('lista-campos').innerHTML = html;
+    }
+
+    function salvar() {
+      var ativos = [];
+      var obrigatorios = [];
+      camposPadrao.forEach(function(c) {
+        var el = document.getElementById('campo_' + c.id);
+        if (el && el.checked) {
+          ativos.push(c.id);
+          var obr = document.querySelector('.obrig-' + c.id);
+          if (obr && obr.checked) obrigatorios.push(c.id);
+        }
+      });
+
+      var dados = {
+        especialidade_id: document.getElementById('especialidade').value,
+        campos_ativos: ativos,
+        campos_obrigatorios: obrigatorios
+      };
+
+      // Salvar no localStorage (em produção, enviaria para API)
+      localStorage.setItem('anamnese_config_' + dados.especialidade_id, JSON.stringify(dados));
+      alert('✅ Configuração salva!');
+    }
+
+    function restaurar() {
+      if (confirm('Restaurar configuração padrão?')) {
+        localStorage.removeItem('anamnese_config_' + document.getElementById('especialidade').value);
+        carregarConfig();
+        alert('✅ Padrão restaurado!');
+      }
+    }
+
+    carregarConfig();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

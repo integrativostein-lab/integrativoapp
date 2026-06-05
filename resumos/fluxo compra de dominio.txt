@@ -1,0 +1,13 @@
+[Profissional compra domínio]
+        │
+        ├── 🔐 Revenda → Comprar Domínio
+        │       ├── Digita: minhalinica.com.br
+        │       └── [Verificar Disponibilidade]
+        │
+        ├── [Se disponível]
+        │       ├── Compra via PIX/Cartão
+        │       └── Sistema mostra registros DNS para configurar
+        │
+        └── [Após configuração]
+                ├── painel.minhalinica.com.br ativo
+                └── contato@minhalinica.com.br disponível (Zoho)

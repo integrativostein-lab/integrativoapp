@@ -1,0 +1,12 @@
+[Admin Premium/Enterprise/Coworking]
+        │
+        ├── Configurar domínio próprio
+        │       └── painel.minhalinica.com.br
+        │
+        ├── Configurar emails personalizados
+        │       └── contato@minhalinica.com.br
+        │
+        ├── Integrar com site externo
+        │       └── Pacientes agendam no site da clínica → dados vão para o Integrativo.App
+        │
+        └── Conectar sistemas externos (ERP, CRM)

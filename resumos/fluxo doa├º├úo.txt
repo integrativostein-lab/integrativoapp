@@ -1,0 +1,38 @@
+[Landing Page] → [Entidades]
+        │
+        └── [Cadastro da Entidade]
+                │
+                ├── Tipo: Prefeitura / ONG / Humanitária
+                ├── País
+                ├── CNPJ (ou equivalente)
+                ├── Código IBGE (se prefeitura)
+                ├── Documentação (ofício/portaria)
+                └── [Solicitar Acesso]
+                        │
+                        ├── [Verificação Automática]
+                        │       ├── População (IBGE)
+                        │       ├── IDH (ONU)
+                        │       └── CNPJ (Receita Federal)
+                        │
+                        ├── [Análise Super Admin]
+                        │       ├── Revisar documentação
+                        │       └── [Liberar] / [Rejeitar]
+                        │
+                        ├── [Chave de Ativação]
+                        │       └── Email com link de download
+                        │
+                        └── [Download]
+                                ├── Sistema completo (código aberto)
+                                ├── Manual técnico
+                                ├── Guia de instalação
+                                └── Termo de Cessão
+                                        │
+                                        └── [Modo Homologação]
+                                                │
+                                                ├── Marca d'água
+                                                ├── NF bloqueada
+                                                └── DATASUS bloqueado
+                                                │
+                                                └── [Assinar Termo]
+                                                        │
+                                                        └── [Modo Produção]

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modo Teleaula e Teleconsulta — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .reuniao-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+    .reuniao-card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .video-item { background: #111; border-radius: 8px; height: 150px; display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 14px; }
+    .participantes-lista { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+    .participante-tag { background: var(--azul-escuro); color: #FFF; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+    .chat-box { background: #F7FAFC; padding: 14px; border-radius: 8px; height: 200px; overflow-y: auto; margin: 12px 0; font-size: 13px; }
+    .chat-input { display: flex; gap: 8px; }
+    .chat-input input { flex: 1; }
+    .controles { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+    .controle-btn { padding: 10px 18px; border-radius: 50px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; }
+    .btn-mic { background: var(--azul-escuro); color: #FFF; }
+    .btn-cam { background: var(--azul-escuro); color: #FFF; }
+    .btn-tela { background: var(--laranja); color: #FFF; }
+    .btn-sair { background: var(--vermelho); color: #FFF; }
+    .gravacao-banner { background: #FED7D7; padding: 10px; border-radius: 8px; text-align: center; margin: 10px 0; font-weight: 600; color: var(--vermelho); display: none; }
+    .gravacao-info { background: #EBF4FF; padding: 14px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .download-btn { background: var(--verde-suave); color: #FFF; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px; display: inline-block; }
+    .expiracao-tag { font-size: 11px; color: var(--texto-medio); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="painel-terapeuta.html">Painel</a> <a href="manual.html">Manual</a></div>
+  </nav>
+
+  <div class="reuniao-container">
+    <div class="reuniao-card">
+      <h2>🎥 Sala de Aula e Consulta</h2>
+      <p style="color:var(--texto-medio);">Ideal para Teleaulas e Consultas — Até 20 participantes — Premium, Enterprise e Coworking.</p>
+
+      <div class="gravacao-banner" id="gravacao-banner">🔴 GRAVANDO — Esta reunião está sendo gravada</div>
+
+      <div class="video-grid" id="video-grid">
+        <div class="video-item">👤 Você</div>
+      </div>
+
+      <div class="participantes-lista" id="participantes-lista">
+        <span class="participante-tag">👤 Você (anfitrião)</span>
+      </div>
+
+      <div class="controles">
+        <button class="controle-btn btn-mic" onclick="toggleMic()">🎙️ Microfone</button>
+        <button class="controle-btn btn-cam" onclick="toggleCam()">📹 Câmera</button>
+        <button class="controle-btn btn-tela" onclick="toggleTela()">🖥️ Compartilhar Tela</button>
+        <button class="controle-btn" style="background:#38A169;color:#FFF;" id="btn-gravar" onclick="toggleGravacao()">🔴 Gravar</button>
+        <button class="controle-btn btn-sair" onclick="sairReuniao()">🚪 Sair</button>
+      </div>
+    </div>
+
+    <!-- GRAVAÇÕES SALVAS -->
+    <div class="reuniao-card" id="gravacoes-card">
+      <h3>📼 Gravações Disponíveis</h3>
+      <p style="font-size:13px;color:var(--texto-medio);">As gravações ficam disponíveis para download por <strong>7 dias</strong>. Após esse prazo, são excluídas automaticamente.</p>
+      <div id="lista-gravacoes">
+        <div class="gravacao-info">
+          <strong>📅 Reunião — 25/06/2026</strong><br>
+          Duração: 1h 45min | Tamanho: 320 MB<br>
+          <span class="expiracao-tag">⏰ Expira em: 3 dias</span><br>
+          <a href="#" class="download-btn" style="margin-top:8px;">⬇️ Baixar Gravação</a>
+        </div>
+      </div>
+      <p style="font-size:11px;color:var(--texto-medio);margin-top:8px;">⚠️ Recomendamos baixar em até 7 dias. Após a exclusão, não será possível recuperar.</p>
+    </div>
+
+    <div class="reuniao-card">
+      <h3>💬 Chat</h3>
+      <div class="chat-box" id="chat-box">
+        <p style="color:var(--texto-medio);">Bem-vindo ao chat da reunião!</p>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chat-msg" placeholder="Digite sua mensagem...">
+        <button class="btn btn-primario" onclick="enviarMsg()">Enviar</button>
+      </div>
+    </div>
+
+    <div class="reuniao-card">
+      <h3>⚙️ Regras de Gravação</h3>
+      <p style="font-size:13px;color:var(--texto-medio);">
+        ✅ Transmissão própria (WebRTC) — sem app externo<br>
+        ✅ Criptografia ponta a ponta<br>
+        ✅ Compartilhamento de tela<br>
+        ✅ Chat coletivo<br>
+        ✅ Gravação opcional (com autorização de todos)<br>
+        ✅ Até 20 participantes<br>
+        ✅ Qualidade: 480p (comprimido)<br>
+        ✅ Tamanho máximo: 500 MB<br>
+        ✅ Disponível para download: 7 dias<br>
+        ✅ Exclusão automática após 7 dias<br>
+        ✅ Armazenado no servidor do profissional
+      </p>
+      <p style="font-size:11px;color:var(--texto-medio);margin-top:8px;">
+        ⚠️ A gravação só é iniciada após autorização de todos os participantes. Você receberá um lembrete 24h antes da exclusão.
+      </p>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    var micOn = true;
+    var camOn = true;
+    var gravando = false;
+
+    function toggleMic() {
+      micOn = !micOn;
+      var btn = document.querySelector('.btn-mic');
+      btn.textContent = micOn ? '🎙️ Microfone' : '🔇 Mudo';
+    }
+
+    function toggleCam() {
+      camOn = !camOn;
+      var btn = document.querySelector('.btn-cam');
+      btn.textContent = camOn ? '📹 Câmera' : '📷 Off';
+    }
+
+    function toggleTela() {
+      alert('🖥️ Compartilhamento de tela iniciado (em produção, usaria WebRTC)');
+    }
+
+    function toggleGravacao() {
+      if (!gravando) {
+        if (confirm('Iniciar gravação? Todos os participantes precisam autorizar.\n\n⚠️ Regras:\n• Qualidade: 480p\n• Máximo: 500 MB / 2 horas\n• Disponível: 7 dias\n• Após: exclusão automática')) {
+          gravando = true;
+          document.getElementById('gravacao-banner').style.display = 'block';
+          document.getElementById('btn-gravar').textContent = '⏹️ Parar Gravação';
+        }
+      } else {
+        gravando = false;
+        document.getElementById('gravacao-banner').style.display = 'none';
+        document.getElementById('btn-gravar').textContent = '🔴 Gravar';
+        alert('✅ Gravação salva! Disponível para download por 7 dias. Você receberá um lembrete 24h antes da exclusão.');
+      }
+    }
+
+    function sairReuniao() {
+      if (confirm('Sair da reunião?')) {
+        window.location.href = 'painel-terapeuta.html';
+      }
+    }
+
+    function enviarMsg() {
+      var msg = document.getElementById('chat-msg').value;
+      if (!msg) return;
+      var chat = document.getElementById('chat-box');
+      chat.innerHTML += '<p><strong>Você:</strong> ' + msg + '</p>';
+      document.getElementById('chat-msg').value = '';
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meu Painel — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🌿 Integrativo.App</h3>
+      <nav>
+        <a href="#" class="ativo">📅 Meus Agendamentos</a>
+        <a href="busca.html">🔍 Buscar Profissionais</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+    <div class="painel-conteudo">
+      <h2>Meus Agendamentos</h2>
+      <div id="lista-agendamentos" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    async function carregar() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      var r = await fetch(`${CONFIG.API_URL}/agendamentos/meus`, { headers: { 'Authorization': `Bearer ${token}` } });
+      var dados = await r.json();
+      var div = document.getElementById('lista-agendamentos');
+
+      if (dados.length === 0) {
+        div.innerHTML = '<p style="color:var(--texto-medio);">Nenhum agendamento encontrado.</p>';
+        return;
+      }
+
+      div.innerHTML = dados.map(a => `
+        <div style="background:var(--branco);padding:18px;border-radius:var(--raio-borda);box-shadow:var(--sombra);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <strong>${a.data_agendamento}</strong> às ${a.horario_inicio} — ${a.modalidade}<br>
+            <span style="font-size:13px;color:var(--texto-medio);">Profissional: ${a.profissional_nome || 'N/A'} | Status: ${a.status} | R$ ${a.valor}</span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            ${a.status === 'agendado' ? `<button class="btn btn-primario" style="font-size:12px;padding:6px 12px;background:var(--vermelho);" onclick="cancelar(${a.id})">Cancelar</button><button class="btn btn-outline" style="font-size:12px;padding:6px 12px;" onclick="remarcar(${a.id})">Remarcar</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function cancelar(id) {
+      if (!confirm('Deseja cancelar este agendamento?')) return;
+      var token = localStorage.getItem('integra_token');
+      await fetch(`${CONFIG.API_URL}/agendamentos/${id}/cancelar`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` } });
+      carregar();
+    }
+
+    async function remarcar(id) {
+      var novaData = prompt('Nova data (AAAA-MM-DD):');
+      if (!novaData) return;
+      var novoHorario = prompt('Novo horário (HH:MM):');
+      if (!novoHorario) return;
+      var token = localStorage.getItem('integra_token');
+      await fetch(`${CONFIG.API_URL}/agendamentos/${id}/remarcar`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ data_agendamento: novaData, horario_inicio: novoHorario }) });
+      carregar();
+    }
+
+    carregar();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

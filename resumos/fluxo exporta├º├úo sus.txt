@@ -1,0 +1,14 @@
+[Profissional/Clínica com CNES cadastrado]
+        │
+        ├── [Gerar Relatório SUS]
+        │       ├── Seleciona período
+        │       ├── Sistema gera arquivo BPA
+        │       │       ├── CNS do paciente
+        │       │       ├── CNES do profissional
+        │       │       ├── CBO (ocupação)
+        │       │       └── Código SIGTAP (procedimento)
+        │       └── Arquivo formatado (.txt)
+        │
+        └── [Envio]
+                ├── Download manual (profissional envia)
+                └── Envio automático (se endpoint configurado)

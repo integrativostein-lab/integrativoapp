@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configurar Pagamentos — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .gateway-container { max-width: 800px; margin: 40px auto; padding: 20px; }
+    .gateway-card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .gateway-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-top: 20px; }
+    .gateway-item { border: 2px solid #E2E8F0; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+    .gateway-item:hover { border-color: var(--azul-escuro); transform: translateY(-2px); }
+    .gateway-item.selected { border-color: var(--verde-suave); background: #F0FFF4; }
+    .gateway-logo { font-size: 24px; font-weight: 700; margin-bottom: 8px; color: var(--azul-escuro); }
+    .form-config { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid #E2E8F0; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #CBD5E0; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="gateway-container">
+    <div class="gateway-card">
+      <h2>💳 Configurar Meios de Pagamento</h2>
+      <p style="color:var(--texto-medio);">Escolha o gateway de sua preferência para receber pagamentos diretamente em sua conta.</p>
+      
+      <div class="gateway-grid" id="gateway-grid">
+        <!-- JS preencherá -->
+      </div>
+
+      <div id="form-config" class="form-config">
+        <h3 id="gw-nome">Configurar Gateway</h3>
+        <p id="gw-desc" style="font-size:13px;color:var(--texto-medio);margin-bottom:20px;"></p>
+        
+        <div id="campos-dinamicos">
+          <!-- JS preencherá campos específicos -->
+        </div>
+
+        <button class="btn btn-primario" onclick="salvarConfig()" style="width:100%;">Conectar Gateway</button>
+      </div>
+    </div>
+
+    <div class="gateway-card">
+      <h3>🔒 Segurança e Repasses</h3>
+      <p style="font-size:14px;color:var(--texto-medio);">
+        Ao conectar seu próprio gateway, os valores das consultas caem <strong>diretamente na sua conta</strong>, seguindo as taxas e prazos de recebimento de cada empresa. O Integrativo.App não retém seus valores de consulta.
+      </p>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    const gateways = [
+      { id: 'ton', nome: 'Ton', campos: ['API Key'] },
+      { id: 'pagseguro', nome: 'PagSeguro', campos: ['E-mail', 'Token'] },
+      { id: 'mercadopago', nome: 'Mercado Pago', campos: ['Access Token'] },
+      { id: 'pagbank', nome: 'PagBank', campos: ['Client ID', 'Client Secret'] },
+      { id: 'asaas', nome: 'Asaas', campos: ['API Key'] },
+      { id: 'efi', nome: 'Efí Bank', campos: ['Client ID', 'Client Secret'] },
+      { id: 'cielo', nome: 'Cielo', campos: ['Merchant ID', 'Merchant Key'] },
+      { id: 'stone', nome: 'Stone', campos: ['API Key'] }
+    ];
+
+    let selecionado = null;
+
+    function renderGateways() {
+      const grid = document.getElementById('gateway-grid');
+      grid.innerHTML = gateways.map(g => `
+        <div class="gateway-item ${selecionado === g.id ? 'selected' : ''}" onclick="selecionar('${g.id}')">
+          <div class="gateway-logo">${g.nome}</div>
+          <div style="font-size:11px;color:var(--texto-medio);">Conectar conta</div>
+        </div>
+      `).join('');
+    }
+
+    function selecionar(id) {
+      selecionado = id;
+      renderGateways();
+      const gw = gateways.find(g => g.id === id);
+      document.getElementById('form-config').style.display = 'block';
+      document.getElementById('gw-nome').textContent = 'Conectar ao ' + gw.nome;
+      document.getElementById('gw-desc').textContent = 'Insira as credenciais obtidas no painel do ' + gw.nome + ' para ativar a integração.';
+      
+      const campos = document.getElementById('campos-dinamicos');
+      campos.innerHTML = gw.campos.map(c => `
+        <div class="form-group">
+          <label>${c}</label>
+          <input type="text" id="field-${c.replace(' ', '_')}" placeholder="Insira seu ${c}">
+        </div>
+      `).join('');
+    }
+
+    async function salvarConfig() {
+      const gw = gateways.find(g => g.id === selecionado);
+      const data = { gateway_id: selecionado, credenciais: {} };
+      gw.campos.forEach(c => {
+        data.credenciais[c] = document.getElementById('field-' + c.replace(' ', '_')).value;
+      });
+
+      alert('Conectando ao ' + gw.nome + '... (Em produção, isso enviaria os dados para a API)');
+      // Aqui faria o fetch para o backend
+    }
+
+    renderGateways();
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

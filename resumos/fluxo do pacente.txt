@@ -1,0 +1,38 @@
+[Landing Page Pacientes]
+        │
+        ├── [Buscar Profissionais]
+        │       │
+        │       ├── Filtro: Especialidade (30 opções)
+        │       ├── Filtro: CEP / Cidade
+        │       ├── Filtro: Modalidade (Online / Presencial)
+        │       └── [Ver Resultados]
+        │               │
+        │               └── [Agendar]
+        │                       │
+        │                       ├── Escolher Data/Horário
+        │                       ├── Escolher Modalidade
+        │                       └── [Confirmar Agendamento]
+        │                               │
+        │                               ├── [Login] (se já tem conta)
+        │                               └── [Cadastro] (se não tem)
+        │                                       │
+        │                                       └── [Pagamento]
+        │                                               │
+        │                                               └── [Teleconsulta]
+        │
+        ├── [Meus Agendamentos] (Painel do Paciente)
+        │       │
+        │       ├── Cancelar
+        │       ├── Remarcar
+        │       └── Histórico
+        │
+        ├── [Meu Prontuário]
+        │       │
+        │       ├── Anamneses
+        │       ├── Prescrições
+        │       └── Evoluções
+        │
+        └── [Meus Dados / LGPD]
+                │
+                ├── Exportar dados
+                └── Solicitar exclusão

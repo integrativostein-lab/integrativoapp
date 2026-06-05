@@ -1,0 +1,186 @@
+:root {
+  /* Paleta de Cores Sofisticada */
+  --azul-profundo: #0F172A;
+  --azul-primario: #1E293B;
+  --verde-menta: #F0FDF4;
+  --verde-destaque: #10B981;
+  --off-white: #F8FAFC;
+  --bege-claro: #FAF9F6;
+  --texto-principal: #334155;
+  --texto-suave: #64748B;
+  --branco: #FFFFFF;
+  --laranja-premium: #F59E0B;
+  
+  /* Efeitos e Bordas */
+  --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --sombra-elevada: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --raio-padrao: 16px;
+  --transicao: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  -webkit-font-smoothing: antialiased;
+}
+
+body { 
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+  background-color: var(--off-white); 
+  background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+                    radial-gradient(at 50% 0%, rgba(30, 41, 59, 0.02) 0px, transparent 50%);
+  color: var(--texto-principal); 
+  line-height: 1.6;
+}
+
+/* Navbar com Efeito Glassmorphism */
+.navbar { 
+  background: rgba(255, 255, 255, 0.8); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--sombra-suave); 
+  padding: 12px 60px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  transition: var(--transicao);
+}
+
+.logo-container:hover { transform: scale(1.02); }
+
+.logo-img {
+  height: 55px;
+  width: auto;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+}
+
+.logo-texto {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--azul-profundo);
+  letter-spacing: -1.5px;
+  background: linear-gradient(135deg, var(--azul-profundo) 0%, var(--verde-destaque) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.menu { display: flex; align-items: center; }
+
+.navbar .menu a { 
+  text-decoration: none; 
+  color: var(--texto-suave); 
+  margin-left: 32px; 
+  font-weight: 500; 
+  font-size: 14px; 
+  transition: var(--transicao); 
+}
+
+.navbar .menu a:hover { color: var(--verde-destaque); }
+
+/* Botões Premium */
+.btn { 
+  display: inline-block; 
+  padding: 12px 28px; 
+  border-radius: 12px; 
+  font-weight: 600; 
+  font-size: 14px; 
+  text-decoration: none; 
+  cursor: pointer; 
+  border: none; 
+  transition: var(--transicao); 
+}
+
+.btn-primario { 
+  background: var(--azul-profundo); 
+  color: var(--branco); 
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+}
+
+.btn-primario:hover { 
+  background: var(--verde-destaque); 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); 
+}
+
+/* Seções */
+.secao { padding: 100px 60px; }
+.secao-branca { background: var(--branco); }
+.secao-menta { background: var(--verde-menta); }
+.container { max-width: 1200px; margin: 0 auto; }
+
+h2 { 
+  font-size: 36px; 
+  color: var(--azul-profundo); 
+  margin-bottom: 16px; 
+  font-weight: 800; 
+  letter-spacing: -1px;
+}
+
+.subtitulo { 
+  font-size: 18px; 
+  color: var(--texto-suave); 
+  margin-bottom: 60px; 
+  max-width: 700px;
+}
+
+/* Cards com Design Moderno */
+.cards { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+.card { 
+  background: var(--branco); 
+  border-radius: var(--raio-padrao); 
+  padding: 40px; 
+  width: 320px; 
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: var(--sombra-suave); 
+  transition: var(--transicao); 
+}
+
+.card:hover { 
+  transform: translateY(-8px); 
+  box-shadow: var(--sombra-elevada); 
+  border-color: var(--verde-menta);
+}
+
+.card h3 { color: var(--azul-profundo); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
+.card p { color: var(--texto-suave); font-size: 15px; }
+
+/* Rodapé Elegante */
+footer { 
+  background: var(--azul-profundo); 
+  color: rgba(255,255,255,0.7); 
+  padding: 80px 60px; 
+  text-align: center; 
+  font-size: 14px; 
+}
+
+footer a { 
+  color: var(--branco); 
+  text-decoration: none; 
+  margin: 0 12px; 
+  transition: var(--transicao);
+}
+
+footer a:hover { color: var(--verde-destaque); }
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .navbar { padding: 15px 24px; flex-direction: column; gap: 20px; }
+  .logo-texto { font-size: 24px; }
+  .logo-img { height: 45px; }
+  .menu { flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .navbar .menu a { margin: 5px 12px; }
+  .secao { padding: 60px 24px; }
+  h2 { font-size: 28px; }
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .form-login { max-width: 420px; margin: 60px auto; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .form-login h2 { text-align: center; margin-bottom: 24px; }
+    .msg { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
+    .msg.sucesso { background: #C6F6D5; color: #22543D; display: block; }
+    .msg.erro { background: #FED7D7; color: #9B2C2C; display: block; }
+    .senha-wrapper { position: relative; }
+    .senha-wrapper input { width: 100%; padding-right: 40px; }
+    .senha-wrapper .olhinho { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; background: none; border: none; }
+    .modo-teste { background: #FEF3C7; border: 1px solid #F59E0B; padding: 12px; border-radius: 8px; margin-bottom: 16px; text-align: center; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a></div>
+  </nav>
+
+  <div class="form-login" id="form-login">
+    <h2>Entrar</h2>
+    
+    <!-- MODO TESTE (visível apenas em localhost) -->
+    <div class="modo-teste" id="modo-teste" style="display:none;">
+      🧪 <strong>MODO TESTE</strong><br>
+      Profissional: <strong>profissional@teste.com</strong> / demo123<br>
+      Paciente: <strong>paciente@demo.com</strong> / demo123
+    </div>
+
+    <div id="msg" class="msg"></div>
+    
+    <div class="form-grupo">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="seu@email.com" required autocomplete="off">
+    </div>
+    <div class="form-grupo">
+      <label>Senha</label>
+      <div class="senha-wrapper">
+        <input type="password" id="senha" placeholder="Sua senha" required autocomplete="off">
+        <button class="olhinho" onclick="toggleSenha()" type="button">👁️</button>
+      </div>
+    </div>
+
+    <button class="btn btn-primario" onclick="login()" style="width:100%;margin-top:10px;">Entrar</button>
+    
+    <p style="text-align:center;margin-top:16px;font-size:13px;">
+      <a href="#" onclick="esqueciSenha()">Esqueci minha senha</a>
+    </p>
+    <p style="text-align:center;font-size:13px;">
+      Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+    </p>
+  </div>
+
+  <!-- TELA DE RECUPERAÇÃO DE SENHA -->
+  <div class="form-login" id="form-recuperacao" style="display:none;">
+    <h2>Recuperar Senha</h2>
+    <div id="msg-rec" class="msg"></div>
+    <div class="form-grupo">
+      <label>Email cadastrado</label>
+      <input type="email" id="rec-email" placeholder="seu@email.com" required>
+    </div>
+    <button class="btn btn-primario" onclick="recuperarSenha()" style="width:100%;margin-top:10px;">Enviar Link</button>
+    <p style="text-align:center;margin-top:16px;font-size:13px;">
+      <a href="#" onclick="voltarLogin()">← Voltar ao login</a>
+    </p>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    // Mostrar modo teste em localhost
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      document.getElementById('modo-teste').style.display = 'block';
+    }
+
+    function toggleSenha() {
+      var s = document.getElementById('senha');
+      var btn = document.querySelector('.olhinho');
+      if (s.type === 'password') { s.type = 'text'; btn.textContent = '🙈'; }
+      else { s.type = 'password'; btn.textContent = '👁️'; }
+    }
+
+    async function login() {
+      var msg = document.getElementById('msg');
+      msg.style.display = 'block';
+      msg.className = 'msg';
+      msg.textContent = 'Entrando...';
+
+      var email = document.getElementById('email').value.trim();
+      var senha = document.getElementById('senha').value.trim();
+
+      if (!email || !senha) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Preencha email e senha.';
+        return;
+      }
+
+      try {
+        var r = await fetch(`${CONFIG.API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, senha: senha })
+        });
+        var d = await r.json();
+
+        if (r.ok) {
+          localStorage.setItem('integra_token', d.token);
+          localStorage.setItem('integra_usuario', JSON.stringify(d.usuario));
+          msg.className = 'msg sucesso';
+          msg.textContent = '✅ Login realizado! Redirecionando...';
+          
+          // Redirecionar baseado no tipo
+          setTimeout(function() {
+            if (d.usuario.tipo === 'paciente') window.location.href = 'painel-paciente.html';
+            else if (d.usuario.tipo === 'rh') window.location.href = 'painel-rh.html';
+            else if (d.usuario.tipo === 'recepcionista') window.location.href = 'painel-recepcao.html';
+            else if (d.usuario.tipo === 'financeiro') window.location.href = 'painel-financeiro.html';
+            else if (d.usuario.tipo === 'contador') window.location.href = 'painel-contador.html';
+            else window.location.href = 'painel-terapeuta.html';
+          }, 800);
+        } else {
+          msg.className = 'msg erro';
+          msg.textContent = d.erro || 'Email ou senha incorretos.';
+        }
+      } catch(e) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Erro de conexão. Tente novamente.';
+      }
+    }
+
+    function esqueciSenha() {
+      document.getElementById('form-login').style.display = 'none';
+      document.getElementById('form-recuperacao').style.display = 'block';
+    }
+
+    function voltarLogin() {
+      document.getElementById('form-recuperacao').style.display = 'none';
+      document.getElementById('form-login').style.display = 'block';
+    }
+
+    async function recuperarSenha() {
+      var msg = document.getElementById('msg-rec');
+      msg.style.display = 'block';
+      msg.className = 'msg';
+      msg.textContent = 'Enviando...';
+
+      var email = document.getElementById('rec-email').value.trim();
+      if (!email) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Informe seu email.';
+        return;
+      }
+
+      try {
+        var r = await fetch(`${CONFIG.API_URL}/auth/recuperar-senha`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        });
+        var d = await r.json();
+        msg.className = 'msg sucesso';
+        msg.textContent = d.mensagem || 'Se o email existir, você receberá um link de recuperação.';
+      } catch(e) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Erro de conexão.';
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>

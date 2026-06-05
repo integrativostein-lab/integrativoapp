@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ativação — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .ativacao-container { max-width: 600px; margin: 60px auto; padding: 40px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); text-align: center; }
+    .ativacao-container h2 { margin-bottom: 20px; }
+    .chave-input { width: 100%; padding: 14px; border: 2px solid #E2E8F0; border-radius: 8px; font-size: 18px; text-align: center; letter-spacing: 4px; margin-bottom: 20px; }
+    .chave-input:focus { outline: none; border-color: var(--azul-escuro); }
+    .downloads { display: none; margin-top: 30px; text-align: left; }
+    .download-item { background: var(--cinza-claro); padding: 14px 18px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .download-item .btn { font-size: 13px; padding: 8px 18px; }
+    .msg { padding: 12px; border-radius: 8px; margin: 14px 0; font-size: 14px; }
+    .msg.erro { background: #FED7D7; color: #9B2C2C; }
+    .msg.sucesso { background: #C6F6D5; color: #22543D; }
+    .validade { font-size: 13px; color: var(--texto-medio); margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <div class="menu"><a href="index.html">Início</a></div>
+  </nav>
+
+  <div class="ativacao-container">
+    <h2>🔑 Ativação do Sistema</h2>
+    <p style="color:var(--texto-medio);margin-bottom:20px;">Insira a chave de ativação recebida por email para acessar os downloads.</p>
+    
+    <input type="text" class="chave-input" id="chave" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+    <button class="btn btn-primario" onclick="ativar()" style="width:100%;">Verificar Chave</button>
+    
+    <div id="msg" class="msg" style="display:none;"></div>
+
+    <div class="downloads" id="downloads">
+      <h3 style="margin-bottom:16px;">📥 Downloads Disponíveis</h3>
+      <div class="download-item"><span>📦 Sistema Completo (código aberto)</span><a href="#" class="btn btn-primario">⬇️ Baixar</a></div>
+      <div class="download-item"><span>📋 Manual Técnico de Instalação (PDF)</span><a href="#" class="btn btn-primario">⬇️ Baixar</a></div>
+      <div class="download-item"><span>🔧 Guia de Configuração para CPD</span><a href="#" class="btn btn-primario">⬇️ Baixar</a></div>
+      <div class="download-item"><span>📄 Termo de Cessão Gratuita</span><a href="#" class="btn btn-primario">⬇️ Baixar</a></div>
+      <div class="download-item"><span>🌐 Arquivos de Tradução (idiomas locais)</span><a href="#" class="btn btn-primario">⬇️ Baixar</a></div>
+      <p class="validade" id="validade"></p>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    async function ativar() {
+      var chave = document.getElementById('chave').value.trim();
+      var msg = document.getElementById('msg');
+      msg.style.display = 'none';
+      
+      if (!chave) { msg.className = 'msg erro'; msg.textContent = 'Insira a chave de ativação.'; msg.style.display = 'block'; return; }
+      
+      var r = await fetch(`${CONFIG.API_URL}/criador/verificar-chave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chave: chave })
+      });
+      var d = await r.json();
+      
+      if (r.ok && d.valida) {
+        msg.className = 'msg sucesso';
+        msg.textContent = '✅ Chave validada! Downloads liberados.';
+        msg.style.display = 'block';
+        document.getElementById('downloads').style.display = 'block';
+        document.getElementById('validade').textContent = '⏱️ Chave válida até: ' + d.validade;
+      } else {
+        msg.className = 'msg erro';
+        msg.textContent = d.erro || 'Chave inválida ou expirada.';
+        msg.style.display = 'block';
+      }
+    }
+  </script>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+</body>
+</html>
