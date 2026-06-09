@@ -8,7 +8,17 @@ router.post('/cadastro', async (req, res) => {
   try {
     const { nome, email, senha, tipo, especialidades, atende_online, atende_presencial, atende_domiciliar, domiciliar_tipo, domiciliar_valor, lgpd_consentimento, token_convite } = req.body;
     if (!nome || !email || !senha) return res.status(400).json({ erro: 'Nome, email e senha são obrigatórios' });
-    
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return res.status(400).json({ erro: 'Email inválido' });
+    if (typeof senha !== 'string' || senha.length < 8) {
+      return res.status(400).json({ erro: 'Senha deve ter no mínimo 8 caracteres' });
+    }
+
+    // Allowlist de tipos no cadastro público — NUNCA aceitar admin do body
+    const TIPOS_PUBLICOS = ['paciente', 'profissional'];
+    const tipoFinal = TIPOS_PUBLICOS.includes(tipo) ? tipo : 'paciente';
+
     const existe = await db.query('SELECT id FROM usuarios WHERE email = $1', [email]);
     if (existe.rows.length > 0) return res.status(400).json({ erro: 'Email já cadastrado' });
     
@@ -29,7 +39,7 @@ router.post('/cadastro', async (req, res) => {
       `INSERT INTO usuarios (nome, email, senha, tipo, especialidades, atende_online, atende_presencial, atende_domiciliar, domiciliar_tipo, domiciliar_valor, lgpd_consentimento, lgpd_data_consentimento, plano) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), $12) RETURNING id`,
       [
-        nome, email, hash, tipo || 'paciente',
+        nome, email, hash, tipoFinal,
         especialidades || null,
         atende_online || 0, atende_presencial || 0,
         atende_domiciliar || 0, domiciliar_tipo || null, domiciliar_valor || null,
@@ -37,8 +47,8 @@ router.post('/cadastro', async (req, res) => {
         convite ? convite.plano : 'freemium'
       ]
     );
-    
-    if (tipo === 'paciente' || !tipo) {
+
+    if (tipoFinal === 'paciente') {
       await db.query('INSERT INTO pacientes (usuario_id) VALUES ($1)', [result.rows[0].id]);
     }
 
@@ -47,12 +57,12 @@ router.post('/cadastro', async (req, res) => {
       await db.query("INSERT INTO assinaturas (usuario_id, plano, tipo_ciclo, valor, data_inicio, data_expiracao, status) VALUES ($1, $2, 'vitalicio', 0, NOW(), '2099-12-31', 'ativa')", [result.rows[0].id, convite.plano]);
       await db.query("UPDATE usuarios SET assinatura_ativa = 1, data_expiracao_assinatura = '2099-12-31' WHERE id = $1", [result.rows[0].id]);
     }
-    
-    const token = jwt.sign({ id: result.rows[0].id, email, tipo: tipo || 'paciente' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+    const token = jwt.sign({ id: result.rows[0].id, email, tipo: tipoFinal }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({
       mensagem: 'Cadastro realizado!',
       token,
-      usuario: { id: result.rows[0].id, nome, email },
+      usuario: { id: result.rows[0].id, nome, email, tipo: tipoFinal },
       convite: convite ? {
         plano: convite.plano,
         vitalicio: convite.vitalicio,
@@ -61,7 +71,7 @@ router.post('/cadastro', async (req, res) => {
       } : null
     });
   } catch (e) {
-    console.error(e);
+    console.error('[auth/cadastro]', e.message);
     res.status(500).json({ erro: 'Erro interno' });
   }
 });
@@ -97,6 +107,64 @@ router.get('/verificar', async (req, res) => {
     if (result.rows.length === 0) return res.status(401).json({ erro: 'Usuário não encontrado' });
     res.json({ valido: true, usuario: result.rows[0] });
   } catch { res.status(401).json({ erro: 'Token inválido' }); }
+});
+
+// ============================================
+// CADASTRO ESPECÍFICO DE PROFISSIONAL
+// ============================================
+// Cria usuário tipo='profissional' e (opcional) já dispara validação no conselho
+router.post('/cadastro-profissional', async (req, res) => {
+  try {
+    const {
+      nome, email, senha, telefone,
+      especialidade, conselho, uf_conselho, numero_registro,
+      especialidades_adicionais, gateway, email_corporativo,
+      prescricao_eletronica, lgpd_consentimento
+    } = req.body;
+
+    if (!nome || !email || !senha || !especialidade) {
+      return res.status(400).json({ erro: 'Nome, email, senha e especialidade são obrigatórios' });
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return res.status(400).json({ erro: 'Email inválido' });
+    if (typeof senha !== 'string' || senha.length < 8) {
+      return res.status(400).json({ erro: 'Senha deve ter no mínimo 8 caracteres' });
+    }
+
+    const existe = await db.query('SELECT id FROM usuarios WHERE email = $1', [email]);
+    if (existe.rows.length > 0) return res.status(400).json({ erro: 'Email já cadastrado' });
+
+    const hash = await bcrypt.hash(senha, 12);
+
+    const ins = await db.query(
+      `INSERT INTO usuarios (nome, email, senha, tipo, telefone, especialidades, atende_online, atende_presencial, lgpd_consentimento, lgpd_data_consentimento, plano)
+       VALUES ($1, $2, $3, 'profissional', $4, $5, 1, 1, $6, NOW(), 'freemium') RETURNING id`,
+      [nome, email, hash, telefone || null, especialidade, lgpd_consentimento || 0]
+    );
+    const userId = ins.rows[0].id;
+
+    // Registrar dados profissionais (best-effort — tabela pode não existir em todos os ambientes)
+    try {
+      await db.query(
+        `INSERT INTO profissionais_dados (usuario_id, especialidade, conselho, uf_conselho, numero_registro, especialidades_adicionais, gateway, email_corporativo, prescricao_eletronica, criado_em)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
+        [userId, especialidade, conselho || null, uf_conselho || null, numero_registro || null,
+          especialidades_adicionais || null, gateway || null, email_corporativo || null, prescricao_eletronica || null]
+      );
+    } catch (errDados) {
+      console.warn('[cadastro-profissional] profissionais_dados não persistido:', errDados.message);
+    }
+
+    const token = jwt.sign({ id: userId, email, tipo: 'profissional' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.status(201).json({
+      mensagem: 'Cadastro profissional realizado!',
+      token,
+      usuario: { id: userId, nome, email, tipo: 'profissional', especialidade }
+    });
+  } catch (e) {
+    console.error('[auth/cadastro-profissional]', e.message);
+    res.status(500).json({ erro: 'Erro interno' });
+  }
 });
 
 module.exports = router;

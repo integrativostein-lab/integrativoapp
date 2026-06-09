@@ -4,43 +4,65 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App — Saúde Integrativa ao seu alcance.">
-  <title>Integrativo.App — Saúde Integrativa</title>
+  <meta name="description" content="Integrativo.App — Cadastro gratuito para pacientes. Encontre profissionais de saúde integrativa.">
+  <title>Integrativo.App — Saúde Integrativa para Pacientes</title>
   <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/carrossel.css">
   <style>
-    .hero-moderno { 
-      padding: 120px 60px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      max-width: 1200px; 
+    /* ============ HERO ============ */
+    .hero {
+      max-width: 1200px;
       margin: 0 auto;
-      gap: 40px;
-    }
-    .hero-texto-novo { flex: 1; }
-    .hero-texto-novo h1 { font-size: 56px; line-height: 1.1; margin-bottom: 24px; color: var(--azul-profundo); font-weight: 800; letter-spacing: -2px; }
-    .hero-texto-novo p { font-size: 20px; color: var(--texto-suave); margin-bottom: 40px; line-height: 1.5; }
-    
-    .hero-imagem { 
-      flex: 1; 
-      position: relative;
-      display: flex;
-      justify-content: center;
-    }
-    .hero-imagem img { 
-      width: 100%; 
-      max-width: 500px; 
-      border-radius: 24px; 
-      box-shadow: var(--sombra-elevada);
-    }
-
-    .especialidades-grid {
+      padding: 80px 60px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin-top: 40px;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 56px;
+      align-items: center;
     }
-    
+    .hero-texto h1 {
+      font-size: 52px;
+      line-height: 1.08;
+      color: var(--azul-profundo);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+    .hero-texto h1 span {
+      background: linear-gradient(135deg, var(--azul-profundo) 0%, var(--verde-destaque) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-texto p {
+      font-size: 19px;
+      color: var(--texto-suave);
+      margin-bottom: 32px;
+      line-height: 1.55;
+    }
+    .hero-bullets {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .hero-bullets li {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--texto-principal);
+      font-size: 15px;
+    }
+    .hero-bullets li::before {
+      content: "✓";
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--verde-menta);
+      color: var(--verde-destaque);
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+    }
     .tag-plano {
       display: inline-block;
       padding: 6px 12px;
@@ -49,77 +71,262 @@
       border-radius: 100px;
       font-size: 12px;
       font-weight: 700;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
+    /* ============ CARD DE CADASTRO ============ */
+    .card-cadastro {
+      background: var(--branco);
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: var(--sombra-elevada);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .card-cadastro h2 {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .card-cadastro .sub {
+      color: var(--texto-suave);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .form-grupo { margin-bottom: 14px; }
+    .form-grupo label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--azul-profundo);
+      margin-bottom: 6px;
+    }
+    .form-grupo input,
+    .form-grupo select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #FAFBFC;
+      transition: var(--transicao);
+    }
+    .form-grupo input:focus,
+    .form-grupo select:focus {
+      outline: none;
+      border-color: var(--verde-destaque);
+      background: var(--branco);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+    }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .lgpd {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 12px;
+      color: var(--texto-suave);
+      margin: 12px 0 18px;
+    }
+    .lgpd input { margin-top: 3px; }
+    .btn-cadastro {
+      width: 100%;
+      padding: 14px;
+      background: var(--azul-profundo);
+      color: var(--branco);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transicao);
+    }
+    .btn-cadastro:hover { background: var(--verde-destaque); transform: translateY(-1px); }
+    .btn-cadastro:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .msg {
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      display: none;
+    }
+    .msg.ok  { display: block; background: #DCFCE7; color: #166534; }
+    .msg.err { display: block; background: #FEE2E2; color: #991B1B; }
+    .login-link {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--texto-suave);
+    }
+    .login-link a { color: var(--azul-profundo); font-weight: 600; }
+
+    /* ============ TABELA DE PLANOS ============ */
+    .planos-secao {
+      padding: 80px 24px;
+      background: var(--branco);
+    }
+    .planos-secao .container { max-width: 1200px; margin: 0 auto; }
+    .planos-secao h2 { text-align: center; margin-bottom: 8px; }
+    .planos-secao .sub-h { text-align: center; color: var(--texto-suave); margin-bottom: 8px; font-size: 16px; }
+    .planos-info {
+      text-align: center;
+      color: var(--texto-suave);
+      font-size: 13px;
+      margin-bottom: 40px;
+    }
+    .planos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .plano {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 28px 22px;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transicao);
+    }
+    .plano:hover { transform: translateY(-4px); box-shadow: var(--sombra-elevada); }
+    .plano.destaque {
+      border: 2px solid var(--verde-destaque);
+      box-shadow: 0 12px 32px rgba(16,185,129,0.15);
+      position: relative;
+    }
+    .plano.destaque::before {
+      content: "Mais popular";
+      position: absolute;
+      top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--verde-destaque);
+      color: var(--branco);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .plano h3 { color: var(--azul-profundo); font-size: 20px; margin-bottom: 4px; }
+    .plano .desc { color: var(--texto-suave); font-size: 12px; min-height: 32px; margin-bottom: 16px; }
+    .plano .preco { font-size: 30px; color: var(--azul-profundo); font-weight: 800; margin-bottom: 4px; }
+    .plano .preco small { font-size: 13px; font-weight: 500; color: var(--texto-suave); }
+    .plano .parcela { font-size: 12px; color: var(--texto-suave); margin-bottom: 18px; min-height: 32px; }
+    .plano ul { list-style: none; margin-bottom: 22px; flex: 1; }
+    .plano ul li { font-size: 13px; padding: 6px 0; color: var(--texto-principal); display: flex; gap: 8px; }
+    .plano ul li::before { content: "•"; color: var(--verde-destaque); font-weight: 800; }
+    .plano .btn { text-align: center; width: 100%; padding: 11px; font-size: 13px; }
+
     @media (max-width: 968px) {
-      .hero-moderno { flex-direction: column; text-align: center; padding: 60px 24px; }
-      .hero-texto-novo h1 { font-size: 38px; }
+      .hero { grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
+      .hero-texto h1 { font-size: 36px; }
+      .row-2 { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <a href="index.html" class="logo-container">
-      <img src="img/logo.png" alt="Logo" class="logo-img">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
     <div class="menu">
-      <a href="#como-funciona">Como Funciona</a>
+      <a href="#planos">Planos</a>
       <a href="blog.html">Blog</a>
-      <a href="profissionais.html">Especialistas</a>
+      <a href="profissionais.html">Sou profissional</a>
       <a href="login.html" class="btn btn-primario">Entrar</a>
     </div>
   </nav>
 
-  <header class="hero-moderno">
-    <div class="hero-texto-novo fade-in">
-      <span class="tag-plano">Inovação em Saúde</span>
-      <h1>Saúde Integrativa na palma da sua mão</h1>
-      <p>Conecte-se com os melhores especialistas em Ayurveda, Yoga, MTC e mais de 30 áreas terapêuticas. Atendimento online, presencial ou a domicílio.</p>
-      <div style="display: flex; gap: 16px; justify-content: flex-start;" class="mobile-center">
-        <a href="busca.html" class="btn btn-primario" style="padding: 16px 32px; font-size: 16px;">Encontrar Especialista</a>
-        <a href="cadastro.html" class="btn" style="color: var(--azul-profundo); font-weight: 700;">Criar Conta Grátis</a>
-      </div>
+  <!-- HERO COM CADASTRO DE PACIENTE -->
+  <header class="hero">
+    <div class="hero-texto">
+      <span class="tag-plano">Para pacientes</span>
+      <h1>Cuide de você com <span>saúde integrativa</span> de verdade.</h1>
+      <p>Crie sua conta gratuita e encontre profissionais de Ayurveda, MTC, Yoga, Psicologia, Medicina Integrativa e mais de 30 áreas terapêuticas. Atendimento online, presencial ou domiciliar.</p>
+      <ul class="hero-bullets">
+        <li>Cadastro gratuito e rápido</li>
+        <li>Profissionais com registro verificado online</li>
+        <li>Agendamento e teleconsulta no mesmo lugar</li>
+        <li>Dados protegidos pela LGPD</li>
+      </ul>
     </div>
-    <div class="hero-imagem fade-in">
-      <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80" alt="Bem-estar">
+
+    <div class="card-cadastro">
+      <h2>Crie sua conta de paciente</h2>
+      <p class="sub">Leva menos de 1 minuto. Sem cartão.</p>
+      <div id="msg" class="msg"></div>
+
+      <form id="formPaciente" autocomplete="on">
+        <div class="form-grupo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" required placeholder="Seu nome">
+        </div>
+        <div class="form-grupo">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="voce@exemplo.com">
+        </div>
+        <div class="row-2">
+          <div class="form-grupo">
+            <label for="telefone">WhatsApp (opcional)</label>
+            <input type="tel" id="telefone" placeholder="(11) 99999-9999">
+          </div>
+          <div class="form-grupo">
+            <label for="senha">Senha</label>
+            <input type="password" id="senha" required placeholder="Mínimo 8 caracteres" minlength="8">
+          </div>
+        </div>
+        <label class="lgpd">
+          <input type="checkbox" id="lgpd" required>
+          <span>Concordo com os <a href="termos.html" target="_blank">Termos</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a> (LGPD).</span>
+        </label>
+        <button type="submit" class="btn-cadastro" id="btnCadastrar">Criar conta gratuita</button>
+        <p class="login-link">Já tem conta? <a href="login.html">Entrar</a></p>
+      </form>
     </div>
   </header>
 
+  <!-- COMO FUNCIONA -->
   <section class="secao secao-branca" id="como-funciona">
     <div class="container" style="text-align: center;">
-      <h2 style="margin-bottom: 40px;">Simples, Humano e Eficiente</h2>
+      <h2 style="margin-bottom: 40px;">Simples, humano e eficiente</h2>
       <div class="cards">
         <div class="card">
           <div style="font-size: 40px; margin-bottom: 20px;">🔍</div>
-          <h3>Busca Inteligente</h3>
-          <p>Encontre exatamente o que você precisa filtrando por especialidade, preço e localização.</p>
+          <h3>Busca inteligente</h3>
+          <p>Filtre por especialidade, preço, modalidade e localização.</p>
         </div>
         <div class="card">
           <div style="font-size: 40px; margin-bottom: 20px;">📅</div>
-          <h3>Agendamento Real</h3>
-          <p>Escolha horários disponíveis em tempo real, sem espera ou burocracia.</p>
+          <h3>Agendamento real</h3>
+          <p>Horários disponíveis em tempo real, sem espera ou burocracia.</p>
         </div>
         <div class="card">
           <div style="font-size: 40px; margin-bottom: 20px;">📱</div>
-          <h3>Teleaula & Consulta</h3>
-          <p>Ambiente seguro e de alta qualidade para seus atendimentos e aprendizados.</p>
+          <h3>Teleconsulta segura</h3>
+          <p>Ambiente protegido para atendimentos online de alta qualidade.</p>
         </div>
       </div>
     </div>
   </section>
 
+  <!-- CARROSSEL DE ESPECIALIDADES -->
   <section class="secao secao-menta">
     <div class="container" style="text-align: center;">
       <h2>Um ecossistema completo</h2>
-      <p class="subtitulo" style="margin: 0 auto 60px;">Desenvolvido para profissionais que buscam excelência e pacientes que buscam resultados reais.</p>
-      <div class="especialidades-grid">
-        <!-- Especialidades serão carregadas aqui via JS -->
-      </div>
-      <a href="profissionais.html" class="btn btn-primario" style="margin-top: 40px;">Ver Todas as Especialidades</a>
+      <p class="subtitulo" style="margin: 0 auto 60px;">Da medicina convencional às tradições milenares — todos os caminhos da saúde em um só lugar.</p>
+      <div id="carrossel-especialidades" class="carrossel-container"></div>
+    </div>
+  </section>
+
+  <!-- TABELA DE PLANOS -->
+  <section class="planos-secao" id="planos">
+    <div class="container">
+      <h2>Planos para profissionais</h2>
+      <p class="sub-h">Pagamento <strong>100% anual</strong>. Pacientes usam a plataforma de graça.</p>
+      <p class="planos-info">PIX à vista com 5% de desconto · Cartão em até 12x com juros de 1,99% a.m. · Cancelamento em 15 dias com reembolso integral</p>
+      <div class="planos-grid" id="planosGrid"></div>
     </div>
   </section>
 
@@ -133,11 +340,103 @@
       </div>
       <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
       <p>&copy; 2026 Todos os direitos reservados.</p>
-      <p style="margin-top: 24px; font-size: 12px; opacity: 0.6;">Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</p>
+      <p style="margin-top: 24px; font-size: 12px; opacity: 0.6;">CNPJ: 48.893.405/0001-22</p>
     </div>
   </footer>
 
   <script src="js/config.js"></script>
+  <script src="js/carrossel.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    // ============================================
+    // CADASTRO DE PACIENTE — exclusivo desta página
+    // ============================================
+    const $ = (sel) => document.querySelector(sel);
+    const msgEl = $('#msg');
+    const btn = $('#btnCadastrar');
+
+    function showMsg(text, type) {
+      msgEl.textContent = text;
+      msgEl.className = 'msg ' + (type === 'ok' ? 'ok' : 'err');
+    }
+
+    $('#formPaciente').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = $('#nome').value.trim();
+      const email = $('#email').value.trim();
+      const telefone = $('#telefone').value.trim();
+      const senha = $('#senha').value;
+      const lgpd = $('#lgpd').checked;
+
+      if (!nome || !email || !senha) return showMsg('Preencha todos os campos obrigatórios.', 'err');
+      if (senha.length < 8) return showMsg('A senha precisa ter no mínimo 8 caracteres.', 'err');
+      if (!lgpd) return showMsg('É necessário aceitar os termos.', 'err');
+
+      btn.disabled = true; btn.textContent = 'Criando conta...';
+      try {
+        const r = await fetch(`${CONFIG.API_URL}/auth/cadastro`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nome, email, senha, telefone,
+            tipo: 'paciente',
+            lgpd_consentimento: 1
+          })
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.erro || 'Erro ao cadastrar');
+        localStorage.setItem('integra_token', d.token);
+        localStorage.setItem('integra_usuario', JSON.stringify(d.usuario));
+        showMsg('Conta criada! Redirecionando...', 'ok');
+        setTimeout(() => location.href = 'busca.html', 800);
+      } catch (err) {
+        showMsg(err.message || 'Erro de conexão. Tente novamente.', 'err');
+        btn.disabled = false; btn.textContent = 'Criar conta gratuita';
+      }
+    });
+
+    // ============================================
+    // RENDER DOS PLANOS
+    // ============================================
+    function fmtMoeda(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+    function renderPlanos() {
+      const grid = document.getElementById('planosGrid');
+      const planos = CONFIG.PLANOS;
+      const ordem = ['freemium', 'pro', 'premium', 'enterprise', 'coworking'];
+      grid.innerHTML = ordem.map(key => {
+        const p = planos[key];
+        const isFree = p.valor_anual === 0;
+        const calc = isFree ? null : CONFIG.PARCELAMENTO.calcular(p.valor_anual, 12);
+        const features = [];
+        features.push(`${p.teleconsultas_mes} teleconsultas/mês`);
+        features.push(`${p.max_pacientes} pacientes cadastrados`);
+        features.push(`${p.whatsapp_mensagens_mes} mensagens WhatsApp/mês`);
+        features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
+        if (p.white_label)        features.push('White-label');
+        if (p.api_white_label)    features.push('API white-label');
+        if (p.migracao)           features.push('Migração de dados');
+        if (p.certificado_a1_gratis) features.push('Certificado A1 grátis');
+        if (p.coworking_fisico)   features.push('Espaço coworking físico');
+
+        return `
+          <div class="plano ${p.destaque ? 'destaque' : ''}">
+            <h3>${p.nome}</h3>
+            <p class="desc">${p.descricao}</p>
+            <div class="preco">${isFree ? 'Grátis' : fmtMoeda(p.valor_anual)} <small>${isFree ? '' : '/ ano'}</small></div>
+            <p class="parcela">${isFree
+              ? 'Sem cartão. Sem cobrança.'
+              : `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br><span style="color:var(--verde-destaque);font-weight:600">PIX: ${fmtMoeda(p.valor_anual * 0.95)}</span>`}</p>
+            <ul>${features.map(f => `<li>${f}</li>`).join('')}</ul>
+            <a href="${isFree ? '#formPaciente' : 'profissionais.html#planos'}"
+               class="btn ${p.destaque ? 'btn-primario' : ''}"
+               style="${p.destaque ? '' : 'background:#F1F5F9;color:var(--azul-profundo);'}">
+              ${isFree ? 'Começar grátis' : 'Quero esse plano'}
+            </a>
+          </div>`;
+      }).join('');
+    }
+    renderPlanos();
+  </script>
 </body>
 </html>

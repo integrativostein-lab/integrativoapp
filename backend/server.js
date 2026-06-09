@@ -1,4 +1,16 @@
 require('dotenv').config();
+
+// ============================================
+// VALIDAÇÃO DE VARIÁVEIS DE AMBIENTE CRÍTICAS
+// ============================================
+if (!process.env.JWT_SECRET) {
+  console.error('[FATAL] JWT_SECRET não configurado. Defina em .env antes de iniciar.');
+  process.exit(1);
+}
+if (process.env.JWT_SECRET.length < 32) {
+  console.warn('[AVISO] JWT_SECRET tem menos de 32 caracteres. Use uma chave forte em produção.');
+}
+
 const formulariosRoutes = require('./rotas/formularios');
 const express = require('express');
 const cors = require('cors');
@@ -7,6 +19,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
+const cron = require('node-cron');
 
 const db = require('./database');
 
@@ -15,11 +28,37 @@ const PORT = process.env.PORT || 3000;
 
 // Segurança
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
-app.use(cors({ origin: '*', credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], allowedHeaders: ['Content-Type', 'Authorization'] }));
 
-// Rate Limiting
+// CORS — origens controladas via env CORS_ORIGINS (lista separada por vírgula)
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:8000,http://localhost:3000')
+  .split(',').map(s => s.trim()).filter(Boolean);
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true); // server-to-server / curl
+    if (allowedOrigins.includes('*')) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error('Origem não permitida pelo CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Rate Limiting global
 const limiter = rateLimit({ windowMs: 60000, max: 100, message: { erro: 'Muitas requisições.' } });
 app.use('/api/', limiter);
+
+// Rate Limiting agressivo em endpoints sensíveis
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { erro: 'Muitas tentativas. Tente novamente em alguns minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/cadastro', authLimiter);
+app.use('/api/auth/cadastro-profissional', authLimiter);
 
 // Logs e parsing
 app.use(morgan('dev'));
@@ -30,7 +69,7 @@ if (!fs.existsSync('./uploads')) fs.mkdirSync('./uploads');
 
 // Rota de teste
 app.get('/', (req, res) => {
-  res.json({ sistema: 'Integrativo.App - Saúde Integrativa', versao: '2.0.0', status: 'online' });
+  res.json({ sistema: 'Integrativo.App - Saúde Integrativa', versao: '2.1.0', status: 'online' });
 });
 
 // ============================================
@@ -60,6 +99,12 @@ const googleCalendarRoutes = require('./rotas/google-calendar');
 const gatewaysRoutes = require('./rotas/gateways');
 const conciliacaoRoutes = require('./rotas/conciliacao');
 const entidadesRoutes = require('./rotas/entidades');
+const acsRoutes = require('./rotas/acs');
+const equipeRoutes = require('./rotas/equipe');
+const pagamentoRoutes = require('./rotas/pagamento');
+const susRoutes = require('./rotas/sus');
+const { router: fhirRoutes, atualizarProtocolosFiocruz } = require('./rotas/fhir');
+const { router: validacaoRoutes, atualizarStatusValidacoes } = require('./rotas/validacao-conselhos');
 
 // ============================================
 // ATIVAÇÃO DAS ROTAS
@@ -89,17 +134,48 @@ app.use('/api/google-calendar', googleCalendarRoutes);
 app.use('/api/gateways', gatewaysRoutes);
 app.use('/api/conciliacao', conciliacaoRoutes);
 app.use('/api/entidades', entidadesRoutes);
+app.use('/api/acs', acsRoutes);
+app.use('/api/equipe', equipeRoutes);
+app.use('/api/pagamento', pagamentoRoutes);
+app.use('/api/sus', susRoutes);
+app.use('/api/fhir', fhirRoutes);
+app.use('/api/validacao', validacaoRoutes);
 
 console.log('✅ Todas as rotas carregadas');
 
+// ============================================
+// JOBS AGENDADOS (CRON)
+// ============================================
+
+// Atualizar protocolos Fiocruz diariamente às 2h da manhã
+cron.schedule('0 2 * * *', () => {
+  console.log('🔄 Iniciando atualização de protocolos Fiocruz...');
+  atualizarProtocolosFiocruz();
+});
+
+// Atualizar status de validações diariamente às 3h da manhã
+cron.schedule('0 3 * * *', () => {
+  console.log('🔄 Iniciando atualização de status de validações...');
+  atualizarStatusValidacoes();
+});
+
+console.log('⏰ Jobs agendados configurados');
+
 // Tratamento de erros
-app.use((err, req, res, next) => { res.status(500).json({ erro: 'Erro interno' }); });
+app.use((err, req, res, next) => {
+  const errId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  console.error(`[ERR ${errId}] ${req.method} ${req.originalUrl}:`, err.message);
+  if (process.env.NODE_ENV !== 'production') console.error(err.stack);
+  res.status(500).json({ erro: 'Erro interno', id: errId });
+});
 app.use('*', (req, res) => { res.status(404).json({ erro: 'Rota não encontrada' }); });
 
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log('🌿 Integrativo.App - Rodando na porta ' + PORT);
-  console.log('📧 Admin: admin@integra.com / admin123');
+  console.log('🌿 Integrativo.App v2.1 - Rodando na porta ' + PORT);
+  console.log('🔐 FHIR Brasil: /api/fhir');
+  console.log('✓ Validação de Conselhos: /api/validacao');
+  console.log('✓ CORS permitido para: ' + allowedOrigins.join(', '));
 });
 
 module.exports = app;

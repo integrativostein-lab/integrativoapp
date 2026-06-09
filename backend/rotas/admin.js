@@ -8,8 +8,9 @@ function autenticarAdmin(req, res, next) {
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try {
     const d = jwt.verify(token, process.env.JWT_SECRET);
-    const u = db.query('SELECT tipo FROM usuarios WHERE id = $1', [d.id]);
-    if (!['admin', 'super_admin'].includes(d.tipo)) return res.status(403).json({ erro: 'Acesso restrito' });
+    const uResult = await db.query(\'SELECT tipo FROM usuarios WHERE id = $1\', [d.id]);
+    const u = uResult.rows[0];
+    if (![\'admin\', \'super_admin\'].includes(u.tipo)) return res.status(403).json({ erro: \'Acesso restrito\' });
     req.usuario = d;
     next();
   } catch { res.status(401).json({ erro: 'Token inválido' }); }

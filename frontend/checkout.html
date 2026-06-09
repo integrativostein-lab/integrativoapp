@@ -4,186 +4,520 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Checkout — Integrativo.App">
   <title>Checkout — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
-    .checkout-container { max-width: 600px; margin: 40px auto; padding: 0 20px; }
-    .checkout-card { background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
-    .checkout-card h2 { margin-bottom: 8px; }
-    .resumo { background: var(--cinza-claro); padding: 16px; border-radius: 8px; margin: 16px 0; font-size: 14px; }
-    .resumo span { float: right; font-weight: 600; }
-    .cupom { margin: 16px 0; }
-    .cupom input { padding: 10px; border: 2px solid #E2E8F0; border-radius: 8px; width: 60%; }
-    .cupom button { padding: 10px 16px; background: var(--azul-escuro); color: #FFF; border: none; border-radius: 8px; cursor: pointer; }
-    .desconto-pix { background: #C6F6D5; padding: 12px; border-radius: 8px; margin: 12px 0; font-size: 14px; color: #22543D; font-weight: 600; }
-    .parcelas-select { display: none; margin: 12px 0; }
-    .parcelas-select select { padding: 10px; border: 2px solid #E2E8F0; border-radius: 8px; width: 100%; }
+    .checkout-container {
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    .checkout-resumo {
+      background: var(--branco);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(26, 54, 93, 0.08);
+      height: fit-content;
+      position: sticky;
+      top: 20px;
+    }
+
+    .checkout-resumo h2 {
+      color: var(--azul-profundo);
+      margin-bottom: 24px;
+      font-size: 20px;
+    }
+
+    .plano-info {
+      padding: 20px;
+      background: var(--verde-menta);
+      border-radius: 8px;
+      margin-bottom: 24px;
+    }
+
+    .plano-info h3 {
+      color: var(--azul-profundo);
+      margin: 0 0 8px 0;
+    }
+
+    .plano-info p {
+      margin: 0;
+      color: var(--texto-suave);
+      font-size: 14px;
+    }
+
+    .resumo-linha {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--cinza-claro);
+      font-size: 14px;
+    }
+
+    .resumo-linha.total {
+      border-bottom: none;
+      border-top: 2px solid var(--azul-profundo);
+      padding-top: 16px;
+      margin-top: 16px;
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--azul-profundo);
+    }
+
+    .desconto-pix {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 16px 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .checkout-formulario {
+      background: var(--branco);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(26, 54, 93, 0.08);
+    }
+
+    .checkout-formulario h2 {
+      color: var(--azul-profundo);
+      margin-bottom: 24px;
+      font-size: 20px;
+    }
+
+    .opcoes-pagamento {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .opcao-pagamento {
+      padding: 20px;
+      border: 2px solid var(--cinza-claro);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .opcao-pagamento:hover {
+      border-color: var(--azul-profundo);
+      background: rgba(26, 54, 93, 0.05);
+    }
+
+    .opcao-pagamento.selecionado {
+      border-color: var(--azul-profundo);
+      background: rgba(26, 54, 93, 0.1);
+    }
+
+    .opcao-pagamento input[type="radio"] {
+      display: none;
+    }
+
+    .opcao-pagamento-titulo {
+      font-weight: 700;
+      color: var(--azul-profundo);
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .opcao-pagamento-descricao {
+      font-size: 13px;
+      color: var(--texto-suave);
+    }
+
+    .opcao-pagamento-destaque {
+      color: #10b981;
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--azul-profundo);
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--cinza-claro);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--azul-profundo);
+      box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    }
+
+    .parcelas-info {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .parcelas-info.ativo {
+      display: block;
+    }
+
+    .parcelas-info h4 {
+      color: #92400e;
+      margin: 0 0 12px 0;
+      font-size: 14px;
+    }
+
+    .parcelas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 8px;
+    }
+
+    .parcela-opcao {
+      padding: 8px;
+      border: 1px solid #f59e0b;
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+
+    .parcela-opcao:hover {
+      background: #fef3c7;
+    }
+
+    .parcela-opcao.selecionada {
+      background: #f59e0b;
+      color: white;
+      border-color: #f59e0b;
+    }
+
+    .btn-pagar {
+      width: 100%;
+      padding: 16px;
+      background: var(--azul-profundo);
+      color: var(--branco);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 24px;
+    }
+
+    .btn-pagar:hover {
+      background: #153a4d;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(26, 54, 93, 0.2);
+    }
+
+    .btn-pagar:disabled {
+      background: var(--cinza-claro);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .garantia {
+      background: #d1fae5;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #065f46;
+      text-align: center;
+    }
+
+    .garantia strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .checkout-container {
+        grid-template-columns: 1fr;
+      }
+
+      .checkout-resumo {
+        position: static;
+      }
+
+      .opcoes-pagamento {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  
   <nav class="navbar">
-    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
-    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a></div>
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo" class="logo-img" style="width: 120px; height: 120px;">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu">
+      <a href="index.html">Voltar</a>
+    </div>
   </nav>
 
-  <div class="checkout-container">
-    <div class="checkout-card">
-      <h2>Finalizar Assinatura</h2>
-      <p style="color:var(--texto-medio);">Plano escolhido: <strong id="plano-nome">Pro</strong></p>
+  <div class="container">
+    <div class="checkout-container">
+      <!-- RESUMO DO PLANO -->
+      <div class="checkout-resumo">
+        <h2>Resumo do Pedido</h2>
+        
+        <div class="plano-info" id="planoInfo">
+          <h3 id="planoNome">Pro</h3>
+          <p id="planoDescricao">Para profissionais independentes</p>
+        </div>
 
-      <div class="resumo">
-        <p>Ciclo: <strong id="resumo-ciclo">Mensal</strong></p>
-        <p>Valor base: <span id="resumo-valor-base">R$ 89,90</span></p>
-        <p id="resumo-desconto-pix" style="display:none;">Desconto PIX (5%): <span id="desconto-valor" style="color:#22543D;">-R$ 0,00</span></p>
-        <p>Valor final: <span id="resumo-valor-final" style="font-size:18px;font-weight:700;">R$ 89,90</span></p>
-      </div>
+        <div class="resumo-linha">
+          <span>Assinatura Anual:</span>
+          <span id="valorAnual">R$ 899,00</span>
+        </div>
 
-      <div class="form-grupo">
-        <label>Forma de Pagamento</label>
-        <select id="forma-pagamento" onchange="atualizarResumo()">
-          <option value="cartao_credito">Cartão de Crédito</option>
-          <option value="pix">PIX (5% de desconto)</option>
-        </select>
-      </div>
+        <div class="resumo-linha" id="linhaDesconto" style="display: none;">
+          <span>Desconto PIX (5%):</span>
+          <span id="valorDesconto" style="color: #10b981;">-R$ 44,95</span>
+        </div>
 
-      <div class="form-grupo parcelas-select" id="grupo-parcelas">
-        <label>Parcelas (sem juros)</label>
-        <select id="parcelas" onchange="atualizarResumo()">
-          <option value="1">1x</option>
-          <option value="2">2x</option>
-          <option value="3">3x</option>
-          <option value="4">4x</option>
-        </select>
-      </div>
+        <div class="resumo-linha total">
+          <span>Total:</span>
+          <span id="valorTotal">R$ 899,00</span>
+        </div>
 
-      <div class="cupom">
-        <label>Cupom de desconto</label><br>
-        <input type="text" id="cupom" placeholder="PRESENTEDOMAU">
-        <button onclick="aplicarCupom()">Aplicar</button>
-        <p id="msg-cupom" style="font-size:12px;margin-top:4px;"></p>
-      </div>
+        <div class="desconto-pix" id="descricaoPix">
+          <strong>💰 Economize 5% pagando com PIX!</strong><br>
+          Pagamento à vista: R$ 854,05
+        </div>
 
-      <div class="form-grupo">
-        <label>☐ Sou associado ABRATH (15% off)</label>
-        <div id="grupo-abrath" style="display:none;">
-          <input type="text" id="abrath-registro" placeholder="Nº de registro ABRATH">
-          <input type="text" id="abrath-nome" placeholder="Nome completo" style="margin-top:8px;">
-          <button onclick="verificarABRATH()" style="margin-top:8px;">Confirmar</button>
-          <p id="msg-abrath" style="font-size:12px;margin-top:4px;"></p>
+        <div class="garantia">
+          <strong>✓ Garantia de Satisfação</strong>
+          Você pode cancelar sua assinatura em até 15 dias com reembolso integral.
         </div>
       </div>
 
-      <button class="btn btn-primario" onclick="finalizar()" style="width:100%;margin-top:10px;">Finalizar Pagamento</button>
+      <!-- FORMULÁRIO DE PAGAMENTO -->
+      <div class="checkout-formulario">
+        <h2>Informações de Pagamento</h2>
+
+        <form id="formCheckout">
+          <!-- SELEÇÃO DE PLANO -->
+          <div class="form-group">
+            <label>Selecione seu Plano</label>
+            <select id="selectPlano" onchange="atualizarPlano()" required>
+              <option value="">Escolha um plano...</option>
+              <option value="pro">Pro — R$ 899/ano</option>
+              <option value="premium">Premium — R$ 4.799/ano</option>
+              <option value="enterprise">Enterprise — R$ 9.990/ano</option>
+              <option value="coworking">Coworking — R$ 15.990/ano</option>
+            </select>
+          </div>
+
+          <!-- OPÇÕES DE PAGAMENTO -->
+          <div class="form-group">
+            <label>Forma de Pagamento</label>
+            <div class="opcoes-pagamento">
+              <label class="opcao-pagamento selecionado">
+                <input type="radio" name="pagamento" value="pix" checked onchange="atualizarPagamento()">
+                <div class="opcao-pagamento-titulo">💳 PIX</div>
+                <div class="opcao-pagamento-descricao">Pagamento instantâneo</div>
+                <div class="opcao-pagamento-destaque">5% de desconto</div>
+              </label>
+              <label class="opcao-pagamento">
+                <input type="radio" name="pagamento" value="cartao" onchange="atualizarPagamento()">
+                <div class="opcao-pagamento-titulo">💰 Cartão</div>
+                <div class="opcao-pagamento-descricao">Até 12 parcelas</div>
+                <div class="opcao-pagamento-destaque">Com juros</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- OPÇÕES DE PARCELAMENTO -->
+          <div class="parcelas-info" id="parcelasInfo">
+            <h4>Escolha o número de parcelas:</h4>
+            <div class="parcelas-grid" id="parcelasGrid"></div>
+          </div>
+
+          <!-- DADOS DO PAGADOR -->
+          <div class="form-group">
+            <label for="nomeCompleto">Nome Completo</label>
+            <input type="text" id="nomeCompleto" name="nomeCompleto" required placeholder="Seu nome completo">
+          </div>
+
+          <div class="form-group">
+            <label for="emailPagador">Email</label>
+            <input type="email" id="emailPagador" name="emailPagador" required placeholder="seu@email.com">
+          </div>
+
+          <div class="form-group">
+            <label for="cpf">CPF</label>
+            <input type="text" id="cpf" name="cpf" required placeholder="000.000.000-00">
+          </div>
+
+          <!-- DADOS DO CARTÃO (se cartão) -->
+          <div id="dadosCartao" style="display: none;">
+            <div class="form-group">
+              <label for="numeroCartao">Número do Cartão</label>
+              <input type="text" id="numeroCartao" name="numeroCartao" placeholder="0000 0000 0000 0000" maxlength="19">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <div class="form-group">
+                <label for="validade">Validade</label>
+                <input type="text" id="validade" name="validade" placeholder="MM/AA" maxlength="5">
+              </div>
+              <div class="form-group">
+                <label for="cvv">CVV</label>
+                <input type="text" id="cvv" name="cvv" placeholder="000" maxlength="3">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-pagar" id="btnPagar">Pagar com PIX — R$ 854,05</button>
+        </form>
+      </div>
     </div>
   </div>
 
-  <footer style="text-align:center;padding:20px;font-size:12px;color:var(--texto-medio);">
-    <a href="manual.html">📖 Manual de Uso</a>
+  <footer>
+    <div class="container">
+      <div style="margin-bottom: 40px;">
+        <a href="termos.html">Termos</a>
+        <a href="privacidade.html">Privacidade</a>
+      </div>
+      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
+      <p>&copy; 2026 Todos os direitos reservados.</p>
+    </div>
   </footer>
 
   <script src="js/config.js"></script>
   <script>
-    var plano = 'pro';
-    var ciclo = 'mensal';
-    var valorBase = CONFIG.PLANOS[plano].valor_mensal;
-    var descontoABRATH = false;
+    const PLANOS_VALORES = {
+      pro: 899,
+      premium: 4799,
+      enterprise: 9990,
+      coworking: 15990
+    };
 
-    document.getElementById('resumo-valor-base').textContent = 'R$ ' + valorBase.toFixed(2).replace('.', ',');
-    document.getElementById('resumo-valor-final').textContent = 'R$ ' + valorBase.toFixed(2).replace('.', ',');
+    const JUROS_CARTAO = 1.0199; // 1.99% ao mês
 
-    function atualizarResumo() {
-      var forma = document.getElementById('forma-pagamento').value;
-      var parcelas = parseInt(document.getElementById('parcelas').value);
-      var valorFinal = valorBase;
-      var desconto = 0;
+    function atualizarPlano() {
+      const plano = document.getElementById('selectPlano').value;
+      if (!plano) return;
 
-      // Desconto PIX
-      if (forma === 'pix') {
-        desconto = valorBase * 0.05;
-        valorFinal = valorBase - desconto;
-        document.getElementById('resumo-desconto-pix').style.display = 'block';
-        document.getElementById('desconto-valor').textContent = '-R$ ' + desconto.toFixed(2).replace('.', ',');
-        document.getElementById('grupo-parcelas').style.display = 'none';
-      } else {
-        document.getElementById('resumo-desconto-pix').style.display = 'none';
-        document.getElementById('grupo-parcelas').style.display = 'block';
-      }
+      const valor = PLANOS_VALORES[plano];
+      const planoConfig = CONFIG.PLANOS[plano];
 
-      document.getElementById('resumo-valor-final').textContent = 'R$ ' + valorFinal.toFixed(2).replace('.', ',');
+      document.getElementById('planoNome').textContent = planoConfig.nome;
+      document.getElementById('planoDescricao').textContent = planoConfig.descricao;
+      document.getElementById('valorAnual').textContent = `R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+      atualizarPagamento();
     }
 
-    function aplicarCupom() {
-      var cod = document.getElementById('cupom').value.toUpperCase();
-      var msg = document.getElementById('msg-cupom');
-      if (cod === 'PRESENTEDOMAU' && plano === 'premium') {
-        msg.textContent = '✅ Cupom aplicado! Acesso vitalício.';
-        msg.style.color = 'var(--verde-suave)';
-        document.getElementById('resumo-valor-base').textContent = 'R$ 0,00';
-        document.getElementById('resumo-valor-final').textContent = 'R$ 0,00 (vitalício)';
+    function atualizarPagamento() {
+      const plano = document.getElementById('selectPlano').value;
+      const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
+
+      if (!plano) return;
+
+      const valor = PLANOS_VALORES[plano];
+      const desconto = pagamento === 'pix' ? valor * 0.05 : 0;
+      const valorFinal = valor - desconto;
+
+      // Atualizar resumo
+      if (pagamento === 'pix') {
+        document.getElementById('linhaDesconto').style.display = 'flex';
+        document.getElementById('valorDesconto').textContent = `-R$ ${desconto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        document.getElementById('descricaoPix').style.display = 'block';
+        document.getElementById('parcelasInfo').classList.remove('ativo');
+        document.getElementById('dadosCartao').style.display = 'none';
       } else {
-        msg.textContent = '❌ Cupom inválido para este plano.';
-        msg.style.color = 'var(--vermelho)';
+        document.getElementById('linhaDesconto').style.display = 'none';
+        document.getElementById('descricaoPix').style.display = 'none';
+        document.getElementById('parcelasInfo').classList.add('ativo');
+        document.getElementById('dadosCartao').style.display = 'block';
+        gerarOpcoesParcelas(valor);
+      }
+
+      document.getElementById('valorTotal').textContent = `R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+      document.getElementById('btnPagar').textContent = `Pagar com ${pagamento === 'pix' ? 'PIX' : 'Cartão'} — R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+    }
+
+    function gerarOpcoesParcelas(valor) {
+      const grid = document.getElementById('parcelasGrid');
+      grid.innerHTML = '';
+
+      for (let i = 2; i <= 12; i++) {
+        const valorParcela = (valor * Math.pow(JUROS_CARTAO, i - 1)) / i;
+        const jurosTotal = (valorParcela * i) - valor;
+
+        const btn = document.createElement('div');
+        btn.className = 'parcela-opcao';
+        btn.textContent = `${i}x R$ ${valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        btn.onclick = () => selecionarParcela(btn, i, valorParcela);
+        grid.appendChild(btn);
       }
     }
 
-    function verificarABRATH() {
-      // Simulação da verificação ABRATH
-      var registro = document.getElementById('abrath-registro').value;
-      var nome = document.getElementById('abrath-nome').value;
-      var msg = document.getElementById('msg-abrath');
-
-      // No início do script, verificar se o plano é Coworking
-      if (plano === 'coworking') {
-    document.getElementById('grupo-abrath').style.display = 'none';
-}
- 
-      
-      if (registro && nome) {
-        descontoABRATH = true;
-        msg.textContent = '✅ Registro ABRATH confirmado! 15% off aplicado.';
-        msg.style.color = 'var(--verde-suave)';
-        valorBase = valorBase * 0.85;
-        document.getElementById('resumo-valor-base').textContent = 'R$ ' + valorBase.toFixed(2).replace('.', ',');
-        atualizarResumo();
-      } else {
-        msg.textContent = '❌ Preencha todos os campos.';
-        msg.style.color = 'var(--vermelho)';
-      }
+    function selecionarParcela(element, parcelas, valor) {
+      document.querySelectorAll('.parcela-opcao').forEach(el => el.classList.remove('selecionada'));
+      element.classList.add('selecionada');
+      document.getElementById('btnPagar').textContent = `Pagar ${parcelas}x de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     }
 
-    async function finalizar() {
-      var token = localStorage.getItem('integra_token');
-      if (!token) { alert('Faça login primeiro.'); return; }
-      
-      var forma = document.getElementById('forma-pagamento').value;
-      var parcelas = parseInt(document.getElementById('parcelas').value);
-      var cupom = document.getElementById('cupom').value.toUpperCase();
-      
-      var body = {
-        plano: plano,
-        tipo_ciclo: ciclo,
-        parcelas: forma === 'pix' ? 1 : parcelas,
-        codigo_cupom: cupom === 'PRESENTEDOMAU' ? cupom : '',
-        abrath_registro: descontoABRATH ? document.getElementById('abrath-registro').value : null,
-        abrath_nome: descontoABRATH ? document.getElementById('abrath-nome').value : null
+    document.getElementById('formCheckout').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const dados = {
+        plano: document.getElementById('selectPlano').value,
+        pagamento: document.querySelector('input[name="pagamento"]:checked').value,
+        nomeCompleto: document.getElementById('nomeCompleto').value,
+        email: document.getElementById('emailPagador').value,
+        cpf: document.getElementById('cpf').value
       };
 
-      var r = await fetch(`${CONFIG.API_URL}/financeiro/renovar-assinatura`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(body)
-      });
-      
-      var d = await r.json();
-      if (r.ok) { 
-        alert('✅ Assinatura ativada!'); 
-        window.location.href = 'boas-vindas.html'; 
-      } else { 
-        alert('Erro: ' + (d.erro || 'Tente novamente.')); 
+      try {
+        const response = await fetch(`${CONFIG.API_URL}/financeiro/processar-pagamento`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        });
+
+        if (response.ok) {
+          alert('Pagamento processado com sucesso!');
+          window.location.href = 'painel-paciente.html';
+        } else {
+          alert('Erro ao processar pagamento. Tente novamente.');
+        }
+      } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao conectar com o servidor.');
       }
-    }
+    });
   </script>
-<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
 </body>
 </html>
