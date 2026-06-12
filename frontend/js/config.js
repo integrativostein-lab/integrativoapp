@@ -2,15 +2,26 @@
 // CONFIGURAÇÃO GLOBAL DO INTEGRATIVO.APP v2.1
 // ============================================
 
+const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname : '';
+
+function resolverApiUrl() {
+  if (typeof window !== 'undefined' && window.INTEGRATIVO_API_URL) {
+    return window.INTEGRATIVO_API_URL;
+  }
+  if (['localhost', '127.0.0.1'].includes(HOSTNAME_ATUAL)) {
+    return 'http://localhost:3001/api';
+  }
+  if (HOSTNAME_ATUAL.includes('alfa') || HOSTNAME_ATUAL.includes('alpha')) {
+    return 'https://integra-backend-alfa.onrender.com/api';
+  }
+  return 'https://integra-backend-ynrd.onrender.com/api';
+}
+
 const CONFIG = {
   // ═══════════════════════════════════════════
   // API
   // ═══════════════════════════════════════════
-  API_URL: (typeof window !== 'undefined' && window.INTEGRATIVO_API_URL)
-    ? window.INTEGRATIVO_API_URL
-    : (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname))
-      ? 'http://localhost:3001/api'
-      : 'https://integra-backend-ynrd.onrender.com/api',
+  API_URL: resolverApiUrl(),
 
   // ═══════════════════════════════════════════
   // PLANOS (MODELO 100% ANUAL — 2026)
