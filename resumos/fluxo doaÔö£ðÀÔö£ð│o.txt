@@ -2,17 +2,16 @@
         │
         └── [Cadastro da Entidade]
                 │
-                ├── Tipo: Prefeitura / ONG / Humanitária
+                ├── Tipo: ONG / Humanitária / Projeto Social
                 ├── País
                 ├── CNPJ (ou equivalente)
-                ├── Código IBGE (se prefeitura)
                 ├── Documentação (ofício/portaria)
                 └── [Solicitar Acesso]
                         │
                         ├── [Verificação Automática]
-                        │       ├── População (IBGE)
-                        │       ├── IDH (ONU)
-                        │       └── CNPJ (Receita Federal)
+                        │       ├── Documentação da entidade
+                        │       ├── Finalidade social
+                        │       └── CNPJ ou documento equivalente
                         │
                         ├── [Análise Super Admin]
                         │       ├── Revisar documentação
@@ -25,7 +24,7 @@
                                 ├── Sistema completo (código aberto)
                                 ├── Manual técnico
                                 ├── Guia de instalação
-                                └── Termo de Cessão
+                                └── Termo de Parceria Social
                                         │
                                         └── [Modo Homologação]
                                                 │

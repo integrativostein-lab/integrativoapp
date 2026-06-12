@@ -45,7 +45,7 @@ router.get('/visitas', autenticar, async (req, res) => {
   res.json(r.rows);
 });
 
-// Relatório de cobertura (para a prefeitura)
+// Relatório de cobertura (para a organização social)
 router.get('/relatorio-cobertura', autenticar, async (req, res) => {
   const { mes, ano } = req.query;
   const inicio = `${ano}-${mes}-01`;

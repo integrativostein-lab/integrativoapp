@@ -1,4 +1,4 @@
-[Prefeitura instala o sistema]
+[Organização social instala o sistema]
         │
         ├── [Sistema inicia em Modo de Homologação]
         │       │
@@ -8,7 +8,7 @@
         │       ├── Assinatura digital bloqueada
         │       └── Banco de dados volátil (opcional)
         │
-        ├── [Prefeitura assina Termo de Cessão]
+        ├── [Organização social assina Termo de Parceria Social]
         │       │
         │       ├── [Com certificado digital]
         │       │       └── Assinatura online, liberação imediata
@@ -23,4 +23,4 @@
                 └── [Modo Produção ativado]
                         ├── Todas as restrições removidas
                         ├── Sistema 100% funcional
-                        └── Certificado A1 da prefeitura ativado
+                        └── Certificado A1 da organização social ativado

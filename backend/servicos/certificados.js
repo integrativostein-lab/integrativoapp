@@ -30,7 +30,7 @@ function obterInstrucoesFallback() {
   return {
     metodo: 'firma_cartorio',
     passos: [
-      'Baixe o Termo de Cessão Gratuita',
+      'Baixe o Termo de Parceria Social',
       'Imprima e reconheça firma em cartório local',
       'Digitalize o documento assinado',
       'Faça upload no painel de administração',

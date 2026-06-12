@@ -7,15 +7,15 @@
    coworking é regido pelos Termos de Uso comerciais (SaaS proprietário).
    Não é permitida a redistribuição, modificação ou venda do código-fonte.
 
-2. DOAÇÃO PARA PREFEITURAS, ONGs E ORGANIZAÇÕES HUMANITÁRIAS
-   2.1. Prefeituras com população ≤ 45.000 habitantes, ONGs, Cruz Vermelha,
-        Médicos Sem Fronteiras e organizações humanitárias reconhecidas
-        recebem o código-fonte sob os termos desta licença.
+2. CONDIÇÕES SOCIAIS PARA ONGs E ORGANIZAÇÕES HUMANITÁRIAS
+   2.1. ONGs, organizações humanitárias reconhecidas e projetos sociais
+        podem solicitar condições sociais de uso sob os termos desta licença,
+        sempre mediante análise documental e acordo formal.
    2.2. É permitido: usar e modificar o código exclusivamente para uso
         próprio da entidade beneficiada.
-   2.3. A entidade pode distribuir o acesso ao sistema a todos os
-        profissionais de saúde a ela vinculados e à população por ela
-        atendida, sem custo adicional.
+   2.3. A entidade pode distribuir o acesso ao sistema aos profissionais
+        vinculados ao projeto aprovado e à população por ele atendida,
+        conforme o acordo formal firmado.
    2.4. É proibido: vender o código, sublicenciar, redistribuir a terceiros
         fora do escopo da entidade, ou utilizar para fins comerciais,
         políticos, religiosos ou militares.
@@ -23,9 +23,10 @@
         mas podem ser enviadas voluntariamente ao Integrativo.App para
         beneficiar outras entidades.
 
-3. DOAÇÃO PARA PAÍSES EM DESENVOLVIMENTO
-   3.1. Países classificados como "Low-income" ou "Lower-middle-income" pelo
-        Banco Mundial recebem o código-fonte sob os mesmos termos do item 2.
+3. PARCERIAS SOCIAIS INTERNACIONAIS
+   3.1. Projetos sociais internacionais podem solicitar condições especiais
+        sob os mesmos critérios do item 2, sem promessa automática de cessão,
+        gratuidade ou transferência de código-fonte.
 
 4. PROTEÇÃO DE DADOS
    4.1. O uso do sistema deve respeitar a LGPD (Brasil) ou, na ausência de

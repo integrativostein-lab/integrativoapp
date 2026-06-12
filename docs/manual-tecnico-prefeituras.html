@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manual Técnico — Integrativo.App para Prefeituras</title>
+  <title>Manual Técnico — Integrativo.App para Organizações Sociais</title>
   <link rel="stylesheet" href="../frontend/css/estilo.css">
   <style>
     body { background: #F5F0E8; font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif; padding: 40px; }
@@ -22,8 +22,8 @@
 </head>
 <body>
   <div class="manual">
-    <h1>🔧 Manual Técnico — Integrativo.App para Prefeituras</h1>
-    <p style="color:#4A5568;">Guia de instalação, configuração e manutenção para a equipe de TI do município.</p>
+    <h1>Manual Técnico — Integrativo.App para Organizações Sociais</h1>
+    <p style="color:#4A5568;">Guia de instalação, configuração e manutenção para a equipe técnica da entidade parceira.</p>
 
     <h2>1. Requisitos do Sistema</h2>
     <table>
@@ -40,7 +40,7 @@
     <h3>2.1. Obter o código-fonte</h3>
     <p>Acesse a página de download com a chave de ativação fornecida pelo Integrativo.App:</p>
     <pre>https://integrativo.app/ativacao?chave=SUA_CHAVE_AQUI</pre>
-    <p>Faça o download do arquivo <code>integrativo-prefeitura.zip</code> e extraia no servidor.</p>
+    <p>Faça o download do arquivo <code>integrativo-entidade.zip</code> e extraia no servidor.</p>
 
     <h3>2.2. Instalar dependências</h3>
     <pre>
@@ -51,9 +51,9 @@ npm install
     <h3>2.3. Configurar o banco de dados</h3>
     <p>Crie um banco PostgreSQL e configure o arquivo <code>.env</code>:</p>
     <pre>
-DATABASE_URL=postgresql://usuario:senha@localhost:5432/integrativo_prefeitura
-JWT_SECRET=chave_secreta_gerada_pela_prefeitura
-FRONTEND_URL=https://saude.SEU_MUNICIPIO.gov.br
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/integrativo_entidade
+JWT_SECRET=chave_secreta_gerada_pela_entidade
+FRONTEND_URL=https://saude.SUA_ENTIDADE.org.br
 </pre>
 
     <h3>2.4. Criar as tabelas</h3>
@@ -74,10 +74,10 @@ node server.js
     <pre>
 server {
     listen 443 ssl;
-    server_name saude.SEU_MUNICIPIO.gov.br;
+    server_name saude.SUA_ENTIDADE.org.br;
 
-    ssl_certificate /etc/letsencrypt/live/saude.SEU_MUNICIPIO.gov.br/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/saude.SEU_MUNICIPIO.gov.br/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/saude.SUA_ENTIDADE.org.br/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/saude.SUA_ENTIDADE.org.br/privkey.pem;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -98,7 +98,7 @@ server {
       <li>Exportação DATASUS desabilitada</li>
       <li>Assinatura digital bloqueada</li>
     </ul>
-    Para liberar o <strong>Modo Produção</strong>, o responsável legal da prefeitura deve assinar o Termo de Cessão Gratuita com certificado digital ICP-Brasil (e-CNPJ) e inseri-lo no painel de administração.</div>
+    Para liberar o <strong>Modo Produção</strong>, o responsável legal da organização social deve assinar o Termo de Parceria Social com certificado digital ICP-Brasil (e-CNPJ) e inseri-lo no painel de administração.</div>
 
     <h2>5. Integração com o DATASUS (BPA)</h2>
     <p>O sistema gera arquivos no formato BPA (Boletim de Produção Ambulatorial) compatíveis com o DATASUS.</p>
@@ -114,7 +114,7 @@ server {
     <p>O sistema realiza backup automático semanal (diário para planos pagos). Os arquivos são salvos em <code>/opt/integrativo/backups/</code>.</p>
     <h3>6.2. Restauração manual</h3>
     <pre>
-psql -U usuario -d integrativo_prefeitura < backup_2026-06-15.sql
+psql -U usuario -d integrativo_entidade < backup_2026-06-15.sql
 </pre>
 
     <h2>7. Atualização do Sistema</h2>

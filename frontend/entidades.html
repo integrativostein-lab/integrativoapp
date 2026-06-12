@@ -4,7 +4,7 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App — Acesso gratuito para prefeituras, ONGs e organizações humanitárias.">
+  <meta name="description" content="Integrativo.App — Condições sociais para ONGs, organizações humanitárias e projetos comunitários.">
   <title>Entidades — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
@@ -34,7 +34,7 @@
 
   <div class="entidade-container">
     <h1>🌍 Acesso para Entidades</h1>
-    <p class="subtitulo">Prefeituras (até 45.000 hab.), ONGs, Cruz Vermelha, Médicos Sem Fronteiras e organizações humanitárias têm acesso gratuito ao sistema completo.</p>
+    <p class="subtitulo">ONGs, organizações humanitárias e projetos comunitários podem solicitar condições sociais mediante análise documental.</p>
 
     <div class="info-box">
       <strong>✅ O que está incluído:</strong><br>
@@ -43,14 +43,14 @@
       • Hospedagem própria (seus servidores)<br>
       • Exportação SUS (BPA) integrada<br>
       • Manual técnico de instalação<br>
-      • Sem custo, para sempre
+      • Condições especiais conforme análise
     </div>
 
     <div class="info-box">
       <strong>📋 Condições:</strong><br>
-      • Municípios com até 45.000 habitantes<br>
       • ONGs e organizações humanitárias mediante comprovação<br>
-      • Assinatura do Termo de Cessão Gratuita<br>
+      • Projetos comunitários de saúde mediante análise<br>
+      • Assinatura de termo de parceria ou condições sociais<br>
       • Proibido uso político, religioso ou militar<br>
       • Dados dos cidadãos protegidos (LGPD)
     </div>
@@ -61,10 +61,9 @@
       <label>Tipo de Entidade *</label>
       <select id="tipo-entidade">
         <option value="">Selecione...</option>
-        <option value="prefeitura">Prefeitura</option>
         <option value="ong">ONG</option>
         <option value="humanitaria">Organização Humanitária</option>
-        <option value="pais">País em Desenvolvimento</option>
+        <option value="projeto-social">Projeto Social</option>
       </select>
     </div>
 
@@ -117,11 +116,6 @@
       <input type="text" id="cnpj" placeholder="00.000.000/0000-00">
     </div>
 
-    <div class="form-grupo" id="grupo-ibge" style="display:none;">
-      <label>Código IBGE do Município (se prefeitura brasileira)</label>
-      <input type="text" id="codigo-ibge" placeholder="7 dígitos">
-    </div>
-
     <div class="form-grupo">
       <label>Nome do Responsável *</label>
       <input type="text" id="nome-responsavel" placeholder="Nome completo">
@@ -129,7 +123,7 @@
 
     <div class="form-grupo">
       <label>Cargo *</label>
-      <input type="text" id="cargo" placeholder="Secretário de Saúde, Presidente, etc.">
+      <input type="text" id="cargo" placeholder="Presidente, coordenador, diretor, etc.">
     </div>
 
     <div class="form-grupo">
@@ -159,17 +153,6 @@
   </footer>
 
   <script>
-    document.getElementById('tipo-entidade').addEventListener('change', function() {
-      var grupo = document.getElementById('grupo-ibge');
-      grupo.style.display = (this.value === 'prefeitura' && document.getElementById('pais').value === 'BR') ? 'block' : 'none';
-    });
-
-    document.getElementById('pais').addEventListener('change', function() {
-      var grupo = document.getElementById('grupo-ibge');
-      var tipo = document.getElementById('tipo-entidade').value;
-      grupo.style.display = (tipo === 'prefeitura' && this.value === 'BR') ? 'block' : 'none';
-    });
-
     async function solicitar() {
       var msg = document.getElementById('msg');
       var tipo = document.getElementById('tipo-entidade').value;
@@ -194,6 +177,6 @@
       }, 2000);
     }
   </script>
-<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
+<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
 </body>
 </html>

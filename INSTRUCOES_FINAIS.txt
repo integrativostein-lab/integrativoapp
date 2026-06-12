@@ -29,7 +29,7 @@
 
 6. DADOS DA EMPRESA
 -------------------------------------
-- CNPJ: 48.893.405/0001-22 incluído em todos os rodapés.
+- CPF: 089.106.448-69 incluído em todos os rodapés.
 - Marca Registrada (INPI) identificada.
 
 Boa sorte com os testes!

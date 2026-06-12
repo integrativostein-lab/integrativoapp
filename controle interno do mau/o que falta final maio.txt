@@ -323,7 +323,7 @@
           <tr><td>servicos/anvisa-api.js</td><td class="status-missing">Não existe</td><td>Consultar registros de fitoterápicos</td><td>~150 linhas</td></tr>
           <tr><td>servicos/pubmed-api.js</td><td class="status-missing">Não existe</td><td>Buscar artigos via NCBI/E-utilities</td><td>~120 linhas</td></tr>
           <tr><td>servicos/ibge-api.js</td><td class="status-missing">Mencionado</td><td>Buscar população por código IBGE</td><td>~80 linhas</td></tr>
-          <tr><td>servicos/receitaws-api.js</td><td class="status-missing">Mencionado</td><td>Validar CNPJ de prefeituras</td><td>~60 linhas</td></tr>
+          <tr><td>servicos/receitaws-api.js</td><td class="status-missing">Mencionado</td><td>Validar CNPJ de organizações sociais</td><td>~60 linhas</td></tr>
           <tr><td>servicos/certificados.js</td><td class="status-partial">Só padrões</td><td>Emissão via Certisign/Soluti</td><td>~200 linhas</td></tr>
         </tbody>
       </table>

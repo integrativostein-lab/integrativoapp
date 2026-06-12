@@ -1,12 +1,12 @@
 // ============================================
 // CONTADOR INTEGRATIVO SOLIDÁRIO
 // Atualiza automaticamente ao detectar
-// cadastro de prefeitura ou ONG
+// cadastro de organização social ou ONG
 // ============================================
 
 const ContadorSolidario = {
   metricas: {
-    prefeituras: 0,
+    organizacoesSociais: 0,
     ongs: 0,
     profissionais: 0,
     pacientes: 0
@@ -20,7 +20,7 @@ const ContadorSolidario = {
       if (r.ok) {
         const d = await r.json();
         this.metricas = {
-          prefeituras: d.prefeituras || 0,
+          organizacoesSociais: d.organizacoesSociais || d.entidades || 0,
           ongs: d.ongs || 0,
           profissionais: d.profissionais || 0,
           pacientes: d.pacientes || 0
@@ -36,7 +36,7 @@ const ContadorSolidario = {
     const container = document.getElementById('contador-solidario');
     if (!container) return;
 
-    const total = this.metricas.prefeituras + this.metricas.ongs;
+    const total = this.metricas.organizacoesSociais + this.metricas.ongs;
     if (total === 0) {
       container.style.display = 'none';
       return;
@@ -47,7 +47,7 @@ const ContadorSolidario = {
       <div style="text-align:center;padding:12px;">
         <strong style="color:#1A365D;">🌍 Impacto Solidário</strong><br>
         <span style="font-size:13px;">
-          🏛️ ${this.metricas.prefeituras} prefeituras atendidas gratuitamente<br>
+          🏛️ ${this.metricas.organizacoesSociais} organizações sociais apoiadas<br>
           🌱 ${this.metricas.ongs} ONGs recebendo o sistema<br>
           🩺 ${this.metricas.profissionais} profissionais impactados<br>
           👥 ${this.metricas.pacientes}+ pacientes beneficiados

@@ -16,7 +16,7 @@
         ├── [Sem certificado digital]
         │       ├── Popup: "Certificado necessário"
         │       ├── Link para comprar (revenda)
-        │       └── Link para portal manual da prefeitura
+        │       └── Link para portal manual da organização social
         │
         └── [Com certificado digital]
                 ├── NF assinada digitalmente

@@ -9,4 +9,4 @@
         └── [De volta à UBS (com WiFi)]
                 ├── Sincronização automática
                 ├── Dados vão para o prontuário do paciente
-                └── Relatório de cobertura disponível para a prefeitura
+                └── Relatório de cobertura disponível para a organização social
