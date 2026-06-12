@@ -28,12 +28,33 @@ O frontend detecta automaticamente dominios com `alfa` ou `alpha` e passa a usar
 4. No servico `integra-backend-alfa`, preencha as variaveis sensiveis:
    - `DATABASE_URL`: banco Postgres exclusivo para alfa.
    - `JWT_SECRET`: chave forte exclusiva para alfa.
+   - `LIVEKIT_URL`: URL WebSocket do projeto LiveKit.
+   - `LIVEKIT_API_KEY`: chave API do LiveKit.
+   - `LIVEKIT_API_SECRET`: segredo API do LiveKit.
+
+Se o servico `integra-backend-alfa` ainda nao existir, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto e preencha nele as mesmas variaveis sensiveis. Depois crie o backend alfa separado antes de liberar testadores.
 
 ## Banco alfa
 
 Use uma base separada da producao. Pode ser Supabase, Render PostgreSQL ou outro Postgres.
 
 Depois de criar o banco, rode as migracoes do projeto nessa base antes de liberar para testadores.
+
+## LiveKit / Teleconsulta
+
+O backend gera tokens seguros pela rota:
+
+```text
+POST /api/reunioes/livekit-token
+```
+
+O frontend de teste usa:
+
+```text
+/reuniao.html?sala=teleconsulta-alfa
+```
+
+As chaves reais do LiveKit devem ficar somente em variaveis de ambiente do Render e nos arquivos locais `.env` / `.env.teste`, que nao devem ir para o GitHub.
 
 ## Acesso dos testadores
 
