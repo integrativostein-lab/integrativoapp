@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: integra-backend-ynrd
+    runtime: node
+    plan: starter
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CORS_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FHIR_BASE_URL
+        value: https://integra-backend-ynrd.onrender.com/api/fhir
+      - key: TISS_BASE_URL
+        value: https://integra-backend-ynrd.onrender.com/api/tiss
+      - key: RNDS_ENABLED
+        value: false
+      - key: TEST_MODE
+        value: false

@@ -5,14 +5,14 @@ const db = require('../database');
 const crypto = require('crypto');
 const axios = require('axios');
 
-function autenticarCriador(req, res, next) {
+async function autenticarCriador(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try {
     const d = jwt.verify(token, process.env.JWT_SECRET);
-    const uResult = await db.query(\'SELECT email, tipo FROM usuarios WHERE id = $1\', [d.id]);
+    const uResult = await db.query('SELECT email, tipo FROM usuarios WHERE id = $1', [d.id]);
     const u = uResult.rows[0];
-    if (u?.email !== \'admin@integra.com\') return res.status(403).json({ erro: \'Exclusivo do criador\' });
+    if (u?.email !== 'admin@integra.com') return res.status(403).json({ erro: 'Exclusivo do criador' });
     req.criador = d;
     next();
   } catch { res.status(401).json({ erro: 'Token inválido' }); }

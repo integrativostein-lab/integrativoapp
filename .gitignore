@@ -1,8 +1,9 @@
-node_modules/
 .env
 .env.*
 !.env.example
-database.sqlite
+
+node_modules/
 uploads/
 *.log
+database.sqlite
 .DS_Store

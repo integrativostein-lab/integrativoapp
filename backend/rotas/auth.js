@@ -80,6 +80,18 @@ router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
     if (!email || !senha) return res.status(400).json({ erro: 'Email e senha obrigatórios' });
+
+    if (process.env.TEST_MODE === 'true' && senha === 'demo123') {
+      const usuariosDemo = {
+        'profissional@demo.com': { id: 'demo-profissional', nome: 'Dr. João Integrativo', tipo: 'profissional', plano: 'pro' },
+        'paciente@demo.com': { id: 'demo-paciente', nome: 'Maria Paciente', tipo: 'paciente', plano: 'freemium' }
+      };
+      const demo = usuariosDemo[email];
+      if (demo) {
+        const token = jwt.sign({ id: demo.id, email, tipo: demo.tipo, demo: true }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        return res.json({ mensagem: 'Login demo realizado!', token, usuario: { ...demo, email } });
+      }
+    }
     
     const result = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
     if (result.rows.length === 0) return res.status(401).json({ erro: 'Email ou senha incorretos' });

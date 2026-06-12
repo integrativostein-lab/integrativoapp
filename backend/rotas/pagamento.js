@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { criarPagamentoTeste, emitirNFSimulada, modoTeste } = require('../config/stripe');
+const ambiente = require('../config/ambiente');
+const db = require('../database');
 
 // Rota para processar pagamento (modo teste)
 router.post('/criar', async (req, res) => {
@@ -48,6 +50,8 @@ router.get('/status', (req, res) => {
     res.json({
         modo_teste: modoTeste,
         ambiente: process.env.NODE_ENV || 'development',
+        pasta_teste: ambiente.testeDir,
+        banco_teste: db.usandoBancoTeste,
         stripe_configurada: !!process.env.STRIPE_SECRET_KEY,
         nf_sem_certificado: process.env.SIMULAR_NF_SEM_CERTIFICADO === 'true'
     });

@@ -6,7 +6,11 @@ const CONFIG = {
   // ═══════════════════════════════════════════
   // API
   // ═══════════════════════════════════════════
-  API_URL: 'https://integra-backend-ynrd.onrender.com/api',
+  API_URL: (typeof window !== 'undefined' && window.INTEGRATIVO_API_URL)
+    ? window.INTEGRATIVO_API_URL
+    : (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname))
+      ? 'http://localhost:3001/api'
+      : 'https://integra-backend-ynrd.onrender.com/api',
 
   // ═══════════════════════════════════════════
   // PLANOS (MODELO 100% ANUAL — 2026)
@@ -345,14 +349,42 @@ const CONFIG = {
   ],
 
   // ═══════════════════════════════════════════
-  // FHIR BRASIL
+  // FHIR BRASIL (HL7 Brasil / RNDS R4)
   // ═══════════════════════════════════════════
   FHIR: {
     enabled: true,
     version: 'R4',
     padraoFHIRBrasil: true,
     url_hapi: 'https://hapi.fhir.org.br/fhir',
-    url_validacao: 'https://hapi.fhir.org.br/fhir/metadata'
+    url_validacao: 'https://hapi.fhir.org.br/fhir/metadata',
+    url_api: '/api/fhir',
+    url_metadata: '/api/fhir/metadata',
+    profiles: {
+      Patient: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BRIndividuo-1.0',
+      Practitioner: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BRProfissional-1.0',
+      Organization: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BREstabelecimentoSaude-1.0',
+      Encounter: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BRAtendimentoRegistroAtendimentoClinico-1.0',
+      Appointment: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BRAgendamentoRegistroConsulta-1.0',
+      MedicationRequest: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BRMedicamentoPrescricaoMedicamento-1.0',
+      Bundle: 'http://www.saude.gov.br/fhir/r4/StructureDefinition/BRDocumentoBundle-1.0'
+    },
+    namingSystems: {
+      CPF: 'http://www.saude.gov.br/fhir/r4/NamingSystem/cpf',
+      CNS: 'http://www.saude.gov.br/fhir/r4/NamingSystem/cns',
+      CNES: 'http://www.saude.gov.br/fhir/r4/NamingSystem/cnes',
+      CNPJ: 'http://www.saude.gov.br/fhir/r4/NamingSystem/cnpj',
+      CONSELHO: 'http://www.saude.gov.br/fhir/r4/NamingSystem/conselho-profissional'
+    },
+    endpoints: {
+      exportPatient: '/api/fhir/export-patient',
+      exportPractitioner: '/api/fhir/export-practitioner',
+      exportOrganization: '/api/fhir/export-organization',
+      exportAppointment: '/api/fhir/export-appointment',
+      exportEncounter: '/api/fhir/export-encounter',
+      exportMedicationRequest: '/api/fhir/export-medication-request',
+      exportBundle: '/api/fhir/export-bundle',
+      importPatient: '/api/fhir/import-patient'
+    }
   },
 
   // ═══════════════════════════════════════════

@@ -17,9 +17,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
-const fs = require('fs');
 const cron = require('node-cron');
+const ambiente = require('./config/ambiente');
 
 const db = require('./database');
 
@@ -64,12 +63,19 @@ app.use('/api/auth/cadastro-profissional', authLimiter);
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-if (!fs.existsSync('./uploads')) fs.mkdirSync('./uploads');
+const uploadsDir = ambiente.garantirDiretorio('uploads');
+app.use('/uploads', express.static(uploadsDir));
 
 // Rota de teste
 app.get('/', (req, res) => {
-  res.json({ sistema: 'Integrativo.App - Saúde Integrativa', versao: '2.1.0', status: 'online' });
+  res.json({
+    sistema: 'Integrativo.App - Saúde Integrativa',
+    versao: '2.1.0',
+    status: 'online',
+    ambiente: process.env.NODE_ENV || 'development',
+    modo_teste: ambiente.modoTeste,
+    pasta_teste: ambiente.testeDir
+  });
 });
 
 // ============================================
@@ -103,6 +109,7 @@ const acsRoutes = require('./rotas/acs');
 const equipeRoutes = require('./rotas/equipe');
 const pagamentoRoutes = require('./rotas/pagamento');
 const susRoutes = require('./rotas/sus');
+const tissRoutes = require('./rotas/tiss');
 const { router: fhirRoutes, atualizarProtocolosFiocruz } = require('./rotas/fhir');
 const { router: validacaoRoutes, atualizarStatusValidacoes } = require('./rotas/validacao-conselhos');
 
@@ -138,6 +145,7 @@ app.use('/api/acs', acsRoutes);
 app.use('/api/equipe', equipeRoutes);
 app.use('/api/pagamento', pagamentoRoutes);
 app.use('/api/sus', susRoutes);
+app.use('/api/tiss', tissRoutes);
 app.use('/api/fhir', fhirRoutes);
 app.use('/api/validacao', validacaoRoutes);
 
@@ -176,6 +184,9 @@ app.listen(PORT, () => {
   console.log('🔐 FHIR Brasil: /api/fhir');
   console.log('✓ Validação de Conselhos: /api/validacao');
   console.log('✓ CORS permitido para: ' + allowedOrigins.join(', '));
+  if (ambiente.modoTeste) {
+    console.log('✓ Ambiente de teste ativo: ' + (ambiente.testeDir || 'sem pasta TESTE configurada'));
+  }
 });
 
 module.exports = app;

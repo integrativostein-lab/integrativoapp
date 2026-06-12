@@ -3,7 +3,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/migracao/' });
+const { garantirDiretorio } = require('../config/ambiente');
+const upload = multer({ dest: garantirDiretorio('uploads', 'migracao') });
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];

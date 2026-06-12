@@ -1,13 +1,22 @@
 require('dotenv').config();
 const { Pool } = require('pg');
+const { modoTeste } = require('./config/ambiente');
 
-if (!process.env.DATABASE_URL) {
+const connectionString = modoTeste && process.env.TESTE_DATABASE_URL
+  ? process.env.TESTE_DATABASE_URL
+  : process.env.DATABASE_URL;
+
+if (!connectionString) {
   console.error('[FATAL] DATABASE_URL não configurada. Defina em .env antes de iniciar.');
   process.exit(1);
 }
 
+if (modoTeste && !process.env.TESTE_DATABASE_URL) {
+  console.warn('[DB] Ambiente de teste ativo sem TESTE_DATABASE_URL. Usando DATABASE_URL atual.');
+}
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: process.env.PGSSL === 'false' ? false : { rejectUnauthorized: false }
 });
 
@@ -17,5 +26,7 @@ pool.on('error', (err) => {
 
 module.exports = {
   query: (text, params) => pool.query(text, params),
-  pool
+  pool,
+  modoTeste,
+  usandoBancoTeste: modoTeste && !!process.env.TESTE_DATABASE_URL
 };
