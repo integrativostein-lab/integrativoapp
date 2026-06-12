@@ -12,7 +12,10 @@ function resolverApiUrl() {
     return 'http://localhost:3001/api';
   }
   if (HOSTNAME_ATUAL.includes('alfa') || HOSTNAME_ATUAL.includes('alpha')) {
-    return 'https://integra-backend-alfa.onrender.com/api';
+    // Temporario: enquanto o backend alfa remoto nao existir no Render,
+    // o frontend alfa usa o backend existente. Trocar para o endpoint alfa
+    // quando `integra-backend-alfa` for criado.
+    return 'https://integra-backend-ynrd.onrender.com/api';
   }
   return 'https://integra-backend-ynrd.onrender.com/api';
 }

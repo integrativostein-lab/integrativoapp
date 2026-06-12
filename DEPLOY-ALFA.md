@@ -8,7 +8,13 @@ Este projeto esta preparado para um ambiente alfa separado da producao.
 - Backend alfa: `https://integra-backend-alfa.onrender.com`
 - API alfa: `https://integra-backend-alfa.onrender.com/api`
 
-O frontend detecta automaticamente dominios com `alfa` ou `alpha` e passa a usar a API alfa.
+O frontend detecta automaticamente dominios com `alfa` ou `alpha`. Enquanto o servico `integra-backend-alfa` ainda nao existir no Render, ele usa temporariamente a API existente `https://integra-backend-ynrd.onrender.com/api`.
+
+Quando o backend alfa for criado, altere `frontend/js/config.js` para apontar dominios alfa para:
+
+```text
+https://integra-backend-alfa.onrender.com/api
+```
 
 ## Vercel
 
@@ -32,7 +38,7 @@ O frontend detecta automaticamente dominios com `alfa` ou `alpha` e passa a usar
    - `LIVEKIT_API_KEY`: chave API do LiveKit.
    - `LIVEKIT_API_SECRET`: segredo API do LiveKit.
 
-Se o servico `integra-backend-alfa` ainda nao existir, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto e preencha nele as mesmas variaveis sensiveis. Depois crie o backend alfa separado antes de liberar testadores.
+Se o servico `integra-backend-alfa` ainda nao existir, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto e preencha nele as mesmas variaveis sensiveis. Nesse cenario, inclua tambem a URL do frontend alfa em `CORS_ORIGINS` do `integra-backend-ynrd`. Depois crie o backend alfa separado antes de liberar testadores.
 
 ## Banco alfa
 
@@ -64,7 +70,13 @@ Envie apenas a URL do frontend alfa:
 https://integrativoapp-alfa.vercel.app
 ```
 
-Esse endereco chamara automaticamente:
+Enquanto o backend alfa remoto nao existir, esse endereco chamara temporariamente:
+
+```text
+https://integra-backend-ynrd.onrender.com/api
+```
+
+Depois da criacao do backend alfa, esse endereco devera chamar:
 
 ```text
 https://integra-backend-alfa.onrender.com/api

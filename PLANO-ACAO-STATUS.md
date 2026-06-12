@@ -14,7 +14,8 @@ Atualizado em: 2026-06-12
 - Tela `frontend/reuniao.html` conectada ao SDK WebRTC do LiveKit.
 - Variaveis LiveKit previstas em `.env.example` e `render.yaml`.
 - Arquivos sensiveis `.env` e `.env.teste` protegidos fora do Git.
-- Ultimo push para GitHub realizado no commit `f00ce05`.
+- Frontend alfa configurado para usar temporariamente o backend existente enquanto `integra-backend-alfa` nao existir.
+- Ultimo push para GitHub realizado no commit `7eeff69`.
 
 ## Falta fazer manualmente em painel externo
 
@@ -26,6 +27,7 @@ Atualizado em: 2026-06-12
 - Criar o servico remoto `integra-backend-alfa`, se o ambiente alfa separado ainda for necessario.
 - Criar/configurar banco alfa separado e preencher `TESTE_DATABASE_URL`.
 - Confirmar URL publica atual do Vercel ou criar o projeto `integrativoapp-alfa`.
+- Se usar frontend alfa com `integra-backend-ynrd`, incluir a URL do frontend alfa em `CORS_ORIGINS`.
 
 ## Falta testar
 
@@ -46,6 +48,7 @@ Atualizado em: 2026-06-12
 ## Proxima prioridade
 
 1. Configurar variaveis LiveKit no Render.
-2. Fazer deploy limpo no Render.
-3. Abrir a URL publica do frontend e testar `/reuniao.html?sala=teleconsulta-alfa`.
-4. Criar ambiente alfa remoto separado antes de convidar testadores.
+2. Incluir a URL do frontend alfa em `CORS_ORIGINS`.
+3. Fazer deploy limpo no Render.
+4. Abrir a URL publica do frontend e testar `/reuniao.html?sala=teleconsulta-alfa`.
+5. Criar ambiente alfa remoto separado antes de convidar testadores.
