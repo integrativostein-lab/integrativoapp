@@ -65,12 +65,12 @@
 
           <div class="form-grupo">
             <label>Itens (medicamentos, ervas, orientações)</label>
-            <textarea id="itens-prescricao" rows="4" placeholder="Ex: Unha de Gato 500mg — 1 cápsula 2x ao dia por 30 dias"></textarea>
+            <textarea id="itens-prescricao" rows="4" data-voz placeholder="Ex: Unha de Gato 500mg — 1 cápsula 2x ao dia por 30 dias"></textarea>
           </div>
 
           <div class="form-grupo">
             <label>Observações</label>
-            <textarea id="obs-prescricao" rows="2" placeholder="Orientações adicionais..."></textarea>
+            <textarea id="obs-prescricao" rows="2" data-voz placeholder="Orientações adicionais..."></textarea>
           </div>
 
           <button class="btn btn-primario" onclick="emitirPrescricao()" style="width:100%;">Emitir</button>
@@ -91,6 +91,7 @@
   </div>
 
   <script src="js/config.js"></script>
+  <script src="js/voz.js"></script>
   <script>
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 

@@ -26,11 +26,16 @@
     .gravacao-info { background: #EBF4FF; padding: 14px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
     .download-btn { background: var(--verde-suave); color: #FFF; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 13px; display: inline-block; }
     .expiracao-tag { font-size: 11px; color: var(--texto-medio); margin-top: 4px; }
+    .status-livekit { background: #EBF4FF; color: var(--azul-escuro); padding: 10px; border-radius: 8px; margin: 12px 0; font-size: 13px; }
+    .video-item video { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
   </style>
 </head>
 <body>
   <nav class="navbar">
-    <div class="logo"><img src="img/logo.png" alt="Integrativo.App" style="height:40px;"></div>
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
     <div class="menu"><a href="painel-terapeuta.html">Painel</a> <a href="manual.html">Manual</a></div>
   </nav>
 
@@ -40,9 +45,10 @@
       <p style="color:var(--texto-medio);">Ideal para Teleaulas e Consultas — Até 20 participantes — Premium, Enterprise e Coworking.</p>
 
       <div class="gravacao-banner" id="gravacao-banner">🔴 GRAVANDO — Esta reunião está sendo gravada</div>
+      <div class="status-livekit" id="status-livekit">Conectando à sala segura...</div>
 
       <div class="video-grid" id="video-grid">
-        <div class="video-item">👤 Você</div>
+        <div class="video-item">Aguardando câmera...</div>
       </div>
 
       <div class="participantes-lista" id="participantes-lista">
@@ -105,26 +111,146 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
   <script src="js/config.js"></script>
   <script>
     var micOn = true;
     var camOn = true;
     var gravando = false;
+    var room = null;
+    var localVideoTrack = null;
+    var localAudioTrack = null;
+    var screenTrack = null;
+    var salaAtual = new URLSearchParams(window.location.search).get('sala') || 'teleconsulta-alfa';
+
+    function atualizarStatus(msg) {
+      document.getElementById('status-livekit').textContent = msg;
+    }
+
+    function nomeUsuario() {
+      try {
+        var usuario = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
+        return usuario.nome || usuario.email || 'Participante';
+      } catch (e) {
+        return 'Participante';
+      }
+    }
+
+    function criarVideoItem(label, element) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'video-item';
+      wrapper.dataset.label = label;
+      if (element) {
+        wrapper.appendChild(element);
+      } else {
+        wrapper.textContent = label;
+      }
+      return wrapper;
+    }
+
+    function atualizarParticipantes() {
+      var lista = document.getElementById('participantes-lista');
+      lista.innerHTML = '<span class="participante-tag">👤 Você</span>';
+      if (!room) return;
+      room.remoteParticipants.forEach(function(p) {
+        var item = document.createElement('span');
+        item.className = 'participante-tag';
+        item.textContent = '👤 ' + (p.name || p.identity);
+        lista.appendChild(item);
+      });
+    }
+
+    function anexarTrack(track, label) {
+      if (!track || !track.attach) return;
+      var grid = document.getElementById('video-grid');
+      var el = track.attach();
+      el.autoplay = true;
+      el.playsInline = true;
+      grid.appendChild(criarVideoItem(label, el));
+    }
+
+    async function conectarLiveKit() {
+      var tokenApp = localStorage.getItem('integra_token');
+      if (!tokenApp) {
+        atualizarStatus('Faça login antes de entrar na teleconsulta.');
+        setTimeout(function() { window.location.href = 'login.html'; }, 1200);
+        return;
+      }
+
+      try {
+        var resposta = await fetch(CONFIG.API_URL + '/reunioes/livekit-token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + tokenApp
+          },
+          body: JSON.stringify({ sala: salaAtual, nome: nomeUsuario() })
+        });
+        var dados = await resposta.json();
+        if (!resposta.ok) throw new Error(dados.erro || 'Erro ao gerar token da sala.');
+
+        room = new LivekitClient.Room({ adaptiveStream: true, dynacast: true });
+        room.on(LivekitClient.RoomEvent.TrackSubscribed, function(track, publication, participant) {
+          if (track.kind === 'video') anexarTrack(track, participant.name || participant.identity);
+        });
+        room.on(LivekitClient.RoomEvent.ParticipantConnected, atualizarParticipantes);
+        room.on(LivekitClient.RoomEvent.ParticipantDisconnected, atualizarParticipantes);
+        room.on(LivekitClient.RoomEvent.Disconnected, function() {
+          atualizarStatus('Você saiu da sala.');
+        });
+
+        await room.connect(dados.url, dados.token);
+        document.getElementById('video-grid').innerHTML = '';
+
+        var tracks = await LivekitClient.createLocalTracks({ audio: true, video: true });
+        tracks.forEach(async function(track) {
+          await room.localParticipant.publishTrack(track);
+          if (track.kind === 'video') {
+            localVideoTrack = track;
+            anexarTrack(track, 'Você');
+          }
+          if (track.kind === 'audio') localAudioTrack = track;
+        });
+
+        atualizarParticipantes();
+        atualizarStatus('Conectado à sala: ' + dados.sala);
+      } catch (e) {
+        console.error(e);
+        atualizarStatus('Erro ao conectar LiveKit: ' + e.message);
+      }
+    }
 
     function toggleMic() {
       micOn = !micOn;
       var btn = document.querySelector('.btn-mic');
       btn.textContent = micOn ? '🎙️ Microfone' : '🔇 Mudo';
+      if (localAudioTrack) micOn ? localAudioTrack.unmute() : localAudioTrack.mute();
     }
 
     function toggleCam() {
       camOn = !camOn;
       var btn = document.querySelector('.btn-cam');
       btn.textContent = camOn ? '📹 Câmera' : '📷 Off';
+      if (localVideoTrack) camOn ? localVideoTrack.unmute() : localVideoTrack.mute();
     }
 
-    function toggleTela() {
-      alert('🖥️ Compartilhamento de tela iniciado (em produção, usaria WebRTC)');
+    async function toggleTela() {
+      if (!room) return;
+      try {
+        if (screenTrack) {
+          await room.localParticipant.unpublishTrack(screenTrack);
+          screenTrack.stop();
+          screenTrack = null;
+          document.querySelector('.btn-tela').textContent = '🖥️ Compartilhar Tela';
+          return;
+        }
+        var tracks = await LivekitClient.createLocalScreenTracks();
+        screenTrack = tracks[0];
+        await room.localParticipant.publishTrack(screenTrack);
+        document.querySelector('.btn-tela').textContent = '⏹️ Parar Tela';
+      } catch (e) {
+        alert('Não foi possível compartilhar a tela: ' + e.message);
+      }
     }
 
     function toggleGravacao() {
@@ -144,6 +270,7 @@
 
     function sairReuniao() {
       if (confirm('Sair da reunião?')) {
+        if (room) room.disconnect();
         window.location.href = 'painel-terapeuta.html';
       }
     }
@@ -156,6 +283,8 @@
       document.getElementById('chat-msg').value = '';
       chat.scrollTop = chat.scrollHeight;
     }
+
+    conectarLiveKit();
   </script>
 <footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CNPJ: 48.893.405/0001-22</footer>
 </body>

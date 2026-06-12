@@ -36,8 +36,8 @@
         <div class="triagem-card">
           <h3>Nova Triagem</h3>
           <div class="form-grupo"><label>Paciente</label><input type="text" id="paciente-nome" placeholder="Nome do paciente"></div>
-          <div class="form-grupo"><label>Queixa Principal</label><input type="text" id="queixa" placeholder="Ex: Dor torácica"></div>
-          <div class="form-grupo"><label>Sinais Vitais</label><input type="text" id="sinais" placeholder="PA, FC, FR, Temp, SatO2"></div>
+          <div class="form-grupo"><label>Queixa Principal</label><input type="text" id="queixa" data-voz placeholder="Ex: Dor torácica"></div>
+          <div class="form-grupo"><label>Sinais Vitais</label><input type="text" id="sinais" data-voz placeholder="PA, FC, FR, Temp, SatO2"></div>
           <div class="form-grupo">
             <label>Classificação de Risco (Manchester)</label>
             <div>
@@ -60,6 +60,7 @@
     </div>
   </div>
 
+  <script src="js/voz.js"></script>
   <script>
     function classificar(risco) { window.riscoSelecionado = risco; alert('Classificação: ' + risco.toUpperCase()); }
     function registrarTriagem() { alert('Triagem registrada! Paciente encaminhado para a fila de espera.'); }
