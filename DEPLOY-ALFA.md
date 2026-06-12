@@ -48,3 +48,9 @@ Esse endereco chamara automaticamente:
 ```text
 https://integra-backend-alfa.onrender.com/api
 ```
+
+## Redeploy automatico via GitHub
+
+Quando Vercel e Render estiverem conectados ao repositorio, qualquer novo commit em `master` dispara um novo deploy.
+
+Se precisar forcar um redeploy sem alterar regra de negocio, atualize este guia ou outro arquivo de documentacao e faca push para o GitHub.
