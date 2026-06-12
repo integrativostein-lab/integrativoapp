@@ -59,7 +59,7 @@ router.get('/exportar-vendas', autenticarCriador, async (req, res) => {
 });
 
 // ============================================
-// ENTIDADES (ONGs, ORGANIZAÇÕES HUMANITÁRIAS E PROJETOS SOCIAIS)
+// ENTIDADES (ONGs, ORGANIZAÇÕES HUMANITÁRIAS, PROJETOS SOCIAIS E GUARDIÕES DA FLORESTA)
 // ============================================
 
 router.post('/entidades/cadastro', async (req, res) => {
@@ -69,7 +69,7 @@ router.post('/entidades/cadastro', async (req, res) => {
     return res.status(400).json({ erro: 'Campos obrigatórios não preenchidos.' });
   }
 
-  const tiposElegiveis = ['ong', 'humanitaria', 'projeto-social'];
+  const tiposElegiveis = ['ong', 'humanitaria', 'projeto-social', 'guardioes-floresta'];
   const elegivel = tiposElegiveis.includes(tipo);
 
   if (!elegivel) {

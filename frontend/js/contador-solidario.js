@@ -7,6 +7,7 @@
 const ContadorSolidario = {
   metricas: {
     organizacoesSociais: 0,
+    guardioesFloresta: 0,
     ongs: 0,
     profissionais: 0,
     pacientes: 0
@@ -21,6 +22,7 @@ const ContadorSolidario = {
         const d = await r.json();
         this.metricas = {
           organizacoesSociais: d.organizacoesSociais || d.entidades || 0,
+          guardioesFloresta: d.guardioesFloresta || 0,
           ongs: d.ongs || 0,
           profissionais: d.profissionais || 0,
           pacientes: d.pacientes || 0
@@ -36,7 +38,7 @@ const ContadorSolidario = {
     const container = document.getElementById('contador-solidario');
     if (!container) return;
 
-    const total = this.metricas.organizacoesSociais + this.metricas.ongs;
+    const total = this.metricas.organizacoesSociais + this.metricas.guardioesFloresta + this.metricas.ongs;
     if (total === 0) {
       container.style.display = 'none';
       return;
@@ -48,6 +50,7 @@ const ContadorSolidario = {
         <strong style="color:#1A365D;">🌍 Impacto Solidário</strong><br>
         <span style="font-size:13px;">
           🏛️ ${this.metricas.organizacoesSociais} organizações sociais apoiadas<br>
+          🌳 ${this.metricas.guardioesFloresta} Guardiões da Floresta apoiados<br>
           🌱 ${this.metricas.ongs} ONGs recebendo o sistema<br>
           🩺 ${this.metricas.profissionais} profissionais impactados<br>
           👥 ${this.metricas.pacientes}+ pacientes beneficiados
