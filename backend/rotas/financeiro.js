@@ -1,8 +1,11 @@
 const express = require('express');
+const crypto = require('crypto');
 const router = express.Router();
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
+const { estornarPagamento } = require('../config/stripe');
+const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
 // CONSTANTES DE NEGÓCIO
@@ -23,6 +26,94 @@ const PRAZO_ARREPENDIMENTO_DIAS = 15;
 const MULTA_APOS_PRAZO = 0.20;     // 20% sobre saldo proporcional
 const VALOR_CERTIFICADO_A1 = 260.00;
 const PLANOS_COM_CERTIFICADO_A1 = ['premium', 'enterprise'];
+
+async function garantirColunasAssinaturaPagamento() {
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS forma_pagamento VARCHAR(30)").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS gateway_id VARCHAR(255)").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS gateway_resposta JSONB").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS valor_estornado DECIMAL(10, 2) DEFAULT 0").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS estorno_gateway_id VARCHAR(255)").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS estorno_status VARCHAR(40)").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS estorno_resposta JSONB").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS certificado_a1_emitido_plataforma BOOLEAN DEFAULT false").catch(() => {});
+  await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS cancelamento_recibo JSONB").catch(() => {});
+}
+
+async function garantirColunasCartaoUsuario() {
+  await db.query("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS cartao_final4 VARCHAR(4)").catch(() => {});
+  await db.query("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS cartao_obrigatorio_confirmado BOOLEAN DEFAULT false").catch(() => {});
+  await db.query("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS cartao_atualizado_em TIMESTAMP").catch(() => {});
+}
+
+async function garantirTabelaValidacaoAssinatura() {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS assinatura_validacoes (
+      id SERIAL PRIMARY KEY,
+      assinatura_id INTEGER NOT NULL,
+      usuario_id INTEGER NOT NULL,
+      codigo_hash VARCHAR(80) NOT NULL,
+      expira_em TIMESTAMP NOT NULL,
+      validado_em TIMESTAMP,
+      tentativas INTEGER DEFAULT 0,
+      canais_enviados JSONB,
+      criado_em TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await db.query(`
+    CREATE INDEX IF NOT EXISTS idx_assinatura_validacoes_assinatura
+    ON assinatura_validacoes (assinatura_id, criado_em DESC)
+  `);
+}
+
+function hashCodigo(codigo) {
+  return crypto.createHash('sha256').update(String(codigo)).digest('hex');
+}
+
+function gerarCodigoValidacao() {
+  return String(crypto.randomInt(100000, 1000000));
+}
+
+async function buscarUsuarioContato(usuarioId) {
+  const r = await db.query('SELECT id, nome, email, telefone FROM usuarios WHERE id = $1', [usuarioId]);
+  return r.rows[0] || {};
+}
+
+async function criarValidacaoAssinatura({ assinaturaId, usuario }) {
+  await garantirTabelaValidacaoAssinatura();
+  const codigo = gerarCodigoValidacao();
+  const canais = await notificacoes.enviarCodigoAssinatura({ usuario, codigo });
+  await db.query(
+    `INSERT INTO assinatura_validacoes (assinatura_id, usuario_id, codigo_hash, expira_em, canais_enviados)
+     VALUES ($1, $2, $3, NOW() + INTERVAL '15 minutes', $4)`,
+    [assinaturaId, usuario.id, hashCodigo(codigo), JSON.stringify(canais)]
+  );
+  return canais;
+}
+
+function moeda(valor) {
+  return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function montarReciboCancelamento({ ass, diasUsados, mesesUsados, mesesRestantes, valorMensalEquivalente, valorRestante, multa, certificadoCobrado, valorEstorno, estornoGateway }) {
+  const linhas = [
+    ['Plano', ass.plano],
+    ['Valor pago no ciclo anual', moeda(ass.valor)],
+    ['Data de início', new Date(ass.data_inicio).toLocaleDateString('pt-BR')],
+    ['Tempo utilizado', `${diasUsados} dia(s), equivalente a ${mesesUsados} mês(es) para cálculo proporcional`],
+    ['Meses restantes no ciclo anual', `${mesesRestantes} mês(es)`],
+    ['Valor mensal equivalente', moeda(valorMensalEquivalente)],
+    ['Saldo proporcional restante', moeda(valorRestante)],
+    ['Retenção/multa de 20% sobre o saldo restante', moeda(multa)],
+    ['Certificado A1 emitido pela plataforma', certificadoCobrado > 0 ? moeda(certificadoCobrado) : 'Não cobrado'],
+    ['Valor final de reembolso', moeda(valorEstorno)],
+    ['Status do estorno', estornoGateway?.status || 'não solicitado']
+  ];
+
+  return {
+    texto: linhas.map(([k, v]) => `${k}: ${v}`).join('\n'),
+    html: `<table border="1" cellpadding="8" cellspacing="0">${linhas.map(([k, v]) => `<tr><th align="left">${k}</th><td>${v}</td></tr>`).join('')}</table>`
+  };
+}
 
 /**
  * Calcula parcelamento Tabela Price.
@@ -150,14 +241,20 @@ router.post('/nota-fiscal', autenticar, async (req, res) => {
 // ============================================
 router.post('/renovar-assinatura', autenticar, async (req, res) => {
   try {
-    const { plano, forma_pagamento, parcelas, codigo_cupom, abrath_registro, abrath_nome } = req.body || {};
+    await garantirColunasAssinaturaPagamento();
+    await garantirColunasCartaoUsuario();
+    await garantirTabelaValidacaoAssinatura();
+    const { plano, forma_pagamento, parcelas, codigo_cupom, abrath_registro, abrath_nome, gateway_id, cartao_final4, cartao_obrigatorio_confirmado } = req.body || {};
     if (VALORES_ANUAIS[plano] == null) {
       return res.status(400).json({ erro: 'Plano inválido' });
     }
-    if (plano === 'freemium') {
-      await db.query("UPDATE usuarios SET plano = 'freemium', assinatura_ativa = 0 WHERE id = $1", [req.usuario.id]);
-      return res.json({ mensagem: 'Plano Freemium ativado.', plano, valor: 0 });
+    if (!cartao_obrigatorio_confirmado || !cartao_final4) {
+      return res.status(400).json({ erro: 'Cartão de crédito obrigatório para cobrança automática de teleconsultas.' });
     }
+    await db.query(
+      'UPDATE usuarios SET cartao_final4 = $1, cartao_obrigatorio_confirmado = true, cartao_atualizado_em = NOW() WHERE id = $2',
+      [String(cartao_final4).slice(-4), req.usuario.id]
+    ).catch(() => {});
 
     const valorBase = VALORES_ANUAIS[plano];
     let valor = valorBase;
@@ -186,7 +283,9 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       }
     }
 
-    const calc = vitalicio
+    const calc = plano === 'freemium'
+      ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
+      : vitalicio
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
       : calcularParcelamento(valor, parcelas || 1, forma_pagamento, plano !== 'guardioes_floresta');
 
@@ -194,31 +293,89 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
 
+    const gatewayResposta = {
+      cartao_final4: cartao_final4 || null,
+      cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
+      observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Pagamento registrado sem identificador de gateway; estorno automático depende da administradora configurada.'
+    };
+
     const r = await db.query(
-      `INSERT INTO assinaturas (usuario_id, plano, tipo_ciclo, valor, data_inicio, data_expiracao, parcelas, renovacao_automatica, status)
-       VALUES ($1, $2, $3, $4, NOW(), $5, $6, 0, 'ativa') RETURNING id`,
+      `INSERT INTO assinaturas (usuario_id, plano, tipo_ciclo, valor, data_inicio, data_expiracao, parcelas, renovacao_automatica, status, forma_pagamento, gateway_id, gateway_resposta)
+       VALUES ($1, $2, $3, $4, NOW(), $5, $6, 0, 'pendente_validacao', $7, $8, $9) RETURNING id`,
       [req.usuario.id, plano, vitalicio ? 'vitalicio' : 'anual', calc.valorTotal,
-        dataExpiracao.toISOString().split('T')[0], calc.parcelas]
+        dataExpiracao.toISOString().split('T')[0], calc.parcelas, forma_pagamento || null, gateway_id || null, JSON.stringify(gatewayResposta)]
     );
 
-    await db.query(
-      "UPDATE usuarios SET plano = $1, assinatura_ativa = 1, data_expiracao_assinatura = $2 WHERE id = $3",
-      [plano, dataExpiracao.toISOString().split('T')[0], req.usuario.id]
-    );
+    const usuario = await buscarUsuarioContato(req.usuario.id);
+    const canais = await criarValidacaoAssinatura({ assinaturaId: r.rows[0].id, usuario });
 
     res.json({
-      mensagem: vitalicio ? '🎉 Assinatura Premium Vitalícia ativada!' : 'Assinatura anual ativada!',
+      mensagem: 'Enviamos um código de validação por WhatsApp e email. Digite o código para ativar sua assinatura.',
+      precisa_validacao: true,
       vitalicio,
       plano,
       tipo_ciclo: vitalicio ? 'vitalicio' : 'anual',
       valor_base: valorBase,
       desconto_pct: descontoAplicado,
       ...calc,
-      id: r.rows[0].id
+      id: r.rows[0].id,
+      canais
     });
   } catch (e) {
     console.error('[financeiro/renovar-assinatura]', e.message);
     res.status(500).json({ erro: 'Erro ao processar assinatura' });
+  }
+});
+
+router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
+  try {
+    await garantirTabelaValidacaoAssinatura();
+    const { assinatura_id, codigo } = req.body || {};
+    if (!assinatura_id || !codigo) return res.status(400).json({ erro: 'Assinatura e código são obrigatórios' });
+
+    const a = await db.query('SELECT * FROM assinaturas WHERE id = $1 AND usuario_id = $2', [assinatura_id, req.usuario.id]);
+    if (a.rows.length === 0) return res.status(404).json({ erro: 'Assinatura não encontrada' });
+    const ass = a.rows[0];
+    if (ass.status !== 'pendente_validacao') {
+      return res.status(400).json({ erro: 'Assinatura não está pendente de validação' });
+    }
+
+    const v = await db.query(
+      `SELECT * FROM assinatura_validacoes
+       WHERE assinatura_id = $1 AND usuario_id = $2 AND validado_em IS NULL
+       ORDER BY criado_em DESC LIMIT 1`,
+      [assinatura_id, req.usuario.id]
+    );
+    if (v.rows.length === 0) return res.status(400).json({ erro: 'Código não encontrado ou já utilizado' });
+    const validacao = v.rows[0];
+    if (new Date(validacao.expira_em) < new Date()) return res.status(400).json({ erro: 'Código expirado. Solicite uma nova assinatura para receber outro código.' });
+    if ((validacao.tentativas || 0) >= 5) return res.status(429).json({ erro: 'Muitas tentativas. Solicite um novo código.' });
+
+    if (validacao.codigo_hash !== hashCodigo(codigo)) {
+      await db.query('UPDATE assinatura_validacoes SET tentativas = tentativas + 1 WHERE id = $1', [validacao.id]);
+      return res.status(400).json({ erro: 'Código inválido' });
+    }
+
+    await db.query('UPDATE assinatura_validacoes SET validado_em = NOW() WHERE id = $1', [validacao.id]);
+    await db.query("UPDATE assinaturas SET status = 'ativa' WHERE id = $1", [assinatura_id]);
+
+    const assinaturaAtiva = ass.plano !== 'freemium' ? 1 : 0;
+    await db.query(
+      'UPDATE usuarios SET plano = $1, assinatura_ativa = $2, data_expiracao_assinatura = $3 WHERE id = $4',
+      [ass.plano, assinaturaAtiva, ass.data_expiracao, req.usuario.id]
+    );
+
+    const usuario = await buscarUsuarioContato(req.usuario.id);
+    await notificacoes.enviarBoasVindasAssinatura({ usuario });
+
+    res.json({
+      mensagem: 'Assinatura validada. Seja bem-vindo(a) ao Integrativo.App!',
+      plano: ass.plano,
+      assinatura_ativa: !!assinaturaAtiva
+    });
+  } catch (e) {
+    console.error('[financeiro/validar-assinatura-codigo]', e.message);
+    res.status(500).json({ erro: 'Erro ao validar assinatura' });
   }
 });
 
@@ -227,6 +384,7 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
 // ============================================
 router.post('/cancelar-assinatura', autenticar, async (req, res) => {
   try {
+    await garantirColunasAssinaturaPagamento();
     const { assinatura_id } = req.body || {};
     const a = await db.query('SELECT * FROM assinaturas WHERE id = $1 AND usuario_id = $2', [assinatura_id, req.usuario.id]);
     if (a.rows.length === 0) return res.status(404).json({ erro: 'Assinatura não encontrada' });
@@ -237,6 +395,11 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
     const hoje = new Date();
     const inicio = new Date(ass.data_inicio);
     const diasUsados = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
+    const mesesUsados = Math.min(12, Math.max(1, Math.ceil(diasUsados / 30)));
+    const mesesRestantes = Math.max(0, 12 - mesesUsados);
+    const valorAssinatura = parseFloat(ass.valor) || 0;
+    const valorMensalEquivalente = valorAssinatura / 12;
+    const valorRestante = valorMensalEquivalente * mesesRestantes;
 
     let multa = 0;
     let valorEstorno = 0;
@@ -244,36 +407,103 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
     let mensagem = '';
 
     if (diasUsados <= PRAZO_ARREPENDIMENTO_DIAS) {
-      valorEstorno = parseFloat(ass.valor);
+      valorEstorno = valorAssinatura;
       mensagem = `Cancelamento dentro do prazo de ${PRAZO_ARREPENDIMENTO_DIAS} dias — reembolso calculado conforme regras de cancelamento.`;
     } else if (ass.tipo_ciclo === 'anual') {
-      const totalDias = 365;
-      const diasRestantes = Math.max(0, totalDias - diasUsados);
-      const valorPorDia = parseFloat(ass.valor) / totalDias;
-      const valorRestante = valorPorDia * diasRestantes;
       multa = valorRestante * MULTA_APOS_PRAZO;
       valorEstorno = Math.max(0, valorRestante - multa);
-      mensagem = `Cancelamento após ${PRAZO_ARREPENDIMENTO_DIAS} dias — multa de 20% aplicada sobre o saldo proporcional.`;
+      mensagem = `Cancelamento após ${PRAZO_ARREPENDIMENTO_DIAS} dias — retenção de 20% aplicada sobre o saldo dos ${mesesRestantes} mês(es) restante(s) do ciclo anual.`;
     } else {
       mensagem = 'Assinatura cancelada.';
     }
 
-    if (PLANOS_COM_CERTIFICADO_A1.includes(ass.plano)) {
+    if (PLANOS_COM_CERTIFICADO_A1.includes(ass.plano) && ass.certificado_a1_emitido_plataforma === true) {
       certificadoCobrado = VALOR_CERTIFICADO_A1;
       valorEstorno = Math.max(0, valorEstorno - certificadoCobrado);
-      mensagem += ` Certificado A1 incluído no plano será cobrado à parte no valor de R$ ${VALOR_CERTIFICADO_A1.toFixed(2)}.`;
+      mensagem += ` Certificado A1 emitido pela plataforma será cobrado no valor de R$ ${VALOR_CERTIFICADO_A1.toFixed(2)}.`;
+    } else if (PLANOS_COM_CERTIFICADO_A1.includes(ass.plano)) {
+      mensagem += ' Certificado A1 não foi cobrado porque não consta como emitido pela plataforma.';
     }
 
+    let estornoGateway = {
+      status: 'sem_estorno',
+      mensagem: 'Não havia valor a estornar.'
+    };
+
+    if (valorEstorno > 0) {
+      try {
+        estornoGateway = await estornarPagamento({
+          paymentIntentId: ass.gateway_id,
+          valor: parseFloat(valorEstorno.toFixed(2)),
+          motivo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS ? 'requested_by_customer' : 'requested_by_customer'
+        });
+        if (estornoGateway.status === 'succeeded') {
+          mensagem += ' Estorno automático enviado à administradora do cartão.';
+        } else if (estornoGateway.status === 'nao_enviado') {
+          mensagem += ' Estorno calculado, mas sem identificador do gateway para envio automático.';
+        } else {
+          mensagem += ' Estorno solicitado à administradora e aguardando confirmação.';
+        }
+      } catch (errEstorno) {
+        estornoGateway = {
+          status: 'erro',
+          erro: errEstorno.message
+        };
+        mensagem += ' Estorno automático não confirmado; encaminhar para revisão financeira.';
+      }
+    }
+
+    const recibo = valorEstorno > 0
+      ? montarReciboCancelamento({
+        ass,
+        diasUsados,
+        mesesUsados,
+        mesesRestantes,
+        valorMensalEquivalente,
+        valorRestante,
+        multa,
+        certificadoCobrado,
+        valorEstorno,
+        estornoGateway
+      })
+      : null;
+
     await db.query("UPDATE assinaturas SET status = 'cancelada', data_cancelamento = NOW() WHERE id = $1", [assinatura_id]);
+    await db.query(
+      `UPDATE assinaturas
+       SET valor_estornado = $1,
+           estorno_gateway_id = $2,
+           estorno_status = $3,
+           estorno_resposta = $4,
+           cancelamento_recibo = $5
+       WHERE id = $6`,
+      [
+        parseFloat(valorEstorno.toFixed(2)),
+        estornoGateway.id || null,
+        estornoGateway.status || null,
+        JSON.stringify(estornoGateway),
+        recibo ? JSON.stringify(recibo) : null,
+        assinatura_id
+      ]
+    );
     await db.query("UPDATE usuarios SET assinatura_ativa = 0, plano = 'freemium' WHERE id = $1", [req.usuario.id]);
+
+    const usuario = await buscarUsuarioContato(req.usuario.id);
+    await notificacoes.enviarCancelamento({ usuario, recibo });
 
     res.json({
       mensagem,
       dias_usados: diasUsados,
+      meses_usados: mesesUsados,
+      meses_restantes: mesesRestantes,
       dentro_do_prazo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS,
+      valor_mensal_equivalente: parseFloat(valorMensalEquivalente.toFixed(2)),
+      saldo_proporcional_restante: parseFloat(valorRestante.toFixed(2)),
       multa: parseFloat(multa.toFixed(2)),
       certificado_cobrado: parseFloat(certificadoCobrado.toFixed(2)),
-      valor_estorno: parseFloat(valorEstorno.toFixed(2))
+      valor_estorno: parseFloat(valorEstorno.toFixed(2)),
+      estorno_gateway: estornoGateway,
+      recibo
     });
   } catch (e) {
     console.error('[financeiro/cancelar-assinatura]', e.message);

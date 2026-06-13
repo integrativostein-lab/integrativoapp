@@ -12,7 +12,7 @@ router.post('/criar', async (req, res) => {
   const contas = [
     { nome: 'Dr. João Fitoterapeuta', email: 'joao@teste.com', senha: 'Teste@123', tipo: 'profissional', especialidades: '["Fitoterapia","Ayurveda"]', plano: 'pro', atende_online: 1, atende_presencial: 1 },
     { nome: 'Dra. Ana Massoterapeuta', email: 'ana@teste.com', senha: 'Teste@123', tipo: 'profissional', especialidades: '["Massoterapia","Aromaterapia"]', plano: 'premium', atende_online: 0, atende_presencial: 1 },
-    { nome: 'Clínica Vida Integrativa', email: 'clinica@teste.com', senha: 'Teste@123', tipo: 'admin', especialidades: '["Fitoterapia","Yoga","MTC"]', plano: 'enterprise', atende_online: 1, atende_presencial: 1, cnpj: '12345678000190' },
+    { nome: 'Clínica Vida Integrativa', email: 'clinica@teste.com', senha: 'Teste@123', tipo: 'admin', especialidades: '["Fitoterapia","Yoga","MTC","Arteterapia","Terapia de Florais","Biodança","Bioenergética","Constelação Familiar","Dança Circular","Geoterapia","Hipnoterapia","Homeopatia","Imposição de Mãos","Medicina Antroposófica","Meditação","Naturopatia","Ozonioterapia","Shantala","Terapia Comunitária Integrativa","Termalismo Social / Crenoterapia"]', plano: 'enterprise', atende_online: 1, atende_presencial: 1, cnpj: '12345678000190' },
     { nome: 'Maria Paciente', email: 'maria@teste.com', senha: 'Teste@123', tipo: 'paciente' },
     { nome: 'Pedro Paciente', email: 'pedro@teste.com', senha: 'Teste@123', tipo: 'paciente' }
   ];

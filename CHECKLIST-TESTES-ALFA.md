@@ -13,8 +13,14 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 ## 2. API e ambiente
 
 - Confirmar que o frontend chama a API correta.
-- Enquanto `integra-backend-alfa` nao existir, a API remota temporaria e `https://integra-backend-ynrd.onrender.com/api`.
-- Depois que `integra-backend-alfa` existir, trocar `frontend/js/config.js` para `https://integra-backend-alfa.onrender.com/api`.
+- Enquanto `integrativoappespelho` nao estiver configurado como backend, a API remota temporaria e `https://integra-backend-ynrd.onrender.com/api`.
+- Depois que `integrativoappespelho` responder como backend, trocar `frontend/js/config.js` para `https://integrativoappespelho.onrender.com/api`.
+- Confirmar que `https://integrativoappespelho.onrender.com/` responde `200`.
+- Confirmar que `https://integrativoappespelho.onrender.com/api/alertas-seguranca?termo=ginkgo%20varfarina` retorna:
+  - `usa_ia:false`
+  - `total_alertas` maior que `0`
+  - regra `FITOTERAPIA_ANTICOAGULANTE_001`
+- Confirmar que `https://integrativoappespelho.onrender.com/api/alertas-seguranca/regras` retorna `401` sem token, pois as regras completas nao devem ficar publicas.
 
 ## 3. Teleconsulta LiveKit
 
@@ -35,10 +41,12 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 - Criacao de agendamento.
 - Visualizacao do agendamento no painel.
 - Inicio de teleconsulta a partir do painel.
+- Busca em `painel-bibliotecas.html` por `ginkgo varfarina` e conferir alerta deterministico.
+- Em `painel-prescricao.html`, inserir item com risco conhecido e confirmar que aparece alerta antes da emissao.
 
 ## 5. Pendencias conhecidas
 
 - Gravacao real ainda nao implementada.
 - Transcricao/STT ainda nao implementada.
 - Banco alfa separado ainda precisa ser configurado.
-- Backend alfa remoto separado ainda precisa ser criado se os testes nao puderem usar o backend existente.
+- Backend alfa `integrativoappespelho` ainda precisa responder como backend se os testes nao puderem usar o backend existente.

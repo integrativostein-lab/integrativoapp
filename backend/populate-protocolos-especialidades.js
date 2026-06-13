@@ -249,6 +249,145 @@ const especialidades = [
   }
 ];
 
+especialidades.push(
+  {
+    nome: 'Arteterapia',
+    fonte: 'PNPIC/MS; BVS/BIREME; literatura de saúde mental e reabilitação psicossocial',
+    avaliacao: 'Avaliar objetivos expressivos, estado emocional, cognição, comunicação, trauma, rede de apoio e risco psicossocial.',
+    tratamento: 'Usar recursos artísticos como expressão, vínculo, regulação emocional e promoção de autonomia, com metas pactuadas.',
+    encaminhamento: 'Encaminhar em risco suicida, psicose, trauma grave, violência, regressão funcional ou sofrimento psíquico intenso.',
+    seguranca: 'Não interpretar produção artística de forma diagnóstica isolada; preservar consentimento, privacidade e limites clínicos.'
+  },
+  {
+    nome: 'Terapia de Florais',
+    fonte: 'PNPIC/MS; Bach Centre; BVS/BIREME; estudos de práticas integrativas e cuidado emocional complementar',
+    avaliacao: 'Avaliar estado emocional, estressores, sono, rede de apoio, psicotrópicos, risco de autoagressão e objetivo subjetivo.',
+    tratamento: 'Usar essências florais como recurso complementar de autocuidado emocional, com metas simples e reavaliação periódica.',
+    encaminhamento: 'Encaminhar imediatamente em ideação suicida, violência, crise de pânico incapacitante, psicose, depressão grave ou piora funcional.',
+    seguranca: 'Explicar caráter complementar, não suspender medicação, evitar promessas de cura e monitorar sinais de agravamento.'
+  },
+  {
+    nome: 'Biodança',
+    fonte: 'PNPIC/MS; BVS/BIREME; RedePICS Brasil; promoção da saúde',
+    avaliacao: 'Avaliar mobilidade, equilíbrio, saúde cardiovascular, saúde mental, histórico de trauma, limites corporais e preferências.',
+    tratamento: 'Usar vivências corporais e grupais com progressão suave para vínculo, vitalidade, expressão e integração comunitária.',
+    encaminhamento: 'Encaminhar em síncope, dor torácica, dispneia, crise psíquica, trauma ativo ou limitação funcional importante.',
+    seguranca: 'Evitar exposição emocional ou corporal sem consentimento; adaptar intensidade e respeitar limites físicos e culturais.'
+  },
+  {
+    nome: 'Bioenergética',
+    fonte: 'PNPIC/MS; BVS/BIREME; literatura de psicoterapia corporal',
+    avaliacao: 'Avaliar postura, respiração, tensão corporal, história emocional, trauma, dor, autonomia e risco em saúde mental.',
+    tratamento: 'Aplicar exercícios corporais, respiração, grounding e consciência corporal dentro do escopo habilitado.',
+    encaminhamento: 'Encaminhar em dissociação, psicose, risco suicida, dor aguda, trauma complexo ou crise emocional grave.',
+    seguranca: 'Evitar induções intensas sem preparo; manter consentimento, ritmo seguro e possibilidade de pausa a qualquer momento.'
+  },
+  {
+    nome: 'Constelação Familiar',
+    fonte: 'PNPIC/MS; BVS/BIREME; diretrizes de segurança em saúde mental e ética do cuidado',
+    avaliacao: 'Avaliar demanda psicossocial, vulnerabilidade, violência, luto, trauma, saúde mental e expectativa sobre a prática.',
+    tratamento: 'Usar como recurso reflexivo complementar, sem impor narrativas, culpa ou decisões clínicas/familiares.',
+    encaminhamento: 'Encaminhar em violência, abuso, risco suicida, psicose, mania, trauma grave, litígio complexo ou sofrimento intenso.',
+    seguranca: 'Exigir consentimento claro; evitar julgamento, exposição pública indevida, promessa de cura e substituição de psicoterapia.'
+  },
+  {
+    nome: 'Dança Circular',
+    fonte: 'PNPIC/MS; BVS/BIREME; OPAS/OMS promoção da saúde',
+    avaliacao: 'Avaliar mobilidade, equilíbrio, risco de queda, dor, inclusão social, objetivo comunitário e capacidade de participação.',
+    tratamento: 'Usar roda, ritmo e movimento coletivo para convivência, coordenação, pertencimento, relaxamento e promoção de saúde.',
+    encaminhamento: 'Encaminhar em queda recente, dor intensa, instabilidade, dispneia, tontura recorrente ou limitação funcional importante.',
+    seguranca: 'Adaptar passos, permitir pausas, evitar exclusão e monitorar fadiga, hidratação e segurança do ambiente.'
+  },
+  {
+    nome: 'Geoterapia',
+    fonte: 'PNPIC/MS; BVS/BIREME; vigilância sanitária; segurança dermatológica',
+    avaliacao: 'Avaliar pele, alergias, feridas, infecção, imunossupressão, gestação, procedência do material e objetivo complementar.',
+    tratamento: 'Usar argilas/terras de procedência segura apenas em pele íntegra, com tempo limitado e orientação de higiene.',
+    encaminhamento: 'Encaminhar em lesão cutânea, infecção, alergia, queimadura, piora dermatológica ou doença sistêmica sem diagnóstico.',
+    seguranca: 'Não aplicar em feridas, mucosas ou material contaminado; evitar ingestão e registrar procedência e reação.'
+  },
+  {
+    nome: 'Hipnoterapia',
+    fonte: 'PNPIC/MS; BVS/BIREME; PubMed/NCBI; diretrizes de saúde mental',
+    avaliacao: 'Avaliar objetivo, sugestionabilidade, trauma, dissociação, psicose, uso de substâncias, consentimento e expectativas.',
+    tratamento: 'Aplicar técnicas de relaxamento, foco atencional e sugestão terapêutica dentro do escopo profissional.',
+    encaminhamento: 'Encaminhar em psicose, mania, trauma complexo, dissociação grave, risco suicida ou sintomas neurológicos sem avaliação.',
+    seguranca: 'Não recuperar memórias como prova; evitar coerção, promessas e intervenções fora da habilitação.'
+  },
+  {
+    nome: 'Homeopatia',
+    fonte: 'PNPIC/MS; BVS Homeopatia; diretrizes profissionais; segurança clínica',
+    avaliacao: 'Avaliar queixa, história clínica, medicações, diagnóstico conhecido, gravidade, sinais de alarme e acompanhamento convencional.',
+    tratamento: 'Usar recurso homeopático complementar quando houver profissional habilitado, plano de seguimento e orientação clara.',
+    encaminhamento: 'Encaminhar em febre persistente, dor intensa, dispneia, sangramento, perda ponderal, gestação de risco ou doença grave.',
+    seguranca: 'Não suspender tratamento efetivo; registrar limites, consentimento e retorno para reavaliação.'
+  },
+  {
+    nome: 'Imposição de Mãos',
+    fonte: 'PNPIC/MS; NCCIH; BVS/BIREME; estudos de relaxamento e cuidado complementar',
+    avaliacao: 'Avaliar dor, ansiedade, fadiga, crenças, consentimento, conforto com toque e condições que exigem cuidado convencional.',
+    tratamento: 'Oferecer prática não invasiva de relaxamento, presença terapêutica e cuidado complementar respeitando preferências.',
+    encaminhamento: 'Encaminhar em sintomas agudos, dor intensa, dispneia, febre, alteração neurológica, risco emocional ou piora clínica.',
+    seguranca: 'Não prometer cura, não substituir diagnóstico/tratamento e manter limites profissionais e privacidade.'
+  },
+  {
+    nome: 'Medicina Antroposófica',
+    fonte: 'PNPIC/MS; BVS/BIREME; diretrizes profissionais da área; segurança clínica',
+    avaliacao: 'Avaliar diagnóstico biomédico, biografia, funcionalidade, medicamentos, preferências, riscos e sinais de alarme.',
+    tratamento: 'Integrar recursos antroposóficos complementares ao plano de cuidado, com coordenação clínica e seguimento.',
+    encaminhamento: 'Encaminhar em condição grave, progressiva, sem diagnóstico, urgência, falha terapêutica ou necessidade de especialista.',
+    seguranca: 'Não atrasar tratamento efetivo; checar interações, habilitação, consentimento e registro clínico.'
+  },
+  {
+    nome: 'Meditação',
+    fonte: 'PNPIC/MS; NCCIH; Cochrane; PubMed/NCBI; diretrizes de saúde mental',
+    avaliacao: 'Avaliar estresse, sono, dor, ansiedade, trauma, psicose, dissociação, disponibilidade e experiência prévia.',
+    tratamento: 'Usar práticas graduais de atenção plena, respiração, relaxamento e compaixão com duração adaptada.',
+    encaminhamento: 'Encaminhar em psicose, mania, dissociação, risco suicida, trauma intenso ou piora importante durante a prática.',
+    seguranca: 'Evitar práticas longas/intensas em vulneráveis; orientar pausa, grounding e acompanhamento quando necessário.'
+  },
+  {
+    nome: 'Naturopatia',
+    fonte: 'PNPIC/MS; OMS/WHO Traditional Medicine Strategy; BVS/BIREME; segurança clínica',
+    avaliacao: 'Avaliar estilo de vida, alimentação, sono, atividade física, medicamentos, suplementos, riscos e diagnóstico conhecido.',
+    tratamento: 'Usar educação em saúde, autocuidado, recursos naturais seguros e prevenção dentro do escopo profissional.',
+    encaminhamento: 'Encaminhar em sinais de alarme, doença grave, perda ponderal, febre, dor intensa, gestação de risco ou interação relevante.',
+    seguranca: 'Evitar prescrição fora da habilitação, promessas de cura, detox agressivo e suspensão de tratamento convencional.'
+  },
+  {
+    nome: 'Ozonioterapia',
+    fonte: 'PNPIC/MS; ANVISA; diretrizes profissionais; literatura de segurança clínica',
+    avaliacao: 'Avaliar indicação, via pretendida, habilitação, comorbidades, gestação, deficiência de G6PD, anticoagulação e risco oxidativo.',
+    tratamento: 'Usar somente quando permitido, com profissional habilitado, técnica reconhecida, dose/forma documentada e consentimento específico.',
+    encaminhamento: 'Encaminhar em evento adverso, dor intensa, dispneia, hemólise, infecção, piora clínica ou indicação fora de escopo.',
+    seguranca: 'Nunca inalar ozônio; respeitar regulação, biossegurança, rastreabilidade e limites de evidência.'
+  },
+  {
+    nome: 'Shantala',
+    fonte: 'PNPIC/MS; Caderneta da Criança/MS; BVS/BIREME; saúde materno-infantil',
+    avaliacao: 'Avaliar idade, vínculo cuidador-bebê, pele, febre, prematuridade, dor, alimentação, sono e conforto da criança.',
+    tratamento: 'Orientar toque/massagem infantil suave para vínculo, relaxamento e percepção corporal, com cuidador presente.',
+    encaminhamento: 'Encaminhar em febre, irritabilidade persistente, lesão de pele, dor, perda de peso, dificuldade alimentar ou sinais de risco.',
+    seguranca: 'Não aplicar sobre feridas, após alimentação imediata ou com bebê desconfortável; respeitar sinais de pausa.'
+  },
+  {
+    nome: 'Terapia Comunitária Integrativa',
+    fonte: 'PNPIC/MS; BVS/BIREME; OPAS/OMS promoção da saúde',
+    avaliacao: 'Avaliar demanda coletiva, vulnerabilidade social, rede de apoio, sofrimento, risco, recursos comunitários e objetivos da roda.',
+    tratamento: 'Conduzir roda de escuta, vínculo, partilha de estratégias, pertencimento e fortalecimento comunitário.',
+    encaminhamento: 'Encaminhar em risco suicida, violência, abuso, psicose, crise grave, insegurança alimentar ou necessidade de rede especializada.',
+    seguranca: 'Preservar confidencialidade, não expor participantes, não oferecer diagnóstico e acionar rede quando houver risco.'
+  },
+  {
+    nome: 'Termalismo Social / Crenoterapia',
+    fonte: 'PNPIC/MS; BVS/BIREME; vigilância sanitária; segurança ambiental',
+    avaliacao: 'Avaliar pele, circulação, pressão arterial, cardiopatias, gestação, mobilidade, hidratação e qualidade sanitária da água.',
+    tratamento: 'Usar banhos/águas minerais com tempo, temperatura e supervisão adequados como recurso complementar de bem-estar.',
+    encaminhamento: 'Encaminhar em síncope, dor torácica, dispneia, infecção de pele, hipotensão, febre ou descompensação clínica.',
+    seguranca: 'Controlar temperatura, tempo de exposição, hidratação, risco de queda e condições sanitárias.'
+  }
+);
+
 const bibliotecasMedicinasTradicionais = {
   Fitoterapia: [
     {

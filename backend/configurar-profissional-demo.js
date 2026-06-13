@@ -26,10 +26,12 @@ async function configurar() {
     console.log('⚠️ Rota /profissionais/valores falhou:', e.response?.data?.erro || e.message);
   }
 
-  // Tentar rota alternativa (usuarios/perfil)
+  // Tentar rota alternativa (usuarios/bibliotecas + usuarios/perfil)
   try {
+    await axios.put(`${API_URL}/usuarios/bibliotecas`, {
+      bibliotecas: ['Fitoterapia']
+    }, { headers: { 'Authorization': `Bearer ${token}` } });
     await axios.put(`${API_URL}/usuarios/perfil`, {
-      especialidades: JSON.stringify(['Fitoterapia']),
       atende_online: 1,
       atende_presencial: 1
     }, { headers: { 'Authorization': `Bearer ${token}` } });

@@ -17,13 +17,14 @@ async function inserirValores() {
   });
   const tokenProf = loginProf.data.token;
 
-  // Atualizar perfil do profissional via rota de usuários
+  // Atualizar bibliotecas e perfil do profissional via rotas de usuários
   try {
+    await axios.put(`${API_URL}/usuarios/bibliotecas`, {
+      bibliotecas: ['Fitoterapia', 'Ayurveda', 'MTC', 'Yoga']
+    }, { headers: { 'Authorization': `Bearer ${tokenProf}` } });
     await axios.put(`${API_URL}/usuarios/perfil`, {
-      especialidades: JSON.stringify(['Fitoterapia', 'Ayurveda', 'MTC', 'Yoga']),
       atende_online: 1,
-      atende_presencial: 1,
-      plano: 'enterprise'
+      atende_presencial: 1
     }, { headers: { 'Authorization': `Bearer ${tokenProf}` } });
     console.log('✅ Perfil atualizado: especialidades, modalidades, plano Enterprise');
   } catch (e) {

@@ -4,10 +4,10 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App conecta pacientes a profissionais de saúde integrativa com 30 bibliotecas terapêuticas, 936 registros, teleconsulta segura e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
+  <meta name="description" content="Integrativo.App conecta pacientes a profissionais de saúde integrativa com 63 bibliotecas terapêuticas, 1101 registros, PICS completas, teleconsulta segura e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
   <meta name="keywords" content="saúde integrativa, terapias integrativas, teleconsulta, ODS, Objetivos de Desenvolvimento Sustentável, Ayurveda, MTC, Yoga, Fitoterapia, protocolos terapêuticos, profissionais de saúde integrativa, Integrativo.App">
   <meta property="og:title" content="Integrativo.App — Saúde Integrativa com Protocolos e Bibliotecas Terapêuticas">
-  <meta property="og:description" content="Encontre profissionais e acesse um ecossistema com 30 bibliotecas terapêuticas, 936 registros e alinhamento aos ODS.">
+  <meta property="og:description" content="Encontre profissionais e acesse um ecossistema com 63 bibliotecas terapêuticas, 1101 registros, PICS completas e alinhamento aos ODS.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <title>Integrativo.App — Saúde Integrativa, Teleconsulta e Protocolos Terapêuticos</title>
@@ -337,7 +337,7 @@
     <div class="hero-texto">
       <span class="tag-plano">Para pacientes</span>
       <h1>Cuide de você com <span>saúde integrativa</span> de verdade.</h1>
-      <p>Crie sua conta gratuita e encontre profissionais de Ayurveda, MTC, Yoga, Psicologia, Medicina Integrativa e mais de 30 áreas terapêuticas. Atendimento online, presencial ou domiciliar.</p>
+      <p>Crie sua conta gratuita e encontre profissionais de Ayurveda, MTC, Yoga, Psicologia, Medicina Integrativa, PICS e mais de 47 áreas terapêuticas. Atendimento online, presencial ou domiciliar.</p>
       <ul class="hero-bullets">
         <li>Cadastro gratuito e rápido</li>
         <li>Profissionais com registro verificado online</li>
@@ -373,6 +373,10 @@
         <label class="lgpd">
           <input type="checkbox" id="lgpd" required>
           <span>Concordo com os <a href="termos.html" target="_blank">Termos</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a> (LGPD).</span>
+        </label>
+        <label class="lgpd">
+          <input type="checkbox" id="pesquisaConsentimento">
+          <span>Autorizo, de forma opcional e revogável, o uso de dados anonimizados para apoio a pesquisas clínicas e iniciativas de erradicação de doenças, sem identificação pessoal.</span>
         </label>
         <button type="submit" class="btn-cadastro" id="btnCadastrar">Criar conta gratuita</button>
         <p class="login-link">Já tem conta? <a href="login.html">Entrar</a></p>
@@ -445,8 +449,8 @@
       <div class="bibliotecas-head">
         <div>
           <span class="tag-plano">Bibliotecas e protocolos</span>
-          <h2>30 bibliotecas terapêuticas com protocolos confiáveis</h2>
-          <p>Um banco estruturado para apoiar escolhas conscientes em saúde integrativa: fontes oficiais, protocolos de avaliação, tratamentos, encaminhamentos e segurança clínica.</p>
+          <h2>63 bibliotecas terapêuticas com PICS completas</h2>
+          <p>Um banco estruturado para apoiar escolhas conscientes em saúde integrativa: PICS, fontes oficiais, protocolos de avaliação, tratamentos, encaminhamentos e segurança clínica.</p>
         </div>
         <div class="bibliotecas-metricas" id="bibliotecasMetricasIndex"></div>
       </div>
@@ -521,6 +525,7 @@
       const telefone = $('#telefone').value.trim();
       const senha = $('#senha').value;
       const lgpd = $('#lgpd').checked;
+      const pesquisaConsentimento = $('#pesquisaConsentimento').checked;
 
       if (!nome || !email || !senha) return showMsg('Preencha todos os campos obrigatórios.', 'err');
       if (senha.length < 8) return showMsg('A senha precisa ter no mínimo 8 caracteres.', 'err');
@@ -534,7 +539,8 @@
           body: JSON.stringify({
             nome, email, senha, telefone,
             tipo: 'paciente',
-            lgpd_consentimento: 1
+            lgpd_consentimento: 1,
+            pesquisa_clinica_consentimento: pesquisaConsentimento
           })
         });
         const d = await r.json();

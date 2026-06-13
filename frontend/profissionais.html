@@ -4,10 +4,10 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cadastre-se no Integrativo.App e tenha agenda, teleconsulta, padrões FHIR/TISS, 30 bibliotecas terapêuticas, 936 registros e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
+  <meta name="description" content="Cadastre-se no Integrativo.App e tenha agenda, teleconsulta, padrões FHIR/TISS, 63 bibliotecas terapêuticas, 1101 registros, PICS completas e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
   <meta name="keywords" content="cadastro profissional saúde integrativa, software para terapeutas, FHIR, TISS, ODS, Objetivos de Desenvolvimento Sustentável, interoperabilidade em saúde, agenda online, teleconsulta, prontuário, protocolos terapêuticos, ABRATH, Integrativo.App">
   <meta property="og:title" content="Integrativo.App para Profissionais — Gestão, Teleconsulta e Bibliotecas Terapêuticas">
-  <meta property="og:description" content="Plataforma para profissionais com padrões FHIR/TISS, teleconsulta, 30 bibliotecas terapêuticas e alinhamento aos ODS.">
+  <meta property="og:description" content="Plataforma para profissionais com padrões FHIR/TISS, teleconsulta, 63 bibliotecas terapêuticas, PICS completas e alinhamento aos ODS.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <title>Para Profissionais — Integrativo.App com Protocolos e Teleconsulta</title>
@@ -225,6 +225,21 @@
       font-size: 12px;
       margin-bottom: 10px;
     }
+    .bibliotecas-limite-info {
+      background: #ECFDF5;
+      border: 1px solid #BBF7D0;
+      border-radius: 10px;
+      color: #065F46;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 10px 0;
+      padding: 10px 12px;
+    }
+    .bibliotecas-limite-info.warn {
+      background: #FEF3C7;
+      border-color: #FCD34D;
+      color: #92400E;
+    }
     .especialidades-checkbox-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -244,6 +259,10 @@
       cursor: pointer;
     }
     .especialidades-checkbox-grid input { margin-top: 2px; }
+    .especialidades-checkbox-grid label.bloqueado {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
     .selo-abrath {
       display: none;
       align-items: center;
@@ -379,7 +398,7 @@
         <div>
           <span class="tag-plano">Bibliotecas profissionais</span>
           <h2>Protocolos para apoiar sua prática integrativa</h2>
-          <p>São 30 bibliotecas terapêuticas com registros organizados por fontes confiáveis, avaliação, tratamentos, encaminhamentos e segurança clínica para consulta profissional, com estrutura preparada para padrões FHIR e TISS.</p>
+          <p>São 63 bibliotecas terapêuticas, incluindo todas as PICS reconhecidas na PNPIC, com registros organizados por fontes confiáveis, avaliação, tratamentos, encaminhamentos e segurança clínica para consulta profissional, com estrutura preparada para padrões FHIR e TISS.</p>
         </div>
         <div class="bibliotecas-metricas" id="bibliotecasMetricasProf"></div>
       </div>
@@ -474,7 +493,8 @@
             <p class="sub" id="especialidadeAjuda" style="margin:8px 0 0;"></p>
             <div class="especialidades-opcoes" id="caixaEspecialidadesAdicionais">
               <strong style="color:var(--azul-profundo);font-size:13px;">Outras especialidades (opcional)</strong>
-              <p>Marque outras especialidades que também fazem parte da sua atuação.</p>
+              <p>A biblioteca da especialidade principal é liberada automaticamente. Marque outras bibliotecas apenas dentro do limite do seu plano.</p>
+              <div class="bibliotecas-limite-info" id="especialidadesLimiteInfo"></div>
               <div class="especialidades-checkbox-grid" id="especialidadesAdicionaisGrid"></div>
             </div>
           </div>
@@ -576,6 +596,10 @@
           <input type="checkbox" id="lgpd" required>
           <span>Concordo com os <a href="termos.html" target="_blank">Termos</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a> (LGPD).</span>
         </label>
+        <label class="lgpd">
+          <input type="checkbox" id="pesquisaConsentimento">
+          <span>Desejo colaborar, de forma opcional e revogável, com pesquisas clínicas por meio de dados anonimizados, quando houver base legal e sem identificação de pacientes.</span>
+        </label>
 
         <button type="submit" class="btn-submit" id="btnSubmit">Criar conta profissional</button>
       </form>
@@ -664,6 +688,16 @@
     const msgEl = $('#msg');
     const showMsg = (t, type) => { msgEl.textContent = t; msgEl.className = 'msg ' + (type === 'ok' ? 'ok' : 'err'); };
     const fmtMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const PLANO_CADASTRO_PADRAO = 'freemium';
+
+    function obterPlanoCadastro() {
+      return CONFIG.PLANOS[PLANO_CADASTRO_PADRAO] || CONFIG.PLANOS.freemium;
+    }
+
+    function limiteBibliotecasCadastro() {
+      const plano = obterPlanoCadastro();
+      return Number(plano.especialidades_inclusas) || 1;
+    }
 
     // ============================================
     // CALCULADORA COMPARATIVA
@@ -894,11 +928,11 @@
       const grid = $('#especialidadesAdicionaisGrid');
       const caixa = $('#caixaEspecialidadesAdicionais');
       const principal = $('#especialidade').value;
-      const opcoes = lista.filter(e => e.id !== principal);
+      const opcoes = CONFIG.ESPECIALIDADES.filter(e => e.id !== principal);
 
       grid.innerHTML = opcoes.map(e => `
         <label>
-          <input type="checkbox" name="especialidadesAdicionais" value="${e.nome}">
+          <input type="checkbox" name="especialidadesAdicionais" value="${e.nome}" data-especialidade-id="${e.id}">
           <span>${e.nome}${e.conselho && e.conselho !== 'ABRATH' ? ` — ${e.conselho}` : ''}</span>
         </label>
       `).join('');
@@ -908,9 +942,35 @@
     }
 
     function atualizarEspecialidadesAdicionais() {
-      const selecionadas = Array.from(document.querySelectorAll('input[name="especialidadesAdicionais"]:checked'))
-        .map(item => item.value);
+      const limiteTotal = limiteBibliotecasCadastro();
+      const limiteAdicionais = Math.max(0, limiteTotal - 1);
+      const principalNome = $('#especialidade').selectedOptions[0]?.dataset.nome || '';
+      let marcadas = Array.from(document.querySelectorAll('input[name="especialidadesAdicionais"]:checked'));
+
+      if (marcadas.length > limiteAdicionais) {
+        marcadas.slice(limiteAdicionais).forEach(item => { item.checked = false; });
+        marcadas = marcadas.slice(0, limiteAdicionais);
+        showMsg(`Seu plano permite ${limiteTotal} biblioteca(s): a principal + ${limiteAdicionais} adicional(is).`, 'err');
+      }
+
+      const selecionadas = marcadas.map(item => item.value);
       $('#adicionais').value = selecionadas.join(', ');
+
+      const bloquearNovas = selecionadas.length >= limiteAdicionais;
+      document.querySelectorAll('input[name="especialidadesAdicionais"]').forEach(input => {
+        input.disabled = !input.checked && bloquearNovas;
+        input.closest('label')?.classList.toggle('bloqueado', input.disabled);
+      });
+
+      const info = $('#especialidadesLimiteInfo');
+      if (info) {
+        const plano = obterPlanoCadastro();
+        const restante = Math.max(0, limiteAdicionais - selecionadas.length);
+        info.classList.toggle('warn', restante === 0);
+        info.textContent = principalNome
+          ? `Biblioteca principal liberada: ${principalNome}. Plano ${plano.nome}: ${limiteTotal} biblioteca(s) no total. Adicionais selecionadas: ${selecionadas.length}/${limiteAdicionais}. Restantes: ${restante}.`
+          : `Escolha a especialidade principal para liberar a primeira biblioteca.`;
+      }
     }
 
     function mostrarAbrath() {
@@ -1082,16 +1142,20 @@
       const senha2 = $('#senha2').value;
       const profissao = $('#profissao').value;
       const especialidade = $('#especialidade').value;
+      const especialidadeNome = $('#especialidade').selectedOptions[0]?.dataset.nome || '';
       const temAbrath = document.querySelector('input[name="temAbrath"]:checked')?.value || '';
       const registroAbrath = $('#registroAbrath').value.trim();
       const conselho = $('#conselhoSigla').value || (temAbrath === 'sim' ? 'ABRATH' : '');
       const uf = $('#ufConselho').value;
       const numero = conselho === 'ABRATH' ? registroAbrath : $('#numeroRegistro').value.trim();
       const adicionais = $('#adicionais').value.trim();
+      const adicionaisLista = adicionais ? adicionais.split(',').map(item => item.trim()).filter(Boolean) : [];
+      const bibliotecasSelecionadas = [especialidadeNome, ...adicionaisLista].filter(Boolean);
       const gateway = $('#gateway').value;
       const emailCorp = $('#emailCorp').value.trim();
       const prescricao = $('#prescricao').value;
       const lgpd = $('#lgpd').checked;
+      const pesquisaConsentimento = $('#pesquisaConsentimento').checked;
       const cartaoObrigatorio = $('#cartaoObrigatorio').checked;
 
       if (!nome || !email || !senha || !profissao || !especialidade) return showMsg('Preencha todos os campos obrigatórios.', 'err');
@@ -1099,6 +1163,9 @@
       if (senha !== senha2) return showMsg('As senhas não conferem.', 'err');
       if (!cartaoObrigatorio) return showMsg('Confirme que está ciente do cadastro obrigatório do cartão.', 'err');
       if (!lgpd) return showMsg('É necessário aceitar os termos.', 'err');
+      if (bibliotecasSelecionadas.length > limiteBibliotecasCadastro()) {
+        return showMsg(`Seu plano permite até ${limiteBibliotecasCadastro()} biblioteca(s), incluindo a principal.`, 'err');
+      }
 
       // Se houver conselho exigido, exige número (verificação online é recomendada mas não bloqueante)
       if (conselhoAtual && !numero) return showMsg(`Informe o número do registro no ${conselhoAtual}.`, 'err');
@@ -1116,6 +1183,8 @@
             nome, email, senha, telefone,
             profissao,
             especialidade,
+            especialidade_nome: especialidadeNome,
+            bibliotecas_selecionadas: bibliotecasSelecionadas,
             conselho: conselho || null,
             uf_conselho: uf || null,
             numero_registro: numero || null,
@@ -1125,7 +1194,8 @@
             gateway: gateway || null,
             email_corporativo: emailCorp || null,
             prescricao_eletronica: prescricao || null,
-            lgpd_consentimento: 1
+            lgpd_consentimento: 1,
+            pesquisa_clinica_consentimento: pesquisaConsentimento
           })
         });
         const d = await r.json();

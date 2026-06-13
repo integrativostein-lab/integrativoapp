@@ -4,9 +4,94 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 
+const VERSAO_CONSENTIMENTO_PESQUISA = 'pesquisa-clinica-anonimizada-2026-06-13';
+const LIMITES_BIBLIOTECAS_PLANO = {
+  freemium: 1,
+  guardioes_floresta: 5,
+  pro: 10,
+  premium: 20,
+  enterprise: 47
+};
+
+function normalizarListaBibliotecas(valor) {
+  if (Array.isArray(valor)) {
+    return valor.map((item) => String(item || '').trim()).filter(Boolean);
+  }
+  if (typeof valor !== 'string' || !valor.trim()) return [];
+  try {
+    const parsed = JSON.parse(valor);
+    if (Array.isArray(parsed)) return normalizarListaBibliotecas(parsed);
+  } catch {
+    // Mantem compatibilidade com listas simples separadas por virgula.
+  }
+  return valor.split(',').map((item) => item.trim()).filter(Boolean);
+}
+
+function unicas(lista) {
+  return Array.from(new Set(lista.filter(Boolean)));
+}
+
+async function garantirTabelaConsentimentoPesquisa() {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS consentimentos_pesquisa (
+      id SERIAL PRIMARY KEY,
+      usuario_id INTEGER NOT NULL,
+      consentiu BOOLEAN NOT NULL DEFAULT false,
+      finalidade VARCHAR(120) NOT NULL,
+      versao VARCHAR(120) NOT NULL,
+      ip VARCHAR(80),
+      user_agent TEXT,
+      origem VARCHAR(80),
+      criado_em TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await db.query(`
+    CREATE INDEX IF NOT EXISTS idx_consentimentos_pesquisa_usuario
+    ON consentimentos_pesquisa (usuario_id, criado_em DESC)
+  `);
+}
+
+async function salvarConsentimentoPesquisa({ usuarioId, consentiu, req, origem }) {
+  try {
+    await garantirTabelaConsentimentoPesquisa();
+    await db.query(
+      `INSERT INTO consentimentos_pesquisa
+         (usuario_id, consentiu, finalidade, versao, ip, user_agent, origem, criado_em)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+      [
+        usuarioId,
+        Boolean(consentiu),
+        'uso de dados anonimizados de pacientes para apoio a pesquisas clinicas',
+        VERSAO_CONSENTIMENTO_PESQUISA,
+        req.ip || null,
+        req.get('user-agent') || null,
+        origem
+      ]
+    );
+  } catch (error) {
+    console.warn('[consentimento-pesquisa] não foi possível registrar:', error.message);
+  }
+}
+
+function autenticar(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
+  try {
+    req.usuario = jwt.verify(token, process.env.JWT_SECRET);
+    return next();
+  } catch {
+    return res.status(401).json({ erro: 'Token inválido' });
+  }
+}
+
 router.post('/cadastro', async (req, res) => {
   try {
-    const { nome, email, senha, tipo, especialidades, atende_online, atende_presencial, atende_domiciliar, domiciliar_tipo, domiciliar_valor, lgpd_consentimento, token_convite } = req.body;
+    const {
+      nome, email, senha, tipo, especialidades,
+      atende_online, atende_presencial, atende_domiciliar,
+      domiciliar_tipo, domiciliar_valor, lgpd_consentimento,
+      pesquisa_clinica_consentimento, token_convite
+    } = req.body;
     if (!nome || !email || !senha) return res.status(400).json({ erro: 'Nome, email e senha são obrigatórios' });
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,6 +136,13 @@ router.post('/cadastro', async (req, res) => {
     if (tipoFinal === 'paciente') {
       await db.query('INSERT INTO pacientes (usuario_id) VALUES ($1)', [result.rows[0].id]);
     }
+
+    await salvarConsentimentoPesquisa({
+      usuarioId: result.rows[0].id,
+      consentiu: pesquisa_clinica_consentimento === true || pesquisa_clinica_consentimento === 1,
+      req,
+      origem: `cadastro-${tipoFinal}`
+    });
 
     // Se veio de convite com benefícios, criar assinatura
     if (convite && convite.vitalicio) {
@@ -121,6 +213,21 @@ router.get('/verificar', async (req, res) => {
   } catch { res.status(401).json({ erro: 'Token inválido' }); }
 });
 
+router.post('/pesquisa-consentimento', autenticar, async (req, res) => {
+  const { consentiu } = req.body || {};
+  await salvarConsentimentoPesquisa({
+    usuarioId: req.usuario.id,
+    consentiu: consentiu === true || consentiu === 1,
+    req,
+    origem: 'painel-usuario'
+  });
+  res.json({
+    mensagem: consentiu
+      ? 'Consentimento de pesquisa clínica anonimizada registrado.'
+      : 'Consentimento de pesquisa clínica anonimizada revogado.'
+  });
+});
+
 // ============================================
 // CADASTRO ESPECÍFICO DE PROFISSIONAL
 // ============================================
@@ -129,10 +236,11 @@ router.post('/cadastro-profissional', async (req, res) => {
   try {
     const {
       nome, email, senha, telefone,
-      especialidade, conselho, uf_conselho, numero_registro,
+      especialidade, especialidade_nome, bibliotecas_selecionadas,
+      conselho, uf_conselho, numero_registro,
       registro_abrath,
       especialidades_adicionais, gateway, email_corporativo,
-      prescricao_eletronica, lgpd_consentimento
+      prescricao_eletronica, lgpd_consentimento, pesquisa_clinica_consentimento
     } = req.body;
 
     if (!nome || !email || !senha || !especialidade) {
@@ -148,13 +256,40 @@ router.post('/cadastro-profissional', async (req, res) => {
     if (existe.rows.length > 0) return res.status(400).json({ erro: 'Email já cadastrado' });
 
     const hash = await bcrypt.hash(senha, 12);
+    const planoInicial = 'freemium';
+    const limiteBibliotecas = LIMITES_BIBLIOTECAS_PLANO[planoInicial];
+    const bibliotecaPrincipal = String(especialidade_nome || especialidade || '').trim();
+    const adicionaisNormalizadas = normalizarListaBibliotecas(especialidades_adicionais)
+      .filter((item) => item !== bibliotecaPrincipal);
+    const bibliotecasSolicitadas = normalizarListaBibliotecas(bibliotecas_selecionadas);
+    const bibliotecasAutorizadas = unicas(
+      bibliotecasSolicitadas.length
+        ? [bibliotecaPrincipal, ...bibliotecasSolicitadas.filter((item) => item !== bibliotecaPrincipal)]
+        : [bibliotecaPrincipal, ...adicionaisNormalizadas]
+    );
+
+    if (bibliotecasAutorizadas.length > limiteBibliotecas) {
+      return res.status(400).json({
+        erro: `Seu plano ${planoInicial} permite ${limiteBibliotecas} biblioteca(s), incluindo a especialidade principal.`
+      });
+    }
+
+    const especialidadesJson = JSON.stringify(bibliotecasAutorizadas);
+    const adicionaisAutorizadasJson = JSON.stringify(bibliotecasAutorizadas.slice(1));
 
     const ins = await db.query(
       `INSERT INTO usuarios (nome, email, senha, tipo, telefone, especialidades, atende_online, atende_presencial, lgpd_consentimento, lgpd_data_consentimento, plano)
-       VALUES ($1, $2, $3, 'profissional', $4, $5, 1, 1, $6, NOW(), 'freemium') RETURNING id`,
-      [nome, email, hash, telefone || null, especialidade, lgpd_consentimento || 0]
+       VALUES ($1, $2, $3, 'profissional', $4, $5, 1, 1, $6, NOW(), $7) RETURNING id`,
+      [nome, email, hash, telefone || null, especialidadesJson, lgpd_consentimento || 0, planoInicial]
     );
     const userId = ins.rows[0].id;
+
+    await salvarConsentimentoPesquisa({
+      usuarioId: userId,
+      consentiu: pesquisa_clinica_consentimento === true || pesquisa_clinica_consentimento === 1,
+      req,
+      origem: 'cadastro-profissional'
+    });
 
     // Persistir registros profissionais se as colunas existirem no ambiente.
     try {
@@ -176,8 +311,8 @@ router.post('/cadastro-profissional', async (req, res) => {
       await db.query(
         `INSERT INTO profissionais_dados (usuario_id, especialidade, conselho, uf_conselho, numero_registro, especialidades_adicionais, gateway, email_corporativo, prescricao_eletronica, criado_em)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW())`,
-        [userId, especialidade, conselho || null, uf_conselho || null, numero_registro || null,
-          especialidades_adicionais || null, gateway || null, email_corporativo || null, prescricao_eletronica || null]
+        [userId, bibliotecaPrincipal, conselho || null, uf_conselho || null, numero_registro || null,
+          adicionaisAutorizadasJson, gateway || null, email_corporativo || null, prescricao_eletronica || null]
       );
     } catch (errDados) {
       console.warn('[cadastro-profissional] profissionais_dados não persistido:', errDados.message);
@@ -187,7 +322,7 @@ router.post('/cadastro-profissional', async (req, res) => {
     res.status(201).json({
       mensagem: 'Cadastro profissional realizado!',
       token,
-      usuario: { id: userId, nome, email, tipo: 'profissional', especialidade }
+      usuario: { id: userId, nome, email, tipo: 'profissional', plano: planoInicial, especialidade: bibliotecaPrincipal, especialidades: bibliotecasAutorizadas }
     });
   } catch (e) {
     console.error('[auth/cadastro-profissional]', e.message);

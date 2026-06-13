@@ -12,9 +12,14 @@ async function criarContasDemo() {
     tipo: 'profissional',
     especialidades: JSON.stringify([
       'Fitoterapia','Ayurveda','MTC','Yoga','Massoterapia','Aromaterapia',
-      'Fisioterapia','Xamanismo','Florais de Bach','Reiki','Reflexologia',
+      'Fisioterapia','Xamanismo','Florais de Bach','Terapia de Florais','Reiki','Reflexologia',
       'Medicina Integrativa','Jyotish','Vastu Shastra','Quiropraxia',
       'Osteopatia','Cromoterapia','Musicoterapia','Equoterapia','Apiterapia',
+      'Arteterapia','Biodança','Bioenergética','Constelação Familiar',
+      'Dança Circular','Geoterapia','Hipnoterapia','Homeopatia',
+      'Imposição de Mãos','Medicina Antroposófica','Meditação','Naturopatia',
+      'Ozonioterapia','Shantala','Terapia Comunitária Integrativa',
+      'Termalismo Social / Crenoterapia',
       'Hidroterapia','Acupuntura','Medicina Tradicional','Farmacologia',
       'Pediatria','Ginecologia','Geriatria','Saúde Mental',
       'Medicina de Família','Emergência'

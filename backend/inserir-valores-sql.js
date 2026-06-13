@@ -18,10 +18,12 @@ async function inserirValoresSQL() {
   const tokenProf = loginProf.data.token;
   console.log('✅ Profissional logado');
 
-  // Tentar criar valor via PUT na rota de perfil (forçando)
+  // Configurar bibliotecas e perfil do profissional
   try {
+    await axios.put(`${API_URL}/usuarios/bibliotecas`, {
+      bibliotecas: ['Fitoterapia']
+    }, { headers: { 'Authorization': `Bearer ${tokenProf}` } });
     await axios.put(`${API_URL}/usuarios/perfil`, {
-      especialidades: JSON.stringify(['Fitoterapia']),
       atende_online: 1,
       atende_presencial: 1
     }, { headers: { 'Authorization': `Bearer ${tokenProf}` } });

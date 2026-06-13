@@ -4,11 +4,35 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 
+const LIMITES_BIBLIOTECAS_PLANO = {
+  freemium: 1,
+  guardioes_floresta: 5,
+  pro: 10,
+  premium: 20,
+  enterprise: 63
+};
+
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
   catch { res.status(401).json({ erro: 'Token inválido' }); }
+}
+
+function normalizarBibliotecas(valor) {
+  if (Array.isArray(valor)) return valor.map((item) => String(item || '').trim()).filter(Boolean);
+  if (typeof valor !== 'string' || !valor.trim()) return [];
+  try {
+    const parsed = JSON.parse(valor);
+    if (Array.isArray(parsed)) return normalizarBibliotecas(parsed);
+  } catch {
+    // Aceita tambem texto simples separado por virgulas.
+  }
+  return valor.split(',').map((item) => item.trim()).filter(Boolean);
+}
+
+function unicas(lista) {
+  return Array.from(new Set(lista.filter(Boolean)));
 }
 
 router.get('/perfil', autenticar, async (req, res) => {
@@ -23,7 +47,7 @@ router.get('/perfil', autenticar, async (req, res) => {
 });
 
 router.put('/perfil', autenticar, async (req, res) => {
-  const campos = ['nome', 'telefone', 'registro_profissional', 'conselho_classe', 'uf_conselho', 'registro_abrath', 'cnpj', 'cidade', 'estado', 'especialidades', 'atende_online', 'atende_presencial', 'certificado_digital_senha'];
+  const campos = ['nome', 'telefone', 'registro_profissional', 'conselho_classe', 'uf_conselho', 'registro_abrath', 'cnpj', 'cidade', 'estado', 'atende_online', 'atende_presencial', 'certificado_digital_senha'];
   const att = {};
   campos.forEach(c => { if (req.body[c] !== undefined) att[c] = req.body[c]; });
   if (Object.keys(att).length === 0) return res.status(400).json({ erro: 'Nada para atualizar' });
@@ -33,6 +57,48 @@ router.put('/perfil', autenticar, async (req, res) => {
   vals.push(req.usuario.id);
   await db.query(`UPDATE usuarios SET ${sets}, atualizado_em = NOW() WHERE id = $${vals.length}`, vals);
   res.json({ mensagem: 'Perfil atualizado!' });
+});
+
+router.put('/bibliotecas', autenticar, async (req, res) => {
+  const r = await db.query('SELECT id, tipo, plano FROM usuarios WHERE id = $1', [req.usuario.id]);
+  if (r.rows.length === 0) return res.status(404).json({ erro: 'Usuário não encontrado' });
+  const usuario = r.rows[0];
+  if (!['profissional', 'admin', 'super_admin'].includes(usuario.tipo)) {
+    return res.status(403).json({ erro: 'Apenas profissionais podem configurar bibliotecas' });
+  }
+
+  const plano = usuario.plano || 'freemium';
+  const limite = LIMITES_BIBLIOTECAS_PLANO[plano] || LIMITES_BIBLIOTECAS_PLANO.freemium;
+  const bibliotecas = unicas(normalizarBibliotecas(req.body.bibliotecas));
+  if (bibliotecas.length === 0) return res.status(400).json({ erro: 'Informe ao menos a biblioteca principal' });
+  if (bibliotecas.length > limite) {
+    return res.status(400).json({ erro: `Seu plano permite até ${limite} biblioteca(s).` });
+  }
+
+  await db.query(
+    'UPDATE usuarios SET especialidades = $1, atualizado_em = NOW() WHERE id = $2',
+    [JSON.stringify(bibliotecas), req.usuario.id]
+  );
+  res.json({ mensagem: 'Bibliotecas atualizadas!', plano, limite, bibliotecas });
+});
+
+router.get('/bibliotecas', autenticar, async (req, res) => {
+  const r = await db.query('SELECT id, tipo, plano, especialidades FROM usuarios WHERE id = $1', [req.usuario.id]);
+  if (r.rows.length === 0) return res.status(404).json({ erro: 'Usuário não encontrado' });
+  const usuario = r.rows[0];
+  if (!['profissional', 'admin', 'super_admin'].includes(usuario.tipo)) {
+    return res.status(403).json({ erro: 'Apenas profissionais podem consultar bibliotecas profissionais' });
+  }
+
+  const plano = usuario.plano || 'freemium';
+  const limite = LIMITES_BIBLIOTECAS_PLANO[plano] || LIMITES_BIBLIOTECAS_PLANO.freemium;
+  const bibliotecas = unicas(normalizarBibliotecas(usuario.especialidades));
+  res.json({
+    plano,
+    limite,
+    bibliotecas,
+    observacao: 'O limite controla bibliotecas escolhidas do plano. Bibliotecas transversais podem ser exibidas como apoio geral de segurança, estudo e documentação clínica.'
+  });
 });
 
 router.put('/senha', autenticar, async (req, res) => {

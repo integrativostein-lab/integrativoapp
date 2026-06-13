@@ -5,7 +5,7 @@ const I18N = {
   translations: {
     'pt-BR': {
       'hero.titulo': 'Encontre seu profissional integrativo',
-      'hero.subtitulo': '30 especialidades. Agende online ou presencial.',
+      'hero.subtitulo': '47 especialidades. Agende online ou presencial.',
       'hero.buscar': 'Buscar Profissionais',
       'hero.baixar_app': '📱 Baixe o App Grátis',
       'nav.entrar': 'Entrar',
@@ -23,7 +23,7 @@ const I18N = {
     },
     'es': {
       'hero.titulo': 'Encuentra tu profesional integrativo',
-      'hero.subtitulo': '30 especialidades. Reserva online o presencial.',
+      'hero.subtitulo': '47 especialidades. Reserva online o presencial.',
       'hero.buscar': 'Buscar Profesionales',
       'hero.baixar_app': '📱 Descarga la App Gratis',
       'nav.entrar': 'Entrar',

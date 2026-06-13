@@ -112,3 +112,38 @@ Está seguro.
 ## Manutenção
 
 Novas regras devem ser adicionadas apenas quando houver fonte rastreável e texto de conduta conservadora. Alterações em gravidade ou conduta devem preservar o `regra_id` antigo em histórico documental ou criar novo identificador versionado.
+
+## Gestão em Alfa e Produção
+
+As regras são versionadas pelo Git junto com o backend. O ambiente alfa deve ser usado para validar regras antes de liberar para produção.
+
+Fluxo recomendado:
+
+1. Criar ou alterar regra em `backend/servicos/alertas-seguranca.js`.
+2. Testar localmente com casos positivos e negativos.
+3. Subir para `main`.
+4. Confirmar primeiro no backend alfa:
+
+```txt
+https://integrativoappespelho.onrender.com/api/alertas-seguranca?termo=ginkgo%20varfarina
+```
+
+5. Conferir se `usa_ia:false`, `regra_id`, `gravidade`, `conduta` e `fontes` estão corretos.
+6. Validar no painel profissional e na prescrição.
+7. Só então considerar a regra apta para uso em produção.
+
+O ambiente alfa pode usar banco separado, mas o arquivo de regras continua no backend e não deve ser copiado para o frontend.
+
+## Critério para Nova Regra
+
+Cada nova regra deve ter:
+
+- `id` único e estável;
+- `area`;
+- `tipo`;
+- `gravidade`;
+- gatilhos explícitos (`pratica`, `condicoes`, `medicamentos` ou `alergias`);
+- `mensagem`;
+- `conduta`;
+- pelo menos uma fonte rastreável;
+- posição da fonte (`contraindicado`, `cautela`, `sem_mencao` ou `permitido`).

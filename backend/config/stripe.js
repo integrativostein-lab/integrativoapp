@@ -36,6 +36,39 @@ async function criarPagamentoTeste(produto, valor, email) {
     return paymentIntent;
 }
 
+async function estornarPagamento({ paymentIntentId, valor, motivo = 'requested_by_customer' }) {
+    if (!paymentIntentId) {
+        return {
+            status: 'nao_enviado',
+            mensagem: 'Pagamento sem identificador do gateway; estorno automático não pôde ser enviado à administradora.'
+        };
+    }
+
+    if (modoTeste || paymentIntentId.startsWith('test_')) {
+        console.log(`[TESTE] Estorno simulado: ${paymentIntentId} - R$ ${valor}`);
+        return {
+            id: `test_refund_${Date.now()}`,
+            status: 'succeeded',
+            payment_intent: paymentIntentId,
+            amount: Math.round((Number(valor) || 0) * 100),
+            currency: 'brl',
+            simulated: true
+        };
+    }
+
+    if (!stripe) {
+        throw new Error('Stripe não configurado para processar estorno automático');
+    }
+
+    const refund = await stripe.refunds.create({
+        payment_intent: paymentIntentId,
+        amount: Math.round((Number(valor) || 0) * 100),
+        reason: motivo
+    });
+
+    return refund;
+}
+
 // Função para simular NF sem certificado
 async function emitirNFSimulada(dados) {
     console.log('[TESTE] Emissão de NF simulada (sem certificado)');
@@ -55,5 +88,6 @@ module.exports = {
     stripe,
     modoTeste,
     criarPagamentoTeste,
+    estornarPagamento,
     emitirNFSimulada
 };
