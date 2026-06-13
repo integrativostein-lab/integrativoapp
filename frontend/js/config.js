@@ -12,10 +12,7 @@ function resolverApiUrl() {
     return 'http://localhost:3001/api';
   }
   if (HOSTNAME_ATUAL.includes('alfa') || HOSTNAME_ATUAL.includes('alpha')) {
-    // Temporario: enquanto o backend alfa `integrativoappespelho` nao responder 200,
-    // o frontend alfa usa o backend existente. Trocar para o endpoint alfa
-    // `https://integrativoappespelho.onrender.com/api` quando estiver online.
-    return 'https://integra-backend-ynrd.onrender.com/api';
+    return 'https://integrativoappespelho.onrender.com/api';
   }
   return 'https://integra-backend-ynrd.onrender.com/api';
 }

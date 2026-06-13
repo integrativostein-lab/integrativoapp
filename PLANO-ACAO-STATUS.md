@@ -14,7 +14,7 @@ Atualizado em: 2026-06-12
 - Tela `frontend/reuniao.html` conectada ao SDK WebRTC do LiveKit.
 - Variaveis LiveKit previstas em `.env.example` e `render.yaml`.
 - Arquivos sensiveis `.env` e `.env.teste` protegidos fora do Git.
-- Frontend alfa configurado para usar temporariamente o backend existente enquanto `integrativoappespelho` nao responder como backend.
+- Frontend alfa configurado para usar o backend espelho `integrativoappespelho`.
 - Ultimo push para GitHub realizado no commit `b523be3`.
 
 ## Falta fazer manualmente em painel externo
@@ -24,8 +24,8 @@ Atualizado em: 2026-06-12
   - `LIVEKIT_API_KEY`
   - `LIVEKIT_API_SECRET`
 - No Render, fazer `Manual Deploy -> Clear build cache & deploy`.
-- Manter `integrativoappespelho` pausado/sem uso enquanto exigir plano pago no Render.
-- Usar temporariamente o backend principal para o frontend alfa, com `CORS_ORIGINS` incluindo `https://integrativoapp-alfa.vercel.app`.
+- Manter `integrativoappespelho` com branch `master`, root directory `backend`, build `npm install` e start `npm start`.
+- Usar o backend principal apenas como fallback temporario se o espelho ficar indisponivel.
 - Criar/configurar banco alfa separado e preencher `TESTE_DATABASE_URL`.
 - Confirmar URL publica atual do Vercel ou criar o projeto `integrativoapp-alfa`.
 - Se usar frontend alfa com `integra-backend-ynrd`, incluir a URL do frontend alfa em `CORS_ORIGINS`.

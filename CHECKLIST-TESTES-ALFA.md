@@ -13,8 +13,8 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 ## 2. API e ambiente
 
 - Confirmar que o frontend chama a API correta.
-- Enquanto `integrativoappespelho` nao estiver configurado como backend, a API remota temporaria e `https://integra-backend-ynrd.onrender.com/api`.
-- Depois que `integrativoappespelho` responder como backend, trocar `frontend/js/config.js` para `https://integrativoappespelho.onrender.com/api`.
+- A API alfa padrao e `https://integrativoappespelho.onrender.com/api`.
+- Usar `https://integra-backend-ynrd.onrender.com/api` apenas como fallback temporario de contingencia.
 - Confirmar que `https://integrativoappespelho.onrender.com/` responde `200`.
 - Confirmar que `https://integrativoappespelho.onrender.com/api/alertas-seguranca?termo=ginkgo%20varfarina` retorna:
   - `usa_ia:false`

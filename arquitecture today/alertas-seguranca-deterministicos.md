@@ -121,7 +121,7 @@ Fluxo recomendado:
 
 1. Criar ou alterar regra em `backend/servicos/alertas-seguranca.js`.
 2. Testar localmente com casos positivos e negativos.
-3. Subir para `main`.
+3. Subir para `master`.
 4. Confirmar primeiro no backend alfa:
 
 ```txt

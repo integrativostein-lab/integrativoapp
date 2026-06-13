@@ -8,7 +8,7 @@ Este projeto esta preparado para um ambiente alfa separado da producao.
 - Backend alfa: `https://integrativoappespelho.onrender.com`
 - API alfa: `https://integrativoappespelho.onrender.com/api`
 
-O frontend detecta automaticamente dominios com `alfa` ou `alpha`. Enquanto o servico alfa `integrativoappespelho` ainda nao estiver respondendo como backend, ele usa temporariamente a API existente `https://integra-backend-ynrd.onrender.com/api`.
+O frontend detecta automaticamente dominios com `alfa` ou `alpha` e usa o backend espelho `https://integrativoappespelho.onrender.com/api`.
 
 Quando o backend alfa for criado, altere `frontend/js/config.js` para apontar dominios alfa para:
 
@@ -20,7 +20,7 @@ https://integrativoappespelho.onrender.com/api
 
 1. Crie um novo projeto chamado `integrativoapp-alfa`.
 2. Conecte o repositorio `integrativostein-lab/integrativoapp`.
-3. Use a branch `main`.
+3. Use a branch `master`.
 4. Mantenha o deploy pelo arquivo `vercel.json`.
 5. Faca o primeiro deploy com cache limpo.
 
@@ -56,7 +56,7 @@ Se o Blueprint nao criou o alfa automaticamente, ou se o servico ja aparece como
 1. Acesse Render > `integrativoappespelho` > Settings.
 2. Confirme que o repositorio conectado e `integrativostein-lab/integrativoapp`.
 3. Nome do servico: `integrativoappespelho`.
-4. Branch: `main`.
+4. Branch: `master`.
 5. Root Directory: `backend`.
 6. Runtime: `Node`.
 7. Build Command: `npm install`.
@@ -85,7 +85,7 @@ https://integrativoappespelho.onrender.com/api/alertas-seguranca?termo=ginkgo%20
 
 O segundo endpoint deve retornar `usa_ia:false` e uma regra como `FITOTERAPIA_ANTICOAGULANTE_001`.
 
-Se o servico `integrativoappespelho` ainda nao estiver configurado como backend, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto. Nesse cenario, inclua tambem a URL do frontend alfa em `CORS_ORIGINS` do `integra-backend-ynrd`.
+Se o servico `integrativoappespelho` ficar indisponivel, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto. Nesse cenario, inclua tambem a URL do frontend alfa em `CORS_ORIGINS` do `integra-backend-ynrd` e ajuste `frontend/js/config.js` enquanto durar a contingencia.
 
 ## Banco alfa
 
@@ -117,25 +117,17 @@ Envie apenas a URL do frontend alfa:
 https://integrativoapp-alfa.vercel.app
 ```
 
-Enquanto o backend alfa remoto nao existir, esse endereco chamara temporariamente:
-
-```text
-https://integra-backend-ynrd.onrender.com/api
-```
-
-Depois da criacao do backend alfa, esse endereco devera chamar:
+O frontend alfa deve chamar:
 
 ```text
 https://integrativoappespelho.onrender.com/api
 ```
 
-Somente altere `frontend/js/config.js` para o backend alfa depois que:
+Fallback temporario, somente em contingencia:
 
 ```text
-https://integrativoappespelho.onrender.com/
+https://integra-backend-ynrd.onrender.com/api
 ```
-
-responder `200` e o endpoint `/api/alertas-seguranca` estiver funcionando.
 
 ## Gestao das regras deterministicas
 
@@ -166,6 +158,6 @@ O endpoint `/api/alertas-seguranca/regras` e restrito a `admin` e `super_admin`.
 
 ## Redeploy automatico via GitHub
 
-Quando Vercel e Render estiverem conectados ao repositorio, qualquer novo commit em `main` dispara um novo deploy.
+Quando Vercel e Render estiverem conectados ao repositorio, qualquer novo commit em `master` dispara um novo deploy.
 
 Se precisar forcar um redeploy sem alterar regra de negocio, atualize este guia ou outro arquivo de documentacao e faca push para o GitHub.
