@@ -506,7 +506,8 @@
                 <input type="text" id="numeroRegistro" placeholder="Ex.: 123456">
               </div>
             </div>
-            <button type="button" class="btn-verificar" id="btnVerificar" style="margin-top:14px;">Verificar registro online</button>
+            <button type="button" class="btn-verificar" id="btnVerificar" style="margin-top:14px;">Verificar agora</button>
+            <p style="font-size:11px;color:var(--texto-suave);margin-top:8px;">A consulta ao conselho é feita automaticamente quando UF e número do registro forem preenchidos.</p>
             <div id="resultadoVerificacao"></div>
           </div>
 
@@ -835,6 +836,8 @@
     let conselhoAtual = null;
     let registroValidado = false;
     let especialidadeAtual = null;
+    let timerVerificacaoRegistro = null;
+    let ultimaConsultaRegistro = '';
 
     function obterProfissaoSelecionada() {
       return PROFISSOES.find(p => p.id === $('#profissao').value);
@@ -847,6 +850,8 @@
     }
 
     function resetarRegistro() {
+      clearTimeout(timerVerificacaoRegistro);
+      ultimaConsultaRegistro = '';
       conselhoAtual = null;
       registroValidado = false;
       especialidadeAtual = null;
@@ -973,8 +978,27 @@
     // ============================================
     // VERIFICAR REGISTRO ONLINE
     // ============================================
-    $('#btnVerificar').addEventListener('click', async () => {
-      if (!conselhoAtual) return;
+    function dadosRegistroProntos() {
+      const numero = $('#numeroRegistro').value.trim();
+      const uf = $('#ufConselho').value;
+      const cfg = CONFIG.CONSELHOS[conselhoAtual];
+      if (!conselhoAtual || !cfg || !numero || numero.length < 3) return false;
+      if (cfg.requerUF && !uf) return false;
+      return true;
+    }
+
+    function chaveConsultaRegistro() {
+      return [
+        conselhoAtual,
+        $('#ufConselho').value,
+        $('#numeroRegistro').value.trim(),
+        especialidadeAtual?.id || $('#especialidade').value,
+        $('#nome').value.trim()
+      ].join('|');
+    }
+
+    async function verificarRegistroOnline({ manual = false } = {}) {
+      if (!conselhoAtual) return false;
       const numero = $('#numeroRegistro').value.trim();
       const uf = $('#ufConselho').value;
       const cfg = CONFIG.CONSELHOS[conselhoAtual];
@@ -982,6 +1006,10 @@
 
       if (!numero) { out.innerHTML = `<div class="status-pill err">Informe o número do registro</div>`; return; }
       if (cfg.requerUF && !uf) { out.innerHTML = `<div class="status-pill err">Selecione a UF do conselho</div>`; return; }
+
+      const chave = chaveConsultaRegistro();
+      if (!manual && chave === ultimaConsultaRegistro) return registroValidado;
+      ultimaConsultaRegistro = chave;
 
       const btn = $('#btnVerificar');
       btn.disabled = true; btn.textContent = 'Verificando...';
@@ -1009,10 +1037,37 @@
             <p style="font-size:11px;color:var(--texto-suave);margin-top:6px">${link}</p>`;
         }
       } catch (err) {
+        registroValidado = false;
         out.innerHTML = `<div class="status-pill err">${err.message}</div>`;
       } finally {
-        btn.disabled = false; btn.textContent = 'Verificar registro online';
+        btn.disabled = false; btn.textContent = 'Verificar agora';
       }
+      return registroValidado;
+    }
+
+    function agendarVerificacaoRegistro() {
+      clearTimeout(timerVerificacaoRegistro);
+      registroValidado = false;
+      ultimaConsultaRegistro = '';
+      const out = $('#resultadoVerificacao');
+
+      if (!conselhoAtual) return;
+      if (!dadosRegistroProntos()) {
+        out.innerHTML = `<div class="status-pill warn">Preencha UF e número para verificar automaticamente.</div>`;
+        return;
+      }
+
+      out.innerHTML = `<div class="status-pill warn">Verificação automática agendada...</div>`;
+      timerVerificacaoRegistro = setTimeout(() => {
+        verificarRegistroOnline();
+      }, 800);
+    }
+
+    $('#btnVerificar').addEventListener('click', () => verificarRegistroOnline({ manual: true }));
+    $('#numeroRegistro').addEventListener('input', agendarVerificacaoRegistro);
+    $('#ufConselho').addEventListener('change', agendarVerificacaoRegistro);
+    $('#nome').addEventListener('blur', () => {
+      if (dadosRegistroProntos()) agendarVerificacaoRegistro();
     });
 
     // ============================================
