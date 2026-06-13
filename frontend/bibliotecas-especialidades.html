@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mapa de especialidades, bibliotecas, fontes clássicas, científicas e institucionais do Integrativo.App.">
+  <title>Mapa de Especialidades e Bibliotecas — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .bibliotecas-page {
+      max-width: 1180px;
+      margin: 36px auto 80px;
+      padding: 0 24px;
+    }
+
+    .bibliotecas-hero {
+      background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f 65%, var(--verde-destaque));
+      color: var(--branco);
+      border-radius: 28px;
+      padding: 42px;
+      box-shadow: var(--sombra-elevada);
+    }
+
+    .bibliotecas-hero h1 {
+      color: var(--branco);
+      font-size: 38px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .bibliotecas-hero p {
+      max-width: 840px;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 16px;
+    }
+
+    .metricas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin: 24px 0;
+    }
+
+    .metrica {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--sombra-suave);
+    }
+
+    .metrica strong {
+      display: block;
+      color: var(--azul-profundo);
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .metrica span {
+      color: var(--texto-suave);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .aviso-apoio {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-left: 5px solid var(--verde-destaque);
+      border-radius: 18px;
+      color: var(--texto-principal);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 22px 0;
+      padding: 18px 20px;
+    }
+
+    .aviso-apoio strong {
+      color: var(--azul-profundo);
+    }
+
+    .painel-controles {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 22px;
+      box-shadow: var(--sombra-suave);
+      margin-bottom: 24px;
+      padding: 22px;
+    }
+
+    .painel-controles h2 {
+      color: var(--azul-profundo);
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .painel-controles p {
+      color: var(--texto-suave);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .alertas-seguranca-card {
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      border-left: 5px solid #F59E0B;
+      border-radius: 18px;
+      box-shadow: var(--sombra-suave);
+      margin-bottom: 24px;
+      padding: 20px;
+    }
+
+    .alertas-seguranca-card h2 {
+      color: var(--azul-profundo);
+      font-size: 21px;
+      margin-bottom: 8px;
+    }
+
+    .alertas-seguranca-card p,
+    .alertas-seguranca-card small {
+      color: var(--texto-suave);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .alerta-seguranca {
+      background: var(--branco);
+      border: 1px solid #FCD34D;
+      border-radius: 14px;
+      margin-top: 10px;
+      padding: 12px;
+    }
+
+    .alerta-seguranca.critica { background: #FEF2F2; border-color: #DC2626; }
+    .alerta-seguranca.alta { background: #FFF7ED; border-color: #F97316; }
+    .alerta-seguranca strong { color: var(--azul-profundo); display: block; margin-bottom: 4px; }
+
+    .campo-busca {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .campo-busca input {
+      border: 1px solid #CBD5E1;
+      border-radius: 999px;
+      font-size: 15px;
+      padding: 13px 18px;
+      width: 100%;
+    }
+
+    .campo-busca button {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 999px;
+      color: var(--azul-profundo);
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0 18px;
+    }
+
+    .chips-filtro {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip-filtro {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 999px;
+      color: var(--azul-profundo);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 8px 12px;
+    }
+
+    .chip-filtro.ativo {
+      background: var(--verde-destaque);
+      border-color: var(--verde-destaque);
+      color: var(--branco);
+    }
+
+    .resumo-categorias {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .categoria-card {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      box-shadow: var(--sombra-suave);
+      padding: 16px;
+    }
+
+    .categoria-card strong {
+      color: var(--azul-profundo);
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .categoria-card span {
+      color: var(--texto-suave);
+      font-size: 13px;
+    }
+
+    .tabela-card {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--sombra-elevada);
+    }
+
+    .tabela-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th {
+      background: var(--azul-profundo);
+      color: var(--branco);
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #E2E8F0;
+      color: var(--texto-principal);
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #F8FAFC;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #ECFDF5;
+      color: #047857;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-tipo {
+      background: #ECFDF5;
+      border-radius: 999px;
+      color: #047857;
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 9px;
+      white-space: nowrap;
+    }
+
+    .nota {
+      margin-top: 18px;
+      color: var(--texto-suave);
+      font-size: 13px;
+    }
+
+    @media (max-width: 720px) {
+      .bibliotecas-hero { padding: 28px; }
+      .bibliotecas-hero h1 { font-size: 30px; }
+      .campo-busca { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu">
+      <a href="index.html">Início</a>
+      <a href="profissionais.html">Profissionais</a>
+      <a href="manual.html">Manual</a>
+      <a href="login.html" class="btn btn-primario">Entrar</a>
+    </div>
+  </nav>
+
+  <main class="bibliotecas-page">
+    <section class="bibliotecas-hero">
+      <span class="tag">PICS completas + bases clínicas + clássicos tradicionais</span>
+      <h1>Mapa de Especialidades e Bibliotecas</h1>
+      <p>Visão organizada das bibliotecas clínicas, médicas, científicas, integrativas, tradicionais e ancestrais incorporadas ao Integrativo.App. As fontes priorizam materiais públicos, confiáveis, verificáveis e oficiais quando possível: PNPIC/MS, OPAS/OMS, BVS/BIREME, Fiocruz, Cochrane, PubMed, ANVISA, diretrizes profissionais e textos clássicos nomeados em repositórios abertos.</p>
+    </section>
+
+    <section class="aviso-apoio">
+      <strong>Uso profissional de apoio.</strong> As bibliotecas do Integrativo.App organizam referências, protocolos, fontes e pontos de atenção para estudo e suporte à decisão do profissional habilitado. A plataforma não realiza diagnóstico, não prescreve tratamentos e não substitui avaliação clínica, responsabilidade técnica, conselho profissional ou encaminhamento médico quando necessário.
+    </section>
+
+    <section class="metricas" id="metricasBibliotecas"></section>
+
+    <section class="painel-controles" aria-labelledby="tituloControles">
+      <h2 id="tituloControles">Encontrar especialidade ou fonte</h2>
+      <p>Busque por especialidade, categoria, fonte, texto clássico ou uso atendido. Use os filtros para navegar entre PICS, clínicas, reabilitação e saberes tradicionais.</p>
+      <div class="campo-busca">
+        <input type="search" id="buscaBibliotecas" list="sugestoesEspecialidades" placeholder="Ex.: Ayurveda, Ahara, PubMed, PNPIC, emergência, saúde mental...">
+        <datalist id="sugestoesEspecialidades"></datalist>
+        <button type="button" id="limparBusca">Limpar</button>
+      </div>
+      <div class="chips-filtro" id="chipsCategorias"></div>
+    </section>
+
+    <section class="tabela-card" id="resultadoAutocomplete" aria-live="polite" style="display:none;margin-bottom:24px;"></section>
+
+    <section class="alertas-seguranca-card" aria-labelledby="tituloAlertasSeguranca">
+      <h2 id="tituloAlertasSeguranca">Alertas determinísticos de segurança</h2>
+      <p>Consulta por regras IF/THEN auditáveis. Não usa IA decisória. Se fontes públicas divergirem, prevalece a posição mais restritiva.</p>
+      <div id="resultadoAlertasSeguranca">
+        <div class="alerta-seguranca"><strong>Aguardando busca</strong><small>Exemplos: ginkgo varfarina, aromaterapia epilepsia, apiterapia alergia, massagem trombose.</small></div>
+      </div>
+    </section>
+
+    <section class="resumo-categorias" id="resumoCategorias" aria-label="Resumo por categoria"></section>
+
+    <section class="tabela-card" aria-labelledby="tituloTabela">
+      <div style="padding:22px 24px 8px;">
+        <h2 id="tituloTabela">Especialidades e bibliotecas incorporadas</h2>
+        <p style="color:var(--texto-suave);margin-top:6px;">As práticas tradicionais e ancestrais entram como apoio complementar ao profissional, com registro de consentimento, triagem de segurança e sem substituir diagnóstico, prescrição ou tratamento médico indicado.</p>
+      </div>
+      <div class="tabela-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Especialidade / Biblioteca</th>
+              <th>Categoria</th>
+              <th>Base de uso</th>
+              <th>Fontes principais</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaBibliotecas"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="tabela-card" aria-labelledby="tituloFontes" style="margin-top:24px;">
+      <div style="padding:22px 24px 8px;">
+        <h2 id="tituloFontes">Tabela de fontes e o que atendem</h2>
+        <p style="color:var(--texto-suave);margin-top:6px;">Resumo prático das fontes públicas, confiáveis, verificáveis e, sempre que possível, oficiais utilizadas nas bibliotecas.</p>
+      </div>
+      <div class="tabela-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Fonte</th>
+              <th>O que atende</th>
+              <th>Verificação pública</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaFontesAtendimento"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="tabela-card" aria-labelledby="tituloCobertura" style="margin-top:24px;">
+      <div style="padding:22px 24px 8px;">
+        <h2 id="tituloCobertura">Cobertura por todas as especialidades da plataforma</h2>
+        <p style="color:var(--texto-suave);margin-top:6px;">Cada especialidade recebe apoio para avaliação/diagnóstico dentro do escopo, tratamentos ou práticas possíveis, protocolos de conduta, segurança e encaminhamento responsável.</p>
+      </div>
+      <div class="tabela-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Especialidade</th>
+              <th>Diagnóstico / Avaliação</th>
+              <th>Tratamentos / Protocolos</th>
+              <th>Fontes nominadas</th>
+              <th>Segurança / Encaminhamento</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaCoberturaEspecialidades"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="nota">Observação: a tabela organiza fontes de apoio profissional e pesquisa. Cada conduta deve respeitar legislação, conselho profissional aplicável, habilitação técnica, consentimento informado e limites clínicos de segurança.</p>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script>
+    const bibliotecas = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
+    let categoriaAtiva = 'Todas';
+    let termoBusca = '';
+    let timerAlertasSeguranca = null;
+
+    document.getElementById('metricasBibliotecas').innerHTML = `
+      <div class="metrica"><strong>${bibliotecas.total_bibliotecas}</strong><span>Bibliotecas</span></div>
+      <div class="metrica"><strong>${bibliotecas.total_especialidades}</strong><span>Especialidades</span></div>
+      <div class="metrica"><strong>${bibliotecas.total_registros}</strong><span>Registros</span></div>
+      <div class="metrica"><strong>${bibliotecas.fontes.length}</strong><span>Fontes-base</span></div>
+    `;
+
+    const normalizar = (texto) => String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const categorias = ['Todas', ...Array.from(new Set(bibliotecas.matriz.map((item) => item.categoria)))];
+    const nomesBusca = Array.from(new Set([
+      ...CONFIG.ESPECIALIDADES.map((item) => item.nome),
+      ...bibliotecas.matriz.map((item) => item.especialidade),
+      ...bibliotecas.fontes
+    ])).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+
+    document.getElementById('sugestoesEspecialidades').innerHTML = nomesBusca.map((nome) => `<option value="${nome}"></option>`).join('');
+
+    function renderCategorias() {
+      document.getElementById('chipsCategorias').innerHTML = categorias.map((categoria) => `
+        <button type="button" class="chip-filtro ${categoria === categoriaAtiva ? 'ativo' : ''}" data-categoria="${categoria}">
+          ${categoria}
+        </button>
+      `).join('');
+
+      const contagem = bibliotecas.matriz.reduce((acc, item) => {
+        acc[item.categoria] = (acc[item.categoria] || 0) + 1;
+        return acc;
+      }, {});
+
+      document.getElementById('resumoCategorias').innerHTML = Object.entries(contagem).map(([categoria, total]) => `
+        <div class="categoria-card">
+          <strong>${categoria}</strong>
+          <span>${total} biblioteca(s) nesta categoria</span>
+        </div>
+      `).join('');
+    }
+
+    function filtrarBibliotecas() {
+      const termo = normalizar(termoBusca);
+      return bibliotecas.matriz.filter((item) => {
+        const passaCategoria = categoriaAtiva === 'Todas' || item.categoria === categoriaAtiva;
+        const texto = normalizar(`${item.especialidade} ${item.categoria} ${item.base} ${item.fontes}`);
+        const passaBusca = !termo || texto.includes(termo);
+        return passaCategoria && passaBusca;
+      });
+    }
+
+    function renderBibliotecas() {
+      const filtradas = filtrarBibliotecas();
+      document.getElementById('tabelaBibliotecas').innerHTML = filtradas.length
+        ? filtradas.map((item) => `
+          <tr>
+            <td><strong>${item.especialidade}</strong></td>
+            <td><span class="badge-tipo">${item.categoria}</span></td>
+            <td>${item.base}</td>
+            <td>${item.fontes}</td>
+          </tr>
+        `).join('')
+        : `<tr><td colspan="4">Nenhuma biblioteca encontrada para o filtro aplicado.</td></tr>`;
+    }
+
+    function encontrarEspecialidadeOuBiblioteca(valor) {
+      const termo = normalizar(valor);
+      if (!termo) return null;
+      const especialidade = CONFIG.ESPECIALIDADES.find((item) => normalizar(item.nome) === termo);
+      const biblioteca = bibliotecas.matriz.find((item) => normalizar(item.especialidade) === termo);
+      return { especialidade, biblioteca };
+    }
+
+    function renderResultadoAutocomplete() {
+      const painel = document.getElementById('resultadoAutocomplete');
+      const encontrado = encontrarEspecialidadeOuBiblioteca(termoBusca);
+      if (!encontrado || (!encontrado.especialidade && !encontrado.biblioteca)) {
+        painel.style.display = 'none';
+        painel.innerHTML = '';
+        return;
+      }
+
+      const nome = encontrado.biblioteca?.especialidade || encontrado.especialidade?.nome;
+      const categoria = encontrado.biblioteca?.categoria || encontrado.especialidade?.categoria || 'Especialidade';
+      const cobertura = encontrado.especialidade ? coberturaPorCategoria(encontrado.especialidade) : {
+        avaliacao: encontrado.biblioteca.base,
+        tratamento: 'Protocolos de estudo, condutas de apoio, revisão de fontes, critérios de segurança e reavaliação conforme escopo profissional.',
+        seguranca: 'Uso apenas como apoio profissional. A plataforma não realiza diagnóstico, prescrição ou tratamento.'
+      };
+      const fontes = encontrado.biblioteca?.fontes || 'Fontes nominadas na tabela de bibliotecas e nas referências públicas verificáveis.';
+
+      painel.style.display = 'block';
+      painel.innerHTML = `
+        <div style="padding:22px 24px;">
+          <span class="badge-tipo">${categoria}</span>
+          <h2 style="color:var(--azul-profundo);margin:10px 0 8px;">${nome}</h2>
+          <p style="color:var(--texto-suave);margin-bottom:14px;">Resumo de apoio para leitura profissional. Não constitui diagnóstico oficial, prescrição ou tratamento pela plataforma.</p>
+          <div class="tabela-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Diagnóstico / Avaliação de apoio</th>
+                  <th>Tratamentos / Protocolos de apoio</th>
+                  <th>Fontes nominadas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${cobertura.avaliacao}</td>
+                  <td>${cobertura.tratamento}</td>
+                  <td>${fontes}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="nota">A conduta permanece sob responsabilidade do profissional habilitado, respeitando escopo, conselho profissional, consentimento informado e encaminhamento quando necessário.</p>
+        </div>
+      `;
+    }
+
+    async function verificarAlertasSeguranca() {
+      const termo = termoBusca.trim();
+      const painel = document.getElementById('resultadoAlertasSeguranca');
+      if (termo.length < 3) {
+        painel.innerHTML = `<div class="alerta-seguranca"><strong>Aguardando busca</strong><small>Informe ao menos 3 caracteres para consultar alertas.</small></div>`;
+        return;
+      }
+
+      painel.innerHTML = `<div class="alerta-seguranca"><strong>Consultando regras determinísticas...</strong><small>Sem uso de IA; resultado rastreável por regra e fonte.</small></div>`;
+      try {
+        const resposta = await fetch(`${CONFIG.API_URL}/alertas-seguranca?termo=${encodeURIComponent(termo)}&observacoes=${encodeURIComponent(termo)}`);
+        const resultado = await resposta.json();
+        const alertas = resultado.alertas || [];
+        if (!alertas.length) {
+          painel.innerHTML = `<div class="alerta-seguranca"><strong>Sem alerta crítico cadastrado</strong><small>${resultado.mensagem_geral}</small></div>`;
+          return;
+        }
+
+        painel.innerHTML = alertas.map((alerta) => {
+          const fontes = (alerta.fontes || []).map((fonte) => `${fonte.nome} (${fonte.posicao})`).join('; ');
+          return `
+            <div class="alerta-seguranca ${alerta.gravidade}">
+              <strong>${alerta.gravidade.toUpperCase()} — ${alerta.area} / ${alerta.tipo}</strong>
+              <small>${alerta.mensagem}</small><br>
+              <small><b>Conduta conservadora:</b> ${alerta.conduta}</small><br>
+              <small><b>Regra:</b> ${alerta.regra_id}<br><b>Fontes:</b> ${fontes}</small>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        painel.innerHTML = `<div class="alerta-seguranca alta"><strong>Falha ao consultar alertas</strong><small>Revise contraindicações manualmente e tente novamente.</small></div>`;
+      }
+    }
+
+    function agendarAlertasSeguranca() {
+      clearTimeout(timerAlertasSeguranca);
+      timerAlertasSeguranca = setTimeout(verificarAlertasSeguranca, 450);
+    }
+
+    const fontesAtendimento = [
+      { fonte: 'PNPIC/MS', atende: 'Referência oficial brasileira para PICS: fitoterapia, Ayurveda, MTC, yoga, arteterapia, biodança, bioenergética, constelação familiar, cromoterapia, dança circular, geoterapia, hipnoterapia, homeopatia, imposição de mãos, medicina antroposófica, meditação, musicoterapia, naturopatia, osteopatia, ozonioterapia, quiropraxia, reflexologia, Reiki, shantala, terapia comunitária integrativa, terapia de florais e termalismo.', url: 'https://www.gov.br/saude/pt-br/composicao/saps/pics' },
+      { fonte: 'Ministério da Saúde', atende: 'Atenção primária, saúde pública, protocolos oficiais, linhas de cuidado, saúde da criança, saúde da mulher, urgência, prevenção, LGPD em saúde e integração com políticas nacionais.', url: 'https://www.gov.br/saude' },
+      { fonte: 'OMS/WHO', atende: 'Estratégia global de medicina tradicional, saúde integrativa, promoção da saúde, atividade física, habitação saudável, atenção centrada na pessoa e parâmetros internacionais de segurança.', url: 'https://www.who.int' },
+      { fonte: 'OPAS/OMS', atende: 'Atenção primária, promoção da saúde, saúde comunitária, saúde pública latino-americana, redução de desigualdades e integração de sistemas de cuidado.', url: 'https://www.paho.org/pt' },
+      { fonte: 'BVS/BIREME', atende: 'Busca de literatura técnico-científica em saúde para PICS, práticas tradicionais, saúde mental, reabilitação, promoção da saúde e evidências latino-americanas.', url: 'https://bvsalud.org' },
+      { fonte: 'Fiocruz/ARCA', atende: 'Repositório científico brasileiro para saúde pública, pesquisa clínica, políticas de saúde, epidemiologia e produção acadêmica institucional.', url: 'https://arca.fiocruz.br' },
+      { fonte: 'RedePICS Brasil', atende: 'Pesquisa, articulação e produção técnica em Práticas Integrativas e Complementares em Saúde no contexto brasileiro.', url: 'https://redepicsbrasil.org.br' },
+      { fonte: 'PubMed/NCBI', atende: 'Literatura biomédica internacional, estudos clínicos, revisões, segurança clínica, saúde mental, dor, meditação, hipnoterapia e práticas complementares com evidência publicada.', url: 'https://pubmed.ncbi.nlm.nih.gov' },
+      { fonte: 'SciELO', atende: 'Produção científica ibero-americana e brasileira em saúde pública, práticas integrativas, educação em saúde e pesquisa clínica.', url: 'https://scielo.org' },
+      { fonte: 'Cochrane', atende: 'Revisões sistemáticas e avaliação crítica de evidência para intervenções clínicas, práticas mente-corpo, dor, saúde mental e recursos complementares.', url: 'https://www.cochranelibrary.com' },
+      { fonte: 'NCCIH', atende: 'Segurança e evidências em práticas complementares e integrativas, incluindo meditação, Reiki, massagem, produtos naturais e cuidado mente-corpo.', url: 'https://www.nccih.nih.gov' },
+      { fonte: 'ANVISA', atende: 'Regulação sanitária, medicamentos, fitoterápicos, óleos essenciais, produtos naturais, cosméticos, ozonioterapia, segurança e farmacovigilância.', url: 'https://www.gov.br/anvisa' },
+      { fonte: 'NICE', atende: 'Diretrizes clínicas internacionais para saúde mental, dor, reabilitação, condições musculoesqueléticas, autismo e cuidado baseado em evidências.', url: 'https://www.nice.org.uk/guidance' },
+      { fonte: 'MSF Medical Guidelines', atende: 'Condutas práticas em contextos de urgência, baixa infraestrutura, saúde humanitária, triagem e manejo clínico seguro.', url: 'https://medicalguidelines.msf.org' },
+      { fonte: 'AYUSH / Ministry of AYUSH', atende: 'Ayurveda, yoga, sistemas tradicionais indianos, formação, escopo de prática, segurança e integração responsável.', url: 'https://ayush.gov.in' },
+      { fonte: 'WHO Benchmarks', atende: 'Parâmetros de formação e segurança para Ayurveda, Medicina Tradicional Chinesa, acupuntura e osteopatia.', url: 'https://www.who.int/publications' },
+      { fonte: 'Diretrizes profissionais', atende: 'Escopo e segurança por conselho/associação: CRM, CRP, CREFITO, COREN, CRO, CRN, CRF, CREF, ABRATH e entidades técnicas.', url: 'https://portal.cfm.org.br' },
+      { fonte: 'Clássicos de Aushadha: Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Bhavaprakasha Nighantu, Dhanvantari Nighantu e Kaiyadeva Nighantu', atende: 'Matéria médica ayurvédica: substâncias, ervas, formulações, rasa, guna, virya, vipaka, prabhava, indicações tradicionais, contraindicações, compatibilidade e segurança no uso complementar.', url: 'https://archive.org' },
+      { fonte: 'Clássicos de Ahara: Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Kashyapa Samhita e Bhavaprakasha Nighantu', atende: 'Dietética ayurvédica: alimentação individualizada, agni, ama, pathya-apathya, compatibilidade alimentar, rotina, sazonalidade, digestão e orientação alimentar dentro do escopo profissional.', url: 'https://archive.org' },
+      { fonte: 'Clássicos de Dinacharya: Charaka Samhita, Sushruta Samhita e Ashtanga Hridaya', atende: 'Rotina diária ayurvédica: sono, higiene, oleação, movimento, respiração, alimentação em horários adequados, autocuidado, adaptação ao biotipo/estação e prevenção por hábitos.', url: 'https://archive.org' },
+      { fonte: 'Ayurveda Clássico: diagnóstico, tratamentos e protocolos — Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Madhava Nidana, Bhavaprakasha Nighantu e Dr. Vasant Lad', atende: 'Avaliação e cuidado ayurvédico complementar: darshana, sparshana, prashna, prakriti, vikriti, agni, ama, dosha, dhatu, mala, nadi, jihva, nidana, chikitsa, shamana, shodhana, rasayana, dinacharya, ritucharya, ahara, aushadha, protocolos de conduta, encaminhamentos e segurança clínica. Uso integrativo, sem substituir diagnóstico médico.', url: 'https://www.ayurveda.com' },
+      { fonte: 'Textos clássicos de Jyotish e Vastu: Bṛhat Parāśara Horā Śāstra, Bṛhat Jātaka, Saravali, Phaladeepika, Vastu Shastra, Mayamata e Manasara', atende: 'Saberes tradicionais e ancestrais de Jyotish e Vastu Shastra usados com finalidade reflexiva, complementar, histórica, cultural e educacional, sem uso diagnóstico médico.', url: 'https://www.wisdomlib.org' },
+      { fonte: 'Bach Centre', atende: 'Florais de Bach e terapia de florais como apoio complementar emocional, com limites claros para não substituir cuidado em saúde mental.', url: 'https://www.bachcentre.com' },
+      { fonte: 'AMTA / IFPA / Tisserand & Young', atende: 'Massoterapia e aromaterapia: segurança em terapias manuais, diluição, contraindicações, vias de uso e prevenção de eventos adversos.', url: 'https://www.amtamassage.org' },
+      { fonte: 'World Physiotherapy / COFFITO', atende: 'Fisioterapia, hidroterapia, reabilitação, avaliação funcional, exercício terapêutico e segurança em práticas corporais.', url: 'https://world.physio' },
+      { fonte: 'ANDE-Brasil', atende: 'Equoterapia, terapia assistida por equinos, critérios de segurança, equipe habilitada e reabilitação interdisciplinar.', url: 'https://equoterapia.org.br' },
+      { fonte: 'Sociedades médicas brasileiras', atende: 'Pediatria, ginecologia, geriatria, medicina de família e saúde mental por meio de referências como SBP, FEBRASGO, SBGG, WONCA e diretrizes clínicas.', url: 'https://amb.org.br' },
+      { fonte: 'AHA / Manchester Triage / ATLS-PHTLS', atende: 'Urgência e emergência: suporte inicial, classificação de risco, trauma, sinais de alarme e encaminhamento responsável.', url: 'https://www.heart.org' },
+      { fonte: 'Bibliotecas transversais do Integrativo.App', atende: 'Tudo que se repete entre especialidades: anamnese, semiotécnica, sinais de alarme, contraindicações, interações, farmacovigilância, consentimento, LGPD, escalas, evolução SOAP, teleconsulta segura, ciclos de vida, dor, sono, estresse, educação do paciente, autocuidado e protocolos reutilizáveis.', url: 'bibliotecas-especialidades.html' }
+    ];
+
+    document.getElementById('tabelaFontesAtendimento').innerHTML = fontesAtendimento.map((item) => `
+      <tr>
+        <td><strong>${item.fonte}</strong></td>
+        <td>${item.atende}</td>
+        <td><a href="${item.url}" target="_blank" rel="noopener">Verificar fonte</a></td>
+      </tr>
+    `).join('');
+
+    function coberturaPorCategoria(especialidade) {
+      const nome = especialidade.nome;
+      const categoria = especialidade.categoria;
+      const conselho = especialidade.conselho;
+
+      if (categoria === 'Médica') {
+        return {
+          avaliacao: 'Anamnese, exame físico, hipóteses diagnósticas, estratificação de risco, exames quando indicados e CID/CIAP quando aplicável.',
+          tratamento: 'Condutas baseadas em diretrizes, prescrição dentro do CRM, plano terapêutico, retorno, prevenção e coordenação com equipe.',
+          seguranca: 'Sinais de alarme, urgência/emergência, consentimento, farmacovigilância, interação medicamentosa e encaminhamento especializado.'
+        };
+      }
+
+      if (categoria === 'Psicologia') {
+        return {
+          avaliacao: 'Entrevista psicológica, demanda, funcionamento, sofrimento psíquico, risco, rede de apoio, escalas e hipótese psicológica.',
+          tratamento: 'Psicoterapia, psicoeducação, plano terapêutico, manejo de crise, metas, acompanhamento e articulação com psiquiatria quando necessário.',
+          seguranca: 'Risco suicida, violência, psicose, mania, abuso, sigilo, consentimento e encaminhamento à RAPS/urgência quando houver risco.'
+        };
+      }
+
+      if (categoria === 'Reabilitação') {
+        return {
+          avaliacao: 'Avaliação funcional, dor, força, amplitude, marcha, equilíbrio, independência, barreiras e medidas de desfecho.',
+          tratamento: 'Exercício terapêutico, terapia manual quando habilitada, treino funcional, adaptação, recursos físicos e plano progressivo.',
+          seguranca: 'Bandeiras vermelhas, risco de queda, dor aguda, déficit neurológico, contraindicações e encaminhamento médico quando necessário.'
+        };
+      }
+
+      if (categoria === 'Enfermagem') {
+        return {
+          avaliacao: 'Coleta de dados, sinais vitais, riscos, feridas, adesão, autocuidado, ciclo de vida e necessidades de enfermagem.',
+          tratamento: 'Processo de enfermagem, educação em saúde, curativos, acompanhamento, vacinação/orientação quando aplicável e cuidado continuado.',
+          seguranca: 'Protocolos institucionais, sinais de gravidade, biossegurança, registro, comunicação com equipe e encaminhamento assistencial.'
+        };
+      }
+
+      if (categoria === 'Nutrição') {
+        return {
+          avaliacao: 'Anamnese alimentar, antropometria, rotina, exames disponíveis, preferências, restrições, sinais de risco e objetivos.',
+          tratamento: 'Plano alimentar, educação nutricional, metas, acompanhamento, suplementação dentro do escopo e adaptação por ciclo de vida.',
+          seguranca: 'Transtornos alimentares, alergias, interações, gestação, doenças crônicas, sinais de desnutrição e encaminhamento médico quando indicado.'
+        };
+      }
+
+      if (['Odontologia', 'Farmácia', 'Biomedicina', 'Biologia', 'Atividade Física'].includes(categoria)) {
+        return {
+          avaliacao: 'Avaliação técnica dentro do conselho profissional, histórico, riscos, objetivos, sinais de alarme e documentação adequada.',
+          tratamento: 'Protocolos específicos da área, prevenção, orientação, acompanhamento, recursos técnicos habilitados e integração com equipe.',
+          seguranca: 'Limites de escopo, consentimento, biossegurança, eventos adversos, encaminhamento e registro profissional verificável.'
+        };
+      }
+
+      if (categoria === 'PICS' || categoria === 'Integrativa' || categoria === 'Tradicional') {
+        return {
+          avaliacao: 'Avaliação integrativa, queixa, objetivos, contexto, hábitos, medicamentos, contraindicações, preferências e sinais de alerta.',
+          tratamento: 'Práticas complementares, autocuidado, rotina, alimentação, recursos tradicionais, protocolos de acompanhamento e reavaliação periódica.',
+          seguranca: 'Não substitui diagnóstico médico; exige consentimento, triagem de risco, limites de escopo e encaminhamento diante de sinais de alarme.'
+        };
+      }
+
+      return {
+        avaliacao: `Avaliação inicial de ${nome}, objetivos do paciente, contexto, riscos, histórico, limites profissionais e necessidade de encaminhamento.`,
+        tratamento: `Protocolos e práticas de ${nome} dentro do escopo profissional, com metas, registro, acompanhamento e reavaliação.`,
+        seguranca: `Consentimento, documentação, contraindicações, eventos adversos, sinais de alarme e respeito ao conselho/associação ${conselho || 'aplicável'}.`
+      };
+    }
+
+    function fontesPorEspecialidade(especialidade) {
+      const nomeNormalizado = normalizar(especialidade.nome);
+      const bibliotecaDireta = bibliotecas.matriz.find((item) => normalizar(item.especialidade) === nomeNormalizado);
+      if (bibliotecaDireta?.fontes) return bibliotecaDireta.fontes;
+
+      if (especialidade.categoria === 'Médica') {
+        return 'Ministério da Saúde, PubMed/NCBI, Cochrane, NICE, sociedades médicas brasileiras e diretrizes profissionais.';
+      }
+
+      if (especialidade.categoria === 'Psicologia') {
+        return 'CFP, Ministério da Saúde/RAPS, PubMed/NCBI, SciELO, Cochrane e diretrizes profissionais.';
+      }
+
+      if (especialidade.categoria === 'Reabilitação') {
+        return 'COFFITO, World Physiotherapy, PubMed/NCBI, NICE, Cochrane e diretrizes profissionais.';
+      }
+
+      if (especialidade.categoria === 'Nutrição') {
+        return 'CFN, Ministério da Saúde, Guia Alimentar para a População Brasileira, PubMed/NCBI, SciELO e diretrizes profissionais.';
+      }
+
+      if (especialidade.categoria === 'PICS') {
+        return 'PNPIC/MS, BVS/BIREME, OPAS/OMS, RedePICS Brasil, PubMed/NCBI, SciELO, Cochrane e fontes clássicas quando aplicável.';
+      }
+
+      return 'Fontes públicas verificáveis, diretrizes profissionais aplicáveis, BVS/BIREME, PubMed/NCBI, SciELO e referências específicas da área.';
+    }
+
+    document.getElementById('tabelaCoberturaEspecialidades').innerHTML = CONFIG.ESPECIALIDADES.map((especialidade) => {
+      const cobertura = coberturaPorCategoria(especialidade);
+      const fontes = fontesPorEspecialidade(especialidade);
+      return `
+        <tr>
+          <td><strong>${especialidade.nome}</strong><br><span class="badge-tipo">${especialidade.categoria}</span></td>
+          <td>${cobertura.avaliacao}</td>
+          <td>${cobertura.tratamento}</td>
+          <td>${fontes}</td>
+          <td>${cobertura.seguranca}</td>
+        </tr>
+      `;
+    }).join('');
+
+    document.getElementById('chipsCategorias').addEventListener('click', (event) => {
+      const botao = event.target.closest('[data-categoria]');
+      if (!botao) return;
+      categoriaAtiva = botao.dataset.categoria;
+      renderCategorias();
+      renderBibliotecas();
+    });
+
+    document.getElementById('buscaBibliotecas').addEventListener('input', (event) => {
+      termoBusca = event.target.value;
+      renderBibliotecas();
+      renderResultadoAutocomplete();
+      agendarAlertasSeguranca();
+    });
+
+    document.getElementById('limparBusca').addEventListener('click', () => {
+      termoBusca = '';
+      categoriaAtiva = 'Todas';
+      document.getElementById('buscaBibliotecas').value = '';
+      document.getElementById('resultadoAutocomplete').style.display = 'none';
+      document.getElementById('resultadoAlertasSeguranca').innerHTML = `<div class="alerta-seguranca"><strong>Aguardando busca</strong><small>Exemplos: ginkgo varfarina, aromaterapia epilepsia, apiterapia alergia, massagem trombose.</small></div>`;
+      renderCategorias();
+      renderBibliotecas();
+    });
+
+    renderCategorias();
+    renderBibliotecas();
+  </script>
+</body>
+</html>

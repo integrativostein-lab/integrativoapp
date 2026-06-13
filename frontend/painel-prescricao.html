@@ -12,6 +12,14 @@
     .prescricao-card h3 { color: var(--azul-escuro); margin-bottom: 12px; }
     .aviso-conselho { background: var(--laranja-claro); padding: 16px; border-radius: 8px; margin: 16px 0; border-left: 4px solid var(--laranja); }
     .link-conselho { display: inline-block; margin-top: 8px; color: var(--azul-escuro); font-weight: 600; text-decoration: underline; }
+    .alertas-seguranca { display: none; border-left: 5px solid #F59E0B; background: #FFFBEB; }
+    .alertas-seguranca.ativo { display: block; }
+    .alerta-seguranca-item { border: 1px solid #FCD34D; border-radius: 12px; padding: 12px; margin-top: 10px; background: #FFF; }
+    .alerta-seguranca-item.critica { border-color: #DC2626; background: #FEF2F2; }
+    .alerta-seguranca-item.alta { border-color: #F97316; background: #FFF7ED; }
+    .alerta-seguranca-item strong { color: var(--azul-escuro); display: block; margin-bottom: 4px; }
+    .alerta-seguranca-item p { color: var(--texto-medio); font-size: 13px; margin: 4px 0; }
+    .alerta-seguranca-fontes { font-size: 11px; color: var(--texto-medio); margin-top: 8px; }
   </style>
 </head>
 <body>
@@ -75,6 +83,12 @@
 
           <button class="btn btn-primario" onclick="emitirPrescricao()" style="width:100%;">Emitir</button>
           <p id="msg-prescricao" style="text-align:center;margin-top:12px;"></p>
+        </div>
+
+        <div class="prescricao-card alertas-seguranca" id="alertas-seguranca">
+          <h3>Alertas determinísticos de segurança</h3>
+          <p style="font-size:13px;color:var(--texto-medio);">Motor de regras IF/THEN, sem IA decisória. Quando houver divergência entre fontes, prevalece a conduta mais conservadora.</p>
+          <div id="lista-alertas-seguranca"></div>
         </div>
 
         <!-- LINK PARA O PORTAL DO CONSELHO -->
@@ -144,6 +158,15 @@
         return;
       }
 
+      var resultadoSeguranca = await verificarAlertasSeguranca(itens, obs, token);
+      var alertasGraves = (resultadoSeguranca.alertas || []).filter(function(alerta) {
+        return alerta.gravidade === 'critica' || alerta.gravidade === 'alta';
+      });
+      if (alertasGraves.length > 0) {
+        var continuar = confirm('Há alerta(s) grave(s) de segurança clínica. Revise as fontes e a conduta conservadora antes de emitir. Deseja continuar mesmo assim?');
+        if (!continuar) return;
+      }
+
       var r = await fetch(`${CONFIG.API_URL}/prescricoes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
@@ -166,8 +189,52 @@
       }
     }
 
+    async function verificarAlertasSeguranca(itens, observacoes, token) {
+      try {
+        var resposta = await fetch(`${CONFIG.API_URL}/alertas-seguranca/verificar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            pratica: itens,
+            itens: itens.split('\n'),
+            observacoes: observacoes
+          })
+        });
+        var resultado = await resposta.json();
+        renderizarAlertasSeguranca(resultado.alertas || [], resultado.mensagem_geral);
+        return resultado;
+      } catch (e) {
+        renderizarAlertasSeguranca([], 'Não foi possível consultar o motor de alertas. Revise contraindicações manualmente.');
+        return { alertas: [] };
+      }
+    }
+
+    function renderizarAlertasSeguranca(alertas, mensagem) {
+      var box = document.getElementById('alertas-seguranca');
+      var lista = document.getElementById('lista-alertas-seguranca');
+      box.classList.add('ativo');
+      if (!alertas.length) {
+        lista.innerHTML = `<div class="alerta-seguranca-item"><strong>Sem alerta crítico cadastrado</strong><p>${mensagem || 'Nenhum alerta crítico encontrado nas regras cadastradas. Isso não significa liberação clínica automática.'}</p></div>`;
+        return;
+      }
+      lista.innerHTML = alertas.map(function(alerta) {
+        var fontes = (alerta.fontes || []).map(function(fonte) {
+          return `${fonte.nome} (${fonte.posicao})`;
+        }).join('; ');
+        return `
+          <div class="alerta-seguranca-item ${alerta.gravidade}">
+            <strong>${alerta.gravidade.toUpperCase()} — ${alerta.area} / ${alerta.tipo}</strong>
+            <p>${alerta.mensagem}</p>
+            <p><b>Conduta conservadora:</b> ${alerta.conduta}</p>
+            <div class="alerta-seguranca-fontes"><b>Regra:</b> ${alerta.regra_id}<br><b>Fontes:</b> ${fontes}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
     carregar();
   </script>
 <footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
+  <script src="js/arquivo-profissional.js"></script>
 </body>
 </html>

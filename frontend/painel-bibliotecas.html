@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Bibliotecas — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .bibliotecas-profissional {
+      max-width: 1180px;
+      margin: 36px auto 80px;
+      padding: 0 24px;
+    }
+
+    .hero-bibliotecas {
+      background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f 65%, var(--verde-destaque));
+      border-radius: 28px;
+      box-shadow: var(--sombra-elevada);
+      color: var(--branco);
+      padding: 38px;
+    }
+
+    .hero-bibliotecas h1 {
+      color: var(--branco);
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .hero-bibliotecas p {
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 820px;
+    }
+
+    .metricas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .metrica, .painel-leitura, .biblioteca-card, .alertas-card {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      box-shadow: var(--sombra-suave);
+    }
+
+    .metrica {
+      padding: 18px;
+    }
+
+    .metrica strong {
+      color: var(--azul-profundo);
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .metrica span {
+      color: var(--texto-suave);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .aviso-apoio {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-left: 5px solid var(--verde-destaque);
+      border-radius: 18px;
+      color: var(--texto-principal);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 22px 0;
+      padding: 18px 20px;
+    }
+
+    .aviso-apoio strong {
+      color: var(--azul-profundo);
+    }
+
+    .painel-leitura {
+      margin-bottom: 22px;
+      padding: 20px;
+    }
+
+    .painel-leitura h2 {
+      color: var(--azul-profundo);
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .painel-leitura p {
+      color: var(--texto-suave);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .campo-busca {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+
+    .campo-busca input {
+      border: 1px solid #CBD5E1;
+      border-radius: 999px;
+      font-size: 15px;
+      padding: 13px 18px;
+      width: 100%;
+    }
+
+    .campo-busca a {
+      align-items: center;
+      background: var(--azul-profundo);
+      border-radius: 999px;
+      color: var(--branco);
+      display: inline-flex;
+      font-weight: 800;
+      justify-content: center;
+      padding: 0 18px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .bibliotecas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .biblioteca-card {
+      padding: 20px;
+    }
+
+    .biblioteca-card h3 {
+      color: var(--azul-profundo);
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .biblioteca-card p {
+      color: var(--texto-principal);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      background: #ECFDF5;
+      border-radius: 999px;
+      color: #047857;
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      padding: 4px 9px;
+    }
+
+    .fontes {
+      color: var(--texto-suave);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .vazio {
+      background: #FEF3C7;
+      border: 1px solid #FCD34D;
+      border-radius: 16px;
+      color: #92400E;
+      padding: 18px;
+    }
+
+    .alertas-card {
+      border-left: 5px solid #F59E0B;
+      margin: 0 0 24px;
+      padding: 20px;
+    }
+
+    .alertas-card h2 {
+      color: var(--azul-profundo);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .alertas-card p {
+      color: var(--texto-suave);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .alerta-item {
+      border: 1px solid #FCD34D;
+      border-radius: 14px;
+      margin-top: 10px;
+      padding: 12px;
+    }
+
+    .alerta-item.critica { background: #FEF2F2; border-color: #DC2626; }
+    .alerta-item.alta { background: #FFF7ED; border-color: #F97316; }
+    .alerta-item strong { color: var(--azul-profundo); display: block; margin-bottom: 4px; }
+    .alerta-item small { color: var(--texto-suave); display: block; line-height: 1.5; margin-top: 6px; }
+
+    @media (max-width: 720px) {
+      .hero-bibliotecas { padding: 28px; }
+      .campo-busca { grid-template-columns: 1fr; }
+      .campo-busca a { padding: 12px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="painel-terapeuta.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu">
+      <a href="painel-terapeuta.html">Painel</a>
+      <a href="bibliotecas-especialidades.html">Mapa completo</a>
+      <a href="manual.html">Manual</a>
+    </div>
+  </nav>
+
+  <main class="bibliotecas-profissional">
+    <section class="hero-bibliotecas">
+      <h1>Minhas Bibliotecas</h1>
+      <p>Área livre de leitura e estudo para o profissional. Aqui ficam as bibliotecas liberadas no seu plano, independentes de consulta, junto com bibliotecas transversais de apoio para segurança, documentação e encaminhamento.</p>
+    </section>
+
+    <section class="aviso-apoio">
+      <strong>Apoio ao profissional, não diagnóstico da plataforma.</strong> Este conteúdo organiza referências, protocolos, fontes e pontos de atenção para estudo e suporte à prática profissional. O Integrativo.App não realiza diagnósticos, não indica tratamentos e não substitui a avaliação, responsabilidade técnica e decisão clínica do profissional habilitado.
+    </section>
+
+    <section class="metricas" id="metricas"></section>
+
+    <section class="painel-leitura">
+      <h2>Estudar, revisar e consultar</h2>
+      <p>Use a busca para encontrar por especialidade, protocolo, fonte, diagnóstico, tratamento ou segurança clínica. Para liberar mais bibliotecas, faça upgrade do plano ou ajuste suas escolhas.</p>
+      <div class="campo-busca">
+        <input type="search" id="busca" placeholder="Ex.: Ayurveda, dor, consentimento, nadi, sinais de alarme...">
+        <a href="checkout.html?plano=pro">Ajustar plano</a>
+      </div>
+    </section>
+
+    <section class="alertas-card" id="alertasSeguranca">
+      <h2>Alertas determinísticos de segurança</h2>
+      <p>Digite uma prática, produto, condição ou medicamento na busca. O motor IF/THEN compara regras cadastradas e fontes, sem IA decisória.</p>
+      <div id="resultadoAlertasSeguranca">
+        <div class="alerta-item"><strong>Aguardando busca</strong><small>Exemplos: ginkgo varfarina, aromaterapia epilepsia, apiterapia alergia, massagem trombose.</small></div>
+      </div>
+    </section>
+
+    <section>
+      <h2 style="color:var(--azul-profundo);margin-bottom:12px;">Bibliotecas do seu plano</h2>
+      <div class="bibliotecas-grid" id="bibliotecasPlano"></div>
+    </section>
+
+    <section>
+      <h2 style="color:var(--azul-profundo);margin:10px 0 12px;">Apoio transversal incluído</h2>
+      <div class="bibliotecas-grid" id="bibliotecasTransversais"></div>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script>
+    const token = localStorage.getItem('integra_token');
+    if (!token) window.location.href = 'login.html';
+
+    const usuarioLocal = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
+    let estado = {
+      plano: usuarioLocal.plano || 'freemium',
+      limite: CONFIG.PLANOS[usuarioLocal.plano || 'freemium']?.especialidades_inclusas || 1,
+      bibliotecas: []
+    };
+    let termo = '';
+    let timerAlertasSeguranca = null;
+
+    const aliases = {
+      'Medicina Tradicional Chinesa': 'MTC',
+      'Yoga (instrutor)': 'Yoga',
+      'Médico (clínico geral)': 'Medicina Tradicional',
+      'Psicólogo(a)': 'Saúde Mental',
+      'Enfermeiro(a)': 'Enfermagem',
+      'Odontólogo(a)': 'Odontologia',
+      'Farmacêutico(a)': 'Farmacologia',
+      'Educador Físico': 'Atividade Física'
+    };
+
+    function normalizar(texto) {
+      return String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function nomesLiberados() {
+      return estado.bibliotecas.map((nome) => aliases[nome] || nome);
+    }
+
+    function bibliotecaCorresponde(item, nomes) {
+      const alvo = normalizar(item.especialidade);
+      return nomes.some((nome) => {
+        const n = normalizar(nome);
+        return alvo === n || alvo.includes(n) || n.includes(alvo);
+      });
+    }
+
+    function filtrar(lista) {
+      const busca = normalizar(termo);
+      if (!busca) return lista;
+      return lista.filter((item) => normalizar(`${item.especialidade} ${item.categoria} ${item.base} ${item.fontes}`).includes(busca));
+    }
+
+    function card(item) {
+      return `
+        <article class="biblioteca-card">
+          <span class="badge">${item.categoria}</span>
+          <h3>${item.especialidade}</h3>
+          <p>${item.base}</p>
+          <div class="fontes"><strong>Fontes:</strong> ${item.fontes}</div>
+        </article>
+      `;
+    }
+
+    function renderizar() {
+      const nomes = nomesLiberados();
+      const todas = CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz;
+      const transversais = todas.filter((item) => item.categoria === 'Biblioteca transversal');
+      const doPlano = todas.filter((item) => item.categoria !== 'Biblioteca transversal' && bibliotecaCorresponde(item, nomes));
+      const planoFiltrado = filtrar(doPlano);
+      const transversaisFiltradas = filtrar(transversais);
+
+      document.getElementById('metricas').innerHTML = `
+        <div class="metrica"><strong>${estado.plano}</strong><span>Plano atual</span></div>
+        <div class="metrica"><strong>${estado.limite}</strong><span>Limite do plano</span></div>
+        <div class="metrica"><strong>${estado.bibliotecas.length}</strong><span>Bibliotecas escolhidas</span></div>
+        <div class="metrica"><strong>${transversais.length}</strong><span>Apoios transversais</span></div>
+      `;
+
+      document.getElementById('bibliotecasPlano').innerHTML = planoFiltrado.length
+        ? planoFiltrado.map(card).join('')
+        : `<div class="vazio">Nenhuma biblioteca do plano encontrada para o filtro atual. Se você acabou de se cadastrar, confira suas bibliotecas escolhidas no perfil ou ajuste o plano.</div>`;
+
+      document.getElementById('bibliotecasTransversais').innerHTML = transversaisFiltradas.length
+        ? transversaisFiltradas.map(card).join('')
+        : `<div class="vazio">Nenhuma biblioteca transversal encontrada para o filtro atual.</div>`;
+    }
+
+    async function verificarAlertasSeguranca() {
+      const busca = termo.trim();
+      const painel = document.getElementById('resultadoAlertasSeguranca');
+      if (busca.length < 3) {
+        painel.innerHTML = `<div class="alerta-item"><strong>Aguardando busca</strong><small>Informe ao menos 3 caracteres para consultar alertas.</small></div>`;
+        return;
+      }
+
+      painel.innerHTML = `<div class="alerta-item"><strong>Consultando regras determinísticas...</strong><small>Sem uso de IA; apenas regras auditáveis por fonte.</small></div>`;
+      try {
+        const resposta = await fetch(`${CONFIG.API_URL}/alertas-seguranca?termo=${encodeURIComponent(busca)}&observacoes=${encodeURIComponent(busca)}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const resultado = await resposta.json();
+        const alertas = resultado.alertas || [];
+        if (!alertas.length) {
+          painel.innerHTML = `<div class="alerta-item"><strong>Sem alerta crítico cadastrado</strong><small>${resultado.mensagem_geral}</small></div>`;
+          return;
+        }
+        painel.innerHTML = alertas.map((alerta) => {
+          const fontes = (alerta.fontes || []).map((fonte) => `${fonte.nome} (${fonte.posicao})`).join('; ');
+          return `
+            <div class="alerta-item ${alerta.gravidade}">
+              <strong>${alerta.gravidade.toUpperCase()} — ${alerta.area} / ${alerta.tipo}</strong>
+              <small>${alerta.mensagem}</small>
+              <small><b>Conduta conservadora:</b> ${alerta.conduta}</small>
+              <small><b>Regra:</b> ${alerta.regra_id}<br><b>Fontes:</b> ${fontes}</small>
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        painel.innerHTML = `<div class="alerta-item alta"><strong>Falha ao consultar alertas</strong><small>Revise contraindicações manualmente e tente novamente.</small></div>`;
+      }
+    }
+
+    function agendarAlertasSeguranca() {
+      clearTimeout(timerAlertasSeguranca);
+      timerAlertasSeguranca = setTimeout(verificarAlertasSeguranca, 450);
+    }
+
+    async function carregarBibliotecas() {
+      try {
+        const resposta = await fetch(`${CONFIG.API_URL}/usuarios/bibliotecas`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!resposta.ok) throw new Error('Não foi possível carregar as bibliotecas do plano.');
+        estado = await resposta.json();
+      } catch (e) {
+        const especialidades = Array.isArray(usuarioLocal.especialidades) ? usuarioLocal.especialidades : [];
+        estado.bibliotecas = especialidades;
+      }
+      renderizar();
+    }
+
+    document.getElementById('busca').addEventListener('input', (event) => {
+      termo = event.target.value;
+      renderizar();
+      agendarAlertasSeguranca();
+    });
+
+    carregarBibliotecas();
+  </script>
+</body>
+</html>

@@ -12,6 +12,8 @@
     .dash-card h3 { font-size: 14px; color: var(--texto-suave); margin-bottom: 6px; }
     .dash-card .valor { font-size: 28px; font-weight: 700; color: var(--azul-profundo); }
     .lista-agenda, .painel-card { background: var(--branco); border-radius: var(--raio-padrao); box-shadow: var(--sombra-suave); padding: 20px; }
+    .aviso-apoio { background: #F8FAFC; border: 1px solid #CBD5E1; border-left: 5px solid var(--verde-destaque); border-radius: 16px; color: var(--texto-principal); font-size: 13px; line-height: 1.55; margin: 0 0 22px; padding: 14px 16px; }
+    .aviso-apoio strong { color: var(--azul-profundo); }
     .agenda-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #E2E8F0; cursor: pointer; transition: background 0.2s; }
     .agenda-item:hover { background: #F8FAFC; margin: 0 -20px; padding: 12px 20px; }
     .agenda-item:last-child { border-bottom: none; }
@@ -19,12 +21,63 @@
     .agenda-item .paciente-info { font-size: 12px; color: var(--texto-suave); }
     .btn-teleconsulta { background: var(--verde-destaque); color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; text-decoration: none; }
     .upsell-banner { background: #FEF3C7; border: 1px solid #F59E0B; border-radius: var(--raio-padrao); padding: 16px 20px; margin-top: 20px; text-align: center; }
-    .modulos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 24px 0; }
-    .modulo-card { display: block; background: var(--branco); border: 1px solid #E2E8F0; border-radius: 18px; padding: 18px; text-decoration: none; color: var(--texto-principal); box-shadow: var(--sombra-suave); transition: var(--transicao); }
-    .modulo-card:hover { transform: translateY(-4px); border-color: var(--verde-destaque); box-shadow: var(--sombra-elevada); }
-    .modulo-card .icone { display: block; font-size: 28px; margin-bottom: 10px; }
-    .modulo-card strong { display: block; color: var(--azul-profundo); margin-bottom: 5px; }
-    .modulo-card span { display: block; color: var(--texto-suave); font-size: 12px; line-height: 1.45; }
+    .atalhos-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 28px 0 14px; }
+    .atalhos-head h3 { color: var(--azul-profundo); font-size: 20px; margin: 0; }
+    .atalhos-head p { color: var(--texto-suave); font-size: 13px; margin: 2px 0 0; }
+    .modulos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin: 0 0 24px; }
+    .modulo-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 150px;
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 18px;
+      text-decoration: none;
+      color: var(--texto-principal);
+      box-shadow: var(--sombra-suave);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .modulo-card:hover, .modulo-card:focus-visible {
+      transform: translateY(-5px);
+      border-color: var(--verde-destaque);
+      box-shadow: var(--sombra-elevada);
+      outline: none;
+    }
+    .modulo-card::after {
+      content: "Abrir";
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      color: var(--verde-destaque);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .modulo-card .icone {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: #F1F5F9;
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+    .modulo-card strong { display: block; color: var(--azul-profundo); font-size: 16px; margin-bottom: 6px; padding-right: 42px; }
+    .modulo-card span { display: block; color: var(--texto-suave); font-size: 12px; line-height: 1.45; padding-bottom: 18px; }
+    .modulo-card.principal {
+      background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f 68%, var(--verde-destaque));
+      border-color: transparent;
+      color: var(--branco);
+      grid-column: span 2;
+    }
+    .modulo-card.principal .icone { background: rgba(255,255,255,.16); }
+    .modulo-card.principal strong, .modulo-card.principal span, .modulo-card.principal::after { color: var(--branco); }
+    .modulo-card.estudo { border-color: #A7F3D0; background: #F0FDF4; }
+    .modulo-card.alerta { border-color: #FCD34D; background: #FFFBEB; }
     .secao-painel { display: none; }
     .secao-painel.ativo { display: block; }
     .acoes-linha { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
@@ -39,6 +92,8 @@
     .btn-fechar-teleconsulta { background: #DC2626; color: #FFF; border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
     @media (max-width: 768px) {
       .dashboard-grid { grid-template-columns: 1fr; }
+      .atalhos-head { align-items: flex-start; flex-direction: column; }
+      .modulo-card.principal { grid-column: span 1; }
       .teleconsulta-frame { height: 680px; }
       .teleconsulta-header { align-items: flex-start; flex-direction: column; }
     }
@@ -56,6 +111,7 @@
         <a href="painel-prescricao.html">📋 Prescrição</a>
         <a href="painel-blog.html">✍️ Blog</a>
         <a href="painel-mensagens.html">📱 WhatsApp</a>
+        <a href="painel-bibliotecas.html">🌿 Bibliotecas</a>
         <a href="#" data-secao="dominio" onclick="mostrarSecao('dominio')">🌐 Domínio/Email</a>
         <a href="manual.html">📖 Manual</a>
         <a href="#" onclick="logout()">🚪 Sair</a>
@@ -73,24 +129,44 @@
           <div class="dash-card"><h3>Faturamento Mês</h3><div class="valor" id="dash-fat">-</div></div>
         </div>
 
-        <div class="modulos-grid" aria-label="Acessos rápidos do profissional">
-          <a href="#" class="modulo-card" onclick="mostrarSecao('agenda')"><span class="icone">📅</span><strong>Agenda</strong><span>Ver consultas, horários e abrir teleconsulta no painel.</span></a>
-          <a href="#" class="modulo-card" onclick="mostrarSecao('pacientes')"><span class="icone">👥</span><strong>Pacientes</strong><span>Acessar prontuários, histórico e acompanhamento.</span></a>
-          <a href="painel-prescricao.html" class="modulo-card"><span class="icone">📋</span><strong>Prescrição</strong><span>Emitir prescrições, recomendações e documentos clínicos.</span></a>
+        <div class="aviso-apoio">
+          <strong>Bibliotecas como apoio profissional.</strong> O Integrativo.App organiza fontes e protocolos para estudo e suporte à decisão, mas não realiza diagnóstico, prescrição ou tratamento. A conduta permanece sob responsabilidade do profissional habilitado.
+        </div>
+
+        <div class="atalhos-head">
+          <div>
+            <h3>Ações principais</h3>
+            <p>Comece pelos módulos que você mais usa durante a rotina clínica.</p>
+          </div>
+        </div>
+        <div class="modulos-grid" aria-label="Ações principais do profissional">
+          <a href="#" class="modulo-card principal" onclick="mostrarSecao('agenda')"><span class="icone">📅</span><strong>Agenda e teleconsulta</strong><span>Ver consultas, horários e abrir a sala de teleconsulta diretamente no painel.</span></a>
+          <a href="#" class="modulo-card principal" onclick="mostrarSecao('pacientes')"><span class="icone">👥</span><strong>Pacientes e prontuários</strong><span>Acessar pacientes, histórico, acompanhamento e próximos passos clínicos.</span></a>
+          <a href="painel-prescricao.html" class="modulo-card"><span class="icone">📋</span><strong>Prescrição</strong><span>Emitir prescrições, recomendações, documentos e orientações clínicas.</span></a>
+          <a href="painel-bibliotecas.html" class="modulo-card estudo"><span class="icone">🌿</span><strong>Bibliotecas</strong><span>Ler e estudar as bibliotecas liberadas pelo seu plano, sem precisar estar em consulta.</span></a>
+          <a href="painel-bibliotecas.html#alertasSeguranca" class="modulo-card alerta"><span class="icone">⚠️</span><strong>Alertas clínicos</strong><span>Consultar contraindicações graves por motor determinístico, sem IA decisória.</span></a>
+          <a href="painel-anamnese-config.html" class="modulo-card"><span class="icone">🧾</span><strong>Anamnese</strong><span>Configurar formulários e campos clínicos do atendimento.</span></a>
+          <a href="manual.html" class="modulo-card estudo"><span class="icone">📖</span><strong>Manual</strong><span>Leia primeiro para configurar tudo com calma e rodar o sistema sem quebrar a cabeça.</span></a>
+        </div>
+
+        <div class="atalhos-head">
+          <div>
+            <h3>Gestão, comunicação e crescimento</h3>
+            <p>Ferramentas de operação para organizar pagamentos, divulgação, equipe e estrutura profissional.</p>
+          </div>
+        </div>
+        <div class="modulos-grid" aria-label="Gestão, comunicação e crescimento">
+          <a href="painel-mensagens.html" class="modulo-card"><span class="icone">📱</span><strong>WhatsApp</strong><span>Mensagens automáticas, testes e comunicação pela Evolution API.</span></a>
+          <a href="painel-gateways.html" class="modulo-card"><span class="icone">💳</span><strong>Pagamentos</strong><span>Configurar gateways, cartão, cobrança e automações financeiras.</span></a>
+          <a href="painel-financeiro.html" class="modulo-card"><span class="icone">💰</span><strong>Financeiro</strong><span>Acompanhar cobranças, caixa, faturamento e histórico de pagamentos.</span></a>
           <a href="#" class="modulo-card" onclick="mostrarSecao('loja')"><span class="icone">🛒</span><strong>Minha Loja</strong><span>Configurar produtos, loja virtual e vendas presenciais.</span></a>
           <a href="painel-blog.html" class="modulo-card"><span class="icone">✍️</span><strong>Blog</strong><span>Publicar artigos com SEO e referências terapêuticas.</span></a>
-          <a href="painel-mensagens.html" class="modulo-card"><span class="icone">📱</span><strong>WhatsApp</strong><span>Mensagens automáticas e testes pela Evolution API.</span></a>
           <a href="painel-white-label.html" class="modulo-card"><span class="icone">🏷️</span><strong>White Label</strong><span>Personalizar comunicação e identidade da clínica.</span></a>
-          <a href="painel-anamnese-config.html" class="modulo-card"><span class="icone">🧾</span><strong>Anamnese</strong><span>Configurar formulários e campos clínicos do atendimento.</span></a>
-          <a href="painel-gateways.html" class="modulo-card"><span class="icone">💳</span><strong>Pagamentos</strong><span>Configurar gateways, cobrança e automações financeiras.</span></a>
-          <a href="painel-financeiro.html" class="modulo-card"><span class="icone">💰</span><strong>Financeiro</strong><span>Acompanhar cobranças, caixa e faturamento.</span></a>
-          <a href="painel-chatbot.html" class="modulo-card"><span class="icone">🤖</span><strong>Chatbot</strong><span>Suporte inteligente para dúvidas e operação diária.</span></a>
           <a href="painel-revenda.html" class="modulo-card"><span class="icone">🔐</span><strong>Certificado A1</strong><span>Acessar revenda e recursos de assinatura digital.</span></a>
           <a href="painel-recepcao.html" class="modulo-card"><span class="icone">🧑‍💼</span><strong>Recepção</strong><span>Operar check-in, caixa e loja física da clínica.</span></a>
           <a href="#" class="modulo-card" onclick="mostrarSecao('dominio')"><span class="icone">🌐</span><strong>Domínio/Email</strong><span>Orientações para domínio profissional e email corporativo.</span></a>
-          <a href="manual.html#especialidades" class="modulo-card"><span class="icone">🌿</span><strong>Bibliotecas</strong><span>Consultar especialidades, protocolos e fontes terapêuticas.</span></a>
-          <a href="checkout.html?plano=pro" class="modulo-card"><span class="icone">🚀</span><strong>Planos</strong><span>Ver upgrade, limites, teleconsultas e recursos inclusos.</span></a>
-          <a href="manual.html" class="modulo-card"><span class="icone">📖</span><strong>Manual</strong><span>Guia completo de uso da plataforma.</span></a>
+          <a href="painel-chatbot.html" class="modulo-card"><span class="icone">🤖</span><strong>Chatbot</strong><span>Suporte inteligente para dúvidas e operação diária.</span></a>
+          <a href="checkout.html?plano=pro" class="modulo-card alerta"><span class="icone">🚀</span><strong>Planos</strong><span>Ver upgrade, limites, teleconsultas, bibliotecas e recursos inclusos.</span></a>
         </div>
 
         <div class="lista-agenda">
@@ -246,5 +322,6 @@
     carregarDashboard();
   </script>
 <footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
+  <script src="js/arquivo-profissional.js"></script>
 </body>
 </html>

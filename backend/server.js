@@ -109,8 +109,10 @@ const acsRoutes = require('./rotas/acs');
 const equipeRoutes = require('./rotas/equipe');
 const pagamentoRoutes = require('./rotas/pagamento');
 const reunioesRoutes = require('./rotas/reunioes');
+const arquivoProfissionalRoutes = require('./rotas/arquivo-profissional');
 const susRoutes = require('./rotas/sus');
 const tissRoutes = require('./rotas/tiss');
+const alertasSegurancaRoutes = require('./rotas/alertas-seguranca');
 const { router: fhirRoutes, atualizarProtocolosFiocruz } = require('./rotas/fhir');
 const { router: validacaoRoutes, atualizarStatusValidacoes } = require('./rotas/validacao-conselhos');
 
@@ -146,10 +148,12 @@ app.use('/api/acs', acsRoutes);
 app.use('/api/equipe', equipeRoutes);
 app.use('/api/pagamento', pagamentoRoutes);
 app.use('/api/reunioes', reunioesRoutes);
+app.use('/api/arquivo-profissional', arquivoProfissionalRoutes);
 app.use('/api/sus', susRoutes);
 app.use('/api/tiss', tissRoutes);
 app.use('/api/fhir', fhirRoutes);
 app.use('/api/validacao', validacaoRoutes);
+app.use('/api/alertas-seguranca', alertasSegurancaRoutes);
 
 console.log('✅ Todas as rotas carregadas');
 
