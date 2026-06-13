@@ -1,6 +1,6 @@
 # Status do plano de acao
 
-Atualizado em: 2026-06-12
+Atualizado em: 2026-06-13
 
 ## Feito automaticamente
 
@@ -15,22 +15,24 @@ Atualizado em: 2026-06-12
 - Variaveis LiveKit previstas em `.env.example` e `render.yaml`.
 - Arquivos sensiveis `.env` e `.env.teste` protegidos fora do Git.
 - Frontend alfa configurado para usar o backend espelho `integrativoappespelho`.
-- Ultimo push para GitHub realizado no commit `b523be3`.
+- Backend espelho `https://integrativoappespelho.onrender.com` online em `NODE_ENV=test` e `TEST_MODE=true`.
+- Motor deterministico de alertas validado no espelho com `usa_ia:false`.
+- Frontend alfa apontado para `https://integrativoappespelho.onrender.com/api`.
+- Ultimo push para GitHub realizado no commit `053abf8`.
 
-## Falta fazer manualmente em painel externo
+## Verificacoes finais em painel externo
 
-- No Render, adicionar as variaveis secretas no servico backend existente:
+- Confirmar no Render se as variaveis secretas de teleconsulta real estao preenchidas quando o LiveKit real for usado:
   - `LIVEKIT_URL`
   - `LIVEKIT_API_KEY`
   - `LIVEKIT_API_SECRET`
-- No Render, fazer `Manual Deploy -> Clear build cache & deploy`.
 - Manter `integrativoappespelho` com branch `master`, root directory `backend`, build `npm install` e start `npm start`.
 - Usar o backend principal apenas como fallback temporario se o espelho ficar indisponivel.
-- Criar/configurar banco alfa separado e preencher `TESTE_DATABASE_URL`.
-- Confirmar URL publica atual do Vercel ou criar o projeto `integrativoapp-alfa`.
-- Se usar frontend alfa com `integra-backend-ynrd`, incluir a URL do frontend alfa em `CORS_ORIGINS`.
+- Confirmar `CORS_ORIGINS=https://integrativoapp-alfa.vercel.app` no servico `integrativoappespelho`.
+- Configurar banco alfa separado se os testes nao puderem usar o banco temporario atual.
+- Confirmar URL publica atual do Vercel alfa.
 
-## Falta testar
+## Testes finais recomendados
 
 - Login remoto publicado.
 - Teleconsulta com dois participantes reais.
@@ -38,7 +40,7 @@ Atualizado em: 2026-06-12
 - Fluxo paciente -> entrar na sala.
 - Cadastro, agendamento, painel terapeuta e painel paciente.
 
-## Ainda nao implementado
+## Modulos futuros
 
 - Gravacao real da teleconsulta.
 - Transcricao/STT da teleconsulta.
@@ -48,8 +50,7 @@ Atualizado em: 2026-06-12
 
 ## Proxima prioridade
 
-1. Configurar variaveis LiveKit no Render.
-2. Incluir a URL do frontend alfa em `CORS_ORIGINS`.
-3. Fazer deploy limpo no Render.
-4. Abrir a URL publica do frontend e testar `/reuniao.html?sala=teleconsulta-alfa`.
-5. Criar ambiente alfa remoto separado antes de convidar testadores.
+1. Aguardar o deploy do frontend alfa com o endpoint `integrativoappespelho`.
+2. Abrir a URL publica do frontend alfa e confirmar chamadas para `https://integrativoappespelho.onrender.com/api`.
+3. Testar login, cadastro, biblioteca, prescricao e teleconsulta.
+4. Validar LiveKit real quando as chaves finais estiverem no Render.

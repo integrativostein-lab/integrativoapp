@@ -276,7 +276,7 @@
   <div class="header">
     <div class="logo">🌿</div>
     <h1>Integrativo.App</h1>
-    <div class="sub">Plano de Conclusão — O que falta para ir ao ar</div>
+    <div class="sub">Plano de Homologação — Status técnico e roadmap</div>
     <div class="badge">📊 Relatório Técnico • Maio 2026</div>
   </div>
 
@@ -289,13 +289,13 @@
     </div>
     <div class="metric-card">
       <div class="metric-number">~5.670</div>
-      <div class="metric-label">Linhas faltantes</div>
-      <span class="metric-complete complete-mid">⚠️ 20% pendente</span>
+      <div class="metric-label">Melhorias mapeadas</div>
+      <span class="metric-complete complete-mid">⚠️ 20% em roadmap</span>
     </div>
     <div class="metric-card">
       <div class="metric-number">32</div>
-      <div class="metric-label">Arquivos faltantes</div>
-      <span class="metric-complete complete-low">📦 a implementar</span>
+      <div class="metric-label">Serviços mapeados</div>
+      <span class="metric-complete complete-low">📦 roadmap técnico</span>
     </div>
     <div class="metric-card">
       <div class="metric-number">~20h</div>
@@ -313,15 +313,15 @@
     <div class="section-content">
       <table class="file-table">
         <thead>
-          <tr><th>Arquivo</th><th>Status atual</th><th>O que falta fazer</th><th>Estimativa</th></tr>
+          <tr><th>Arquivo</th><th>Status atual</th><th>Próximo ajuste</th><th>Estimativa</th></tr>
         </thead>
         <tbody>
           <tr><td>servicos/stripe.js</td><td class="status-partial">Apenas referenciado</td><td>Criar PaymentIntent, webhooks, confirmação</td><td>~250 linhas</td></tr>
           <tr><td>servicos/evolution-api.js</td><td class="status-partial">Mencionado no manual</td><td>Conexão real com Evolution API, envio de msgs</td><td>~200 linhas</td></tr>
-          <tr><td>servicos/whatsapp.js</td><td class="status-missing">Não existe</td><td>Wrapper para fila de envio e templates</td><td>~150 linhas</td></tr>
+          <tr><td>servicos/whatsapp.js</td><td class="status-missing">Roadmap</td><td>Wrapper para fila de envio e templates</td><td>~150 linhas</td></tr>
           <tr><td>servicos/abrath.js</td><td class="status-partial">Mock (sempre true)</td><td>Consultar API/site real da ABRATH</td><td>~80 linhas</td></tr>
-          <tr><td>servicos/anvisa-api.js</td><td class="status-missing">Não existe</td><td>Consultar registros de fitoterápicos</td><td>~150 linhas</td></tr>
-          <tr><td>servicos/pubmed-api.js</td><td class="status-missing">Não existe</td><td>Buscar artigos via NCBI/E-utilities</td><td>~120 linhas</td></tr>
+          <tr><td>servicos/anvisa-api.js</td><td class="status-missing">Roadmap</td><td>Consultar registros de fitoterápicos</td><td>~150 linhas</td></tr>
+          <tr><td>servicos/pubmed-api.js</td><td class="status-missing">Roadmap</td><td>Buscar artigos via NCBI/E-utilities</td><td>~120 linhas</td></tr>
           <tr><td>servicos/ibge-api.js</td><td class="status-missing">Mencionado</td><td>Buscar população por código IBGE</td><td>~80 linhas</td></tr>
           <tr><td>servicos/receitaws-api.js</td><td class="status-missing">Mencionado</td><td>Validar CNPJ de organizações sociais</td><td>~60 linhas</td></tr>
           <tr><td>servicos/certificados.js</td><td class="status-partial">Só padrões</td><td>Emissão via Certisign/Soluti</td><td>~200 linhas</td></tr>
@@ -337,12 +337,12 @@
     </div>
     <div class="section-content">
       <table class="file-table">
-        <thead><tr><th>Arquivo</th><th>Status</th><th>O que falta</th><th>Estimativa</th></tr></thead>
+        <thead><tr><th>Arquivo</th><th>Status</th><th>Próximo ajuste</th><th>Estimativa</th></tr></thead>
         <tbody>
           <tr><td>rotas/google-calendar.js</td><td class="status-partial">Mock</td><td>OAuth2 real, sync bidirecional</td><td>~200 linhas</td></tr>
           <tr><td>rotas/zoho.js</td><td class="status-partial">Mock</td><td>Criar caixas postais reais</td><td>~150 linhas</td></tr>
           <tr><td>rotas/gateways.js</td><td class="status-partial">Mock</td><td>Checkout real (PagSeguro/Asaas)</td><td>~550 linhas</td></tr>
-          <tr><td>integrations/memed.js</td><td class="status-missing">Não existe</td><td>Prescrição digital</td><td>~150 linhas</td></tr>
+          <tr><td>integrations/memed.js</td><td class="status-missing">Roadmap</td><td>Prescrição digital</td><td>~150 linhas</td></tr>
         </tbody>
       </table>
     </div>
@@ -375,13 +375,13 @@
     </div>
     <div class="section-content">
       <table class="file-table">
-        <thead><tr><th>Arquivo</th><th>Status</th><th>O que falta</th></tr></thead>
+        <thead><tr><th>Arquivo</th><th>Status</th><th>Próximo ajuste</th></tr></thead>
         <tbody>
           <tr><td>middleware/rate-limiter.js</td><td class="status-partial">Só global</td><td>Limites por rota (login mais restrito)</td></tr>
-          <tr><td>middleware/audit-log.js</td><td class="status-missing">Não existe</td><td>Logar ações importantes automaticamente</td></tr>
-          <tr><td>utils/encryption.js</td><td class="status-missing">Não existe</td><td>AES-256 para dados sensíveis (CPF, CNS)</td></tr>
-          <tr><td>utils/jwt-blacklist.js</td><td class="status-missing">Não existe</td><td>Invalidar tokens no logout</td></tr>
-          <tr><td>cron/jobs.js</td><td class="status-missing">Não existe</td><td>Backups, atualização ANVISA, lembretes</td></tr>
+          <tr><td>middleware/audit-log.js</td><td class="status-missing">Roadmap</td><td>Logar ações importantes automaticamente</td></tr>
+          <tr><td>utils/encryption.js</td><td class="status-missing">Roadmap</td><td>AES-256 para dados sensíveis (CPF, CNS)</td></tr>
+          <tr><td>utils/jwt-blacklist.js</td><td class="status-missing">Roadmap</td><td>Invalidar tokens no logout</td></tr>
+          <tr><td>cron/jobs.js</td><td class="status-missing">Roadmap</td><td>Backups, atualização ANVISA, lembretes</td></tr>
         </tbody>
       </table>
     </div>
@@ -513,15 +513,15 @@
         <tbody>
           <tr><td>Backend rodando em produção (Render)</td><td class="status-partial">🟡 Homologação</td><td>DevOps</td></tr>
           <tr><td>Frontend rodando em produção (Vercel)</td><td class="status-partial">🟡 Homologação</td><td>DevOps</td></tr>
-          <tr><td>Banco de dados PostgreSQL (Supabase)</td><td class="status-partial">🟡 Pendente migração</td><td>DevOps</td></tr>
-          <tr><td>Variáveis de ambiente configuradas</td><td class="status-missing">🔴 Pendente</td><td>DevOps</td></tr>
+          <tr><td>Banco de dados PostgreSQL (Supabase)</td><td class="status-partial">🟡 Homologação / alfa separado opcional</td><td>DevOps</td></tr>
+          <tr><td>Variáveis de ambiente configuradas</td><td class="status-partial">🟡 Conferir por ambiente</td><td>DevOps</td></tr>
           <tr><td>SSL/TLS configurado</td><td class="status-done">🟢 Automático (Vercel/Render)</td><td>Plataforma</td></tr>
-          <tr><td>Backup automático do banco</td><td class="status-missing">🔴 Pendente</td><td>DevOps</td></tr>
+          <tr><td>Backup automático do banco</td><td class="status-partial">🟡 Programar antes de produção ampla</td><td>DevOps</td></tr>
           <tr><td>Rate limiting configurado</td><td class="status-partial">🟡 Básico, refinar</td><td>Backend</td></tr>
-          <tr><td>Logs de auditoria ativos</td><td class="status-missing">🔴 Pendente</td><td>Backend</td></tr>
-          <tr><td>Testes de integração passando</td><td class="status-missing">🔴 Não implementados</td><td>QA</td></tr>
-          <tr><td>Documentação da API disponível</td><td class="status-missing">🔴 Pendente</td><td>Tech Writer</td></tr>
-          <tr><td>Monitoramento (Uptime Robot / Better Stack)</td><td class="status-missing">🔴 Pendente</td><td>DevOps</td></tr>
+          <tr><td>Logs de auditoria ativos</td><td class="status-partial">🟡 Reforçar por módulo crítico</td><td>Backend</td></tr>
+          <tr><td>Testes de integração passando</td><td class="status-partial">🟡 Ampliar cobertura</td><td>QA</td></tr>
+          <tr><td>Documentação da API disponível</td><td class="status-partial">🟡 Atualizar conforme endpoints finais</td><td>Tech Writer</td></tr>
+          <tr><td>Monitoramento (Uptime Robot / Better Stack)</td><td class="status-partial">🟡 Configurar alerta externo</td><td>DevOps</td></tr>
         </tbody>
       </table>
     </div>

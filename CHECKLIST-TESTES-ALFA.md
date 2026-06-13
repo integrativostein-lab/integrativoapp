@@ -44,9 +44,8 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 - Busca em `painel-bibliotecas.html` por `ginkgo varfarina` e conferir alerta deterministico.
 - Em `painel-prescricao.html`, inserir item com risco conhecido e confirmar que aparece alerta antes da emissao.
 
-## 5. Pendencias conhecidas
+## 5. Recursos futuros fora deste ciclo
 
-- Gravacao real ainda nao implementada.
-- Transcricao/STT ainda nao implementada.
-- Banco alfa separado ainda precisa ser configurado.
-- Backend alfa `integrativoappespelho` ainda precisa responder como backend se os testes nao puderem usar o backend existente.
+- Gravacao real da teleconsulta.
+- Transcricao/STT da teleconsulta.
+- Banco alfa separado dedicado, se os testes exigirem isolamento completo de dados.
