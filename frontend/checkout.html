@@ -4,7 +4,11 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Checkout — Integrativo.App">
+  <meta name="description" content="Finalize sua assinatura anual do Integrativo.App com PIX, cartão, desconto ABRATH para Pro e Premium e regras transparentes de cancelamento.">
+  <meta name="keywords" content="checkout Integrativo.App, assinatura saúde integrativa, plano Pro, plano Premium, desconto ABRATH, teleconsulta">
+  <meta property="og:title" content="Checkout — Integrativo.App">
+  <meta property="og:description" content="Assine o Integrativo.App com planos anuais, PIX, cartão e condições transparentes.">
+  <meta property="og:type" content="website">
   <title>Checkout — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
@@ -432,7 +436,9 @@
       const planoConfig = CONFIG.PLANOS[plano];
 
       document.getElementById('planoNome').textContent = planoConfig.nome;
-      document.getElementById('planoDescricao').textContent = planoConfig.descricao;
+      document.getElementById('planoDescricao').textContent = planoConfig.texto_profissionais
+        ? `${planoConfig.descricao}. ${planoConfig.texto_profissionais}.`
+        : planoConfig.descricao;
       document.getElementById('valorAnual').textContent = `R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
       atualizarPagamento();

@@ -135,6 +135,19 @@ h2 {
   letter-spacing: -1px;
 }
 
+.tag-plano {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--verde-menta);
+  color: var(--verde-destaque);
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .subtitulo { 
   font-size: 18px; 
   color: var(--texto-suave); 
@@ -163,6 +176,205 @@ h2 {
 .card h3 { color: var(--azul-profundo); margin-bottom: 12px; font-size: 20px; font-weight: 700; }
 .card p { color: var(--texto-suave); font-size: 15px; }
 
+/* Vitrine de bibliotecas terapêuticas */
+.bibliotecas-secao {
+  padding: 90px 24px;
+  background:
+    radial-gradient(circle at top left, rgba(16, 185, 129, 0.10), transparent 34%),
+    linear-gradient(135deg, #0F172A 0%, #123B54 56%, #0E9F6E 130%);
+  color: var(--branco);
+}
+
+.bibliotecas-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.96);
+  color: var(--texto-principal);
+  border-radius: 28px;
+  padding: 36px;
+  box-shadow: var(--sombra-elevada);
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+.bibliotecas-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.bibliotecas-head h2 {
+  color: var(--azul-profundo);
+  margin-bottom: 8px;
+}
+
+.bibliotecas-head p {
+  color: var(--texto-suave);
+  max-width: 760px;
+}
+
+.bibliotecas-metricas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(120px, 1fr));
+  gap: 12px;
+  min-width: 360px;
+}
+
+.bibliotecas-metrica {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+}
+
+.bibliotecas-metrica strong {
+  display: block;
+  color: var(--verde-destaque);
+  font-size: 30px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.bibliotecas-metrica span {
+  color: var(--azul-profundo);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.bibliotecas-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0;
+}
+
+.bibliotecas-subtitulo {
+  color: var(--azul-profundo);
+  font-size: 15px;
+  margin: 18px 0 10px;
+}
+
+.biblioteca-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #ECFDF5;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid #A7F3D0;
+}
+
+.fontes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.fonte-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 14px;
+  color: var(--azul-profundo);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.protocolos-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.protocolo-item {
+  background: var(--azul-profundo);
+  color: var(--branco);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.padroes-saude-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 18px 0 24px;
+}
+
+.padrao-saude-card {
+  background: linear-gradient(135deg, #F8FAFC 0%, #ECFDF5 100%);
+  border: 1px solid #A7F3D0;
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.padrao-saude-card strong {
+  display: block;
+  color: var(--azul-profundo);
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+
+.padrao-saude-card p {
+  color: var(--texto-suave);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ods-bloco {
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: 20px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+.ods-bloco h3 {
+  color: var(--azul-profundo);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.ods-bloco p {
+  color: var(--texto-suave);
+  font-size: 13px;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.ods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 12px;
+}
+
+.ods-item {
+  display: block;
+  background: var(--branco);
+  border-radius: 14px;
+  padding: 8px;
+  border: 1px solid #E2E8F0;
+  transition: var(--transicao);
+}
+
+.ods-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sombra-suave);
+}
+
+.ods-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
 /* Rodapé Elegante */
 footer { 
   background: var(--azul-profundo); 
@@ -190,4 +402,7 @@ footer a:hover { color: var(--verde-destaque); }
   .navbar .menu a { margin: 5px 12px; }
   .secao { padding: 60px 24px; }
   h2 { font-size: 28px; }
+  .bibliotecas-head { grid-template-columns: 1fr; }
+  .bibliotecas-metricas { min-width: 0; grid-template-columns: 1fr; }
+  .bibliotecas-card { padding: 24px; }
 }

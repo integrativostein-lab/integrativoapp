@@ -4,8 +4,13 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App — Cadastro gratuito para pacientes. Encontre profissionais de saúde integrativa.">
-  <title>Integrativo.App — Saúde Integrativa para Pacientes</title>
+  <meta name="description" content="Integrativo.App conecta pacientes a profissionais de saúde integrativa com 30 bibliotecas terapêuticas, 936 registros, teleconsulta segura e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
+  <meta name="keywords" content="saúde integrativa, terapias integrativas, teleconsulta, ODS, Objetivos de Desenvolvimento Sustentável, Ayurveda, MTC, Yoga, Fitoterapia, protocolos terapêuticos, profissionais de saúde integrativa, Integrativo.App">
+  <meta property="og:title" content="Integrativo.App — Saúde Integrativa com Protocolos e Bibliotecas Terapêuticas">
+  <meta property="og:description" content="Encontre profissionais e acesse um ecossistema com 30 bibliotecas terapêuticas, 936 registros e alinhamento aos ODS.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <title>Integrativo.App — Saúde Integrativa, Teleconsulta e Protocolos Terapêuticos</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0F172A">
   <link rel="stylesheet" href="css/estilo.css">
@@ -434,6 +439,41 @@
     </div>
   </section>
 
+  <!-- BIBLIOTECAS TERAPÊUTICAS -->
+  <section class="bibliotecas-secao" id="bibliotecas">
+    <div class="bibliotecas-card">
+      <div class="bibliotecas-head">
+        <div>
+          <span class="tag-plano">Bibliotecas e protocolos</span>
+          <h2>30 bibliotecas terapêuticas com protocolos confiáveis</h2>
+          <p>Um banco estruturado para apoiar escolhas conscientes em saúde integrativa: fontes oficiais, protocolos de avaliação, tratamentos, encaminhamentos e segurança clínica.</p>
+        </div>
+        <div class="bibliotecas-metricas" id="bibliotecasMetricasIndex"></div>
+      </div>
+      <h3 class="bibliotecas-subtitulo">O que cada biblioteca reúne</h3>
+      <div class="protocolos-lista" id="protocolosListaIndex"></div>
+      <h3 class="bibliotecas-subtitulo">Especialidades nas bibliotecas</h3>
+      <div class="bibliotecas-grid" id="bibliotecasGridIndex"></div>
+      <h3 class="bibliotecas-subtitulo">Fontes confiáveis e referências</h3>
+      <div class="fontes-grid" id="fontesGridIndex"></div>
+      <div class="ods-bloco" aria-label="Objetivos de Desenvolvimento Sustentável alinhados ao Integrativo.App">
+        <h3>Alinhamento com os Objetivos de Desenvolvimento Sustentável</h3>
+        <p>O Integrativo.App se alinha aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17 por apoiar saúde e bem-estar, educação em saúde, trabalho profissional, inovação, inclusão, proteção ambiental, governança ética e parcerias de impacto. Este alinhamento é institucional e não representa certificação ou endosso oficial da ONU.</p>
+        <div class="ods-grid">
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-03.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-04.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-08.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-09.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- TABELA DE PLANOS -->
   <section class="planos-secao" id="planos">
     <div class="container">
@@ -549,7 +589,9 @@
         features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
         features.push(`Comissão por consulta: <strong style="font-size:14px;">${String(p.comissao_consulta_pct).replace('.', ',')}%</strong>`);
         if (isFree) features.push('Cartão obrigatório para cobrança automática de consultas e teleconsultas');
-        if (p.max_profissionais) {
+        if (p.texto_profissionais) {
+          features.push(p.texto_profissionais);
+        } else if (p.max_profissionais) {
           features.push(p.max_profissionais === 'ilimitados' ? 'Profissionais ilimitados' : `Até ${p.max_profissionais} profissionais cadastrados`);
         }
         if (p.ferramentas_gestao) features.push('Ferramentas contábil, financeira e RH');
@@ -576,6 +618,22 @@
       }).join('');
     }
     renderPlanos();
+
+    // ============================================
+    // BIBLIOTECAS TERAPÊUTICAS
+    // ============================================
+    function renderBibliotecasIndex() {
+      const b = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
+      document.getElementById('bibliotecasMetricasIndex').innerHTML = `
+        <div class="bibliotecas-metrica"><strong>${b.total_bibliotecas}</strong><span>Bibliotecas</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.total_registros}</strong><span>Registros</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.protocolos_criados}</strong><span>Protocolos novos</span></div>
+      `;
+      document.getElementById('protocolosListaIndex').innerHTML = b.tipos.map(tipo => `<span class="protocolo-item">${tipo}</span>`).join('');
+      document.getElementById('bibliotecasGridIndex').innerHTML = b.itens.map(nome => `<span class="biblioteca-chip">${nome}</span>`).join('');
+      document.getElementById('fontesGridIndex').innerHTML = b.fontes.map(fonte => `<div class="fonte-card">${fonte}</div>`).join('');
+    }
+    renderBibliotecasIndex();
 
     // ============================================
     // MINI APP / PWA

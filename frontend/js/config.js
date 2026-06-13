@@ -90,6 +90,8 @@ const CONFIG = {
       conciliacao: true,
       especialidades_inclusas: 20,
       max_profissionais: 10,
+      cobranca_por_profissional: false,
+      texto_profissionais: 'Até 10 profissionais no mesmo valor, sem cobrança extra por profissional',
       ferramentas_gestao: true,
       certificado_a1_gratis: true,
       destaque: false
@@ -133,6 +135,8 @@ const CONFIG = {
       conciliacao: true,
       especialidades_inclusas: 30,
       max_profissionais: 'ilimitados',
+      cobranca_por_profissional: false,
+      texto_profissionais: 'Profissionais ilimitados dentro do guarda-chuva institucional, sem cobrança por profissional',
       ferramentas_gestao: true,
       certificado_a1_gratis: true,
       destaque: false
@@ -250,6 +254,28 @@ const CONFIG = {
     { id: 'educador-fisico',  nome: 'Educador Físico',                conselho: 'CREF',    categoria: 'Atividade Física' },
     { id: 'personal-trainer', nome: 'Personal Trainer',               conselho: 'CREF',    categoria: 'Atividade Física' }
   ],
+
+  // ═══════════════════════════════════════════
+  // BIBLIOTECAS TERAPÊUTICAS — PROTOCOLOS
+  // ═══════════════════════════════════════════
+  BIBLIOTECAS_TERAPEUTICAS: {
+    total_bibliotecas: 30,
+    total_especialidades: 30,
+    total_registros: 936,
+    registros_base: 781,
+    protocolos_criados: 155,
+    fontes: ['OMS/WHO', 'PNPIC/MS', 'Ministério da Saúde', 'Cochrane', 'ANVISA', 'NICE', 'AYUSH', 'NCCIH', 'Diretrizes profissionais', 'Textos clássicos'],
+    tipos: ['fontes confiáveis', 'protocolos de avaliação', 'tratamentos/intervenções', 'encaminhamentos', 'segurança clínica'],
+    itens: [
+      'Fitoterapia', 'Ayurveda', 'MTC', 'Yoga', 'Massoterapia', 'Aromaterapia',
+      'Fisioterapia', 'Xamanismo', 'Florais de Bach', 'Reiki', 'Reflexologia',
+      'Medicina Integrativa', 'Jyotish', 'Vastu Shastra', 'Quiropraxia',
+      'Osteopatia', 'Cromoterapia', 'Musicoterapia', 'Equoterapia', 'Apiterapia',
+      'Hidroterapia', 'Acupuntura', 'Medicina Tradicional', 'Farmacologia',
+      'Pediatria', 'Ginecologia', 'Geriatria', 'Saúde Mental',
+      'Medicina de Família', 'Emergência'
+    ]
+  },
 
   // ═══════════════════════════════════════════
   // CONSELHOS PROFISSIONAIS

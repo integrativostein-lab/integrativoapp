@@ -4,6 +4,11 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Busque profissionais de saúde integrativa por especialidade, modalidade e localização no Integrativo.App. Encontre atendimento online, presencial e teleconsulta segura.">
+  <meta name="keywords" content="buscar profissionais saúde integrativa, terapeuta online, teleconsulta, Ayurveda, MTC, Yoga, Fitoterapia, Integrativo.App">
+  <meta property="og:title" content="Buscar Profissionais — Integrativo.App">
+  <meta property="og:description" content="Encontre profissionais de saúde integrativa por especialidade e modalidade.">
+  <meta property="og:type" content="website">
   <title>Buscar Profissionais — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
@@ -14,6 +19,40 @@
     .resultado-card h3 { color: var(--azul-escuro); margin-bottom: 4px; }
     .resultado-card p { color: var(--texto-medio); font-size: 13px; }
     .sem-resultados { text-align: center; padding: 40px; color: var(--texto-medio); }
+    .especialidades-lista {
+      background: var(--branco);
+      padding: 20px;
+      border-radius: var(--raio-borda);
+      box-shadow: var(--sombra);
+      margin-bottom: 24px;
+    }
+    .especialidades-lista h3 {
+      color: var(--azul-escuro);
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .especialidades-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .especialidade-chip {
+      border: 1px solid #E2E8F0;
+      background: #F8FAFC;
+      color: var(--azul-escuro);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transicao);
+    }
+    .especialidade-chip:hover,
+    .especialidade-chip.ativa {
+      background: var(--verde-destaque);
+      border-color: var(--verde-destaque);
+      color: var(--branco);
+    }
   </style>
 </head>
 <body>
@@ -54,17 +93,44 @@
       <button class="btn btn-primario" onclick="buscar()">Buscar</button>
     </div>
 
+    <div class="especialidades-lista">
+      <h3>Especialidades disponíveis</h3>
+      <div class="especialidades-grid" id="lista-especialidades"></div>
+    </div>
+
     <div id="resultados"></div>
   </div>
 
   <script src="js/config.js"></script>
   <script>
     var select = document.getElementById('filtro-especialidade');
+    var listaEspecialidades = document.getElementById('lista-especialidades');
     CONFIG.ESPECIALIDADES.forEach(function(esp) {
       var opt = document.createElement('option');
-      opt.value = esp;
-      opt.textContent = esp;
+      opt.value = esp.nome;
+      opt.textContent = esp.nome;
       select.appendChild(opt);
+
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'especialidade-chip';
+      chip.textContent = esp.nome;
+      chip.dataset.especialidade = esp.nome;
+      chip.onclick = function() {
+        select.value = esp.nome;
+        document.querySelectorAll('.especialidade-chip').forEach(function(item) {
+          item.classList.toggle('ativa', item.dataset.especialidade === esp.nome);
+        });
+        buscar();
+      };
+      listaEspecialidades.appendChild(chip);
+    });
+
+    select.addEventListener('change', function() {
+      var selecionada = select.value;
+      document.querySelectorAll('.especialidade-chip').forEach(function(item) {
+        item.classList.toggle('ativa', item.dataset.especialidade === selecionada);
+      });
     });
 
     async function buscar() {

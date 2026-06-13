@@ -4,8 +4,13 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App — Cadastro de profissionais de saúde integrativa, com verificação de conselho online.">
-  <title>Para Profissionais — Integrativo.App</title>
+  <meta name="description" content="Cadastre-se no Integrativo.App e tenha agenda, teleconsulta, padrões FHIR/TISS, 30 bibliotecas terapêuticas, 936 registros e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
+  <meta name="keywords" content="cadastro profissional saúde integrativa, software para terapeutas, FHIR, TISS, ODS, Objetivos de Desenvolvimento Sustentável, interoperabilidade em saúde, agenda online, teleconsulta, prontuário, protocolos terapêuticos, ABRATH, Integrativo.App">
+  <meta property="og:title" content="Integrativo.App para Profissionais — Gestão, Teleconsulta e Bibliotecas Terapêuticas">
+  <meta property="og:description" content="Plataforma para profissionais com padrões FHIR/TISS, teleconsulta, 30 bibliotecas terapêuticas e alinhamento aos ODS.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <title>Para Profissionais — Integrativo.App com Protocolos e Teleconsulta</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
     .hero-pro {
@@ -92,6 +97,8 @@
     .comparativo-grid .plano .preco small {
       display: block;
       margin-top: 2px;
+      color: var(--azul-profundo);
+      font-size: 15px;
     }
     .comparativo-nota {
       color: var(--texto-suave);
@@ -365,55 +372,49 @@
        Validamos seu registro online junto ao conselho competente.</p>
   </header>
 
-  <section class="comparativo-secao" id="comparativo">
-    <div class="comparativo-card">
-      <div class="comparativo-head">
+  <!-- BIBLIOTECAS TERAPÊUTICAS -->
+  <section class="bibliotecas-secao" id="bibliotecas">
+    <div class="bibliotecas-card">
+      <div class="bibliotecas-head">
         <div>
-          <h2>Calculadora comparativa para profissionais</h2>
-          <p>Compare custos anuais e recursos oferecidos por plataformas concorrentes anonimizadas e pelo Integrativo.App.</p>
+          <span class="tag-plano">Bibliotecas profissionais</span>
+          <h2>Protocolos para apoiar sua prática integrativa</h2>
+          <p>São 30 bibliotecas terapêuticas com registros organizados por fontes confiáveis, avaliação, tratamentos, encaminhamentos e segurança clínica para consulta profissional, com estrutura preparada para padrões FHIR e TISS.</p>
         </div>
-        <div class="calculadora-controles">
-          <div class="grupo" style="margin:0;">
-            <label for="calcProfissionais">Quantidade de profissionais</label>
-            <input type="number" id="calcProfissionais" min="1" value="1">
-          </div>
-          <div class="grupo" style="margin:0;">
-            <label for="calcConsultasMes">Consultas/mês por profissional</label>
-            <input type="number" id="calcConsultasMes" min="0" value="40">
-          </div>
-          <div class="grupo" style="margin:0;">
-            <label for="calcTicketMedio">Valor médio da consulta</label>
-            <input type="number" id="calcTicketMedio" min="0" value="180">
-          </div>
-          <div class="grupo" style="margin:0;">
-            <label for="calcPlanoIntegrativo">Plano Integrativo.App</label>
-            <select id="calcPlanoIntegrativo">
-              <option value="pro" selected>Pro</option>
-              <option value="guardioes_floresta">Guardiões da Floresta</option>
-              <option value="premium">Premium</option>
-              <option value="enterprise">Enterprise</option>
-            </select>
-          </div>
+        <div class="bibliotecas-metricas" id="bibliotecasMetricasProf"></div>
+      </div>
+      <h3 class="bibliotecas-subtitulo">Padrões de saúde e interoperabilidade</h3>
+      <div class="padroes-saude-grid">
+        <div class="padrao-saude-card">
+          <strong>FHIR</strong>
+          <p>Organização clínica orientada ao padrão HL7 FHIR para facilitar interoperabilidade, troca estruturada de dados, histórico do paciente, registros de atendimento e integração futura com prontuários e sistemas de saúde.</p>
+        </div>
+        <div class="padrao-saude-card">
+          <strong>TISS</strong>
+          <p>Estrutura compatível com o padrão TISS da ANS para apoiar guias, eventos assistenciais, informações administrativas e preparação de fluxos de faturamento com operadoras e convênios.</p>
         </div>
       </div>
-
-      <div class="resultado-economia">
-        <div class="indicador">
-          <span>Integrativo.App por ano</span>
-          <strong id="calcCustoIntegrativo">R$ 0,00</strong>
-        </div>
-        <div class="indicador">
-          <span>Média dos concorrentes por ano</span>
-          <strong id="calcMediaConcorrentes">R$ 0,00</strong>
-        </div>
-        <div class="indicador destaque">
-          <span>Economia estimada anual</span>
-          <strong id="calcEconomia">R$ 0,00</strong>
+      <div class="ods-bloco" aria-label="Objetivos de Desenvolvimento Sustentável alinhados ao Integrativo.App">
+        <h3>Alinhamento com os Objetivos de Desenvolvimento Sustentável</h3>
+        <p>O Integrativo.App se alinha aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17 ao fortalecer saúde integrativa, educação profissional, trabalho digno, inovação, redução de desigualdades, proteção ambiental, ética institucional e parcerias. Este alinhamento é institucional e não representa certificação ou endosso oficial da ONU.</p>
+        <div class="ods-grid">
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-03.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-04.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-08.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-09.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
         </div>
       </div>
-
-      <div class="comparativo-grid" id="comparativoGrid" aria-label="Comparativo entre plataformas para profissionais"></div>
-      <p class="comparativo-nota">O cálculo soma assinatura anual e comissão estimada sobre consultas/mês, ticket médio e quantidade de profissionais. Valores e comissões de concorrentes são referências comerciais estimadas e podem mudar conforme plano, campanha, região, volume de agenda e módulos adicionais. Os nomes reais foram substituídos por Concorrente 1, Concorrente 2 e Concorrente 3.</p>
+      <h3 class="bibliotecas-subtitulo">O que cada biblioteca reúne</h3>
+      <div class="protocolos-lista" id="protocolosListaProf"></div>
+      <h3 class="bibliotecas-subtitulo">Especialidades nas bibliotecas</h3>
+      <div class="bibliotecas-grid" id="bibliotecasGridProf"></div>
+      <h3 class="bibliotecas-subtitulo">Fontes confiáveis e referências</h3>
+      <div class="fontes-grid" id="fontesGridProf"></div>
     </div>
   </section>
 
@@ -590,6 +591,58 @@
     </div>
   </section>
 
+  <section class="comparativo-secao" id="comparativo">
+    <div class="comparativo-card">
+      <div class="comparativo-head">
+        <div>
+          <h2>Calculadora comparativa para profissionais</h2>
+          <p>Compare custos anuais e recursos oferecidos por plataformas concorrentes anonimizadas e pelo Integrativo.App.</p>
+        </div>
+        <div class="calculadora-controles">
+          <div class="grupo" style="margin:0;">
+            <label for="calcProfissionais">Quantidade de profissionais</label>
+            <input type="number" id="calcProfissionais" min="1" value="1">
+          </div>
+          <div class="grupo" style="margin:0;">
+            <label for="calcConsultasMes">Consultas/mês por profissional</label>
+            <input type="number" id="calcConsultasMes" min="0" value="40">
+          </div>
+          <div class="grupo" style="margin:0;">
+            <label for="calcTicketMedio">Valor médio da consulta</label>
+            <input type="number" id="calcTicketMedio" min="0" value="180">
+          </div>
+          <div class="grupo" style="margin:0;">
+            <label for="calcPlanoIntegrativo">Plano Integrativo.App</label>
+            <select id="calcPlanoIntegrativo">
+              <option value="pro" selected>Pro</option>
+              <option value="guardioes_floresta">Guardiões da Floresta</option>
+              <option value="premium">Premium</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="resultado-economia">
+        <div class="indicador">
+          <span>Integrativo.App por ano</span>
+          <strong id="calcCustoIntegrativo">R$ 0,00</strong>
+        </div>
+        <div class="indicador">
+          <span>Média dos concorrentes por ano</span>
+          <strong id="calcMediaConcorrentes">R$ 0,00</strong>
+        </div>
+        <div class="indicador destaque">
+          <span>Economia estimada anual</span>
+          <strong id="calcEconomia">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="comparativo-grid" id="comparativoGrid" aria-label="Comparativo entre plataformas para profissionais"></div>
+      <p class="comparativo-nota">O cálculo soma assinatura anual e comissão estimada sobre consultas/mês, ticket médio e quantidade de profissionais. Valores e comissões de concorrentes são referências comerciais estimadas e podem mudar conforme plano, campanha, região, volume de agenda e módulos adicionais. Os nomes reais foram substituídos por Concorrente 1, Concorrente 2 e Concorrente 3.</p>
+    </div>
+  </section>
+
   <footer>
     <div class="container">
       <div style="margin-bottom: 40px;">
@@ -650,7 +703,9 @@
       } else {
         recursos.unshift(`${plano.teleconsultas_mes} teleconsultas/mês`);
       }
-      if (plano.max_profissionais) {
+      if (plano.texto_profissionais) {
+        recursos.push(plano.texto_profissionais.toLowerCase());
+      } else if (plano.max_profissionais) {
         recursos.push(plano.max_profissionais === 'ilimitados' ? 'profissionais ilimitados' : `até ${plano.max_profissionais} profissionais cadastrados`);
       }
       if (plano.ferramentas_gestao) recursos.push('ferramentas contábil, financeira e RH');
@@ -681,7 +736,10 @@
       const plano = CONFIG.PLANOS[planoKey] || CONFIG.PLANOS.pro;
       const volumeAnual = consultasMes * ticketMedio * 12 * qtd;
       const comissaoIntegrativo = volumeAnual * ((plano.comissao_consulta_pct || 0) / 100);
-      const assinaturaIntegrativo = plano.valor_anual * qtd;
+      const assinaturasIntegrativo = plano.cobranca_por_profissional === false
+        ? (plano.max_profissionais === 'ilimitados' ? 1 : Math.ceil(qtd / Math.max(1, Number(plano.max_profissionais) || 1)))
+        : qtd;
+      const assinaturaIntegrativo = plano.valor_anual * assinaturasIntegrativo;
       const custoIntegrativo = assinaturaIntegrativo + comissaoIntegrativo;
       const custosConcorrentes = concorrentes.map(c => (c.mensal * 12 * qtd) + (volumeAnual * (c.comissao_pct / 100)));
       const mediaConcorrentes = custosConcorrentes.reduce((soma, valor) => soma + valor, 0) / custosConcorrentes.length;
@@ -709,14 +767,18 @@
         nome: `Integrativo.App (${plano.nome})`,
         descricao: 'Saúde integrativa e operação profissional no mesmo ambiente',
         preco: fmtMoeda(plano.valor_anual),
-        detalhePreco: '/ ano por profissional',
+        detalhePreco: plano.cobranca_por_profissional === false
+          ? (plano.max_profissionais === 'ilimitados' ? '/ ano por instituição' : '/ ano por equipe')
+          : '/ ano por profissional',
         recursos: [
           ...recursosPlanoIntegrativo(plano),
           `Assinatura anual: ${fmtMoeda(assinaturaIntegrativo)}`,
           `Comissão anual: ${fmtMoeda(comissaoIntegrativo)}`,
           `Custo anual calculado: ${fmtMoeda(custoIntegrativo)}`
         ],
-        observacao: 'Plano anual com teleconsulta, agenda, prontuário e recursos integrados.',
+        observacao: plano.cobranca_por_profissional === false
+          ? 'Plano anual por guarda-chuva, sem cobrança por profissional dentro do limite contratado.'
+          : 'Plano anual com teleconsulta, agenda, prontuário e recursos integrados.',
         integrativo: true
       });
 
@@ -1061,7 +1123,9 @@
         features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
         features.push(`Comissão por consulta: <strong style="font-size:14px;">${String(p.comissao_consulta_pct).replace('.', ',')}%</strong>`);
         if (isFree) features.push('Cartão obrigatório para cobrança automática de consultas e teleconsultas');
-        if (p.max_profissionais) {
+        if (p.texto_profissionais) {
+          features.push(p.texto_profissionais);
+        } else if (p.max_profissionais) {
           features.push(p.max_profissionais === 'ilimitados' ? 'Profissionais ilimitados' : `Até ${p.max_profissionais} profissionais cadastrados`);
         }
         if (p.ferramentas_gestao) features.push('Ferramentas contábil, financeira e RH');
@@ -1088,6 +1152,22 @@
       }).join('');
     }
     renderPlanos();
+
+    // ============================================
+    // BIBLIOTECAS TERAPÊUTICAS
+    // ============================================
+    function renderBibliotecasProfissionais() {
+      const b = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
+      document.getElementById('bibliotecasMetricasProf').innerHTML = `
+        <div class="bibliotecas-metrica"><strong>${b.total_bibliotecas}</strong><span>Bibliotecas</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.total_registros}</strong><span>Registros</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.protocolos_criados}</strong><span>Protocolos novos</span></div>
+      `;
+      document.getElementById('protocolosListaProf').innerHTML = b.tipos.map(tipo => `<span class="protocolo-item">${tipo}</span>`).join('');
+      document.getElementById('bibliotecasGridProf').innerHTML = b.itens.map(nome => `<span class="biblioteca-chip">${nome}</span>`).join('');
+      document.getElementById('fontesGridProf').innerHTML = b.fontes.map(fonte => `<div class="fonte-card">${fonte}</div>`).join('');
+    }
+    renderBibliotecasProfissionais();
   </script>
 </body>
 </html>
