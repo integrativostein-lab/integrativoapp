@@ -523,8 +523,8 @@
       const abrath = p.valor_anual * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
       const pixAbrath = pix * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
       const abrathLinha = p.desconto_abrath
-        ? `<br><span style="color:var(--azul-profundo);font-weight:700">ABRATH: ${fmtMoeda(abrath)} (${CONFIG.PARCELAMENTO.desconto_abrath_pct}% off, PIX ou cartão)</span><br>
-        <span style="color:var(--verde-destaque);font-weight:700">PIX + ABRATH: ${fmtMoeda(pixAbrath)}</span>`
+        ? `<br><span style="color:var(--azul-profundo);font-weight:700">ABRATH no cartão: ${fmtMoeda(abrath)} (${CONFIG.PARCELAMENTO.desconto_abrath_pct}% off)</span><br>
+        <span style="color:var(--verde-destaque);font-weight:700">PIX + ABRATH: ${fmtMoeda(pixAbrath)} (${CONFIG.PARCELAMENTO.desconto_pix_pct}% + ${CONFIG.PARCELAMENTO.desconto_abrath_pct}%)</span>`
         : '';
       return `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br>
         <span style="color:var(--verde-destaque);font-weight:600">PIX à vista: ${fmtMoeda(pix)} (${CONFIG.PARCELAMENTO.desconto_pix_pct}% off)</span>${abrathLinha}`;
@@ -547,7 +547,8 @@
         features.push(`${p.max_pacientes} pacientes cadastrados`);
         features.push(`${p.whatsapp_mensagens_mes} mensagens WhatsApp/mês`);
         features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
-        features.push(`Comissão por consulta: ${String(p.comissao_consulta_pct).replace('.', ',')}%`);
+        features.push(`Comissão por consulta: <strong style="font-size:14px;">${String(p.comissao_consulta_pct).replace('.', ',')}%</strong>`);
+        if (isFree) features.push('Cartão obrigatório para cobrança automática de consultas e teleconsultas');
         if (p.max_profissionais) {
           features.push(p.max_profissionais === 'ilimitados' ? 'Profissionais ilimitados' : `Até ${p.max_profissionais} profissionais cadastrados`);
         }

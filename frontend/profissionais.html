@@ -536,6 +536,13 @@
         <!-- PAGAMENTOS / CORPORATIVO -->
         <fieldset>
           <legend>Configurações profissionais</legend>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:14px;padding:14px;margin-bottom:16px;color:var(--azul-profundo);font-size:13px;">
+            <strong>Importante:</strong> mesmo no plano Freemium, é necessário cadastrar um cartão para que as cobranças de consultas e teleconsultas sejam feitas automaticamente conforme o uso.
+            <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-weight:700;">
+              <input type="checkbox" id="cartaoObrigatorio" required style="margin-top:3px;">
+              <span>Estou ciente de que o cadastro do cartão é obrigatório para ativar cobranças automáticas de consultas e teleconsultas.</span>
+            </label>
+          </div>
           <div class="grid-2">
             <div class="grupo">
               <label for="gateway">Gateway de pagamento preferido</label>
@@ -635,7 +642,7 @@
       const recursos = [
         `${plano.max_pacientes} pacientes cadastrados`,
         `${plano.whatsapp_mensagens_mes} mensagens WhatsApp/mês`,
-        `comissão por consulta: ${String(plano.comissao_consulta_pct).replace('.', ',')}%`,
+        `comissão por consulta: <strong style="font-size:14px;">${String(plano.comissao_consulta_pct).replace('.', ',')}%</strong>`,
         'agenda, prontuário e pagamentos integrados'
       ];
       if (plano.teleconsulta_avulsa_valor) {
@@ -691,7 +698,7 @@
         detalhePreco: '/ mês por profissional',
         recursos: [
           ...c.recursos,
-          `Comissão estimada: ${String(c.comissao_pct).replace('.', ',')}%`,
+          `Comissão estimada: <strong style="font-size:14px;">${String(c.comissao_pct).replace('.', ',')}%</strong>`,
           `Comissão anual: ${fmtMoeda(volumeAnual * (c.comissao_pct / 100))}`,
           `Custo anual calculado: ${fmtMoeda(custosConcorrentes[i])}`
         ],
@@ -968,10 +975,12 @@
       const emailCorp = $('#emailCorp').value.trim();
       const prescricao = $('#prescricao').value;
       const lgpd = $('#lgpd').checked;
+      const cartaoObrigatorio = $('#cartaoObrigatorio').checked;
 
       if (!nome || !email || !senha || !profissao || !especialidade) return showMsg('Preencha todos os campos obrigatórios.', 'err');
       if (senha.length < 8) return showMsg('A senha precisa ter no mínimo 8 caracteres.', 'err');
       if (senha !== senha2) return showMsg('As senhas não conferem.', 'err');
+      if (!cartaoObrigatorio) return showMsg('Confirme que está ciente do cadastro obrigatório do cartão.', 'err');
       if (!lgpd) return showMsg('É necessário aceitar os termos.', 'err');
 
       // Se houver conselho exigido, exige número (verificação online é recomendada mas não bloqueante)
@@ -1026,8 +1035,8 @@
       const abrath = p.valor_anual * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
       const pixAbrath = pix * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
       const abrathLinha = p.desconto_abrath
-        ? `<br><span style="color:var(--azul-profundo);font-weight:700">ABRATH: ${fmtMoeda(abrath)} (${CONFIG.PARCELAMENTO.desconto_abrath_pct}% off, PIX ou cartão)</span><br>
-        <span style="color:var(--verde-destaque);font-weight:700">PIX + ABRATH: ${fmtMoeda(pixAbrath)}</span>`
+        ? `<br><span style="color:var(--azul-profundo);font-weight:700">ABRATH no cartão: ${fmtMoeda(abrath)} (${CONFIG.PARCELAMENTO.desconto_abrath_pct}% off)</span><br>
+        <span style="color:var(--verde-destaque);font-weight:700">PIX + ABRATH: ${fmtMoeda(pixAbrath)} (${CONFIG.PARCELAMENTO.desconto_pix_pct}% + ${CONFIG.PARCELAMENTO.desconto_abrath_pct}%)</span>`
         : '';
       return `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br>
         <span style="color:var(--verde-destaque);font-weight:600">PIX à vista: ${fmtMoeda(pix)} (${CONFIG.PARCELAMENTO.desconto_pix_pct}% off)</span>${abrathLinha}`;
@@ -1050,7 +1059,8 @@
         features.push(`${p.max_pacientes} pacientes cadastrados`);
         features.push(`${p.whatsapp_mensagens_mes} mensagens WhatsApp/mês`);
         features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
-        features.push(`Comissão por consulta: ${String(p.comissao_consulta_pct).replace('.', ',')}%`);
+        features.push(`Comissão por consulta: <strong style="font-size:14px;">${String(p.comissao_consulta_pct).replace('.', ',')}%</strong>`);
+        if (isFree) features.push('Cartão obrigatório para cobrança automática de consultas e teleconsultas');
         if (p.max_profissionais) {
           features.push(p.max_profissionais === 'ilimitados' ? 'Profissionais ilimitados' : `Até ${p.max_profissionais} profissionais cadastrados`);
         }

@@ -457,7 +457,7 @@
         document.getElementById('descricaoPix').style.display = 'block';
         document.getElementById('descricaoPix').innerHTML = planoConfig?.plano_social
           ? `<strong>Condição social Guardiões da Floresta</strong><br>Plano anual por R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}, com ${planoConfig.teleconsultas_mes} teleconsultas/mês, ${planoConfig.max_pacientes} pacientes e ${planoConfig.especialidades_inclusas} especialidades.`
-          : `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}${planoConfig?.desconto_abrath ? `<br>Associados ABRATH verificados recebem ${CONFIG.PARCELAMENTO.desconto_abrath_pct}% sobre a assinatura ${planoConfig.nome}, independentemente de pagar por PIX ou cartão.` : ''}`;
+          : `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}${planoConfig?.desconto_abrath ? `<br>ABRATH no cartão: R$ ${(valor * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}<br>PIX + ABRATH: R$ ${(valorFinal * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}`;
         document.getElementById('parcelasInfo').classList.remove('ativo');
         document.getElementById('dadosCartao').style.display = 'none';
       } else {
