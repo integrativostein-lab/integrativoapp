@@ -17,6 +17,89 @@
     .hero-pro h1 { font-size: 44px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; color: #fff; }
     .hero-pro p { font-size: 17px; opacity: 0.9; max-width: 720px; margin: 0 auto; }
 
+    .comparativo-secao {
+      padding: 60px 24px 80px;
+      background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+    }
+    .comparativo-card {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 22px;
+      padding: 34px;
+      box-shadow: var(--sombra-elevada);
+    }
+    .comparativo-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      margin-bottom: 26px;
+    }
+    .comparativo-head h2 {
+      color: var(--azul-profundo);
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+    .comparativo-head p {
+      color: var(--texto-suave);
+      font-size: 14px;
+      max-width: 680px;
+    }
+    .calculadora-controles {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
+      gap: 14px;
+      min-width: 620px;
+    }
+    .resultado-economia {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .indicador {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .indicador span {
+      display: block;
+      color: var(--texto-suave);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .indicador strong {
+      color: var(--azul-profundo);
+      font-size: 22px;
+    }
+    .indicador.destaque {
+      background: #ECFDF5;
+      border-color: #A7F3D0;
+    }
+    .indicador.destaque strong { color: #047857; }
+    .comparativo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .comparativo-grid .plano.integrativo {
+      border: 2px solid var(--verde-destaque);
+      box-shadow: 0 12px 32px rgba(16,185,129,0.15);
+    }
+    .comparativo-grid .plano .preco small {
+      display: block;
+      margin-top: 2px;
+    }
+    .comparativo-nota {
+      color: var(--texto-suave);
+      font-size: 12px;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
     .form-wrap {
       max-width: 880px;
       margin: -40px auto 60px;
@@ -93,6 +176,92 @@
       margin-bottom: 14px;
     }
     .caixa-registro .info a { color: var(--verde-destaque); font-weight: 600; }
+    .caixa-fluxo {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 14px;
+      display: none;
+    }
+    .caixa-fluxo.show { display: block; animation: slideIn .25s ease-out; }
+    .opcoes-radio {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 10px 0 14px;
+    }
+    .opcoes-radio label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid #D1D5DB;
+      border-radius: 999px;
+      background: var(--branco);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--azul-profundo);
+    }
+    .especialidades-opcoes {
+      display: none;
+      margin-top: 14px;
+      padding: 16px;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+    }
+    .especialidades-opcoes.show { display: block; }
+    .especialidades-opcoes p {
+      color: var(--texto-suave);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .especialidades-checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .especialidades-checkbox-grid label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 10px;
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      color: var(--azul-profundo);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .especialidades-checkbox-grid input { margin-top: 2px; }
+    .selo-abrath {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(135deg, #ECFDF5 0%, #F8FAFC 100%);
+      border: 1px solid #A7F3D0;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .selo-abrath.show { display: flex; }
+    .selo-abrath .marca {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--verde-destaque);
+      color: var(--branco);
+      font-weight: 900;
+      font-size: 13px;
+      flex: 0 0 auto;
+    }
+    .selo-abrath strong { color: var(--azul-profundo); display: block; margin-bottom: 4px; }
+    .selo-abrath a { color: var(--verde-destaque); font-weight: 800; text-decoration: none; }
     .btn-verificar {
       padding: 12px 18px;
       background: var(--verde-destaque);
@@ -168,6 +337,11 @@
       .grid-2, .grid-3, .grid-3-eq { grid-template-columns: 1fr; }
       .form-card { padding: 24px; }
       .hero-pro h1 { font-size: 30px; }
+      .comparativo-card { padding: 24px; }
+      .comparativo-head { display: block; }
+      .calculadora-controles { grid-template-columns: 1fr; min-width: 0; margin-top: 20px; }
+      .resultado-economia { grid-template-columns: 1fr; }
+      .selo-abrath { align-items: flex-start; }
     }
   </style>
 </head>
@@ -179,6 +353,7 @@
     </a>
     <div class="menu">
       <a href="index.html">Início</a>
+      <a href="#comparativo">Comparativo</a>
       <a href="#planos">Planos</a>
       <a href="login.html" class="btn btn-primario">Entrar</a>
     </div>
@@ -189,6 +364,58 @@
     <p>Tenha sua agenda, prontuário, teleconsulta e pagamentos integrados.
        Validamos seu registro online junto ao conselho competente.</p>
   </header>
+
+  <section class="comparativo-secao" id="comparativo">
+    <div class="comparativo-card">
+      <div class="comparativo-head">
+        <div>
+          <h2>Calculadora comparativa para profissionais</h2>
+          <p>Compare custos anuais e recursos oferecidos por plataformas concorrentes anonimizadas e pelo Integrativo.App.</p>
+        </div>
+        <div class="calculadora-controles">
+          <div class="grupo" style="margin:0;">
+            <label for="calcProfissionais">Quantidade de profissionais</label>
+            <input type="number" id="calcProfissionais" min="1" value="1">
+          </div>
+          <div class="grupo" style="margin:0;">
+            <label for="calcConsultasMes">Consultas/mês por profissional</label>
+            <input type="number" id="calcConsultasMes" min="0" value="40">
+          </div>
+          <div class="grupo" style="margin:0;">
+            <label for="calcTicketMedio">Valor médio da consulta</label>
+            <input type="number" id="calcTicketMedio" min="0" value="180">
+          </div>
+          <div class="grupo" style="margin:0;">
+            <label for="calcPlanoIntegrativo">Plano Integrativo.App</label>
+            <select id="calcPlanoIntegrativo">
+              <option value="pro" selected>Pro</option>
+              <option value="guardioes_floresta">Guardiões da Floresta</option>
+              <option value="premium">Premium</option>
+              <option value="enterprise">Enterprise</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="resultado-economia">
+        <div class="indicador">
+          <span>Integrativo.App por ano</span>
+          <strong id="calcCustoIntegrativo">R$ 0,00</strong>
+        </div>
+        <div class="indicador">
+          <span>Média dos concorrentes por ano</span>
+          <strong id="calcMediaConcorrentes">R$ 0,00</strong>
+        </div>
+        <div class="indicador destaque">
+          <span>Economia estimada anual</span>
+          <strong id="calcEconomia">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <div class="comparativo-grid" id="comparativoGrid" aria-label="Comparativo entre plataformas para profissionais"></div>
+      <p class="comparativo-nota">O cálculo soma assinatura anual e comissão estimada sobre consultas/mês, ticket médio e quantidade de profissionais. Valores e comissões de concorrentes são referências comerciais estimadas e podem mudar conforme plano, campanha, região, volume de agenda e módulos adicionais. Os nomes reais foram substituídos por Concorrente 1, Concorrente 2 e Concorrente 3.</p>
+    </div>
+  </section>
 
   <main class="form-wrap">
     <section class="form-card">
@@ -203,7 +430,7 @@
           <legend>Dados pessoais</legend>
           <div class="grupo">
             <label for="nome">Nome completo</label>
-            <input type="text" id="nome" required placeholder="Ex.: Dr. João Silva">
+            <input type="text" id="nome" required data-voz placeholder="Ex.: Dr. João Silva">
           </div>
           <div class="grid-2">
             <div class="grupo">
@@ -231,11 +458,24 @@
         <fieldset>
           <legend>Atuação profissional</legend>
           <div class="grupo">
-            <label for="especialidade">Especialidade principal</label>
-            <select id="especialidade" required>
-              <option value="">Selecione sua especialidade...</option>
-              <!-- Preenchido via JS a partir de CONFIG.ESPECIALIDADES -->
+            <label for="profissao">Profissão / área principal</label>
+            <select id="profissao" required>
+              <option value="">Selecione sua profissão ou área...</option>
+              <!-- Preenchido via JS -->
             </select>
+          </div>
+
+          <div class="grupo caixa-fluxo" id="caixaEspecialidades">
+            <label for="especialidade">Especialidade principal</label>
+            <select id="especialidade" required disabled>
+              <option value="">Selecione primeiro sua profissão...</option>
+            </select>
+            <p class="sub" id="especialidadeAjuda" style="margin:8px 0 0;"></p>
+            <div class="especialidades-opcoes" id="caixaEspecialidadesAdicionais">
+              <strong style="color:var(--azul-profundo);font-size:13px;">Outras especialidades (opcional)</strong>
+              <p>Marque outras especialidades que também fazem parte da sua atuação.</p>
+              <div class="especialidades-checkbox-grid" id="especialidadesAdicionaisGrid"></div>
+            </div>
           </div>
 
           <!-- Caixa condicional: aparece apenas se a especialidade exigir conselho -->
@@ -269,10 +509,28 @@
             <div id="resultadoVerificacao"></div>
           </div>
 
-          <div class="grupo" style="margin-top:18px;">
-            <label for="adicionais">Outras especialidades (opcional)</label>
-            <textarea id="adicionais" rows="2" data-voz placeholder="Liste outras especialidades separadas por vírgula"></textarea>
+          <div class="caixa-fluxo" id="caixaAbrath" aria-live="polite">
+            <h4 style="color:var(--azul-profundo);margin-bottom:4px;">Registro ABRATH</h4>
+            <p class="sub" style="margin-bottom:10px;">Para especialidades integrativas sem conselho profissional obrigatório, informe se você possui registro na ABRATH.</p>
+            <div class="opcoes-radio">
+              <label><input type="radio" name="temAbrath" value="sim"> Tenho ABRATH</label>
+              <label><input type="radio" name="temAbrath" value="nao"> Ainda não tenho</label>
+            </div>
+            <div class="grupo" id="grupoRegistroAbrath" style="display:none;margin-bottom:0;">
+              <label for="registroAbrath">Número de inscrição ABRATH</label>
+              <input type="text" id="registroAbrath" data-voz placeholder="Ex.: ABRATH-00000">
+            </div>
+            <div class="selo-abrath" id="seloAbrath">
+              <div class="marca">ABRATH</div>
+              <div>
+                <strong>Selo ABRATH recomendado</strong>
+                <p style="font-size:12px;color:var(--texto-suave);margin-bottom:6px;">Fortalece credibilidade, organização profissional, acesso a benefícios e identificação como terapeuta holístico associado.</p>
+                <a href="https://abrath.org.br" target="_blank" rel="noopener">Conhecer vantagens e associação ABRATH ↗</a>
+              </div>
+            </div>
           </div>
+
+          <input type="hidden" id="adicionais">
         </fieldset>
 
         <!-- PAGAMENTOS / CORPORATIVO -->
@@ -320,7 +578,7 @@
     <div class="container">
       <h2>Escolha seu plano</h2>
       <p class="sub-h">Pagamento <strong>100% anual</strong>. Comece pelo Freemium e atualize quando quiser.</p>
-      <p class="planos-info">PIX à vista com 5% de desconto · Cartão em até 12x com juros de 1,99% a.m. · Cancelamento em 15 dias com reembolso integral</p>
+      <p class="planos-info">PIX à vista com 5% de desconto · ABRATH verificada: 8% nas assinaturas Pro e Premium, inclusive no cartão · Cartão em até 12x com juros de 1,99% a.m. · Cancelamento: certificado A1 cobrado quando incluído e, após 15 dias, multa proporcional de 20% sobre meses restantes</p>
       <div class="planos-grid" id="planosGrid"></div>
     </div>
   </section>
@@ -347,27 +605,151 @@
     const fmtMoeda = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     // ============================================
+    // CALCULADORA COMPARATIVA
+    // ============================================
+    const concorrentes = [
+      {
+        nome: 'Concorrente 1',
+        mensal: 89.90,
+        comissao_pct: 20,
+        recursos: ['Perfil em marketplace', 'Agenda online', 'Chamadas online', 'Repasse por atendimento'],
+        observacao: 'Modelo focado em captação e intermediação.'
+      },
+      {
+        nome: 'Concorrente 2',
+        mensal: 129.00,
+        comissao_pct: 15,
+        recursos: ['Agenda online', 'Página profissional', 'Confirmação de consultas', 'Reputação pública'],
+        observacao: 'Boa vitrine, mas recursos clínicos dependem do plano contratado.'
+      },
+      {
+        nome: 'Concorrente 3',
+        mensal: 189.00,
+        comissao_pct: 8,
+        recursos: ['Gestão clínica', 'Prontuário', 'Financeiro', 'Agenda', 'Módulos administrativos'],
+        observacao: 'Custo tende a crescer com módulos extras e equipe.'
+      }
+    ];
+
+    function recursosPlanoIntegrativo(plano) {
+      const recursos = [
+        `${plano.max_pacientes} pacientes cadastrados`,
+        `${plano.whatsapp_mensagens_mes} mensagens WhatsApp/mês`,
+        `comissão por consulta: ${String(plano.comissao_consulta_pct).replace('.', ',')}%`,
+        'agenda, prontuário e pagamentos integrados'
+      ];
+      if (plano.teleconsulta_avulsa_valor) {
+        recursos.unshift(`teleconsulta a ${fmtMoeda(plano.teleconsulta_avulsa_valor)} cada`);
+      } else {
+        recursos.unshift(`${plano.teleconsultas_mes} teleconsultas/mês`);
+      }
+      if (plano.max_profissionais) {
+        recursos.push(plano.max_profissionais === 'ilimitados' ? 'profissionais ilimitados' : `até ${plano.max_profissionais} profissionais cadastrados`);
+      }
+      if (plano.ferramentas_gestao) recursos.push('ferramentas contábil, financeira e RH');
+      if (plano.white_label) recursos.push('white-label');
+      if (plano.api_white_label) recursos.push('API white-label');
+      if (plano.certificado_a1_gratis) recursos.push('certificado A1 grátis');
+      if (plano.certificado_a1_gratis) recursos.push('certificado cobrado em caso de cancelamento');
+      if (plano.plano_social) recursos.push('condição social para Guardiões da Floresta');
+      return recursos;
+    }
+
+    function renderCardComparativo({ nome, descricao, preco, detalhePreco, recursos, observacao, integrativo = false }) {
+      return `
+        <div class="plano ${integrativo ? 'integrativo' : ''}">
+          <h3>${nome}</h3>
+          <p class="desc">${descricao}</p>
+          <div class="preco">${preco} <small>${detalhePreco}</small></div>
+          <p class="parcela">${observacao}</p>
+          <ul>${recursos.map(r => `<li>${r}</li>`).join('')}</ul>
+        </div>`;
+    }
+
+    function renderComparativo() {
+      const qtd = Math.max(1, Number($('#calcProfissionais').value) || 1);
+      const consultasMes = Math.max(0, Number($('#calcConsultasMes').value) || 0);
+      const ticketMedio = Math.max(0, Number($('#calcTicketMedio').value) || 0);
+      const planoKey = $('#calcPlanoIntegrativo').value;
+      const plano = CONFIG.PLANOS[planoKey] || CONFIG.PLANOS.pro;
+      const volumeAnual = consultasMes * ticketMedio * 12 * qtd;
+      const comissaoIntegrativo = volumeAnual * ((plano.comissao_consulta_pct || 0) / 100);
+      const assinaturaIntegrativo = plano.valor_anual * qtd;
+      const custoIntegrativo = assinaturaIntegrativo + comissaoIntegrativo;
+      const custosConcorrentes = concorrentes.map(c => (c.mensal * 12 * qtd) + (volumeAnual * (c.comissao_pct / 100)));
+      const mediaConcorrentes = custosConcorrentes.reduce((soma, valor) => soma + valor, 0) / custosConcorrentes.length;
+      const economia = Math.max(0, mediaConcorrentes - custoIntegrativo);
+
+      $('#calcCustoIntegrativo').textContent = fmtMoeda(custoIntegrativo);
+      $('#calcMediaConcorrentes').textContent = fmtMoeda(mediaConcorrentes);
+      $('#calcEconomia').textContent = fmtMoeda(economia);
+
+      const cardsConcorrentes = concorrentes.map((c, i) => renderCardComparativo({
+        nome: c.nome,
+        descricao: 'Referência de mercado anonimizada',
+        preco: fmtMoeda(c.mensal),
+        detalhePreco: '/ mês por profissional',
+        recursos: [
+          ...c.recursos,
+          `Comissão estimada: ${String(c.comissao_pct).replace('.', ',')}%`,
+          `Comissão anual: ${fmtMoeda(volumeAnual * (c.comissao_pct / 100))}`,
+          `Custo anual calculado: ${fmtMoeda(custosConcorrentes[i])}`
+        ],
+        observacao: c.observacao
+      })).join('');
+
+      const cardIntegrativo = renderCardComparativo({
+        nome: `Integrativo.App (${plano.nome})`,
+        descricao: 'Saúde integrativa e operação profissional no mesmo ambiente',
+        preco: fmtMoeda(plano.valor_anual),
+        detalhePreco: '/ ano por profissional',
+        recursos: [
+          ...recursosPlanoIntegrativo(plano),
+          `Assinatura anual: ${fmtMoeda(assinaturaIntegrativo)}`,
+          `Comissão anual: ${fmtMoeda(comissaoIntegrativo)}`,
+          `Custo anual calculado: ${fmtMoeda(custoIntegrativo)}`
+        ],
+        observacao: 'Plano anual com teleconsulta, agenda, prontuário e recursos integrados.',
+        integrativo: true
+      });
+
+      $('#comparativoGrid').innerHTML = `${cardsConcorrentes}${cardIntegrativo}`;
+    }
+
+    $('#calcProfissionais').addEventListener('input', renderComparativo);
+    $('#calcConsultasMes').addEventListener('input', renderComparativo);
+    $('#calcTicketMedio').addEventListener('input', renderComparativo);
+    $('#calcPlanoIntegrativo').addEventListener('change', renderComparativo);
+    renderComparativo();
+
+    const PROFISSOES = [
+      { id: 'terapias-integrativas', nome: 'Terapeuta integrativo / holístico', filtro: (e) => !e.conselho || e.conselho === 'ABRATH' },
+      { id: 'medicina', nome: 'Médico(a)', conselho: 'CRM' },
+      { id: 'psicologia', nome: 'Psicólogo(a)', conselho: 'CRP' },
+      { id: 'fisioterapia-to', nome: 'Fisioterapeuta / Terapeuta Ocupacional', conselho: 'CREFITO' },
+      { id: 'enfermagem', nome: 'Enfermagem', conselho: 'COREN' },
+      { id: 'nutricao', nome: 'Nutrição', conselho: 'CRN' },
+      { id: 'odontologia', nome: 'Odontologia', conselho: 'CRO' },
+      { id: 'farmacia', nome: 'Farmácia', conselho: 'CRF' },
+      { id: 'biomedicina', nome: 'Biomedicina', conselho: 'CRBM' },
+      { id: 'biologia', nome: 'Biologia', conselho: 'CRBIO' },
+      { id: 'educacao-fisica', nome: 'Educação Física', conselho: 'CREF' }
+    ];
+
+    // ============================================
     // POPULAR ESPECIALIDADES E GATEWAYS
     // ============================================
     (function popular() {
+      const profSel = $('#profissao');
+      PROFISSOES.forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.id;
+        o.textContent = p.nome;
+        profSel.appendChild(o);
+      });
+
       const espSel = $('#especialidade');
-      // Agrupar por categoria
-      const grupos = {};
-      CONFIG.ESPECIALIDADES.forEach(e => {
-        (grupos[e.categoria] = grupos[e.categoria] || []).push(e);
-      });
-      Object.keys(grupos).sort().forEach(cat => {
-        const og = document.createElement('optgroup');
-        og.label = cat;
-        grupos[cat].forEach(e => {
-          const o = document.createElement('option');
-          o.value = e.id;
-          o.textContent = e.nome + (e.conselho ? ` — ${e.conselho}` : '');
-          o.dataset.conselho = e.conselho || '';
-          og.appendChild(o);
-        });
-        espSel.appendChild(og);
-      });
+      espSel.innerHTML = '<option value="">Selecione primeiro sua profissão...</option>';
 
       const gw = $('#gateway');
       CONFIG.GATEWAYS.forEach(g => {
@@ -383,30 +765,140 @@
     // ============================================
     let conselhoAtual = null;
     let registroValidado = false;
+    let especialidadeAtual = null;
 
-    $('#especialidade').addEventListener('change', async (e) => {
-      const opt = e.target.selectedOptions[0];
-      const conselho = opt?.dataset.conselho || '';
-      const caixa = $('#caixaRegistro');
+    function obterProfissaoSelecionada() {
+      return PROFISSOES.find(p => p.id === $('#profissao').value);
+    }
+
+    function especialidadesDaProfissao(profissao) {
+      if (!profissao) return [];
+      if (profissao.filtro) return CONFIG.ESPECIALIDADES.filter(profissao.filtro);
+      return CONFIG.ESPECIALIDADES.filter(e => e.conselho === profissao.conselho);
+    }
+
+    function resetarRegistro() {
+      conselhoAtual = null;
       registroValidado = false;
+      especialidadeAtual = null;
+      $('#conselhoSigla').value = '';
+      $('#numeroRegistro').value = '';
+      $('#ufConselho').value = '';
+      $('#registroAbrath').value = '';
+      $('#adicionais').value = '';
       $('#resultadoVerificacao').innerHTML = '';
+      $('#caixaRegistro').classList.remove('show');
+      $('#caixaAbrath').classList.remove('show');
+      $('#grupoRegistroAbrath').style.display = 'none';
+      $('#seloAbrath').classList.remove('show');
+      document.querySelectorAll('input[name="temAbrath"]').forEach(r => { r.checked = false; });
+    }
 
-      if (!conselho) {
-        caixa.classList.remove('show');
-        conselhoAtual = null;
-        return;
-      }
+    function popularEspecialidades(profissao) {
+      const espSel = $('#especialidade');
+      espSel.innerHTML = '<option value="">Selecione sua especialidade...</option>';
+      const lista = especialidadesDaProfissao(profissao);
 
-      conselhoAtual = conselho;
+      lista.forEach(e => {
+        const o = document.createElement('option');
+        o.value = e.id;
+        o.textContent = e.nome + (e.conselho && e.conselho !== 'ABRATH' ? ` — ${e.conselho}` : '');
+        o.dataset.conselho = e.conselho || '';
+        o.dataset.nome = e.nome;
+        espSel.appendChild(o);
+      });
+
+      espSel.disabled = lista.length === 0;
+      $('#caixaEspecialidades').classList.toggle('show', lista.length > 0);
+      $('#especialidadeAjuda').textContent = lista.length
+        ? `${lista.length} especialidade(s) disponível(is) para esta profissão/área.`
+        : 'Nenhuma especialidade cadastrada para esta profissão.';
+      renderEspecialidadesAdicionais(lista);
+    }
+
+    function renderEspecialidadesAdicionais(lista) {
+      const grid = $('#especialidadesAdicionaisGrid');
+      const caixa = $('#caixaEspecialidadesAdicionais');
+      const principal = $('#especialidade').value;
+      const opcoes = lista.filter(e => e.id !== principal);
+
+      grid.innerHTML = opcoes.map(e => `
+        <label>
+          <input type="checkbox" name="especialidadesAdicionais" value="${e.nome}">
+          <span>${e.nome}${e.conselho && e.conselho !== 'ABRATH' ? ` — ${e.conselho}` : ''}</span>
+        </label>
+      `).join('');
+
+      caixa.classList.toggle('show', opcoes.length > 0 && !!principal);
+      atualizarEspecialidadesAdicionais();
+    }
+
+    function atualizarEspecialidadesAdicionais() {
+      const selecionadas = Array.from(document.querySelectorAll('input[name="especialidadesAdicionais"]:checked'))
+        .map(item => item.value);
+      $('#adicionais').value = selecionadas.join(', ');
+    }
+
+    function mostrarAbrath() {
+      $('#caixaAbrath').classList.add('show');
+      $('#caixaRegistro').classList.remove('show');
+      conselhoAtual = null;
+      $('#conselhoSigla').value = '';
+    }
+
+    function mostrarConselho(conselho) {
+      const caixa = $('#caixaRegistro');
       const cfg = CONFIG.CONSELHOS[conselho];
+      conselhoAtual = conselho;
       $('#conselhoSigla').value = conselho;
       $('#caixaTitulo').textContent = `Verificação no ${conselho} — ${cfg.nome}`;
       $('#caixaInfo').innerHTML = `Esta especialidade exige registro no <strong>${conselho}</strong>.
         Consulta oficial: <a href="${cfg.url}" target="_blank" rel="noopener">${cfg.url}</a>.`;
-
-      // UF visível apenas para conselhos que exigem
       $('#ufConselho').parentElement.style.display = cfg.requerUF ? '' : 'none';
+      $('#caixaAbrath').classList.remove('show');
       caixa.classList.add('show');
+    }
+
+    $('#profissao').addEventListener('change', () => {
+      resetarRegistro();
+      popularEspecialidades(obterProfissaoSelecionada());
+    });
+
+    $('#especialidade').addEventListener('change', async (e) => {
+      const opt = e.target.selectedOptions[0];
+      const conselho = opt?.dataset.conselho || '';
+      especialidadeAtual = CONFIG.ESPECIALIDADES.find(item => item.id === e.target.value) || null;
+      renderEspecialidadesAdicionais(especialidadesDaProfissao(obterProfissaoSelecionada()));
+      registroValidado = false;
+      $('#resultadoVerificacao').innerHTML = '';
+      $('#numeroRegistro').value = '';
+      $('#registroAbrath').value = '';
+      $('#grupoRegistroAbrath').style.display = 'none';
+      $('#seloAbrath').classList.remove('show');
+      document.querySelectorAll('input[name="temAbrath"]').forEach(r => { r.checked = false; });
+
+      if (!conselho) {
+        mostrarAbrath();
+        return;
+      }
+
+      if (conselho === 'ABRATH') {
+        mostrarAbrath();
+        return;
+      }
+
+      mostrarConselho(conselho);
+    });
+
+    $('#especialidadesAdicionaisGrid').addEventListener('change', atualizarEspecialidadesAdicionais);
+
+    document.querySelectorAll('input[name="temAbrath"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const tem = e.target.value === 'sim';
+        $('#grupoRegistroAbrath').style.display = tem ? 'block' : 'none';
+        $('#seloAbrath').classList.toggle('show', !tem);
+        if (tem) $('#registroAbrath').focus();
+      });
     });
 
     // ============================================
@@ -430,7 +922,7 @@
         const r = await fetch(`${CONFIG.API_URL}/validacao/verificar`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ conselho: conselhoAtual, uf, numero, nome: $('#nome').value.trim() })
+          body: JSON.stringify({ especialidade: especialidadeAtual?.id || $('#especialidade').value, conselho: conselhoAtual, uf, numero, nome: $('#nome').value.trim() })
         });
         const d = await r.json();
         if (!r.ok) throw new Error(d.erro || 'Falha na verificação');
@@ -464,23 +956,28 @@
       const telefone = $('#telefone').value.trim();
       const senha = $('#senha').value;
       const senha2 = $('#senha2').value;
+      const profissao = $('#profissao').value;
       const especialidade = $('#especialidade').value;
-      const conselho = $('#conselhoSigla').value;
+      const temAbrath = document.querySelector('input[name="temAbrath"]:checked')?.value || '';
+      const registroAbrath = $('#registroAbrath').value.trim();
+      const conselho = $('#conselhoSigla').value || (temAbrath === 'sim' ? 'ABRATH' : '');
       const uf = $('#ufConselho').value;
-      const numero = $('#numeroRegistro').value.trim();
+      const numero = conselho === 'ABRATH' ? registroAbrath : $('#numeroRegistro').value.trim();
       const adicionais = $('#adicionais').value.trim();
       const gateway = $('#gateway').value;
       const emailCorp = $('#emailCorp').value.trim();
       const prescricao = $('#prescricao').value;
       const lgpd = $('#lgpd').checked;
 
-      if (!nome || !email || !senha || !especialidade) return showMsg('Preencha todos os campos obrigatórios.', 'err');
+      if (!nome || !email || !senha || !profissao || !especialidade) return showMsg('Preencha todos os campos obrigatórios.', 'err');
       if (senha.length < 8) return showMsg('A senha precisa ter no mínimo 8 caracteres.', 'err');
       if (senha !== senha2) return showMsg('As senhas não conferem.', 'err');
       if (!lgpd) return showMsg('É necessário aceitar os termos.', 'err');
 
       // Se houver conselho exigido, exige número (verificação online é recomendada mas não bloqueante)
       if (conselhoAtual && !numero) return showMsg(`Informe o número do registro no ${conselhoAtual}.`, 'err');
+      if ($('#caixaAbrath').classList.contains('show') && !temAbrath) return showMsg('Informe se possui registro ABRATH.', 'err');
+      if (temAbrath === 'sim' && !registroAbrath) return showMsg('Informe o número de inscrição ABRATH.', 'err');
 
       const btn = $('#btnSubmit');
       btn.disabled = true; btn.textContent = 'Enviando...';
@@ -491,10 +988,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             nome, email, senha, telefone,
+            profissao,
             especialidade,
             conselho: conselho || null,
             uf_conselho: uf || null,
             numero_registro: numero || null,
+            registro_abrath: temAbrath === 'sim' ? registroAbrath : null,
+            tem_abrath: temAbrath || null,
             especialidades_adicionais: adicionais || null,
             gateway: gateway || null,
             email_corporativo: emailCorp || null,
@@ -517,33 +1017,57 @@
     // ============================================
     // RENDER DOS PLANOS
     // ============================================
+    function renderCondicaoPreco(p, isFree, calc) {
+      if (isFree) return 'Sem cartão. Sem cobrança.';
+      if (p.plano_social) {
+        return `Condição social anual<br><span style="color:var(--verde-destaque);font-weight:600">${p.teleconsultas_mes} teleconsultas/mês inclusas</span>`;
+      }
+      const pix = p.valor_anual * (1 - CONFIG.PARCELAMENTO.desconto_pix_pct / 100);
+      const abrath = p.valor_anual * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
+      const pixAbrath = pix * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
+      const abrathLinha = p.desconto_abrath
+        ? `<br><span style="color:var(--azul-profundo);font-weight:700">ABRATH: ${fmtMoeda(abrath)} (${CONFIG.PARCELAMENTO.desconto_abrath_pct}% off, PIX ou cartão)</span><br>
+        <span style="color:var(--verde-destaque);font-weight:700">PIX + ABRATH: ${fmtMoeda(pixAbrath)}</span>`
+        : '';
+      return `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br>
+        <span style="color:var(--verde-destaque);font-weight:600">PIX à vista: ${fmtMoeda(pix)} (${CONFIG.PARCELAMENTO.desconto_pix_pct}% off)</span>${abrathLinha}`;
+    }
+
     function renderPlanos() {
       const grid = $('#planosGrid');
       const planos = CONFIG.PLANOS;
-      const ordem = ['freemium', 'pro', 'premium', 'enterprise', 'coworking'];
+      const ordem = ['freemium', 'guardioes_floresta', 'pro', 'premium', 'enterprise'];
       grid.innerHTML = ordem.map(key => {
         const p = planos[key];
         const isFree = p.valor_anual === 0;
         const calc = isFree ? null : CONFIG.PARCELAMENTO.calcular(p.valor_anual, 12);
         const features = [];
-        features.push(`${p.teleconsultas_mes} teleconsultas/mês`);
+        if (p.teleconsulta_avulsa_valor) {
+          features.push(`Teleconsulta a ${fmtMoeda(p.teleconsulta_avulsa_valor)} cada`);
+        } else {
+          features.push(`${p.teleconsultas_mes} teleconsultas/mês`);
+        }
         features.push(`${p.max_pacientes} pacientes cadastrados`);
         features.push(`${p.whatsapp_mensagens_mes} mensagens WhatsApp/mês`);
         features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
+        features.push(`Comissão por consulta: ${String(p.comissao_consulta_pct).replace('.', ',')}%`);
+        if (p.max_profissionais) {
+          features.push(p.max_profissionais === 'ilimitados' ? 'Profissionais ilimitados' : `Até ${p.max_profissionais} profissionais cadastrados`);
+        }
+        if (p.ferramentas_gestao) features.push('Ferramentas contábil, financeira e RH');
         if (p.white_label)        features.push('White-label');
         if (p.api_white_label)    features.push('API white-label');
         if (p.migracao)           features.push('Migração de dados');
         if (p.certificado_a1_gratis) features.push('Certificado A1 grátis');
-        if (p.coworking_fisico)   features.push('Espaço coworking físico');
+        if (p.certificado_a1_gratis) features.push('No cancelamento, certificado A1 será cobrado');
+        if (p.plano_social)       features.push('Condição social Guardiões da Floresta');
 
         return `
           <div class="plano ${p.destaque ? 'destaque' : ''}">
             <h3>${p.nome}</h3>
             <p class="desc">${p.descricao}</p>
             <div class="preco">${isFree ? 'Grátis' : fmtMoeda(p.valor_anual)} <small>${isFree ? '' : '/ ano'}</small></div>
-            <p class="parcela">${isFree
-              ? 'Sem cartão. Sem cobrança.'
-              : `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br><span style="color:var(--verde-destaque);font-weight:600">PIX: ${fmtMoeda(p.valor_anual * 0.95)}</span>`}</p>
+            <p class="parcela">${renderCondicaoPreco(p, isFree, calc)}</p>
             <ul>${features.map(f => `<li>${f}</li>`).join('')}</ul>
             <a href="checkout.html?plano=${key}"
                class="btn ${p.destaque ? 'btn-primario' : ''}"

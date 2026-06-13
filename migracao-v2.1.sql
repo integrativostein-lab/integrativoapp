@@ -51,7 +51,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_gateway_unico ON gateway_configs(profissio
 CREATE TABLE IF NOT EXISTS assinaturas (
   id SERIAL PRIMARY KEY,
   usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
-  plano VARCHAR(50) NOT NULL, -- pro, premium, enterprise, coworking
+  plano VARCHAR(50) NOT NULL, -- freemium, guardioes_floresta, pro, premium, enterprise
   valor_anual DECIMAL(10, 2) NOT NULL,
   valor_pago DECIMAL(10, 2) NOT NULL,
   forma_pagamento VARCHAR(20) NOT NULL, -- pix, cartao

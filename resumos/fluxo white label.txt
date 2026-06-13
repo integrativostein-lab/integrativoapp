@@ -8,4 +8,4 @@
                 │
                 ├── Todas as telas do painel refletem a nova identidade
                 ├── Pacientes veem a marca da clínica
-                └── Disponível para: Pro, Premium, Enterprise, Coworking
+                └── Disponível para: Pro, Premium e Enterprise

@@ -1,4 +1,4 @@
-[Admin Premium/Enterprise/Coworking]
+[Admin Premium/Enterprise]
         │
         ├── Configurar domínio próprio
         │       └── painel.minhalinica.com.br

@@ -28,6 +28,9 @@
     .expiracao-tag { font-size: 11px; color: var(--texto-medio); margin-top: 4px; }
     .status-livekit { background: #EBF4FF; color: var(--azul-escuro); padding: 10px; border-radius: 8px; margin: 12px 0; font-size: 13px; }
     .video-item video { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+    body.modo-embed { background: #F8FAFC; }
+    body.modo-embed .navbar { display: none; }
+    body.modo-embed .reuniao-container { max-width: none; margin: 0; padding: 16px; }
   </style>
 </head>
 <body>
@@ -42,7 +45,7 @@
   <div class="reuniao-container">
     <div class="reuniao-card">
       <h2>🎥 Sala de Aula e Consulta</h2>
-      <p style="color:var(--texto-medio);">Ideal para Teleaulas e Consultas — Até 20 participantes — Premium, Enterprise e Coworking.</p>
+      <p style="color:var(--texto-medio);">Ideal para Teleaulas e Consultas — Até 20 participantes — Guardiões da Floresta, Pro, Premium e Enterprise.</p>
 
       <div class="gravacao-banner" id="gravacao-banner">🔴 GRAVANDO — Esta reunião está sendo gravada</div>
       <div class="status-livekit" id="status-livekit">Conectando à sala segura...</div>
@@ -121,7 +124,11 @@
     var localVideoTrack = null;
     var localAudioTrack = null;
     var screenTrack = null;
-    var salaAtual = new URLSearchParams(window.location.search).get('sala') || 'teleconsulta-alfa';
+    var params = new URLSearchParams(window.location.search);
+    var salaAtual = params.get('sala') || 'teleconsulta-alfa';
+    if (params.get('embed') === '1') {
+      document.body.classList.add('modo-embed');
+    }
 
     function atualizarStatus(msg) {
       document.getElementById('status-livekit').textContent = msg;

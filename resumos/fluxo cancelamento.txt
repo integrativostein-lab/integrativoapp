@@ -5,7 +5,8 @@
         │       └── Acesso até o fim do ciclo
         │
         ├── Plano Semestral/Anual:
-        │       ├── Multa de 20% sobre valor restante
+        │       ├── Certificado A1 incluído/emitido é cobrado no cancelamento
+        │       ├── Multa proporcional de 20% sobre os meses restantes
         │       ├── Cálculo automático do estorno
         │       └── Mensagem acolhedora de despedida
         │

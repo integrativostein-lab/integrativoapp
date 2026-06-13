@@ -1,7 +1,7 @@
 [Backup Automático]
         │
         ├── Freemium/Pro/Premium: Semanal
-        ├── Enterprise/Coworking: Diário
+        ├── Enterprise: Diário
         │
         └── [Profissional acessa]
                 ├── ⚙️ Configurações → Backup

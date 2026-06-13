@@ -37,7 +37,7 @@
 - ✅ **Modelo Anual** com 4 planos
 - ✅ **PIX com 5% de desconto** à vista
 - ✅ **Cartão com até 12x** com juros
-- ✅ **Cancelamento em 15 dias** com reembolso integral
+- ✅ **Cancelamento em 15 dias**, com certificado A1 cobrado quando incluído/emitido e multa proporcional de 20% sobre meses restantes após esse prazo
 - ✅ **8 Gateways de Pagamento** integrados
 
 ---
@@ -46,10 +46,11 @@
 
 | Plano | Valor Anual | Parcelamento | Desconto PIX |
 |-------|------------|--------------|-------------|
+| **Freemium** | R$ 0 | Gratuito | - |
+| **Guardiões da Floresta** | R$ 200 | Condição social anual | Sem desconto adicional |
 | **Pro** | R$ 899 | Até 12x com juros | 5% (R$ 854) |
 | **Premium** | R$ 4.799 | Até 12x com juros | 5% (R$ 4.559) |
 | **Enterprise** | R$ 9.990 | Até 12x com juros | 5% (R$ 9.491) |
-| **Coworking** | R$ 15.990 | Até 12x com juros | 5% (R$ 15.191) |
 
 ---
 

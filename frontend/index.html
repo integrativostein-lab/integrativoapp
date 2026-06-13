@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Integrativo.App — Cadastro gratuito para pacientes. Encontre profissionais de saúde integrativa.">
   <title>Integrativo.App — Saúde Integrativa para Pacientes</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0F172A">
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="css/carrossel.css">
   <style>
@@ -29,6 +31,7 @@
     }
     .hero-texto h1 span {
       background: linear-gradient(135deg, var(--azul-profundo) 0%, var(--verde-destaque) 100%);
+      background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -218,10 +221,94 @@
     .plano ul li::before { content: "•"; color: var(--verde-destaque); font-weight: 800; }
     .plano .btn { text-align: center; width: 100%; padding: 11px; font-size: 13px; }
 
+    /* ============ MINI APP ============ */
+    .mini-app-secao {
+      padding: 24px;
+      background: linear-gradient(135deg, var(--azul-profundo) 0%, #123B54 55%, var(--verde-destaque) 100%);
+    }
+    .mini-app-card {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-radius: 24px;
+      padding: 34px;
+      background: rgba(255,255,255,0.95);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+      box-shadow: var(--sombra-elevada);
+    }
+    .mini-app-tag {
+      display: inline-block;
+      background: var(--verde-menta);
+      color: var(--verde-destaque);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .mini-app-card h2 { margin-bottom: 8px; }
+    .mini-app-card p {
+      color: var(--texto-suave);
+      max-width: 680px;
+      margin-bottom: 18px;
+    }
+    .mini-app-acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .mini-app-status {
+      font-size: 12px;
+      color: var(--texto-suave);
+      margin-top: 10px;
+    }
+    .mini-app-preview {
+      width: 210px;
+      border-radius: 26px;
+      padding: 14px;
+      background: var(--azul-profundo);
+      color: var(--branco);
+      box-shadow: 0 18px 40px rgba(15,23,42,0.22);
+    }
+    .mini-app-tela {
+      background: linear-gradient(180deg, #FFFFFF 0%, #F0FDF4 100%);
+      border-radius: 20px;
+      padding: 18px;
+      color: var(--azul-profundo);
+      min-height: 250px;
+    }
+    .mini-app-icone {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--verde-destaque);
+      color: var(--branco);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 14px;
+    }
+    .mini-app-linha {
+      height: 10px;
+      border-radius: 999px;
+      background: #D1FAE5;
+      margin-top: 10px;
+    }
+    .mini-app-linha.curta { width: 62%; }
+    .mini-app-linha.media { width: 82%; }
+
     @media (max-width: 968px) {
       .hero { grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
       .hero-texto h1 { font-size: 36px; }
       .row-2 { grid-template-columns: 1fr; }
+      .mini-app-card { grid-template-columns: 1fr; padding: 24px; }
+      .mini-app-preview { width: 100%; max-width: 260px; }
     }
   </style>
 </head>
@@ -232,6 +319,7 @@
       <span class="logo-texto">Integrativo.App</span>
     </a>
     <div class="menu">
+      <a href="#baixe-aqui">Baixe aqui</a>
       <a href="#planos">Planos</a>
       <a href="blog.html">Blog</a>
       <a href="profissionais.html">Sou profissional</a>
@@ -287,6 +375,32 @@
     </div>
   </header>
 
+  <!-- MINI APP / PWA -->
+  <section class="mini-app-secao" id="baixe-aqui">
+    <div class="mini-app-card">
+      <div>
+        <span class="mini-app-tag">Baixe aqui</span>
+        <h2>Tenha o Integrativo.App como mini app no seu celular</h2>
+        <p>Instale o atalho seguro da plataforma e acesse busca, agendamentos, teleconsulta e painel sem precisar abrir a loja de aplicativos.</p>
+        <div class="mini-app-acoes">
+          <button type="button" class="btn btn-primario" id="btnInstalarApp">Baixar mini app</button>
+          <a href="login.html" class="btn" style="background:#F1F5F9;color:var(--azul-profundo);">Já tenho conta</a>
+        </div>
+        <div class="mini-app-status" id="miniAppStatus">Disponível para navegadores compatíveis com instalação de app.</div>
+      </div>
+      <div class="mini-app-preview" aria-hidden="true">
+        <div class="mini-app-tela">
+          <div class="mini-app-icone">+</div>
+          <strong>Integrativo.App</strong>
+          <div class="mini-app-linha media"></div>
+          <div class="mini-app-linha"></div>
+          <div class="mini-app-linha curta"></div>
+          <div style="margin-top:24px;padding:10px;border-radius:12px;background:#DCFCE7;color:#166534;font-size:12px;font-weight:700;">Pronto para instalar</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- COMO FUNCIONA -->
   <section class="secao secao-branca" id="como-funciona">
     <div class="container" style="text-align: center;">
@@ -325,7 +439,7 @@
     <div class="container">
       <h2>Planos para profissionais</h2>
       <p class="sub-h">Pagamento <strong>100% anual</strong>. Pacientes usam a plataforma de graça.</p>
-      <p class="planos-info">PIX à vista com 5% de desconto · Cartão em até 12x com juros de 1,99% a.m. · Cancelamento em 15 dias com reembolso integral</p>
+      <p class="planos-info">PIX à vista com 5% de desconto · ABRATH verificada: 8% nas assinaturas Pro e Premium, inclusive no cartão · Cartão em até 12x com juros de 1,99% a.m. · Cancelamento: certificado A1 cobrado quando incluído e, após 15 dias, multa proporcional de 20% sobre meses restantes</p>
       <div class="planos-grid" id="planosGrid"></div>
     </div>
   </section>
@@ -400,33 +514,57 @@
     // ============================================
     function fmtMoeda(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
 
+    function renderCondicaoPreco(p, isFree, calc) {
+      if (isFree) return 'Sem cartão. Sem cobrança.';
+      if (p.plano_social) {
+        return `Condição social anual<br><span style="color:var(--verde-destaque);font-weight:600">${p.teleconsultas_mes} teleconsultas/mês inclusas</span>`;
+      }
+      const pix = p.valor_anual * (1 - CONFIG.PARCELAMENTO.desconto_pix_pct / 100);
+      const abrath = p.valor_anual * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
+      const pixAbrath = pix * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100);
+      const abrathLinha = p.desconto_abrath
+        ? `<br><span style="color:var(--azul-profundo);font-weight:700">ABRATH: ${fmtMoeda(abrath)} (${CONFIG.PARCELAMENTO.desconto_abrath_pct}% off, PIX ou cartão)</span><br>
+        <span style="color:var(--verde-destaque);font-weight:700">PIX + ABRATH: ${fmtMoeda(pixAbrath)}</span>`
+        : '';
+      return `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br>
+        <span style="color:var(--verde-destaque);font-weight:600">PIX à vista: ${fmtMoeda(pix)} (${CONFIG.PARCELAMENTO.desconto_pix_pct}% off)</span>${abrathLinha}`;
+    }
+
     function renderPlanos() {
       const grid = document.getElementById('planosGrid');
       const planos = CONFIG.PLANOS;
-      const ordem = ['freemium', 'pro', 'premium', 'enterprise', 'coworking'];
+      const ordem = ['freemium', 'guardioes_floresta', 'pro', 'premium', 'enterprise'];
       grid.innerHTML = ordem.map(key => {
         const p = planos[key];
         const isFree = p.valor_anual === 0;
         const calc = isFree ? null : CONFIG.PARCELAMENTO.calcular(p.valor_anual, 12);
         const features = [];
-        features.push(`${p.teleconsultas_mes} teleconsultas/mês`);
+        if (p.teleconsulta_avulsa_valor) {
+          features.push(`Teleconsulta a ${fmtMoeda(p.teleconsulta_avulsa_valor)} cada`);
+        } else {
+          features.push(`${p.teleconsultas_mes} teleconsultas/mês`);
+        }
         features.push(`${p.max_pacientes} pacientes cadastrados`);
         features.push(`${p.whatsapp_mensagens_mes} mensagens WhatsApp/mês`);
         features.push(`${p.especialidades_inclusas} ${p.especialidades_inclusas === 1 ? 'especialidade' : 'especialidades'}`);
+        features.push(`Comissão por consulta: ${String(p.comissao_consulta_pct).replace('.', ',')}%`);
+        if (p.max_profissionais) {
+          features.push(p.max_profissionais === 'ilimitados' ? 'Profissionais ilimitados' : `Até ${p.max_profissionais} profissionais cadastrados`);
+        }
+        if (p.ferramentas_gestao) features.push('Ferramentas contábil, financeira e RH');
         if (p.white_label)        features.push('White-label');
         if (p.api_white_label)    features.push('API white-label');
         if (p.migracao)           features.push('Migração de dados');
         if (p.certificado_a1_gratis) features.push('Certificado A1 grátis');
-        if (p.coworking_fisico)   features.push('Espaço coworking físico');
+        if (p.certificado_a1_gratis) features.push('No cancelamento, certificado A1 será cobrado');
+        if (p.plano_social)       features.push('Condição social Guardiões da Floresta');
 
         return `
           <div class="plano ${p.destaque ? 'destaque' : ''}">
             <h3>${p.nome}</h3>
             <p class="desc">${p.descricao}</p>
             <div class="preco">${isFree ? 'Grátis' : fmtMoeda(p.valor_anual)} <small>${isFree ? '' : '/ ano'}</small></div>
-            <p class="parcela">${isFree
-              ? 'Sem cartão. Sem cobrança.'
-              : `ou 12x de ${fmtMoeda(calc.valorParcela)} <em>(juros 1,99% a.m.)</em><br><span style="color:var(--verde-destaque);font-weight:600">PIX: ${fmtMoeda(p.valor_anual * 0.95)}</span>`}</p>
+            <p class="parcela">${renderCondicaoPreco(p, isFree, calc)}</p>
             <ul>${features.map(f => `<li>${f}</li>`).join('')}</ul>
             <a href="${isFree ? '#formPaciente' : 'profissionais.html#planos'}"
                class="btn ${p.destaque ? 'btn-primario' : ''}"
@@ -437,6 +575,42 @@
       }).join('');
     }
     renderPlanos();
+
+    // ============================================
+    // MINI APP / PWA
+    // ============================================
+    let promptInstalacao = null;
+    const btnInstalarApp = document.getElementById('btnInstalarApp');
+    const miniAppStatus = document.getElementById('miniAppStatus');
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      promptInstalacao = event;
+      btnInstalarApp.disabled = false;
+      miniAppStatus.textContent = 'Clique em "Baixar mini app" para instalar no dispositivo.';
+    });
+
+    btnInstalarApp.addEventListener('click', async () => {
+      if (promptInstalacao) {
+        promptInstalacao.prompt();
+        const escolha = await promptInstalacao.userChoice;
+        promptInstalacao = null;
+        miniAppStatus.textContent = escolha.outcome === 'accepted'
+          ? 'Mini app instalado com sucesso.'
+          : 'Instalação cancelada. Você pode tentar novamente pelo menu do navegador.';
+        return;
+      }
+
+      miniAppStatus.textContent = 'No celular, abra o menu do navegador e toque em "Adicionar à tela inicial" ou "Instalar app".';
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {
+          miniAppStatus.textContent = 'Mini app disponível, mas o cache offline não foi ativado neste navegador.';
+        });
+      });
+    }
   </script>
 </body>
 </html>

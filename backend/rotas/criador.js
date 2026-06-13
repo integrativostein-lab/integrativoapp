@@ -63,50 +63,78 @@ router.get('/exportar-vendas', autenticarCriador, async (req, res) => {
 // ============================================
 
 router.post('/entidades/cadastro', async (req, res) => {
-  const { tipo, pais, nome_entidade, cnpj, nome_responsavel, cargo, email, telefone, documento_url } = req.body;
-  
-  if (!tipo || !pais || !nome_entidade || !cnpj || !nome_responsavel || !email) {
-    return res.status(400).json({ erro: 'Campos obrigatórios não preenchidos.' });
+  try {
+    const { tipo, pais, nome_entidade, cnpj, nome_responsavel, cargo, email, telefone, documento_url } = req.body;
+
+    if (!tipo || !pais || !nome_entidade || !cnpj || !nome_responsavel || !email) {
+      return res.status(400).json({ erro: 'Campos obrigatórios não preenchidos.' });
+    }
+
+    const tiposElegiveis = ['ong', 'humanitaria', 'projeto-social', 'guardioes-floresta'];
+    const elegivel = tiposElegiveis.includes(tipo);
+
+    if (!elegivel) {
+      return res.status(400).json({ erro: 'Tipo de entidade não elegível. Verifique os critérios.' });
+    }
+
+    // Gerar chave de ativação
+    const chave = crypto.randomUUID().replace(/-/g, '').substring(0, 16).toUpperCase();
+    const chaveFormatada = chave.match(/.{4}/g).join('-');
+    const validade = new Date();
+    validade.setDate(validade.getDate() + 30);
+
+    await db.query(
+      `INSERT INTO entidades (tipo, pais, nome_entidade, cnpj, codigo_ibge, nome_responsavel, cargo, email, telefone, documento_url, elegivel, populacao, chave_ativacao, chave_validade, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'pendente')`,
+      [tipo, pais, nome_entidade, cnpj, null, nome_responsavel, cargo, email, telefone, documento_url, elegivel, null, chaveFormatada, validade.toISOString().split('T')[0]]
+    );
+
+    res.status(201).json({
+      mensagem: 'Cadastro recebido! Sua solicitação será analisada.',
+      status: 'pendente',
+      chave: chaveFormatada,
+      validade: validade.toISOString().split('T')[0]
+    });
+  } catch (e) {
+    console.error('[criador/entidades/cadastro]', e.message);
+    if (process.env.TEST_MODE === 'true') {
+      const chave = crypto.randomUUID().replace(/-/g, '').substring(0, 16).toUpperCase();
+      const chaveFormatada = chave.match(/.{4}/g).join('-');
+      const validade = new Date();
+      validade.setDate(validade.getDate() + 30);
+      return res.status(201).json({
+        mensagem: 'Cadastro recebido em modo teste (simulado).',
+        status: 'pendente',
+        chave: chaveFormatada,
+        validade: validade.toISOString().split('T')[0],
+        simulacao: true
+      });
+    }
+    res.status(500).json({ erro: 'Erro ao cadastrar entidade.' });
   }
-
-  const tiposElegiveis = ['ong', 'humanitaria', 'projeto-social', 'guardioes-floresta'];
-  const elegivel = tiposElegiveis.includes(tipo);
-
-  if (!elegivel) {
-    return res.status(400).json({ erro: 'Tipo de entidade não elegível. Verifique os critérios.' });
-  }
-
-  // Gerar chave de ativação
-  const chave = crypto.randomUUID().replace(/-/g, '').substring(0, 16).toUpperCase();
-  const chaveFormatada = chave.match(/.{4}/g).join('-');
-  const validade = new Date();
-  validade.setDate(validade.getDate() + 30);
-
-  await db.query(
-    `INSERT INTO entidades (tipo, pais, nome_entidade, cnpj, codigo_ibge, nome_responsavel, cargo, email, telefone, documento_url, elegivel, populacao, chave_ativacao, chave_validade, status)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,'pendente')`,
-    [tipo, pais, nome_entidade, cnpj, null, nome_responsavel, cargo, email, telefone, documento_url, elegivel, null, chaveFormatada, validade.toISOString().split('T')[0]]
-  );
-
-  res.status(201).json({
-    mensagem: 'Cadastro recebido! Sua solicitação será analisada.',
-    status: 'pendente',
-    chave: chaveFormatada,
-    validade: validade.toISOString().split('T')[0]
-  });
 });
 
 router.post('/entidades/liberar', autenticarCriador, async (req, res) => {
-  const { entidade_id } = req.body;
-  await db.query("UPDATE entidades SET status = 'aprovada', liberado_por = $1, data_liberacao = NOW() WHERE id = $2", [req.criador.id, entidade_id]);
-  res.json({ mensagem: 'Entidade liberada com sucesso!' });
+  try {
+    const { entidade_id } = req.body;
+    await db.query("UPDATE entidades SET status = 'aprovada', liberado_por = $1, data_liberacao = NOW() WHERE id = $2", [req.criador.id, entidade_id]);
+    res.json({ mensagem: 'Entidade liberada com sucesso!' });
+  } catch (e) {
+    console.error('[criador/entidades/liberar]', e.message);
+    res.status(500).json({ erro: 'Erro ao liberar entidade.' });
+  }
 });
 
 router.post('/verificar-chave', async (req, res) => {
-  const { chave } = req.body;
-  const r = await db.query("SELECT * FROM entidades WHERE chave_ativacao = $1 AND status = 'aprovada' AND chave_validade >= CURRENT_DATE", [chave]);
-  if (r.rows.length === 0) return res.status(400).json({ erro: 'Chave inválida ou expirada.', valida: false });
-  res.json({ valida: true, entidade: r.rows[0].nome_entidade, validade: r.rows[0].chave_validade });
+  try {
+    const { chave } = req.body;
+    const r = await db.query("SELECT * FROM entidades WHERE chave_ativacao = $1 AND status = 'aprovada' AND chave_validade >= CURRENT_DATE", [chave]);
+    if (r.rows.length === 0) return res.status(400).json({ erro: 'Chave inválida ou expirada.', valida: false });
+    res.json({ valida: true, entidade: r.rows[0].nome_entidade, validade: r.rows[0].chave_validade });
+  } catch (e) {
+    console.error('[criador/verificar-chave]', e.message);
+    res.status(500).json({ erro: 'Erro ao verificar chave.' });
+  }
 });
 
 module.exports = router;

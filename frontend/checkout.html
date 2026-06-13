@@ -315,7 +315,7 @@
 
         <div class="garantia">
           <strong>✓ Garantia de Satisfação</strong>
-          Você pode cancelar sua assinatura em até 15 dias com reembolso integral.
+          Você pode cancelar em até 15 dias. Certificado A1 incluído será cobrado em caso de cancelamento; após 15 dias, há multa proporcional de 20% sobre os meses restantes.
         </div>
       </div>
 
@@ -329,10 +329,10 @@
             <label>Selecione seu Plano</label>
             <select id="selectPlano" onchange="atualizarPlano()" required>
               <option value="">Escolha um plano...</option>
+              <option value="guardioes_floresta">Guardiões da Floresta — R$ 200/ano</option>
               <option value="pro">Pro — R$ 899/ano</option>
               <option value="premium">Premium — R$ 4.799/ano</option>
               <option value="enterprise">Enterprise — R$ 9.990/ano</option>
-              <option value="coworking">Coworking — R$ 15.990/ano</option>
             </select>
           </div>
 
@@ -416,10 +416,10 @@
   <script src="js/config.js"></script>
   <script>
     const PLANOS_VALORES = {
+      guardioes_floresta: 200,
       pro: 899,
       premium: 4799,
-      enterprise: 9990,
-      coworking: 15990
+      enterprise: 9990
     };
 
     const JUROS_CARTAO = 1.0199; // 1.99% ao mês
@@ -445,14 +445,19 @@
       if (!plano) return;
 
       const valor = PLANOS_VALORES[plano];
-      const desconto = pagamento === 'pix' ? valor * 0.05 : 0;
+      const planoConfig = CONFIG.PLANOS[plano];
+      const descontoPixPct = planoConfig?.plano_social ? 0 : 0.05;
+      const desconto = pagamento === 'pix' ? valor * descontoPixPct : 0;
       const valorFinal = valor - desconto;
 
       // Atualizar resumo
       if (pagamento === 'pix') {
-        document.getElementById('linhaDesconto').style.display = 'flex';
+        document.getElementById('linhaDesconto').style.display = desconto > 0 ? 'flex' : 'none';
         document.getElementById('valorDesconto').textContent = `-R$ ${desconto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
         document.getElementById('descricaoPix').style.display = 'block';
+        document.getElementById('descricaoPix').innerHTML = planoConfig?.plano_social
+          ? `<strong>Condição social Guardiões da Floresta</strong><br>Plano anual por R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}, com ${planoConfig.teleconsultas_mes} teleconsultas/mês, ${planoConfig.max_pacientes} pacientes e ${planoConfig.especialidades_inclusas} especialidades.`
+          : `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}${planoConfig?.desconto_abrath ? `<br>Associados ABRATH verificados recebem ${CONFIG.PARCELAMENTO.desconto_abrath_pct}% sobre a assinatura ${planoConfig.nome}, independentemente de pagar por PIX ou cartão.` : ''}`;
         document.getElementById('parcelasInfo').classList.remove('ativo');
         document.getElementById('dadosCartao').style.display = 'none';
       } else {
@@ -488,6 +493,18 @@
       element.classList.add('selecionada');
       document.getElementById('btnPagar').textContent = `Pagar ${parcelas}x de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     }
+
+    (function selecionarPlanoInicial() {
+      const params = new URLSearchParams(window.location.search);
+      const planoUrl = params.get('plano');
+      const select = document.getElementById('selectPlano');
+      if (planoUrl && PLANOS_VALORES[planoUrl]) {
+        select.value = planoUrl;
+      } else {
+        select.value = 'pro';
+      }
+      atualizarPlano();
+    })();
 
     document.getElementById('formCheckout').addEventListener('submit', async (e) => {
       e.preventDefault();

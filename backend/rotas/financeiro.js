@@ -9,27 +9,31 @@ const { verificarRegistroABRATH } = require('../servicos/abrath');
 // ============================================
 const VALORES_ANUAIS = {
   freemium: 0,
+  guardioes_floresta: 200,
   pro: 899,
   premium: 4799,
-  enterprise: 9990,
-  coworking: 15990
+  enterprise: 9990
 };
 const JUROS_MES = 0.0199;          // 1,99% a.m. — Tabela Price
 const MAX_PARCELAS = 12;
 const DESCONTO_PIX = 0.05;         // 5% à vista
+const DESCONTO_ABRATH = 0.08;      // 8% sobre assinaturas Pro e Premium
+const PLANOS_COM_DESCONTO_ABRATH = ['pro', 'premium'];
 const PRAZO_ARREPENDIMENTO_DIAS = 15;
 const MULTA_APOS_PRAZO = 0.20;     // 20% sobre saldo proporcional
+const VALOR_CERTIFICADO_A1 = 260.00;
+const PLANOS_COM_CERTIFICADO_A1 = ['premium', 'enterprise'];
 
 /**
  * Calcula parcelamento Tabela Price.
  * - PIX ou 1x => sem juros, com 5% off no PIX
  * - 2x..12x  => juros compostos de 1,99% a.m.
  */
-function calcularParcelamento(valor, parcelas, formaPagamento) {
+function calcularParcelamento(valor, parcelas, formaPagamento, aplicarDescontoPix = true) {
   let valorBase = valor;
   let descontoPix = 0;
 
-  if (formaPagamento === 'pix') {
+  if (formaPagamento === 'pix' && aplicarDescontoPix) {
     descontoPix = valor * DESCONTO_PIX;
     valorBase = valor - descontoPix;
   }
@@ -67,7 +71,7 @@ router.post('/simular-parcelamento', (req, res) => {
   const valorBase = VALORES_ANUAIS[plano];
   if (valorBase == null) return res.status(400).json({ erro: 'Plano inválido' });
   if (valorBase === 0) return res.json({ plano, parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 });
-  res.json({ plano, ...calcularParcelamento(valorBase, parcelas, forma_pagamento) });
+  res.json({ plano, ...calcularParcelamento(valorBase, parcelas, forma_pagamento, plano !== 'guardioes_floresta') });
 });
 
 // ============================================
@@ -173,18 +177,18 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       }
     }
 
-    // Desconto ABRATH 15% — não acumula com cupom, não vale Coworking
-    if (!vitalicio && abrath_registro && abrath_nome && plano !== 'coworking') {
+    // Desconto ABRATH 8% — vale para Pro e Premium, independente da forma de pagamento.
+    if (!vitalicio && abrath_registro && abrath_nome && PLANOS_COM_DESCONTO_ABRATH.includes(plano)) {
       const verificado = await verificarRegistroABRATH(abrath_registro, abrath_nome);
       if (verificado) {
-        descontoAplicado = Math.max(descontoAplicado, 15);
-        valor = valorBase * 0.85;
+        descontoAplicado = Math.max(descontoAplicado, DESCONTO_ABRATH * 100);
+        valor = valorBase * (1 - DESCONTO_ABRATH);
       }
     }
 
     const calc = vitalicio
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
-      : calcularParcelamento(valor, parcelas || 1, forma_pagamento);
+      : calcularParcelamento(valor, parcelas || 1, forma_pagamento, plano !== 'guardioes_floresta');
 
     const dataExpiracao = new Date();
     if (vitalicio) dataExpiracao.setFullYear(2099);
@@ -236,11 +240,12 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
 
     let multa = 0;
     let valorEstorno = 0;
+    let certificadoCobrado = 0;
     let mensagem = '';
 
     if (diasUsados <= PRAZO_ARREPENDIMENTO_DIAS) {
       valorEstorno = parseFloat(ass.valor);
-      mensagem = `Cancelamento dentro do prazo de ${PRAZO_ARREPENDIMENTO_DIAS} dias — reembolso integral aprovado.`;
+      mensagem = `Cancelamento dentro do prazo de ${PRAZO_ARREPENDIMENTO_DIAS} dias — reembolso calculado conforme regras de cancelamento.`;
     } else if (ass.tipo_ciclo === 'anual') {
       const totalDias = 365;
       const diasRestantes = Math.max(0, totalDias - diasUsados);
@@ -253,6 +258,12 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
       mensagem = 'Assinatura cancelada.';
     }
 
+    if (PLANOS_COM_CERTIFICADO_A1.includes(ass.plano)) {
+      certificadoCobrado = VALOR_CERTIFICADO_A1;
+      valorEstorno = Math.max(0, valorEstorno - certificadoCobrado);
+      mensagem += ` Certificado A1 incluído no plano será cobrado à parte no valor de R$ ${VALOR_CERTIFICADO_A1.toFixed(2)}.`;
+    }
+
     await db.query("UPDATE assinaturas SET status = 'cancelada', data_cancelamento = NOW() WHERE id = $1", [assinatura_id]);
     await db.query("UPDATE usuarios SET assinatura_ativa = 0, plano = 'freemium' WHERE id = $1", [req.usuario.id]);
 
@@ -261,6 +272,7 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
       dias_usados: diasUsados,
       dentro_do_prazo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS,
       multa: parseFloat(multa.toFixed(2)),
+      certificado_cobrado: parseFloat(certificadoCobrado.toFixed(2)),
       valor_estorno: parseFloat(valorEstorno.toFixed(2))
     });
   } catch (e) {

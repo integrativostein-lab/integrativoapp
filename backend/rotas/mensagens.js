@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../database');
+const evolution = require('../servicos/evolution-api');
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -30,6 +31,43 @@ router.put('/:id', autenticar, async (req, res) => {
 router.delete('/:id', autenticar, async (req, res) => {
   await db.query('DELETE FROM templates_mensagens WHERE id=$1 AND usuario_id=$2', [req.params.id, req.usuario.id]);
   res.json({ mensagem: 'Template removido!' });
+});
+
+router.get('/whatsapp/status', autenticar, async (req, res) => {
+  try {
+    const status = await evolution.obterStatus();
+    res.json(status);
+  } catch (e) {
+    console.error('[mensagens/whatsapp/status]', e.message);
+    res.status(502).json({ erro: 'Erro ao consultar Evolution API.', detalhe: e.message });
+  }
+});
+
+router.post('/whatsapp/enviar', autenticar, async (req, res) => {
+  try {
+    const { telefone, texto, delay } = req.body || {};
+    const resultado = await evolution.enviarTexto({ telefone, texto, delay });
+    res.status(201).json({ mensagem: 'Mensagem enviada via WhatsApp.', ...resultado });
+  } catch (e) {
+    console.error('[mensagens/whatsapp/enviar]', e.message);
+    const status = e.codigo === 'EVOLUTION_NOT_CONFIGURED' || e.codigo === 'EVOLUTION_INVALID_PAYLOAD' ? 400 : 502;
+    res.status(status).json({ erro: e.message || 'Erro ao enviar WhatsApp.' });
+  }
+});
+
+router.post('/whatsapp/teste', autenticar, async (req, res) => {
+  try {
+    const { telefone } = req.body || {};
+    const resultado = await evolution.enviarTexto({
+      telefone,
+      texto: 'Teste Integrativo.App: WhatsApp conectado pela Evolution API.'
+    });
+    res.status(201).json({ mensagem: 'Mensagem de teste enviada.', ...resultado });
+  } catch (e) {
+    console.error('[mensagens/whatsapp/teste]', e.message);
+    const status = e.codigo === 'EVOLUTION_NOT_CONFIGURED' || e.codigo === 'EVOLUTION_INVALID_PAYLOAD' ? 400 : 502;
+    res.status(status).json({ erro: e.message || 'Erro ao enviar teste WhatsApp.' });
+  }
 });
 
 module.exports = router;

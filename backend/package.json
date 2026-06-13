@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "start:teste": "node -r dotenv/config server.js dotenv_config_path=.env.teste",
-    "dev:teste": "nodemon -r dotenv/config server.js dotenv_config_path=.env.teste"
+    "dev:teste": "nodemon -r dotenv/config server.js dotenv_config_path=.env.teste",
+    "populate:protocolos": "node populate-protocolos-especialidades.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",

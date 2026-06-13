@@ -55,7 +55,7 @@
           <div class="msg-box">
             <div class="form-grupo">
               <label>Título da Mensagem 1</label>
-              <input type="text" id="msg1-titulo" placeholder="Ex: Feliz Aniversário! 🎂" maxlength="50">
+              <input type="text" id="msg1-titulo" data-voz placeholder="Ex: Feliz Aniversário! 🎂" maxlength="50">
             </div>
             <div class="form-grupo">
               <label>Quando enviar?</label>
@@ -72,7 +72,7 @@
             </div>
             <div class="form-grupo">
               <label>Mensagem</label>
-              <textarea id="msg1-texto" placeholder="Olá {nome_paciente}! Hoje é um dia especial..."></textarea>
+              <textarea id="msg1-texto" data-voz data-voz-continuo="true" placeholder="Olá {nome_paciente}! Hoje é um dia especial..."></textarea>
               <p class="limite" id="msg1-limite">0/500 caracteres</p>
             </div>
           </div>
@@ -81,7 +81,7 @@
           <div class="msg-box">
             <div class="form-grupo">
               <label>Título da Mensagem 2</label>
-              <input type="text" id="msg2-titulo" placeholder="Ex: Boas Festas! 🎄" maxlength="50">
+              <input type="text" id="msg2-titulo" data-voz placeholder="Ex: Boas Festas! 🎄" maxlength="50">
             </div>
             <div class="form-grupo">
               <label>Quando enviar?</label>
@@ -98,7 +98,7 @@
             </div>
             <div class="form-grupo">
               <label>Mensagem</label>
-              <textarea id="msg2-texto" placeholder="Olá {nome_paciente}! Desejo a você..."></textarea>
+              <textarea id="msg2-texto" data-voz data-voz-continuo="true" placeholder="Olá {nome_paciente}! Desejo a você..."></textarea>
               <p class="limite" id="msg2-limite">0/500 caracteres</p>
             </div>
           </div>
@@ -107,7 +107,7 @@
           <div class="msg-box">
             <div class="form-grupo">
               <label>Título da Mensagem 3</label>
-              <input type="text" id="msg3-titulo" placeholder="Ex: Volta às Aulas! 📚" maxlength="50">
+              <input type="text" id="msg3-titulo" data-voz placeholder="Ex: Volta às Aulas! 📚" maxlength="50">
             </div>
             <div class="form-grupo">
               <label>Quando enviar?</label>
@@ -124,7 +124,7 @@
             </div>
             <div class="form-grupo">
               <label>Mensagem</label>
-              <textarea id="msg3-texto" placeholder="Olá {nome_paciente}! As aulas..."></textarea>
+              <textarea id="msg3-texto" data-voz data-voz-continuo="true" placeholder="Olá {nome_paciente}! As aulas..."></textarea>
               <p class="limite" id="msg3-limite">0/500 caracteres</p>
             </div>
           </div>
@@ -138,6 +138,7 @@
   </div>
 
   <script src="js/config.js"></script>
+  <script src="js/voz.js"></script>
   <script>
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 

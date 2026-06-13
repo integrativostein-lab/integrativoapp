@@ -130,6 +130,7 @@ router.post('/cadastro-profissional', async (req, res) => {
     const {
       nome, email, senha, telefone,
       especialidade, conselho, uf_conselho, numero_registro,
+      registro_abrath,
       especialidades_adicionais, gateway, email_corporativo,
       prescricao_eletronica, lgpd_consentimento
     } = req.body;
@@ -154,6 +155,21 @@ router.post('/cadastro-profissional', async (req, res) => {
       [nome, email, hash, telefone || null, especialidade, lgpd_consentimento || 0]
     );
     const userId = ins.rows[0].id;
+
+    // Persistir registros profissionais se as colunas existirem no ambiente.
+    try {
+      await db.query(
+        `UPDATE usuarios
+         SET conselho_classe = $1,
+             uf_conselho = $2,
+             registro_profissional = $3,
+             registro_abrath = $4
+         WHERE id = $5`,
+        [conselho || null, uf_conselho || null, numero_registro || null, registro_abrath || null, userId]
+      );
+    } catch (errRegistro) {
+      console.warn('[cadastro-profissional] registros profissionais não persistidos em usuarios:', errRegistro.message);
+    }
 
     // Registrar dados profissionais (best-effort — tabela pode não existir em todos os ambientes)
     try {

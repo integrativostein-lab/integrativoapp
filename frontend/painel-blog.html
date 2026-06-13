@@ -41,7 +41,7 @@
 
     <div class="form-grupo">
       <label>Meta Description * (até 160 caracteres)</label>
-      <textarea id="meta-desc" rows="2" placeholder="Resumo do artigo para Google..." class="campo-voz" oninput="analisarSEO()"></textarea>
+      <textarea id="meta-desc" rows="2" placeholder="Resumo do artigo para Google..." class="campo-voz" data-voz-continuo="true" oninput="analisarSEO()"></textarea>
       <span style="font-size:11px;color:var(--texto-medio);" id="meta-contador">0/160</span>
     </div>
 
@@ -50,7 +50,7 @@
 
     <div class="form-grupo">
       <label>Conteúdo *</label>
-      <textarea id="conteudo" rows="12" placeholder="Escreva seu artigo..." class="campo-voz" oninput="analisarSEO(); buscarReferencias()"></textarea>
+      <textarea id="conteudo" rows="12" placeholder="Escreva seu artigo..." class="campo-voz" data-voz-continuo="true" oninput="analisarSEO(); buscarReferencias()"></textarea>
     </div>
 
     <!-- REFERÊNCIAS CRUZADAS -->
@@ -61,7 +61,7 @@
 
     <div class="form-grupo">
       <label>Fonte Bibliográfica *</label>
-      <textarea id="fonte-bib" rows="3" placeholder="Referências usadas no artigo (livros, artigos, links) — obrigatório" class="campo-voz"></textarea>
+      <textarea id="fonte-bib" rows="3" placeholder="Referências usadas no artigo (livros, artigos, links) — obrigatório" class="campo-voz" data-voz-continuo="true"></textarea>
     </div>
 
     <div class="form-grupo">

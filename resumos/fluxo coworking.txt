@@ -1,4 +1,4 @@
-[Painel do Coworking]
+[Módulo futuro de Coworking - não é plano ativo]
         │
         ├── 📊 Dashboard
         │

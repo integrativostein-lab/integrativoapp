@@ -26,30 +26,43 @@
     <div class="painel-conteudo">
       <h2>📱 Templates de Mensagens</h2>
       <p style="color:var(--texto-medio);margin-bottom:20px;">Personalize as mensagens automáticas enviadas aos seus pacientes.</p>
+
+      <div class="card" style="margin-bottom:16px;">
+        <h3>WhatsApp Evolution API</h3>
+        <p id="evolution-status" style="font-size:13px;color:var(--texto-medio);margin:8px 0;">Verificando conexão...</p>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;">
+          <div>
+            <label style="font-size:13px;font-weight:700;color:var(--azul-escuro);">Telefone para teste</label>
+            <input type="tel" id="evolution-telefone" placeholder="Ex: 11999999999" style="width:100%;padding:10px;border:1px solid #E2E8F0;border-radius:8px;margin-top:4px;">
+          </div>
+          <button class="btn btn-primario" onclick="enviarTesteEvolution()" style="font-size:12px;">Enviar teste</button>
+        </div>
+        <p id="evolution-msg" style="font-size:12px;margin-top:8px;"></p>
+      </div>
       
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div class="card">
           <h3>Lembrete 24h antes</h3>
           <p style="font-size:12px;color:var(--texto-medio);">Enviado 1 dia antes da consulta</p>
-          <textarea style="width:100%;height:80px;margin-top:8px;">Olá {nome_paciente}! Sua consulta com {profissional} é amanhã às {horario}.</textarea>
+          <textarea data-voz data-voz-continuo="true" style="width:100%;height:80px;margin-top:8px;">Olá {nome_paciente}! Sua consulta com {profissional} é amanhã às {horario}.</textarea>
           <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
         </div>
         <div class="card">
           <h3>Lembrete 1h antes</h3>
           <p style="font-size:12px;color:var(--texto-medio);">Enviado 1 hora antes da consulta</p>
-          <textarea style="width:100%;height:80px;margin-top:8px;">Olá {nome_paciente}! Sua consulta começa em 1 hora. Link: {link_sala}</textarea>
+          <textarea data-voz data-voz-continuo="true" style="width:100%;height:80px;margin-top:8px;">Olá {nome_paciente}! Sua consulta começa em 1 hora. Link: {link_sala}</textarea>
           <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
         </div>
         <div class="card">
           <h3>Confirmação de Agendamento</h3>
           <p style="font-size:12px;color:var(--texto-medio);">Enviado após agendamento</p>
-          <textarea style="width:100%;height:80px;margin-top:8px;">✅ {nome_paciente}, sua consulta foi agendada! 📅 {data} às {horario}.</textarea>
+          <textarea data-voz data-voz-continuo="true" style="width:100%;height:80px;margin-top:8px;">✅ {nome_paciente}, sua consulta foi agendada! 📅 {data} às {horario}.</textarea>
           <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
         </div>
         <div class="card">
           <h3>Cancelamento</h3>
           <p style="font-size:12px;color:var(--texto-medio);">Enviado quando a consulta é cancelada</p>
-          <textarea style="width:100%;height:80px;margin-top:8px;">⚠️ {nome_paciente}, a consulta do dia {data} foi cancelada.</textarea>
+          <textarea data-voz data-voz-continuo="true" style="width:100%;height:80px;margin-top:8px;">⚠️ {nome_paciente}, a consulta do dia {data} foi cancelada.</textarea>
           <button class="btn btn-primario" style="margin-top:8px;font-size:12px;">Salvar</button>
         </div>
       </div>
@@ -57,8 +70,71 @@
     </div>
   </div>
   <script src="js/config.js"></script>
+  <script src="js/voz.js"></script>
   <script>
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    async function carregarStatusEvolution() {
+      var token = localStorage.getItem('integra_token');
+      var el = document.getElementById('evolution-status');
+      if (!token) {
+        el.textContent = 'Faça login para consultar o WhatsApp.';
+        return;
+      }
+      try {
+        var r = await fetch(`${CONFIG.API_URL}/mensagens/whatsapp/status`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        var d = await r.json();
+        if (!r.ok) throw new Error(d.erro || 'Erro ao consultar status.');
+        if (!d.configurado) {
+          el.textContent = 'Evolution API ainda não configurada no backend.';
+          el.style.color = 'var(--laranja)';
+          return;
+        }
+        el.textContent = d.simulado
+          ? `Modo simulado ativo na instância ${d.instancia}.`
+          : d.conectado
+            ? `Conectado na instância ${d.instancia}.`
+            : `Instância ${d.instancia} com estado: ${d.estado || 'desconhecido'}.`;
+        el.style.color = d.conectado ? 'var(--verde-suave)' : 'var(--laranja)';
+      } catch (e) {
+        el.textContent = e.message || 'Não foi possível consultar a Evolution API.';
+        el.style.color = 'var(--vermelho)';
+      }
+    }
+
+    async function enviarTesteEvolution() {
+      var token = localStorage.getItem('integra_token');
+      var msg = document.getElementById('evolution-msg');
+      var telefone = document.getElementById('evolution-telefone').value.trim();
+      if (!token) return;
+      if (!telefone) {
+        msg.textContent = 'Informe um telefone para teste.';
+        msg.style.color = 'var(--vermelho)';
+        return;
+      }
+      msg.textContent = 'Enviando teste...';
+      msg.style.color = 'var(--texto-medio)';
+      try {
+        var r = await fetch(`${CONFIG.API_URL}/mensagens/whatsapp/teste`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ telefone: telefone })
+        });
+        var d = await r.json();
+        if (!r.ok) throw new Error(d.erro || 'Erro ao enviar teste.');
+        msg.textContent = d.simulado
+          ? 'Mensagem de teste simulada com sucesso. Configure a Evolution real para envio externo.'
+          : 'Mensagem de teste enviada com sucesso.';
+        msg.style.color = 'var(--verde-suave)';
+      } catch (e) {
+        msg.textContent = e.message || 'Erro ao enviar teste.';
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+
+    carregarStatusEvolution();
   </script>
 <footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
 </body>
