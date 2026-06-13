@@ -8,25 +8,37 @@
   <link rel="stylesheet" href="css/estilo.css">
   <style>
     .dashboard-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-    .dash-card { background: var(--branco); padding: 20px; border-radius: var(--raio-borda); box-shadow: var(--sombra); text-align: center; }
-    .dash-card h3 { font-size: 14px; color: var(--texto-medio); margin-bottom: 6px; }
-    .dash-card .valor { font-size: 28px; font-weight: 700; color: var(--azul-escuro); }
-    .lista-agenda { background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); padding: 20px; }
+    .dash-card { background: var(--branco); padding: 20px; border-radius: var(--raio-padrao); box-shadow: var(--sombra-suave); text-align: center; }
+    .dash-card h3 { font-size: 14px; color: var(--texto-suave); margin-bottom: 6px; }
+    .dash-card .valor { font-size: 28px; font-weight: 700; color: var(--azul-profundo); }
+    .lista-agenda, .painel-card { background: var(--branco); border-radius: var(--raio-padrao); box-shadow: var(--sombra-suave); padding: 20px; }
     .agenda-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #E2E8F0; cursor: pointer; transition: background 0.2s; }
-    .agenda-item:hover { background: var(--cinza-claro); margin: 0 -20px; padding: 12px 20px; }
+    .agenda-item:hover { background: #F8FAFC; margin: 0 -20px; padding: 12px 20px; }
     .agenda-item:last-child { border-bottom: none; }
-    .agenda-item .paciente-nome { font-weight: 600; color: var(--azul-escuro); }
-    .agenda-item .paciente-info { font-size: 12px; color: var(--texto-medio); }
-    .btn-teleconsulta { background: var(--verde-suave); color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; text-decoration: none; }
-    .upsell-banner { background: var(--laranja-claro); border: 1px solid var(--laranja); border-radius: var(--raio-borda); padding: 16px 20px; margin-top: 20px; text-align: center; }
-    .teleconsulta-panel { display: none; margin-top: 24px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); overflow: hidden; }
+    .agenda-item .paciente-nome { font-weight: 600; color: var(--azul-profundo); }
+    .agenda-item .paciente-info { font-size: 12px; color: var(--texto-suave); }
+    .btn-teleconsulta { background: var(--verde-destaque); color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; text-decoration: none; }
+    .upsell-banner { background: #FEF3C7; border: 1px solid #F59E0B; border-radius: var(--raio-padrao); padding: 16px 20px; margin-top: 20px; text-align: center; }
+    .modulos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 24px 0; }
+    .modulo-card { display: block; background: var(--branco); border: 1px solid #E2E8F0; border-radius: 18px; padding: 18px; text-decoration: none; color: var(--texto-principal); box-shadow: var(--sombra-suave); transition: var(--transicao); }
+    .modulo-card:hover { transform: translateY(-4px); border-color: var(--verde-destaque); box-shadow: var(--sombra-elevada); }
+    .modulo-card .icone { display: block; font-size: 28px; margin-bottom: 10px; }
+    .modulo-card strong { display: block; color: var(--azul-profundo); margin-bottom: 5px; }
+    .modulo-card span { display: block; color: var(--texto-suave); font-size: 12px; line-height: 1.45; }
+    .secao-painel { display: none; }
+    .secao-painel.ativo { display: block; }
+    .acoes-linha { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+    .acao-botao { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 999px; padding: 10px 16px; background: var(--azul-profundo); color: #FFF; text-decoration: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .acao-botao.secundario { background: #F1F5F9; color: var(--azul-profundo); }
+    .teleconsulta-panel { display: none; margin-top: 24px; background: var(--branco); border-radius: var(--raio-padrao); box-shadow: var(--sombra-suave); overflow: hidden; }
     .teleconsulta-panel.ativo { display: block; }
     .teleconsulta-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #E2E8F0; }
-    .teleconsulta-header h3 { color: var(--azul-escuro); margin: 0; }
-    .teleconsulta-header p { color: var(--texto-medio); font-size: 12px; margin: 2px 0 0; }
+    .teleconsulta-header h3 { color: var(--azul-profundo); margin: 0; }
+    .teleconsulta-header p { color: var(--texto-suave); font-size: 12px; margin: 2px 0 0; }
     .teleconsulta-frame { width: 100%; height: 760px; border: 0; background: #F8FAFC; display: block; }
-    .btn-fechar-teleconsulta { background: var(--vermelho); color: #FFF; border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
+    .btn-fechar-teleconsulta { background: #DC2626; color: #FFF; border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; cursor: pointer; }
     @media (max-width: 768px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
       .teleconsulta-frame { height: 680px; }
       .teleconsulta-header { align-items: flex-start; flex-direction: column; }
     }
@@ -37,20 +49,21 @@
     <div class="painel-sidebar">
       <h3>🌿 Integrativo</h3>
       <nav>
-        <a href="#" class="ativo" onclick="mostrarSecao('dashboard')">📊 Dashboard</a>
-        <a href="#" id="menu-agenda" onclick="mostrarSecao('agenda')">📅 Agenda</a>
-        <a href="#" id="menu-pacientes" onclick="mostrarSecao('pacientes')">👥 Pacientes</a>
-        <a href="#" id="menu-loja" onclick="mostrarSecao('loja')">🛒 Minha Loja</a>
-        <a href="#" id="menu-blog" onclick="mostrarSecao('blog')">✍️ Blog</a>
-        <a href="#" id="menu-whatsapp" onclick="mostrarSecao('whatsapp')">📱 WhatsApp</a>
-        <a href="#" id="menu-dominio" onclick="mostrarSecao('dominio')">🌐 Domínio/Email</a>
+        <a href="#" class="ativo" data-secao="dashboard" onclick="mostrarSecao('dashboard')">📊 Dashboard</a>
+        <a href="#" data-secao="agenda" onclick="mostrarSecao('agenda')">📅 Agenda</a>
+        <a href="#" data-secao="pacientes" onclick="mostrarSecao('pacientes')">👥 Pacientes</a>
+        <a href="#" data-secao="loja" onclick="mostrarSecao('loja')">🛒 Minha Loja</a>
+        <a href="painel-prescricao.html">📋 Prescrição</a>
+        <a href="painel-blog.html">✍️ Blog</a>
+        <a href="painel-mensagens.html">📱 WhatsApp</a>
+        <a href="#" data-secao="dominio" onclick="mostrarSecao('dominio')">🌐 Domínio/Email</a>
         <a href="manual.html">📖 Manual</a>
         <a href="#" onclick="logout()">🚪 Sair</a>
       </nav>
     </div>
     <div class="painel-conteudo" id="conteudo">
       <!-- DASHBOARD -->
-      <div id="secao-dashboard">
+      <div id="secao-dashboard" class="secao-painel ativo">
         <h2>Dashboard</h2>
         <p style="color:var(--texto-medio);margin-bottom:20px;">Bem-vindo(a), <span id="nome-profissional">Profissional</span>!</p>
         
@@ -58,6 +71,26 @@
           <div class="dash-card"><h3>Consultas Hoje</h3><div class="valor" id="dash-hoje">-</div></div>
           <div class="dash-card"><h3>Pacientes Ativos</h3><div class="valor" id="dash-pacientes">-</div></div>
           <div class="dash-card"><h3>Faturamento Mês</h3><div class="valor" id="dash-fat">-</div></div>
+        </div>
+
+        <div class="modulos-grid" aria-label="Acessos rápidos do profissional">
+          <a href="#" class="modulo-card" onclick="mostrarSecao('agenda')"><span class="icone">📅</span><strong>Agenda</strong><span>Ver consultas, horários e abrir teleconsulta no painel.</span></a>
+          <a href="#" class="modulo-card" onclick="mostrarSecao('pacientes')"><span class="icone">👥</span><strong>Pacientes</strong><span>Acessar prontuários, histórico e acompanhamento.</span></a>
+          <a href="painel-prescricao.html" class="modulo-card"><span class="icone">📋</span><strong>Prescrição</strong><span>Emitir prescrições, recomendações e documentos clínicos.</span></a>
+          <a href="#" class="modulo-card" onclick="mostrarSecao('loja')"><span class="icone">🛒</span><strong>Minha Loja</strong><span>Configurar produtos, loja virtual e vendas presenciais.</span></a>
+          <a href="painel-blog.html" class="modulo-card"><span class="icone">✍️</span><strong>Blog</strong><span>Publicar artigos com SEO e referências terapêuticas.</span></a>
+          <a href="painel-mensagens.html" class="modulo-card"><span class="icone">📱</span><strong>WhatsApp</strong><span>Mensagens automáticas e testes pela Evolution API.</span></a>
+          <a href="painel-white-label.html" class="modulo-card"><span class="icone">🏷️</span><strong>White Label</strong><span>Personalizar comunicação e identidade da clínica.</span></a>
+          <a href="painel-anamnese-config.html" class="modulo-card"><span class="icone">🧾</span><strong>Anamnese</strong><span>Configurar formulários e campos clínicos do atendimento.</span></a>
+          <a href="painel-gateways.html" class="modulo-card"><span class="icone">💳</span><strong>Pagamentos</strong><span>Configurar gateways, cobrança e automações financeiras.</span></a>
+          <a href="painel-financeiro.html" class="modulo-card"><span class="icone">💰</span><strong>Financeiro</strong><span>Acompanhar cobranças, caixa e faturamento.</span></a>
+          <a href="painel-chatbot.html" class="modulo-card"><span class="icone">🤖</span><strong>Chatbot</strong><span>Suporte inteligente para dúvidas e operação diária.</span></a>
+          <a href="painel-revenda.html" class="modulo-card"><span class="icone">🔐</span><strong>Certificado A1</strong><span>Acessar revenda e recursos de assinatura digital.</span></a>
+          <a href="painel-recepcao.html" class="modulo-card"><span class="icone">🧑‍💼</span><strong>Recepção</strong><span>Operar check-in, caixa e loja física da clínica.</span></a>
+          <a href="#" class="modulo-card" onclick="mostrarSecao('dominio')"><span class="icone">🌐</span><strong>Domínio/Email</strong><span>Orientações para domínio profissional e email corporativo.</span></a>
+          <a href="manual.html#especialidades" class="modulo-card"><span class="icone">🌿</span><strong>Bibliotecas</strong><span>Consultar especialidades, protocolos e fontes terapêuticas.</span></a>
+          <a href="checkout.html?plano=pro" class="modulo-card"><span class="icone">🚀</span><strong>Planos</strong><span>Ver upgrade, limites, teleconsultas e recursos inclusos.</span></a>
+          <a href="manual.html" class="modulo-card"><span class="icone">📖</span><strong>Manual</strong><span>Guia completo de uso da plataforma.</span></a>
         </div>
 
         <div class="lista-agenda">
@@ -83,12 +116,65 @@
             allowfullscreen></iframe>
         </div>
       </div>
+
+      <div id="secao-agenda" class="secao-painel">
+        <h2>Agenda</h2>
+        <div class="painel-card">
+          <p style="color:var(--texto-suave);">Gerencie consultas, acompanhe próximos horários e inicie teleconsultas diretamente no painel.</p>
+          <div class="acoes-linha">
+            <a href="agendamento.html" class="acao-botao">Abrir agenda pública</a>
+            <a href="#" class="acao-botao secundario" onclick="mostrarSecao('dashboard')">Ver próximos agendamentos</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="secao-pacientes" class="secao-painel">
+        <h2>Pacientes</h2>
+        <div class="painel-card">
+          <p style="color:var(--texto-suave);">Acesse pacientes atendidos, prontuários e histórico clínico. A listagem completa será conectada ao módulo de prontuário.</p>
+          <div class="acoes-linha">
+            <a href="painel-anamnese-config.html" class="acao-botao">Configurar anamnese</a>
+            <a href="painel-prescricao.html" class="acao-botao secundario">Nova prescrição</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="secao-loja" class="secao-painel">
+        <h2>Minha Loja</h2>
+        <div class="painel-card">
+          <p style="color:var(--texto-suave);">Configure produtos, estoque, vendas presenciais e loja virtual do profissional. O acesso do paciente poderá aparecer no card do profissional e no painel do paciente.</p>
+          <div class="acoes-linha">
+            <a href="#" class="acao-botao" onclick="alert('Cadastro completo de produtos será aberto neste módulo da loja.')">Cadastrar produto</a>
+            <a href="painel-recepcao.html" class="acao-botao secundario">Loja física / recepção</a>
+          </div>
+        </div>
+      </div>
+
+      <div id="secao-dominio" class="secao-painel">
+        <h2>Domínio e Email</h2>
+        <div class="painel-card">
+          <p style="color:var(--texto-suave);">Organize domínio próprio, email profissional e recursos white label para sua clínica ou guarda-chuva institucional.</p>
+          <div class="acoes-linha">
+            <a href="painel-white-label.html" class="acao-botao">Configurar white label</a>
+            <a href="checkout.html?plano=premium" class="acao-botao secundario">Ver plano Premium</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="js/config.js"></script>
   <script>
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function mostrarSecao(secao) {
+      document.querySelectorAll('.secao-painel').forEach(function(el) {
+        el.classList.toggle('ativo', el.id === 'secao-' + secao);
+      });
+      document.querySelectorAll('.painel-sidebar nav a[data-secao]').forEach(function(link) {
+        link.classList.toggle('ativo', link.dataset.secao === secao);
+      });
+    }
     
     var token = localStorage.getItem('integra_token');
     if (!token) { window.location.href = 'login.html'; }

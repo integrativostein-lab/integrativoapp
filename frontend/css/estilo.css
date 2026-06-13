@@ -350,15 +350,15 @@ h2 {
 
 .ods-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .ods-item {
   display: block;
   background: var(--branco);
   border-radius: 14px;
-  padding: 8px;
+  padding: 6px;
   border: 1px solid #E2E8F0;
   transition: var(--transicao);
 }
