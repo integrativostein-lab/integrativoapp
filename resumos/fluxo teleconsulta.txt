@@ -1,20 +1,16 @@
-[Profissional inicia teleconsulta]
-        │
-        ├── Sistema gera link único da sala (WebRTC)
-        ├── Paciente recebe link por WhatsApp/Email
-        │
-        ├── [Paciente entra na sala]
-        │       │
-        │       ├── Presença detectada automaticamente
-        │       └── Status: "Em andamento"
-        │
-        ├── [Durante a consulta]
-        │       ├── Chat em tempo real
-        │       ├── Acesso ao prontuário
-        │       ├── Prescrição durante a consulta
-        │       └── Gravação (se autorizada pelo paciente)
-        │
-        └── [Fim da consulta]
-                ├── Status: "Realizado"
-                ├── Gravação disponível por 30 dias (se autorizada)
-                └── NF disponível para emissão
+Resumo historico substituido pelo runbook verificado:
+
+arquitecture today/teleconsulta-livekit.md
+
+Estado implementado em 2026-06:
+- backend gera token LiveKit em POST /api/reunioes/livekit-token;
+- painel profissional abre reuniao.html?sala=teleconsulta-{id}&embed=1;
+- navegador publica audio, video e compartilhamento de tela pelo SDK LiveKit.
+
+Ainda nao implementado no backend:
+- envio automatico de link por WhatsApp/Email;
+- acesso ao prontuario dentro da sala;
+- prescricao durante a consulta;
+- gravacao real e download;
+- retencao/expiracao automatica de gravacoes;
+- mudanca automatica do status do agendamento.
