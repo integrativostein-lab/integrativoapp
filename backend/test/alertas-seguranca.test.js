@@ -136,10 +136,13 @@ test('verificar does not imply clinical clearance when no rule matches', () => {
     pratica: 'respiracao leve',
     condicoes: ['sem queixas relevantes']
   });
+  const mensagemSemAcentos = resultado.mensagem_geral
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
   assert.equal(resultado.total_alertas, 0);
   assert.equal(resultado.maior_gravidade, 'sem_alerta_critico');
-  assert.match(resultado.mensagem_geral, /nao significa liberacao clinica automatica/i);
+  assert.match(mensagemSemAcentos, /nao significa liberacao clinica automatica/i);
 });
 
 test('/api/alertas-seguranca/regras rejects anonymous and non-admin access', async () => {
