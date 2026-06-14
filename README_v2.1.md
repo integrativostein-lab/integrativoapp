@@ -83,7 +83,7 @@ npm install
 
 ### 4. Configurar .env
 ```bash
-cp .env.example .env
+cp ../.env.example .env
 # Editar .env com suas credenciais
 ```
 
@@ -91,6 +91,8 @@ cp .env.example .env
 ```bash
 npm run dev
 ```
+
+O frontend local resolve a API para `http://localhost:3001/api`; mantenha `PORT=3001` no `.env` ou defina `window.INTEGRATIVO_API_URL` antes de carregar `frontend/js/config.js`.
 
 ### 6. Iniciar Frontend
 ```bash
@@ -100,7 +102,7 @@ python3 -m http.server 8000
 
 ### 7. Acessar
 - **Frontend:** http://localhost:8000
-- **Backend:** http://localhost:3000
+- **Backend local para o frontend:** http://localhost:3001
 - **Supabase Studio:** http://localhost:54323
 
 ---
@@ -113,6 +115,8 @@ saude-integrativa-v2.1-final/
 │   ├── rotas/
 │   │   ├── fhir.js                 # ✨ NOVO: FHIR Brasil
 │   │   ├── validacao-conselhos.js  # ✨ NOVO: Validação de Conselhos
+│   │   ├── reunioes.js             # ✨ NOVO: Tokens LiveKit para teleconsulta
+│   │   ├── arquivo-profissional.js # ✨ NOVO: Snapshot central do profissional
 │   │   └── ... (outras rotas)
 │   ├── server.js                   # ✨ ATUALIZADO: Com FHIR e Validação
 │   ├── package.json                # ✨ ATUALIZADO: node-cron, bull
@@ -134,6 +138,7 @@ saude-integrativa-v2.1-final/
 ├── migracao-v2.1.sql               # ✨ NOVO: Migrações do banco
 ├── .env.example                    # ✨ NOVO: Variáveis de ambiente
 ├── SETUP_LOCAL_SUPABASE.md         # ✨ NOVO: Guia de setup local
+├── arquitecture today/             # Runbooks de arquitetura e operação
 ├── README_v2.1.md                  # Este arquivo
 └── ... (outros arquivos)
 ```
@@ -177,6 +182,21 @@ POST   /api/financeiro/processar-pagamento  # Processar pagamento
 GET    /api/financeiro/assinaturas/:user_id # Listar assinaturas
 POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 ```
+
+### Teleconsulta LiveKit
+```
+POST   /api/reunioes/livekit-token          # Gerar token temporario de sala LiveKit
+```
+
+Runbook: [`arquitecture today/teleconsulta-livekit.md`](arquitecture%20today/teleconsulta-livekit.md)
+
+### Arquivo Profissional Central
+```
+POST   /api/arquivo-profissional/snapshot   # Criar snapshot assistencial do profissional
+GET    /api/arquivo-profissional/status     # Consultar ultimo snapshot do profissional
+```
+
+Runbook: [`arquitecture today/arquivo-profissional-central.md`](arquitecture%20today/arquivo-profissional-central.md)
 
 ---
 
@@ -238,6 +258,10 @@ Ver `.env.example` para lista completa. Principais:
 # Banco de Dados
 DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
 
+# Servidor local
+PORT=3001
+CORS_ORIGINS=http://localhost:8000,http://localhost:3000
+
 # Autenticação
 JWT_SECRET=sua_chave_secreta_super_segura
 
@@ -259,13 +283,13 @@ ASAAS_API_KEY=sua_chave
 
 ### Teste FHIR
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
+curl -X GET http://localhost:3001/api/fhir/protocolos-fiocruz \
   -H "Authorization: Bearer seu_token_jwt"
 ```
 
 ### Teste de Validação
 ```bash
-curl -X POST http://localhost:3000/api/validacao/validar-registro \
+curl -X POST http://localhost:3001/api/validacao/validar-registro \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer seu_token_jwt" \
   -d '{

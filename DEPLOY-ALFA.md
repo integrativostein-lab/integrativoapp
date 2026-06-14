@@ -10,12 +10,6 @@ Este projeto esta preparado para um ambiente alfa separado da producao.
 
 O frontend detecta automaticamente dominios com `alfa` ou `alpha` e usa o backend espelho `https://integrativoappespelho.onrender.com/api`.
 
-Quando o backend alfa for criado, altere `frontend/js/config.js` para apontar dominios alfa para:
-
-```text
-https://integrativoappespelho.onrender.com/api
-```
-
 ## Vercel
 
 1. Crie um novo projeto chamado `integrativoapp-alfa`.
@@ -26,19 +20,25 @@ https://integrativoappespelho.onrender.com/api
 
 ## Render
 
-Por enquanto, para evitar custo extra no Render, o `render.yaml` publica apenas o backend principal:
+O backend alfa padrao e o servico espelho:
+
+```text
+https://integrativoappespelho.onrender.com
+```
+
+O backend principal deve ser usado apenas como contingencia temporaria:
 
 ```text
 https://integra-backend-ynrd.onrender.com
 ```
 
-O frontend alfa continua usando temporariamente essa API. Para isso, mantenha a URL do frontend alfa em `CORS_ORIGINS` do backend principal:
+Mantenha a URL do frontend alfa em `CORS_ORIGINS` do servico que estiver atendendo o alfa:
 
 ```text
 https://integrativoapp-alfa.vercel.app
 ```
 
-Se no futuro for necessario um backend alfa separado, use o servico `integrativoappespelho` como opcao manual e preencha as variaveis sensiveis:
+No servico `integrativoappespelho`, preencha as variaveis sensiveis:
 
 - `DATABASE_URL`: banco Postgres exclusivo para alfa.
 - `JWT_SECRET`: chave forte exclusiva para alfa.
@@ -108,6 +108,19 @@ O frontend de teste usa:
 ```
 
 As chaves reais do LiveKit devem ficar somente em variaveis de ambiente do Render e nos arquivos locais `.env` / `.env.teste`, que nao devem ir para o GitHub.
+
+Detalhes de arquitetura, validacao e limites atuais: `arquitecture today/teleconsulta-livekit.md`.
+
+## Arquivo profissional central
+
+Paineis profissionais carregam `frontend/js/arquivo-profissional.js` e exigem snapshot pela rota:
+
+```text
+POST /api/arquivo-profissional/snapshot
+GET  /api/arquivo-profissional/status
+```
+
+Detalhes de pacote, tabela e pendencias de retencao/exportacao: `arquitecture today/arquivo-profissional-central.md`.
 
 ## Acesso dos testadores
 
