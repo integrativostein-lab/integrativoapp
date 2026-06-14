@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
-const { estornarPagamento } = require('../config/stripe');
+const { estornarPagamento, verificarPagamentoAssinatura } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
@@ -88,6 +88,19 @@ async function criarValidacaoAssinatura({ assinaturaId, usuario }) {
     [assinaturaId, usuario.id, hashCodigo(codigo), JSON.stringify(canais)]
   );
   return canais;
+}
+
+async function confirmarPagamentoObrigatorio(assinatura, usuarioId) {
+  const valorAssinatura = Number(assinatura.valor) || 0;
+  if (valorAssinatura <= 0) {
+    return { valido: true };
+  }
+
+  return verificarPagamentoAssinatura({
+    paymentIntentId: assinatura.gateway_id,
+    valorEsperado: valorAssinatura,
+    usuarioId
+  });
 }
 
 function moeda(valor) {
@@ -289,6 +302,27 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
       : calcularParcelamento(valor, parcelas || 1, forma_pagamento, plano !== 'guardioes_floresta');
 
+    if (Number(calc.valorTotal) > 0 && !gateway_id) {
+      return res.status(402).json({
+        erro: 'Pagamento confirmado pelo gateway é obrigatório para ativar planos pagos.',
+        pagamento_confirmado: false
+      });
+    }
+
+    if (Number(calc.valorTotal) > 0) {
+      const pagamento = await verificarPagamentoAssinatura({
+        paymentIntentId: gateway_id,
+        valorEsperado: calc.valorTotal,
+        usuarioId: req.usuario.id
+      });
+      if (!pagamento.valido) {
+        return res.status(402).json({
+          erro: pagamento.motivo || 'Pagamento da assinatura não confirmado pelo gateway.',
+          pagamento_confirmado: false
+        });
+      }
+    }
+
     const dataExpiracao = new Date();
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
@@ -354,6 +388,14 @@ router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
     if (validacao.codigo_hash !== hashCodigo(codigo)) {
       await db.query('UPDATE assinatura_validacoes SET tentativas = tentativas + 1 WHERE id = $1', [validacao.id]);
       return res.status(400).json({ erro: 'Código inválido' });
+    }
+
+    const pagamento = await confirmarPagamentoObrigatorio(ass, req.usuario.id);
+    if (!pagamento.valido) {
+      return res.status(402).json({
+        erro: pagamento.motivo || 'Pagamento da assinatura não confirmado pelo gateway.',
+        pagamento_confirmado: false
+      });
     }
 
     await db.query('UPDATE assinatura_validacoes SET validado_em = NOW() WHERE id = $1', [validacao.id]);
