@@ -154,10 +154,25 @@ saude-integrativa-v2.1-final/
 
 ## 📊 Endpoints Principais
 
+Docs de engenharia:
+
+- `arquitecture today/teleconsulta-livekit.md` — fluxo LiveKit, token, alfa e limites atuais.
+- `arquitecture today/fhir-brasil-r4.md` — mapeadores, exportações, cache científico e endpoints.
+- `arquitecture today/validacao-conselhos.md` — semântica best-effort, APIs externas opcionais e persistência.
+- `arquitecture today/alertas-seguranca-deterministicos.md` — motor determinístico de alertas clínicos.
+
 ### FHIR Brasil
 ```
+GET    /api/fhir/metadata              # CapabilityStatement local
 POST   /api/fhir/export-patient          # Exportar paciente em FHIR
+POST   /api/fhir/export-practitioner    # Exportar profissional em FHIR
+POST   /api/fhir/export-organization    # Exportar organização em FHIR
 POST   /api/fhir/export-appointment      # Exportar agendamento em FHIR
+POST   /api/fhir/export-encounter        # Exportar atendimento em FHIR
+POST   /api/fhir/export-medication-request # Exportar prescrição em FHIR
+POST   /api/fhir/export-bundle           # Exportar bundle de atendimento
+POST   /api/fhir/import-patient          # Mapear Patient FHIR para dados internos
+GET    /api/fhir/exports/:tipo/:id       # Recuperar última exportação
 GET    /api/fhir/protocolos-fiocruz      # Buscar protocolos Fiocruz
 GET    /api/fhir/pesquisas-redepics      # Buscar pesquisas RedePICS
 GET    /api/fhir/artigos-bireme          # Buscar artigos BIREME
@@ -166,9 +181,16 @@ POST   /api/fhir/comparar-protocolos     # Comparar protocolos
 
 ### Validação de Conselhos
 ```
-POST   /api/validacao/validar-registro   # Validar registro profissional
+GET    /api/validacao/conselhos          # Listar conselhos suportados
 GET    /api/validacao/conselho/:esp      # Obter conselho de especialidade
+POST   /api/validacao/verificar          # Verificação pública no cadastro
+POST   /api/validacao/validar-registro   # Validar e persistir registro profissional
 GET    /api/validacao/status/:prof_id    # Status de validação
+```
+
+### Teleconsulta LiveKit
+```
+POST   /api/reunioes/livekit-token        # Emitir token LiveKit para sala autenticada
 ```
 
 ### Assinaturas e Pagamentos
@@ -259,7 +281,7 @@ ASAAS_API_KEY=sua_chave
 
 ### Teste FHIR
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
+curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz?especialidade=fitoterapia \
   -H "Authorization: Bearer seu_token_jwt"
 ```
 
@@ -270,7 +292,7 @@ curl -X POST http://localhost:3000/api/validacao/validar-registro \
   -H "Authorization: Bearer seu_token_jwt" \
   -d '{
     "especialidade": "massoterapia",
-    "numeroRegistro": "123456",
+    "numero": "123456",
     "conselho": "ABRATH"
   }'
 ```

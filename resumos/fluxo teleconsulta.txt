@@ -1,20 +1,33 @@
-[Profissional inicia teleconsulta]
+Fluxo atual implementado (LiveKit)
+==================================
+
+[Usuario autenticado abre reuniao.html?sala=...]
         │
-        ├── Sistema gera link único da sala (WebRTC)
-        ├── Paciente recebe link por WhatsApp/Email
+        ├── Frontend le token da aplicacao em localStorage.integra_token
+        ├── Frontend chama POST /api/reunioes/livekit-token
+        │       └── Backend valida JWT e gera token LiveKit com TTL de 2h
         │
-        ├── [Paciente entra na sala]
-        │       │
-        │       ├── Presença detectada automaticamente
-        │       └── Status: "Em andamento"
+        ├── [Usuario entra na sala]
+        │       ├── LiveKit conecta na sala normalizada
+        │       ├── Audio e video locais sao publicados
+        │       └── Participantes remotos sao renderizados quando assinam tracks
         │
-        ├── [Durante a consulta]
-        │       ├── Chat em tempo real
-        │       ├── Acesso ao prontuário
-        │       ├── Prescrição durante a consulta
-        │       └── Gravação (se autorizada pelo paciente)
-        │
-        └── [Fim da consulta]
-                ├── Status: "Realizado"
-                ├── Gravação disponível por 30 dias (se autorizada)
-                └── NF disponível para emissão
+        └── [Durante a consulta]
+                ├── Microfone liga/desliga
+                ├── Camera liga/desliga
+                ├── Compartilhamento de tela
+                └── Saida encerra a conexao local
+
+Fluxos planejados / ainda sem backend dedicado em rotas/reunioes.js
+===================================================================
+
+- Geracao e envio automatico de link por WhatsApp/Email.
+- Vinculo obrigatorio entre sala e agendamento.
+- Deteccao de presenca com status "Em andamento".
+- Atualizacao de status para "Realizado" ao final.
+- Chat persistido em tempo real.
+- Acesso direto a prontuario/prescricao dentro da sala.
+- Gravacao autorizada, retencao e download.
+- NF disponivel para emissao ao fim da consulta.
+
+Detalhes tecnicos: arquitecture today/teleconsulta-livekit.md
