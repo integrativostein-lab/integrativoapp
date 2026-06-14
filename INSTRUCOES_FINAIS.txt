@@ -19,8 +19,10 @@
 
 4. TELECONSULTA E TELEAULA
 -------------------------------------
-- O sistema usa Plug-n-Meet.
-- Configure a URL da sua CPU dedicada no arquivo backend/config-infra.js ou via variáveis de ambiente.
+- O sistema usa LiveKit para salas WebRTC.
+- Configure LIVEKIT_URL, LIVEKIT_API_KEY e LIVEKIT_API_SECRET no backend.
+- A rota POST /api/reunioes/livekit-token gera tokens temporários para usuários autenticados.
+- Detalhes técnicos: arquitecture today/teleconsulta-livekit.md
 
 5. COMANDO DE VOZ (STT)
 -------------------------------------

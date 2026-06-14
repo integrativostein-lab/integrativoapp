@@ -24,6 +24,12 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 
 ## 3. Teleconsulta LiveKit
 
+- Confirmar que o backend alfa possui `LIVEKIT_URL`, `LIVEKIT_API_KEY` e `LIVEKIT_API_SECRET`.
+- Confirmar que o frontend alfa foi aberto depois do login e possui token `integra_token`.
+- Confirmar no DevTools que `POST https://integrativoappespelho.onrender.com/api/reunioes/livekit-token` retorna `200`.
+- Se retornar `401`, refazer login no frontend alfa e confirmar `JWT_SECRET` consistente no backend.
+- Se retornar `500 LiveKit não configurado no ambiente.`, revisar variaveis LiveKit no Render.
+- Se houver erro de CORS, confirmar `CORS_ORIGINS=https://integrativoapp-alfa.vercel.app`.
 - Abrir `/reuniao.html?sala=teleconsulta-alfa` como profissional.
 - Permitir camera e microfone no navegador.
 - Abrir a mesma sala em outro navegador/dispositivo como paciente.

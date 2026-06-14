@@ -26,19 +26,21 @@ https://integrativoappespelho.onrender.com/api
 
 ## Render
 
-Por enquanto, para evitar custo extra no Render, o `render.yaml` publica apenas o backend principal:
+O `render.yaml` versionado publica apenas o backend principal:
 
 ```text
 https://integra-backend-ynrd.onrender.com
 ```
 
-O frontend alfa continua usando temporariamente essa API. Para isso, mantenha a URL do frontend alfa em `CORS_ORIGINS` do backend principal:
+O backend alfa separado deve ser configurado manualmente no Render como `integrativoappespelho`. O frontend alfa ja detecta dominios com `alfa` ou `alpha` em `frontend/js/config.js` e chama:
 
 ```text
-https://integrativoapp-alfa.vercel.app
+https://integrativoappespelho.onrender.com/api
 ```
 
-Se no futuro for necessario um backend alfa separado, use o servico `integrativoappespelho` como opcao manual e preencha as variaveis sensiveis:
+Use o backend principal `integra-backend-ynrd` apenas como contingencia temporaria. Nesse cenario, inclua `https://integrativoapp-alfa.vercel.app` em `CORS_ORIGINS` do backend principal e ajuste `frontend/js/config.js` somente enquanto durar a contingencia.
+
+Variaveis sensiveis do backend alfa:
 
 - `DATABASE_URL`: banco Postgres exclusivo para alfa.
 - `JWT_SECRET`: chave forte exclusiva para alfa.
@@ -81,11 +83,12 @@ Depois do deploy, valide:
 ```text
 https://integrativoappespelho.onrender.com/
 https://integrativoappespelho.onrender.com/api/alertas-seguranca?termo=ginkgo%20varfarina
+https://integrativoappespelho.onrender.com/api/fhir/metadata
 ```
 
 O segundo endpoint deve retornar `usa_ia:false` e uma regra como `FITOTERAPIA_ANTICOAGULANTE_001`.
 
-Se o servico `integrativoappespelho` ficar indisponivel, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto. Nesse cenario, inclua tambem a URL do frontend alfa em `CORS_ORIGINS` do `integra-backend-ynrd` e ajuste `frontend/js/config.js` enquanto durar a contingencia.
+O endpoint `/api/fhir/metadata` deve retornar um `CapabilityStatement` sem exigir token. Rotas de exportacao FHIR, validacao persistida e LiveKit exigem JWT.
 
 ## Banco alfa
 
@@ -108,6 +111,30 @@ O frontend de teste usa:
 ```
 
 As chaves reais do LiveKit devem ficar somente em variaveis de ambiente do Render e nos arquivos locais `.env` / `.env.teste`, que nao devem ir para o GitHub.
+
+Detalhes de contrato, grants, TTL, falhas esperadas e limites atuais ficam em:
+
+```text
+arquitecture today/teleconsulta-livekit.md
+```
+
+## FHIR e validacao de conselhos
+
+Documentacao tecnica:
+
+```text
+arquitecture today/fhir-brasil-r4.md
+arquitecture today/validacao-conselhos.md
+```
+
+No alfa, mantenha:
+
+```env
+FHIR_BASE_URL=https://integrativoappespelho.onrender.com/api/fhir
+RNDS_ENABLED=false
+```
+
+`RNDS_ENABLED=false` evita confundir exportacao local FHIR com envio RNDS. O codigo atual gera recursos FHIR e cache cientifico; nao ha rota de submissao RNDS implementada.
 
 ## Acesso dos testadores
 

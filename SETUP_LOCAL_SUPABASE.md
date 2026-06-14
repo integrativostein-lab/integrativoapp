@@ -79,23 +79,69 @@ Acesse em `http://localhost:8000`
 
 ## 8. Testar as Rotas
 
-### Teste FHIR
+### Testes FHIR
+
+Metadata publico:
+
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
+curl http://localhost:3000/api/fhir/metadata
+```
+
+Exportacao autenticada:
+
+```bash
+curl -X POST http://localhost:3000/api/fhir/export-patient \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer seu_token_jwt" \
+  -d '{"pacienteId": 1}'
+```
+
+Consulta cientifica autenticada:
+
+```bash
+curl http://localhost:3000/api/fhir/protocolos-fiocruz?especialidade=fitoterapia \
   -H "Authorization: Bearer seu_token_jwt"
 ```
 
-### Teste de Validação
+### Testes de Validação
+
+Verificacao publica usada pelo cadastro:
+
+```bash
+curl -X POST http://localhost:3000/api/validacao/verificar \
+  -H "Content-Type: application/json" \
+  -d '{
+    "conselho": "ABRATH",
+    "numero": "123456",
+    "nome": "Profissional Teste"
+  }'
+```
+
+Validacao autenticada e persistida:
+
 ```bash
 curl -X POST http://localhost:3000/api/validacao/validar-registro \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer seu_token_jwt" \
   -d '{
     "especialidade": "massoterapia",
-    "numeroRegistro": "123456",
+    "numero": "123456",
     "conselho": "ABRATH"
   }'
 ```
+
+### Teste LiveKit
+
+Depois de configurar `LIVEKIT_URL`, `LIVEKIT_API_KEY` e `LIVEKIT_API_SECRET` no `.env`:
+
+```bash
+curl -X POST http://localhost:3000/api/reunioes/livekit-token \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer seu_token_jwt" \
+  -d '{"sala":"teleconsulta-local","nome":"Profissional Teste"}'
+```
+
+Se estiver usando o script `npm run dev:teste`, configure `.env.teste` com `PORT=3001`, pois `frontend/js/config.js` envia localhost para `http://localhost:3001/api`.
 
 ## 9. Acessar Supabase Studio (GUI)
 
