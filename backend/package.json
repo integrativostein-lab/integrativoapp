@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "test": "node --test tests/*.test.js",
     "dev": "nodemon server.js",
     "start:teste": "node -r dotenv/config server.js dotenv_config_path=.env.teste",
     "dev:teste": "nodemon -r dotenv/config server.js dotenv_config_path=.env.teste",

@@ -44,7 +44,7 @@ async function estornarPagamento({ paymentIntentId, valor, motivo = 'requested_b
         };
     }
 
-    if (modoTeste || paymentIntentId.startsWith('test_')) {
+    if (modoTeste) {
         console.log(`[TESTE] Estorno simulado: ${paymentIntentId} - R$ ${valor}`);
         return {
             id: `test_refund_${Date.now()}`,
@@ -69,6 +69,85 @@ async function estornarPagamento({ paymentIntentId, valor, motivo = 'requested_b
     return refund;
 }
 
+async function verificarPagamentoAssinatura({ paymentIntentId, valorEsperado, usuarioId }) {
+    if (!paymentIntentId) {
+        return {
+            valido: false,
+            motivo: 'Pagamento sem identificador do gateway.'
+        };
+    }
+
+    if (modoTeste) {
+        return {
+            valido: paymentIntentId.startsWith('test_'),
+            motivo: paymentIntentId.startsWith('test_') ? null : 'Identificador de pagamento de teste inválido.',
+            simulated: paymentIntentId.startsWith('test_')
+        };
+    }
+
+    if (paymentIntentId.startsWith('test_')) {
+        return {
+            valido: false,
+            motivo: 'Pagamentos simulados só são aceitos em modo de teste.'
+        };
+    }
+
+    if (!stripe) {
+        return {
+            valido: false,
+            motivo: 'Stripe não configurado para confirmar pagamentos.'
+        };
+    }
+
+    let paymentIntent;
+    try {
+        paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    } catch (err) {
+        return {
+            valido: false,
+            motivo: 'Pagamento não encontrado ou indisponível no gateway.'
+        };
+    }
+
+    const valorCentavos = Math.round((Number(valorEsperado) || 0) * 100);
+    const metadata = paymentIntent.metadata || {};
+    const usuarioPagamento = metadata.usuario_id || metadata.usuarioId || metadata.user_id || metadata.userId;
+    const valorRecebido = paymentIntent.amount_received || 0;
+
+    if (paymentIntent.status !== 'succeeded') {
+        return {
+            valido: false,
+            motivo: `Pagamento com status ${paymentIntent.status}.`
+        };
+    }
+
+    if (paymentIntent.currency !== 'brl') {
+        return {
+            valido: false,
+            motivo: 'Pagamento em moeda inválida.'
+        };
+    }
+
+    if (valorRecebido < valorCentavos) {
+        return {
+            valido: false,
+            motivo: 'Valor recebido pelo gateway é menor que o valor da assinatura.'
+        };
+    }
+
+    if (String(usuarioPagamento || '') !== String(usuarioId)) {
+        return {
+            valido: false,
+            motivo: 'Pagamento não pertence ao usuário autenticado.'
+        };
+    }
+
+    return {
+        valido: true,
+        paymentIntent
+    };
+}
+
 // Função para simular NF sem certificado
 async function emitirNFSimulada(dados) {
     console.log('[TESTE] Emissão de NF simulada (sem certificado)');
@@ -89,5 +168,6 @@ module.exports = {
     modoTeste,
     criarPagamentoTeste,
     estornarPagamento,
+    verificarPagamentoAssinatura,
     emitirNFSimulada
 };
