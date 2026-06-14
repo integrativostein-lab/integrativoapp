@@ -89,7 +89,6 @@ cp ../.env.example .env
 
 ### 5. Iniciar Backend
 ```bash
-cd backend
 npm run dev
 ```
 
