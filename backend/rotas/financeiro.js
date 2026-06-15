@@ -5,6 +5,7 @@ const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
 const { estornarPagamento } = require('../config/stripe');
+const { verificarPagamentoAssinatura } = require('../servicos/assinatura-pagamento');
 const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
@@ -289,6 +290,27 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
       : calcularParcelamento(valor, parcelas || 1, forma_pagamento, plano !== 'guardioes_floresta');
 
+    const pagamentoAssinatura = await verificarPagamentoAssinatura({
+      gatewayId: gateway_id,
+      valorEsperado: calc.valorTotal
+    });
+    if (!pagamentoAssinatura.aprovado) {
+      return res.status(402).json({
+        erro: pagamentoAssinatura.erro,
+        status_pagamento: pagamentoAssinatura.status
+      });
+    }
+
+    if (calc.valorTotal > 0) {
+      const pagamentoUsado = await db.query(
+        "SELECT id FROM assinaturas WHERE gateway_id = $1 AND status IN ('pendente_validacao', 'ativa') LIMIT 1",
+        [gateway_id]
+      );
+      if (pagamentoUsado.rows.length > 0) {
+        return res.status(409).json({ erro: 'Pagamento já vinculado a outra assinatura.' });
+      }
+    }
+
     const dataExpiracao = new Date();
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
@@ -296,7 +318,10 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     const gatewayResposta = {
       cartao_final4: cartao_final4 || null,
       cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
-      observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Pagamento registrado sem identificador de gateway; estorno automático depende da administradora configurada.'
+      pagamento: pagamentoAssinatura.gateway_resposta,
+      observacao: calc.valorTotal > 0
+        ? 'Pagamento confirmado no gateway antes da validação da assinatura.'
+        : 'Assinatura sem cobrança no gateway.'
     };
 
     const r = await db.query(
@@ -338,6 +363,17 @@ router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
     const ass = a.rows[0];
     if (ass.status !== 'pendente_validacao') {
       return res.status(400).json({ erro: 'Assinatura não está pendente de validação' });
+    }
+
+    const pagamentoAssinatura = await verificarPagamentoAssinatura({
+      gatewayId: ass.gateway_id,
+      valorEsperado: ass.valor
+    });
+    if (!pagamentoAssinatura.aprovado) {
+      return res.status(402).json({
+        erro: pagamentoAssinatura.erro,
+        status_pagamento: pagamentoAssinatura.status
+      });
     }
 
     const v = await db.query(
