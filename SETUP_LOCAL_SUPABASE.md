@@ -29,11 +29,7 @@ Isso criará um banco de dados PostgreSQL local em Docker.
 psql postgresql://postgres:postgres@localhost:54322/postgres < migracao-v2.1.sql
 ```
 
-Ou via Supabase CLI:
-
-```bash
-supabase db push
-```
+Este repositório mantém a migração principal em `migracao-v2.1.sql`. Se você criar uma pasta `supabase/migrations/` no futuro, documente a ordem das novas migrações aqui antes de trocar para `supabase db push`.
 
 ## 4. Instalar Dependências do Backend
 
@@ -56,7 +52,11 @@ Para desenvolvimento local com Supabase:
 DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
 JWT_SECRET=seu_segredo_super_seguro
 NODE_ENV=development
+PORT=3001
+CORS_ORIGINS=http://localhost:8000
 ```
+
+Use uma `JWT_SECRET` com pelo menos 32 caracteres em qualquer ambiente compartilhado. Sem `PORT`, o backend sobe em `3000`, mas o frontend local (`frontend/js/config.js`) chama `http://localhost:3001/api`.
 
 ## 6. Iniciar o Backend
 
@@ -64,7 +64,37 @@ NODE_ENV=development
 npm run dev
 ```
 
-O servidor estará disponível em `http://localhost:3000`
+O servidor estará disponível em `http://localhost:3001` quando `PORT=3001` estiver no `.env`.
+
+### Modo alfa/teste local
+
+Para reproduzir o ambiente alfa, crie `backend/.env.teste` com variáveis isoladas:
+
+```env
+NODE_ENV=test
+TEST_MODE=true
+PORT=3001
+DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
+TESTE_DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
+JWT_SECRET=uma_chave_de_teste_com_pelo_menos_32_caracteres
+CORS_ORIGINS=http://localhost:8000
+EVOLUTION_SIMULATE=true
+RNDS_ENABLED=false
+```
+
+Inicie com:
+
+```bash
+cd backend
+npm run dev:teste
+```
+
+Com `TEST_MODE=true`, o login aceita as contas demo abaixo sem consultar a tabela de usuários, desde que a senha seja `demo123`:
+
+- `profissional@demo.com`
+- `paciente@demo.com`
+
+O backend ainda precisa de `DATABASE_URL` para inicializar o pool Postgres. Se `TESTE_DATABASE_URL` estiver definido, ele substitui `DATABASE_URL` enquanto o modo teste estiver ativo.
 
 ## 7. Iniciar o Frontend
 
@@ -79,23 +109,59 @@ Acesse em `http://localhost:8000`
 
 ## 8. Testar as Rotas
 
+### Teste de saúde do backend
+```bash
+curl http://localhost:3001/
+```
+
+### Login demo em modo teste
+```bash
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"profissional@demo.com","senha":"demo123"}'
+```
+
 ### Teste FHIR
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
+curl -X GET http://localhost:3001/api/fhir/protocolos-fiocruz \
   -H "Authorization: Bearer seu_token_jwt"
+```
+
+### Teste FHIR público
+```bash
+curl http://localhost:3001/api/fhir/metadata
 ```
 
 ### Teste de Validação
 ```bash
-curl -X POST http://localhost:3000/api/validacao/validar-registro \
+curl -X POST http://localhost:3001/api/validacao/verificar \
+  -H "Content-Type: application/json" \
+  -d '{
+    "conselho": "ABRATH",
+    "numero": "123456",
+    "nome": "Profissional Demo"
+  }'
+```
+
+Para persistir o resultado no histórico do profissional, use a rota autenticada:
+
+```bash
+curl -X POST http://localhost:3001/api/validacao/validar-registro \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer seu_token_jwt" \
   -d '{
     "especialidade": "massoterapia",
-    "numeroRegistro": "123456",
-    "conselho": "ABRATH"
+    "conselho": "ABRATH",
+    "numero": "123456"
   }'
 ```
+
+### Teste de alertas determinísticos
+```bash
+curl "http://localhost:3001/api/alertas-seguranca?termo=ginkgo%20varfarina"
+```
+
+A resposta deve conter `usa_ia:false`. O endpoint `/api/alertas-seguranca/regras` exige token de usuário `admin` ou `super_admin`.
 
 ## 9. Acessar Supabase Studio (GUI)
 
@@ -130,7 +196,7 @@ Banco: postgres
 
 1. **Dados Locais:** Todos os dados são armazenados localmente em Docker
 2. **Reset:** Para resetar o banco: `supabase db reset`
-3. **Migrations:** Novas migrações vão em `supabase/migrations/`
+3. **Migrations:** Hoje a fonte versionada é `migracao-v2.1.sql`; crie e documente `supabase/migrations/` antes de depender de `supabase db push`
 4. **Backup:** Faça backup antes de resetar: `pg_dump > backup.sql`
 
 ## 🐛 Troubleshooting
@@ -153,6 +219,18 @@ supabase start
 ```bash
 supabase db reset
 ```
+
+**Frontend chama backend errado ou retorna CORS**
+```bash
+cd backend
+PORT=3001 CORS_ORIGINS=http://localhost:8000 npm run dev
+```
+
+**Erro fatal de JWT**
+Defina `JWT_SECRET` no `.env` ou `.env.teste`. Em ambientes compartilhados, use pelo menos 32 caracteres.
+
+**Login demo retorna erro**
+Confirme que o backend foi iniciado com `TEST_MODE=true` e que a senha é exatamente `demo123`.
 
 ## 📞 Próximos Passos
 

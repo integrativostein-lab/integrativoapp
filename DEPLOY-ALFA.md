@@ -8,13 +8,13 @@ Este projeto esta preparado para um ambiente alfa separado da producao.
 - Backend alfa: `https://integrativoappespelho.onrender.com`
 - API alfa: `https://integrativoappespelho.onrender.com/api`
 
-O frontend detecta automaticamente dominios com `alfa` ou `alpha` e usa o backend espelho `https://integrativoappespelho.onrender.com/api`.
-
-Quando o backend alfa for criado, altere `frontend/js/config.js` para apontar dominios alfa para:
+O frontend detecta automaticamente dominios com `alfa` ou `alpha` e usa o backend espelho:
 
 ```text
 https://integrativoappespelho.onrender.com/api
 ```
+
+Em `localhost` ou `127.0.0.1`, o mesmo resolvedor usa `http://localhost:3001/api`. Em outros dominios, o fallback e a API de producao `https://integra-backend-ynrd.onrender.com/api`.
 
 ## Vercel
 
@@ -26,19 +26,19 @@ https://integrativoappespelho.onrender.com/api
 
 ## Render
 
-Por enquanto, para evitar custo extra no Render, o `render.yaml` publica apenas o backend principal:
+O `render.yaml` versionado publica apenas o backend principal:
 
 ```text
 https://integra-backend-ynrd.onrender.com
 ```
 
-O frontend alfa continua usando temporariamente essa API. Para isso, mantenha a URL do frontend alfa em `CORS_ORIGINS` do backend principal:
+Ele nao cria automaticamente o servico espelho. Se o servico `integrativoappespelho` ainda nao existir ou estiver indisponivel, use temporariamente a API principal e mantenha a URL do frontend alfa em `CORS_ORIGINS` do backend principal:
 
 ```text
 https://integrativoapp-alfa.vercel.app
 ```
 
-Se no futuro for necessario um backend alfa separado, use o servico `integrativoappespelho` como opcao manual e preencha as variaveis sensiveis:
+Para backend alfa separado, use o servico manual `integrativoappespelho` e preencha as variaveis sensiveis:
 
 - `DATABASE_URL`: banco Postgres exclusivo para alfa.
 - `JWT_SECRET`: chave forte exclusiva para alfa.
@@ -48,6 +48,8 @@ Se no futuro for necessario um backend alfa separado, use o servico `integrativo
 - `EVOLUTION_API_URL`: URL da Evolution API, se for testar WhatsApp real.
 - `EVOLUTION_API_KEY`: chave da Evolution API, se for testar WhatsApp real.
 - `EVOLUTION_INSTANCE`: instancia alfa da Evolution API.
+- `EVOLUTION_SIMULATE=true`: mantem WhatsApp em simulacao enquanto nao houver instancia alfa real.
+- `RNDS_ENABLED=false`: evita envio real para RNDS durante alfa.
 
 ### Criacao manual/correcao do `integrativoappespelho`
 
@@ -76,6 +78,13 @@ Se o Blueprint nao criou o alfa automaticamente, ou se o servico ja aparece como
     - `FHIR_BASE_URL=https://integrativoappespelho.onrender.com/api/fhir`
     - `TISS_BASE_URL=https://integrativoappespelho.onrender.com/api/tiss`
 
+Variaveis opcionais conforme escopo do teste:
+
+- `TESTE_DATABASE_URL=<banco alfa alternativo>`: usado no lugar de `DATABASE_URL` quando `TEST_MODE=true`.
+- `FIOCRUZ_API_KEY`, `REDEPICS_API_KEY`, `BIREME_API_KEY`: chaves para fontes cientificas externas.
+- `EMAIL_WEBHOOK_URL`: webhook de email; sem ele, notificacoes podem simular/logar envio.
+- `EVOLUTION_API_URL`, `EVOLUTION_API_KEY`, `EVOLUTION_INSTANCE`: somente se `EVOLUTION_SIMULATE=false`.
+
 Depois do deploy, valide:
 
 ```text
@@ -101,13 +110,33 @@ O backend gera tokens seguros pela rota:
 POST /api/reunioes/livekit-token
 ```
 
+Contrato da rota:
+
+- Requer `Authorization: Bearer <jwt>`.
+- Requer `LIVEKIT_URL`, `LIVEKIT_API_KEY` e `LIVEKIT_API_SECRET` no ambiente; sem eles retorna HTTP 500.
+- Aceita `sala`, `agendamento_id` e `nome` no body.
+- Normaliza a sala para letras, numeros, `_` e `-`, com maximo de 80 caracteres; valor padrao: `teleconsulta-alfa`.
+- Retorna `{ url, token, sala }`.
+- Token expira em 2 horas e libera entrar na sala, publicar audio/video, assinar streams e publicar dados.
+
 O frontend de teste usa:
 
 ```text
 /reuniao.html?sala=teleconsulta-alfa
 ```
 
+O painel profissional tambem pode embutir a sala com `?embed=1`. A UI atual cobre microfone, camera e compartilhamento de tela; gravacao persistente, chat salvo e estado de reuniao nao sao persistidos pelo backend atual.
+
 As chaves reais do LiveKit devem ficar somente em variaveis de ambiente do Render e nos arquivos locais `.env` / `.env.teste`, que nao devem ir para o GitHub.
+
+Teste manual com token JWT valido:
+
+```bash
+curl -X POST https://integrativoappespelho.onrender.com/api/reunioes/livekit-token \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"sala":"teleconsulta-alfa","nome":"Tester Alfa"}'
+```
 
 ## Acesso dos testadores
 
@@ -128,6 +157,13 @@ Fallback temporario, somente em contingencia:
 ```text
 https://integra-backend-ynrd.onrender.com/api
 ```
+
+Em modo alfa, `TEST_MODE=true` habilita login demo para:
+
+- `profissional@demo.com` / `demo123`
+- `paciente@demo.com` / `demo123`
+
+Esse bypass existe apenas para esses emails e depende de `JWT_SECRET` configurado.
 
 ## Gestao das regras deterministicas
 
@@ -155,6 +191,25 @@ Para manter alfa e producao alinhados:
 5. Depois valide producao.
 
 O endpoint `/api/alertas-seguranca/regras` e restrito a `admin` e `super_admin`.
+
+## Rotas publicas vs privadas relevantes no alfa
+
+Nem toda rota de verificacao exige JWT. Isso e intencional para cadastro, metadados e consultas publicas:
+
+| Rota | Acesso | Observacao |
+|------|--------|------------|
+| `GET /api/fhir/metadata` | Publico | CapabilityStatement FHIR local |
+| `GET /api/validacao/conselhos` | Publico | Lista conselhos e formatos suportados |
+| `GET /api/validacao/conselho/:especialidade` | Publico | Usada no cadastro profissional |
+| `POST /api/validacao/verificar` | Publico | Validacao best-effort de conselho antes do cadastro |
+| `GET /api/alertas-seguranca` | Publico, JWT opcional | Retorna `usa_ia:false` |
+| `POST /api/alertas-seguranca/verificar` | Publico, JWT opcional | Consulta estruturada |
+| `GET /api/alertas-seguranca/regras` | Admin/super_admin | Auditoria das regras |
+| `POST /api/reunioes/livekit-token` | JWT | Gera token LiveKit |
+| `POST /api/financeiro/renovar-assinatura` | JWT | Cria assinatura anual pendente de codigo |
+| `POST /api/financeiro/validar-assinatura-codigo` | JWT | Ativa assinatura apos codigo |
+
+O rate limit global e 100 req/min em `/api/`; login e cadastros usam limite mais restritivo de 10 tentativas a cada 15 minutos.
 
 ## Redeploy automatico via GitHub
 

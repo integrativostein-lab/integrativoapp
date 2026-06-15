@@ -65,17 +65,43 @@ Observação: isso protege contra acesso web comum. Quem tiver acesso administra
 
 ## Endpoints
 
+| Método | Rota | Acesso | Uso |
+|--------|------|--------|-----|
+| GET | `/api/alertas-seguranca` | Público, JWT opcional | Consulta rápida por query string |
+| POST | `/api/alertas-seguranca/verificar` | Público, JWT opcional | Consulta estruturada por JSON |
+| GET | `/api/alertas-seguranca/regras` | `admin` ou `super_admin` | Auditoria das regras cadastradas |
+
 ### `GET /api/alertas-seguranca`
 
 Consulta simples por termo, prática, produto, condições, medicamentos e alergias.
+
+Exemplo:
+
+```bash
+curl "http://localhost:3001/api/alertas-seguranca?termo=ginkgo%20varfarina"
+```
 
 ### `POST /api/alertas-seguranca/verificar`
 
 Consulta estruturada para formulários profissionais, prescrições e recomendações.
 
+Exemplo:
+
+```bash
+curl -X POST http://localhost:3001/api/alertas-seguranca/verificar \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pratica": "fitoterapia",
+    "produto": "ginkgo",
+    "medicamentos": ["varfarina"]
+  }'
+```
+
 ### `GET /api/alertas-seguranca/regras`
 
 Lista regras cadastradas com gravidade e fontes, para auditoria. Restrito a `admin` e `super_admin`.
+
+As rotas públicas usam JWT opcional apenas para registrar `usuario_id` na resposta e nos logs quando houver token válido. Token ausente ou inválido não bloqueia a verificação pública; o arquivo completo de regras continua protegido no backend e só é listado pela rota administrativa.
 
 ## Exemplo de Alerta
 

@@ -87,6 +87,17 @@ cp .env.example .env
 # Editar .env com suas credenciais
 ```
 
+Para rodar junto com o frontend local sem sobrescrever a API de producao, configure:
+
+```env
+PORT=3001
+DATABASE_URL=postgresql://postgres:postgres@localhost:54322/postgres
+JWT_SECRET=uma_chave_local_com_pelo_menos_32_caracteres
+CORS_ORIGINS=http://localhost:8000
+```
+
+O backend tambem aceita modo alfa/teste via `.env.teste` e scripts `npm run start:teste` ou `npm run dev:teste`. Nesse modo, `TEST_MODE=true` habilita login demo com `profissional@demo.com` ou `paciente@demo.com` usando senha `demo123`; use `TESTE_DATABASE_URL` para isolar o banco de teste.
+
 ### 5. Iniciar Backend
 ```bash
 npm run dev
@@ -100,7 +111,8 @@ python3 -m http.server 8000
 
 ### 7. Acessar
 - **Frontend:** http://localhost:8000
-- **Backend:** http://localhost:3000
+- **Backend local esperado pelo frontend:** http://localhost:3001
+- **Backend padrao sem `PORT`:** http://localhost:3000
 - **Supabase Studio:** http://localhost:54323
 
 ---
@@ -142,12 +154,13 @@ saude-integrativa-v2.1-final/
 
 ## 🔐 Segurança
 
-- ✅ Autenticação JWT em todos os endpoints
-- ✅ Dados sensíveis criptografados
+- ✅ Autenticação JWT nos endpoints privados; rotas publicas existem para cadastro, metadados FHIR, validacao inicial de conselhos e consulta de alertas.
+- ✅ Senhas persistidas com bcrypt; códigos de validação de assinatura persistidos como hash SHA-256
+- ✅ Segredos operacionais carregados por variáveis de ambiente (`JWT_SECRET`, bancos, gateways e integrações)
 - ✅ Conformidade FHIR Brasil
 - ✅ LGPD: Proteção de dados pessoais
 - ✅ Validação de entrada em formulários
-- ✅ Rate limiting implementado
+- ✅ Rate limiting global em `/api/` de 100 req/min e limite mais restritivo em login/cadastros de 10 tentativas/15 min
 - ✅ CORS configurado
 
 ---
@@ -155,28 +168,68 @@ saude-integrativa-v2.1-final/
 ## 📊 Endpoints Principais
 
 ### FHIR Brasil
-```
-POST   /api/fhir/export-patient          # Exportar paciente em FHIR
-POST   /api/fhir/export-appointment      # Exportar agendamento em FHIR
-GET    /api/fhir/protocolos-fiocruz      # Buscar protocolos Fiocruz
-GET    /api/fhir/pesquisas-redepics      # Buscar pesquisas RedePICS
-GET    /api/fhir/artigos-bireme          # Buscar artigos BIREME
-POST   /api/fhir/comparar-protocolos     # Comparar protocolos
-```
+
+| Método | Rota | Acesso | Uso |
+|--------|------|--------|-----|
+| GET | `/api/fhir/metadata` | Público | CapabilityStatement local com perfis RNDS/FHIR R4 |
+| POST | `/api/fhir/export-patient` | JWT | Exportar paciente (`pacienteId` ou `patientId`) |
+| POST | `/api/fhir/export-practitioner` | JWT | Exportar profissional (`profissionalId` ou `practitionerId`) |
+| POST | `/api/fhir/export-organization` | JWT | Exportar organização vinculada ao usuário |
+| POST | `/api/fhir/export-appointment` | JWT | Exportar agendamento |
+| POST | `/api/fhir/export-encounter` | JWT | Exportar atendimento |
+| POST | `/api/fhir/export-medication-request` | JWT | Exportar prescrição |
+| POST | `/api/fhir/export-bundle` | JWT | Exportar bundle do atendimento |
+| POST | `/api/fhir/import-patient` | JWT | Mapear `Patient` FHIR para modelo interno |
+| GET | `/api/fhir/exports/:tipo/:id` | JWT | Recuperar última exportação salva |
+| GET | `/api/fhir/protocolos-fiocruz` | JWT | Buscar protocolos Fiocruz; usa cache do banco se a API externa falhar |
+| GET | `/api/fhir/pesquisas-redepics` | JWT | Buscar pesquisas RedePICS |
+| GET | `/api/fhir/artigos-bireme` | JWT | Buscar artigos BIREME |
+| POST | `/api/fhir/comparar-protocolos` | JWT | Comparar fontes científicas por especialidade |
 
 ### Validação de Conselhos
-```
-POST   /api/validacao/validar-registro   # Validar registro profissional
-GET    /api/validacao/conselho/:esp      # Obter conselho de especialidade
-GET    /api/validacao/status/:prof_id    # Status de validação
-```
+
+| Método | Rota | Acesso | Uso |
+|--------|------|--------|-----|
+| GET | `/api/validacao/conselhos` | Público | Lista conselhos, formatos e especialidades livres |
+| GET | `/api/validacao/conselho/:especialidade` | Público | Retorna conselho exigido para uma especialidade |
+| POST | `/api/validacao/verificar` | Público | Validação inicial de cadastro (`conselho`, `uf`, `numero`, `nome`) |
+| POST | `/api/validacao/validar-registro` | JWT | Valida e persiste resultado para profissional logado |
+| GET | `/api/validacao/status/:profissionalId` | JWT | Histórico de validações do profissional |
+
+Limite importante: conselhos brasileiros não oferecem APIs REST públicas oficiais uniformes. A validação é best-effort: confere formato, usa uma URL privada configurável (`<CONSELHO>_API_URL`) quando existir e sempre retorna o link oficial para conferência manual.
 
 ### Assinaturas e Pagamentos
-```
-POST   /api/financeiro/processar-pagamento  # Processar pagamento
-GET    /api/financeiro/assinaturas/:user_id # Listar assinaturas
-POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
-```
+
+| Método | Rota | Acesso | Uso |
+|--------|------|--------|-----|
+| POST | `/api/financeiro/simular-parcelamento` | Público | Simula plano, PIX e parcelas antes do checkout |
+| POST | `/api/financeiro/pagar` | JWT | Registra pagamento de consulta a partir do valor do agendamento |
+| GET | `/api/financeiro/meus-pagamentos` | JWT | Lista pagamentos do usuário |
+| POST | `/api/financeiro/nota-fiscal` | JWT | Emite ou solicita autorização de nota fiscal |
+| POST | `/api/financeiro/renovar-assinatura` | JWT | Cria assinatura anual ou freemium pendente de validação |
+| POST | `/api/financeiro/validar-assinatura-codigo` | JWT | Ativa assinatura com código enviado por WhatsApp/email |
+| POST | `/api/financeiro/cancelar-assinatura` | JWT | Cancela assinatura e calcula estorno |
+| GET | `/api/financeiro/dashboard` | JWT | Indicadores financeiros agregados |
+
+Regras de negócio implementadas no backend: PIX com 5% de desconto, Tabela Price em até 12 parcelas com 1,99% a.m., desconto ABRATH de 8% para Pro/Premium, janela de cancelamento de 15 dias e multa de 20% sobre saldo proporcional após a janela. Certificado A1 emitido pela plataforma pode ser cobrado no cancelamento de planos Premium/Enterprise.
+
+### Teleconsulta LiveKit
+
+| Método | Rota | Acesso | Uso |
+|--------|------|--------|-----|
+| POST | `/api/reunioes/livekit-token` | JWT | Gera `{ url, token, sala }` para entrar em sala LiveKit |
+
+Variáveis obrigatórias: `LIVEKIT_URL`, `LIVEKIT_API_KEY` e `LIVEKIT_API_SECRET`. A sala é normalizada para letras/números/`_`/`-`, com limite de 80 caracteres, e o token expira em 2 horas.
+
+### Alertas de Segurança
+
+| Método | Rota | Acesso | Uso |
+|--------|------|--------|-----|
+| GET | `/api/alertas-seguranca` | Público, JWT opcional | Consulta rápida por termo, prática, produto, condições, medicamentos e alergias |
+| POST | `/api/alertas-seguranca/verificar` | Público, JWT opcional | Consulta estruturada para prescrições e formulários |
+| GET | `/api/alertas-seguranca/regras` | Admin/super_admin | Auditoria de regras cadastradas |
+
+As respostas do motor incluem `usa_ia:false`; novas regras devem permanecer no backend em `backend/servicos/alertas-seguranca.js`.
 
 ---
 
@@ -201,8 +254,9 @@ POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 2. Escolhe PIX (5% desconto) ou Cartão (até 12x)
 3. Se cartão: seleciona número de parcelas
 4. Preenche dados pessoais
-5. Submete para `/api/financeiro/processar-pagamento`
-6. Assinatura é ativada por 1 ano
+5. Submete para `/api/financeiro/renovar-assinatura`
+6. Confirma o código recebido por WhatsApp/email em `/api/financeiro/validar-assinatura-codigo`
+7. Assinatura anual é ativada
 
 ---
 
@@ -259,19 +313,19 @@ ASAAS_API_KEY=sua_chave
 
 ### Teste FHIR
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
+curl -X GET http://localhost:3001/api/fhir/protocolos-fiocruz \
   -H "Authorization: Bearer seu_token_jwt"
 ```
 
 ### Teste de Validação
 ```bash
-curl -X POST http://localhost:3000/api/validacao/validar-registro \
+curl -X POST http://localhost:3001/api/validacao/validar-registro \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer seu_token_jwt" \
   -d '{
     "especialidade": "massoterapia",
-    "numeroRegistro": "123456",
-    "conselho": "ABRATH"
+    "conselho": "ABRATH",
+    "numero": "123456"
   }'
 ```
 
@@ -279,8 +333,8 @@ curl -X POST http://localhost:3000/api/validacao/validar-registro \
 
 ## 📊 Jobs Agendados
 
-- **2h da manhã:** Atualizar protocolos Fiocruz
-- **3h da manhã:** Atualizar status de validações
+- **2h da manhã:** Atualizar cache de protocolos Fiocruz para as principais especialidades integrativas
+- **3h da manhã:** Revalidar registros profissionais válidos dos últimos 30 dias
 
 ---
 
@@ -302,6 +356,12 @@ supabase start
 **Erro: "Rota não encontrada"**
 Verificar se as rotas FHIR e Validação foram adicionadas no `server.js`
 
+**Frontend local chama produção ou falha CORS**
+Confirme que o frontend está em `localhost` e que o backend local roda com `PORT=3001` e `CORS_ORIGINS=http://localhost:8000`. O resolvedor em `frontend/js/config.js` usa `http://localhost:3001/api` para `localhost`/`127.0.0.1`.
+
+**Login demo não funciona**
+Use `TEST_MODE=true`, `JWT_SECRET` configurado e senha `demo123` para `profissional@demo.com` ou `paciente@demo.com`. O modo demo não substitui a necessidade de `DATABASE_URL` para inicializar o backend.
+
 ---
 
 ## 📞 Suporte
@@ -320,7 +380,7 @@ Verificar se as rotas FHIR e Validação foram adicionadas no `server.js`
 3. ✅ Testar integrações FHIR
 4. ✅ Testar pagamentos (sandbox)
 5. ⏳ Integração com Dropbox
-6. ⏳ Deploy em Vercel/Render
+6. ✅ Deploy alfa documentado em `DEPLOY-ALFA.md`; produção continua em Vercel/Render
 
 ---
 

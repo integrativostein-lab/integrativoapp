@@ -19,8 +19,9 @@
 
 4. TELECONSULTA E TELEAULA
 -------------------------------------
-- O sistema usa Plug-n-Meet.
-- Configure a URL da sua CPU dedicada no arquivo backend/config-infra.js ou via variáveis de ambiente.
+- O sistema usa LiveKit via backend/rotas/reunioes.js.
+- Configure LIVEKIT_URL, LIVEKIT_API_KEY e LIVEKIT_API_SECRET no Render ou em backend/.env.teste.
+- A rota autenticada POST /api/reunioes/livekit-token retorna url, token e sala para o frontend reuniao.html.
 
 5. COMANDO DE VOZ (STT)
 -------------------------------------
