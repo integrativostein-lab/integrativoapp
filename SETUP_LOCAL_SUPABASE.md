@@ -132,6 +132,7 @@ Banco: postgres
 2. **Reset:** Para resetar o banco: `supabase db reset`
 3. **Migrations:** Novas migrações vão em `supabase/migrations/`
 4. **Backup:** Faça backup antes de resetar: `pg_dump > backup.sql`
+5. **Arquivo profissional:** A tabela `arquivos_profissionais` é criada em runtime por `/api/arquivo-profissional/status` ou `/api/arquivo-profissional/snapshot`, não por `migracao-v2.1.sql`. Se o usuário de banco local não puder executar DDL, crie a tabela manualmente conforme `arquitecture today/arquivo-profissional-central.md`.
 
 ## 🐛 Troubleshooting
 

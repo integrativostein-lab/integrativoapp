@@ -32,6 +32,7 @@
 - ✅ **Comparação de Protocolos** — Identifica diferenças entre fontes
 - ✅ **Cache automático** — Reduz latência
 - ✅ **Jobs agendados** — Atualização diária
+- ✅ **Arquivo Profissional Central** — Snapshot obrigatório por sessão profissional
 
 #### Fase 5: Assinaturas e Pagamentos
 - ✅ **Modelo Anual** com 4 planos
@@ -113,6 +114,7 @@ saude-integrativa-v2.1-final/
 │   ├── rotas/
 │   │   ├── fhir.js                 # ✨ NOVO: FHIR Brasil
 │   │   ├── validacao-conselhos.js  # ✨ NOVO: Validação de Conselhos
+│   │   ├── arquivo-profissional.js # ✨ NOVO: Arquivamento assistencial
 │   │   └── ... (outras rotas)
 │   ├── server.js                   # ✨ ATUALIZADO: Com FHIR e Validação
 │   ├── package.json                # ✨ ATUALIZADO: node-cron, bull
@@ -123,6 +125,7 @@ saude-integrativa-v2.1-final/
 │   ├── checkout.html               # ✨ NOVO: Checkout com novo modelo
 │   ├── js/
 │   │   ├── config.js               # ✨ ATUALIZADO: Novos planos
+│   │   ├── arquivo-profissional.js # Modal obrigatório de arquivamento
 │   │   ├── carrossel.js            # Carrossel de especialidades
 │   │   └── ... (outros scripts)
 │   ├── css/
@@ -132,6 +135,7 @@ saude-integrativa-v2.1-final/
 │       ├── especialidade-*.png     # Imagens de especialidades
 │       └── ... (outras imagens)
 ├── migracao-v2.1.sql               # ✨ NOVO: Migrações do banco
+├── arquitecture today/             # Notas técnicas e runbooks
 ├── .env.example                    # ✨ NOVO: Variáveis de ambiente
 ├── SETUP_LOCAL_SUPABASE.md         # ✨ NOVO: Guia de setup local
 ├── README_v2.1.md                  # Este arquivo
@@ -142,10 +146,11 @@ saude-integrativa-v2.1-final/
 
 ## 🔐 Segurança
 
-- ✅ Autenticação JWT em todos os endpoints
+- ✅ Autenticação JWT nas rotas privadas
 - ✅ Dados sensíveis criptografados
 - ✅ Conformidade FHIR Brasil
 - ✅ LGPD: Proteção de dados pessoais
+- ✅ Arquivo profissional central por sessão: ver `arquitecture today/arquivo-profissional-central.md`
 - ✅ Validação de entrada em formulários
 - ✅ Rate limiting implementado
 - ✅ CORS configurado
@@ -171,6 +176,14 @@ GET    /api/validacao/conselho/:esp      # Obter conselho de especialidade
 GET    /api/validacao/status/:prof_id    # Status de validação
 ```
 
+### Arquivo Profissional Central
+```
+POST   /api/arquivo-profissional/snapshot # Criar snapshot assistencial do profissional
+GET    /api/arquivo-profissional/status   # Consultar último snapshot do profissional
+```
+
+Detalhes do pacote, persistência e troubleshooting: `arquitecture today/arquivo-profissional-central.md`
+
 ### Assinaturas e Pagamentos
 ```
 POST   /api/financeiro/processar-pagamento  # Processar pagamento
@@ -195,6 +208,15 @@ POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 4. Insere número de registro → validação automática
 5. Seleciona gateway de pagamento → abre modal
 6. Submete para `/api/auth/cadastro-profissional`
+
+### Arquivamento do Profissional
+1. Profissional autenticado abre um painel que carrega `js/arquivo-profissional.js`
+2. O script verifica `localStorage.integra_usuario.tipo === "profissional"`
+3. Se a sessão ainda não foi arquivada, exibe modal obrigatório
+4. Botão do modal chama `POST /api/arquivo-profissional/snapshot`
+5. Backend monta pacote com perfil, pacientes, agendamentos, prescrições, pagamentos, TISS e FHIR
+6. Snapshot é salvo em `arquivos_profissionais`
+7. Sessão recebe `sessionStorage.integrativo_arquivo_profissional_sessao_ok = "true"` e o painel é liberado
 
 ### Checkout
 1. Usuário seleciona plano
@@ -275,6 +297,15 @@ curl -X POST http://localhost:3000/api/validacao/validar-registro \
   }'
 ```
 
+### Teste de Arquivo Profissional
+```bash
+curl -X POST http://localhost:3000/api/arquivo-profissional/snapshot \
+  -H "Authorization: Bearer seu_token_jwt"
+
+curl http://localhost:3000/api/arquivo-profissional/status \
+  -H "Authorization: Bearer seu_token_jwt"
+```
+
 ---
 
 ## 📊 Jobs Agendados
@@ -300,7 +331,10 @@ supabase start
 ```
 
 **Erro: "Rota não encontrada"**
-Verificar se as rotas FHIR e Validação foram adicionadas no `server.js`
+Verificar se as rotas FHIR, Validação e Arquivo Profissional foram adicionadas no `server.js`
+
+**Modal "Arquivamento obrigatório no servidor" não conclui**
+Verifique se o usuário autenticado é `profissional` ou `admin`, se `localStorage.integra_token` existe e se `CONFIG.API_URL` aponta para o backend correto. Na primeira execução, o banco também precisa permitir `CREATE TABLE` para `arquivos_profissionais`.
 
 ---
 
