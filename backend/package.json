@@ -4,6 +4,7 @@
   "description": "Backend do sistema Integrativo.App - Saúde Integrativa",
   "main": "server.js",
   "scripts": {
+    "test": "node --test",
     "start": "node server.js",
     "dev": "nodemon server.js",
     "start:teste": "node -r dotenv/config server.js dotenv_config_path=.env.teste",
