@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database');
 const { autenticar, exigirTipo } = require('../middlewares/autenticar');
+const ambiente = require('../config/ambiente');
 
 async function consultaSegura(sql, params = []) {
   try {
@@ -33,6 +34,30 @@ async function garantirTabelaArquivo() {
 
 function idsUnicos(linhas, campo) {
   return [...new Set(linhas.map((linha) => linha[campo]).filter(Boolean))];
+}
+
+function usuarioDemoSemIdNumerico(usuario) {
+  const idNumerico = Number(usuario?.id);
+  return usuario?.demo === true || !Number.isInteger(idNumerico);
+}
+
+function arquivoDemo(usuario) {
+  return {
+    id: `demo-${Date.now()}`,
+    profissional_id: usuario.id,
+    tipo: 'snapshot-assistencial',
+    status: 'arquivado',
+    totais_json: {
+      pacientes: 0,
+      agendamentos: 0,
+      prescricoes: 0,
+      pagamentos: 0,
+      tiss: 0,
+      fhir: 0
+    },
+    criado_em: new Date().toISOString(),
+    simulado: true
+  };
 }
 
 async function montarPacoteProfissional(profissionalId) {
@@ -124,6 +149,13 @@ async function montarPacoteProfissional(profissionalId) {
 
 router.post('/snapshot', autenticar, exigirTipo('profissional', 'admin'), async (req, res) => {
   try {
+    if (ambiente.modoTeste && usuarioDemoSemIdNumerico(req.usuario)) {
+      return res.status(201).json({
+        mensagem: 'Dados do profissional demo arquivados em modo de teste.',
+        arquivo: arquivoDemo(req.usuario)
+      });
+    }
+
     await garantirTabelaArquivo();
     const pacote = await montarPacoteProfissional(req.usuario.id);
     const result = await db.query(
@@ -152,6 +184,13 @@ router.post('/snapshot', autenticar, exigirTipo('profissional', 'admin'), async 
 
 router.get('/status', autenticar, exigirTipo('profissional', 'admin'), async (req, res) => {
   try {
+    if (ambiente.modoTeste && usuarioDemoSemIdNumerico(req.usuario)) {
+      return res.json({
+        obrigatorio: false,
+        ultimo_arquivo: arquivoDemo(req.usuario)
+      });
+    }
+
     await garantirTabelaArquivo();
     const result = await db.query(
       `SELECT id, tipo, status, totais_json, criado_em

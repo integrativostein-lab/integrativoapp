@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
-const { estornarPagamento } = require('../config/stripe');
+const { estornarPagamento, stripe, modoTeste } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
@@ -26,6 +26,14 @@ const PRAZO_ARREPENDIMENTO_DIAS = 15;
 const MULTA_APOS_PRAZO = 0.20;     // 20% sobre saldo proporcional
 const VALOR_CERTIFICADO_A1 = 260.00;
 const PLANOS_COM_CERTIFICADO_A1 = ['premium', 'enterprise'];
+const STATUS_PAGAMENTO_CONFIRMADO = new Set(['succeeded']);
+
+class ErroPagamentoAssinatura extends Error {
+  constructor(message, statusCode = 402) {
+    super(message);
+    this.statusCode = statusCode;
+  }
+}
 
 async function garantirColunasAssinaturaPagamento() {
   await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS forma_pagamento VARCHAR(30)").catch(() => {});
@@ -88,6 +96,84 @@ async function criarValidacaoAssinatura({ assinaturaId, usuario }) {
     [assinaturaId, usuario.id, hashCodigo(codigo), JSON.stringify(canais)]
   );
   return canais;
+}
+
+function pagamentoDispensado({ plano, vitalicio, valorTotal }) {
+  return plano === 'freemium' || vitalicio || Number(valorTotal || 0) <= 0;
+}
+
+function valorEmCentavos(valor) {
+  return Math.round((Number(valor) || 0) * 100);
+}
+
+function sanitizarCanaisValidacao(canais) {
+  return (canais || []).map((canal) => ({
+    enviado: !!canal.enviado,
+    canal: canal.canal || null,
+    simulado: !!canal.simulado,
+    motivo: canal.motivo || null,
+    erro: canal.erro ? 'falha-envio' : null
+  }));
+}
+
+async function verificarPagamentoAssinatura({ gatewayId, valorTotal, usuarioId }) {
+  const esperadoCentavos = valorEmCentavos(valorTotal);
+
+  if (modoTeste) {
+    return {
+      id: gatewayId || `test_subscription_${Date.now()}`,
+      status: 'succeeded',
+      amount_received: esperadoCentavos,
+      currency: 'brl',
+      simulated: true
+    };
+  }
+
+  if (!gatewayId) {
+    throw new ErroPagamentoAssinatura('Pagamento aprovado pelo gateway é obrigatório para ativar planos pagos.');
+  }
+  if (!stripe) {
+    throw new ErroPagamentoAssinatura('Gateway de pagamento não configurado para validar assinatura paga.', 503);
+  }
+
+  let pagamento;
+  try {
+    pagamento = await stripe.paymentIntents.retrieve(gatewayId);
+  } catch (error) {
+    throw new ErroPagamentoAssinatura('Pagamento não encontrado ou não validado pelo gateway.');
+  }
+  if (!STATUS_PAGAMENTO_CONFIRMADO.has(pagamento.status)) {
+    throw new ErroPagamentoAssinatura('Pagamento ainda não confirmado pelo gateway.');
+  }
+  if (String(pagamento.currency || '').toLowerCase() !== 'brl') {
+    throw new ErroPagamentoAssinatura('Pagamento confirmado em moeda inválida para esta assinatura.');
+  }
+
+  const recebidoCentavos = Number(pagamento.amount_received || pagamento.amount || 0);
+  if (recebidoCentavos < esperadoCentavos) {
+    throw new ErroPagamentoAssinatura('Valor confirmado pelo gateway é menor que o valor da assinatura.');
+  }
+
+  const metadataUsuarioId = pagamento.metadata?.usuario_id || pagamento.metadata?.usuarioId || pagamento.metadata?.user_id;
+  if (!metadataUsuarioId || String(metadataUsuarioId) !== String(usuarioId)) {
+    throw new ErroPagamentoAssinatura('Pagamento confirmado não pertence ao usuário autenticado.');
+  }
+
+  const reutilizado = await db.query(
+    "SELECT id FROM assinaturas WHERE gateway_id = $1 AND status <> 'cancelada' LIMIT 1",
+    [gatewayId]
+  );
+  if (reutilizado.rows.length > 0) {
+    throw new ErroPagamentoAssinatura('Pagamento já vinculado a outra assinatura.');
+  }
+
+  return {
+    id: pagamento.id,
+    status: pagamento.status,
+    amount_received: recebidoCentavos,
+    currency: pagamento.currency,
+    metadata_usuario_id: metadataUsuarioId
+  };
 }
 
 function moeda(valor) {
@@ -293,17 +379,31 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
 
+    const pagamentoConfirmado = pagamentoDispensado({ plano, vitalicio, valorTotal: calc.valorTotal })
+      ? null
+      : await verificarPagamentoAssinatura({ gatewayId: gateway_id, valorTotal: calc.valorTotal, usuarioId: req.usuario.id });
+    const gatewayIdConfirmado = pagamentoConfirmado?.id || null;
+
     const gatewayResposta = {
       cartao_final4: cartao_final4 || null,
       cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
-      observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Pagamento registrado sem identificador de gateway; estorno automático depende da administradora configurada.'
+      pagamento: pagamentoConfirmado
+        ? {
+          id: pagamentoConfirmado.id,
+          status: pagamentoConfirmado.status,
+          amount_received: pagamentoConfirmado.amount_received,
+          currency: pagamentoConfirmado.currency,
+          simulated: !!pagamentoConfirmado.simulated
+        }
+        : { status: 'dispensado' },
+      observacao: gatewayIdConfirmado ? 'Pagamento confirmado no gateway.' : 'Plano sem cobrança de assinatura.'
     };
 
     const r = await db.query(
       `INSERT INTO assinaturas (usuario_id, plano, tipo_ciclo, valor, data_inicio, data_expiracao, parcelas, renovacao_automatica, status, forma_pagamento, gateway_id, gateway_resposta)
        VALUES ($1, $2, $3, $4, NOW(), $5, $6, 0, 'pendente_validacao', $7, $8, $9) RETURNING id`,
       [req.usuario.id, plano, vitalicio ? 'vitalicio' : 'anual', calc.valorTotal,
-        dataExpiracao.toISOString().split('T')[0], calc.parcelas, forma_pagamento || null, gateway_id || null, JSON.stringify(gatewayResposta)]
+        dataExpiracao.toISOString().split('T')[0], calc.parcelas, forma_pagamento || null, gatewayIdConfirmado, JSON.stringify(gatewayResposta)]
     );
 
     const usuario = await buscarUsuarioContato(req.usuario.id);
@@ -319,9 +419,12 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       desconto_pct: descontoAplicado,
       ...calc,
       id: r.rows[0].id,
-      canais
+      canais: sanitizarCanaisValidacao(canais)
     });
   } catch (e) {
+    if (e instanceof ErroPagamentoAssinatura) {
+      return res.status(e.statusCode).json({ erro: e.message });
+    }
     console.error('[financeiro/renovar-assinatura]', e.message);
     res.status(500).json({ erro: 'Erro ao processar assinatura' });
   }
