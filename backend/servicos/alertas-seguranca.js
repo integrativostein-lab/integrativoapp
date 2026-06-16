@@ -149,9 +149,9 @@ function semAcentos(valor) {
 }
 
 function normalizarEntrada(valor) {
-  if (Array.isArray(valor)) return valor.map(semAcentos).filter(Boolean);
-  return semAcentos(valor)
-    .split(/[,\n;|]+/)
+  const valores = Array.isArray(valor) ? valor : [valor];
+  return valores
+    .flatMap((item) => semAcentos(item).split(/[,\n;|]+/))
     .map((item) => item.trim())
     .filter(Boolean);
 }
@@ -163,15 +163,15 @@ function textoContexto(contexto = {}) {
     contexto.produto,
     contexto.observacoes,
     contexto.itens,
-    ...(Array.isArray(contexto.condicoes) ? contexto.condicoes : []),
-    ...(Array.isArray(contexto.medicamentos) ? contexto.medicamentos : []),
-    ...(Array.isArray(contexto.alergias) ? contexto.alergias : [])
+    ...normalizarEntrada(contexto.condicoes),
+    ...normalizarEntrada(contexto.medicamentos),
+    ...normalizarEntrada(contexto.alergias)
   ];
   if (contexto.paciente) {
     partes.push(
-      contexto.paciente.condicoes,
-      contexto.paciente.medicamentos,
-      contexto.paciente.alergias
+      ...normalizarEntrada(contexto.paciente.condicoes),
+      ...normalizarEntrada(contexto.paciente.medicamentos),
+      ...normalizarEntrada(contexto.paciente.alergias)
     );
   }
   return semAcentos(partes.flat().filter(Boolean).join(' '));
