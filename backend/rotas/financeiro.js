@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
-const { estornarPagamento } = require('../config/stripe');
+const { estornarPagamento, verificarPagamentoAssinatura, pagamentoRequerConfirmacao } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
@@ -293,6 +293,12 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
 
+    if (pagamentoRequerConfirmacao(calc.valorTotal) && !gateway_id) {
+      return res.status(402).json({
+        erro: 'Pagamento da assinatura precisa ser confirmado pelo gateway antes da validação por código.'
+      });
+    }
+
     const gatewayResposta = {
       cartao_final4: cartao_final4 || null,
       cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
@@ -356,8 +362,22 @@ router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
       return res.status(400).json({ erro: 'Código inválido' });
     }
 
+    const pagamento = await verificarPagamentoAssinatura({
+      paymentIntentId: ass.gateway_id,
+      valor: ass.valor
+    });
+    if (!pagamento.confirmado) {
+      return res.status(402).json({
+        erro: 'Pagamento da assinatura ainda não confirmado. Conclua o pagamento antes de validar o código.',
+        pagamento
+      });
+    }
+
     await db.query('UPDATE assinatura_validacoes SET validado_em = NOW() WHERE id = $1', [validacao.id]);
-    await db.query("UPDATE assinaturas SET status = 'ativa' WHERE id = $1", [assinatura_id]);
+    await db.query(
+      "UPDATE assinaturas SET status = 'ativa', gateway_resposta = $2 WHERE id = $1",
+      [assinatura_id, JSON.stringify(pagamento)]
+    );
 
     const assinaturaAtiva = ass.plano !== 'freemium' ? 1 : 0;
     await db.query(
