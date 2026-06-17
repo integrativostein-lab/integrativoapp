@@ -156,18 +156,30 @@ saude-integrativa-v2.1-final/
 
 ### FHIR Brasil
 ```
-POST   /api/fhir/export-patient          # Exportar paciente em FHIR
-POST   /api/fhir/export-appointment      # Exportar agendamento em FHIR
-GET    /api/fhir/protocolos-fiocruz      # Buscar protocolos Fiocruz
-GET    /api/fhir/pesquisas-redepics      # Buscar pesquisas RedePICS
-GET    /api/fhir/artigos-bireme          # Buscar artigos BIREME
-POST   /api/fhir/comparar-protocolos     # Comparar protocolos
+GET    /api/fhir/metadata                    # CapabilityStatement FHIR R4
+POST   /api/fhir/export-patient              # Exportar paciente
+POST   /api/fhir/export-practitioner         # Exportar profissional
+POST   /api/fhir/export-organization         # Exportar organização/estabelecimento
+POST   /api/fhir/export-appointment          # Exportar agendamento
+POST   /api/fhir/export-encounter            # Exportar atendimento
+POST   /api/fhir/export-medication-request   # Exportar prescrição
+POST   /api/fhir/export-bundle               # Exportar pacote de atendimento
+POST   /api/fhir/import-patient              # Mapear Patient FHIR para modelo interno
+GET    /api/fhir/exports/:tipo/:id           # Buscar última exportação salva
+GET    /api/fhir/protocolos-fiocruz          # Buscar protocolos Fiocruz
+GET    /api/fhir/pesquisas-redepics          # Buscar pesquisas RedePICS
+GET    /api/fhir/artigos-bireme              # Buscar artigos BIREME
+POST   /api/fhir/comparar-protocolos         # Comparar protocolos
 ```
+
+Detalhes de arquitetura, payloads, persistência e troubleshooting: [`arquitecture today/fhir-brasil-rnds.md`](./arquitecture%20today/fhir-brasil-rnds.md).
 
 ### Validação de Conselhos
 ```
-POST   /api/validacao/validar-registro   # Validar registro profissional
+GET    /api/validacao/conselhos          # Listar conselhos suportados
 GET    /api/validacao/conselho/:esp      # Obter conselho de especialidade
+POST   /api/validacao/verificar          # Verificação pública de formato/API externa
+POST   /api/validacao/validar-registro   # Validar registro profissional
 GET    /api/validacao/status/:prof_id    # Status de validação
 ```
 
@@ -259,8 +271,12 @@ ASAAS_API_KEY=sua_chave
 
 ### Teste FHIR
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
-  -H "Authorization: Bearer seu_token_jwt"
+curl -X GET http://localhost:3000/api/fhir/metadata
+
+curl -X POST http://localhost:3000/api/fhir/export-bundle \
+  -H "Authorization: Bearer seu_token_jwt" \
+  -H "Content-Type: application/json" \
+  -d '{"agendamentoId": 123}'
 ```
 
 ### Teste de Validação
