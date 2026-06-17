@@ -69,6 +69,68 @@ async function estornarPagamento({ paymentIntentId, valor, motivo = 'requested_b
     return refund;
 }
 
+function valorEmCentavos(valor) {
+    return Math.round((Number(valor) || 0) * 100);
+}
+
+function pagamentoRequerConfirmacao(valor) {
+    return valorEmCentavos(valor) > 0;
+}
+
+async function verificarPagamentoAssinatura({ paymentIntentId, valor }) {
+    const amount = valorEmCentavos(valor);
+    if (amount <= 0) {
+        return {
+            confirmado: true,
+            status: 'sem_cobranca',
+            mensagem: 'Assinatura sem valor a cobrar.'
+        };
+    }
+
+    if (!paymentIntentId) {
+        return {
+            confirmado: false,
+            status: 'sem_gateway',
+            mensagem: 'Pagamento da assinatura sem identificador do gateway.'
+        };
+    }
+
+    if (modoTeste && paymentIntentId.startsWith('test_')) {
+        return {
+            confirmado: true,
+            status: 'succeeded',
+            payment_intent: paymentIntentId,
+            amount_received: amount,
+            currency: 'brl',
+            simulated: true
+        };
+    }
+
+    if (!stripe) {
+        return {
+            confirmado: false,
+            status: 'stripe_nao_configurado',
+            mensagem: 'Stripe não configurado para confirmar pagamento da assinatura.'
+        };
+    }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const recebido = paymentIntent.amount_received || 0;
+    const confirmado = paymentIntent.status === 'succeeded' && recebido >= amount;
+
+    return {
+        confirmado,
+        id: paymentIntent.id,
+        status: paymentIntent.status,
+        amount_received: recebido,
+        amount_expected: amount,
+        currency: paymentIntent.currency,
+        mensagem: confirmado
+            ? 'Pagamento confirmado no gateway.'
+            : 'Pagamento ainda não confirmado no gateway.'
+    };
+}
+
 // Função para simular NF sem certificado
 async function emitirNFSimulada(dados) {
     console.log('[TESTE] Emissão de NF simulada (sem certificado)');
@@ -89,5 +151,7 @@ module.exports = {
     modoTeste,
     criarPagamentoTeste,
     estornarPagamento,
+    verificarPagamentoAssinatura,
+    pagamentoRequerConfirmacao,
     emitirNFSimulada
 };
