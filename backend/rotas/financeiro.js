@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
-const { estornarPagamento } = require('../config/stripe');
+const { estornarPagamento, verificarPagamentoAssinatura } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
@@ -293,10 +293,28 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
 
+    const comprovacaoPagamento = await verificarPagamentoAssinatura({
+      paymentIntentId: gateway_id,
+      valorEsperado: calc.valorTotal,
+      metadataEsperada: {
+        integrativo_tipo: 'assinatura',
+        usuario_id: req.usuario.id,
+        plano
+      }
+    });
+    if (!comprovacaoPagamento.comprovado) {
+      return res.status(402).json({
+        erro: 'Pagamento aprovado não encontrado para ativar este plano.',
+        motivo: comprovacaoPagamento.motivo
+      });
+    }
+
     const gatewayResposta = {
       cartao_final4: cartao_final4 || null,
       cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
-      observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Pagamento registrado sem identificador de gateway; estorno automático depende da administradora configurada.'
+      pagamento_comprovado: comprovacaoPagamento.comprovado,
+      motivo_pagamento: comprovacaoPagamento.motivo,
+      observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Plano sem cobrança de assinatura.'
     };
 
     const r = await db.query(
