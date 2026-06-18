@@ -8,6 +8,90 @@ const stripe = process.env.STRIPE_SECRET_KEY
 // Modo simulação (sem chave real)
 const modoTeste = process.env.TEST_MODE === 'true';
 
+function valorEmCentavos(valor) {
+    const numero = Number(valor);
+    if (!Number.isFinite(numero) || numero <= 0) return 0;
+    return Math.round(numero * 100);
+}
+
+function avaliarPagamentoAssinatura(paymentIntent, { valorEsperado, moeda = 'brl', metadataEsperada = {} } = {}) {
+    const valorEsperadoCentavos = valorEmCentavos(valorEsperado);
+    if (valorEsperadoCentavos <= 0) {
+        return { comprovado: true, motivo: 'sem_cobranca' };
+    }
+
+    if (!paymentIntent) {
+        return { comprovado: false, motivo: 'pagamento_ausente' };
+    }
+
+    if (paymentIntent.status !== 'succeeded') {
+        return { comprovado: false, motivo: 'pagamento_nao_aprovado', status: paymentIntent.status };
+    }
+
+    const moedaRecebida = String(paymentIntent.currency || '').toLowerCase();
+    if (moedaRecebida && moedaRecebida !== moeda) {
+        return { comprovado: false, motivo: 'moeda_invalida', moeda: moedaRecebida };
+    }
+
+    const valorRecebidoCentavos = Number(paymentIntent.amount_received ?? paymentIntent.amount ?? 0);
+    if (valorRecebidoCentavos < valorEsperadoCentavos) {
+        return {
+            comprovado: false,
+            motivo: 'valor_insuficiente',
+            valor_recebido_centavos: valorRecebidoCentavos,
+            valor_esperado_centavos: valorEsperadoCentavos
+        };
+    }
+
+    const metadata = paymentIntent.metadata || {};
+    const metadataInvalida = Object.entries(metadataEsperada)
+        .find(([chave, valor]) => String(metadata[chave] || '') !== String(valor));
+    if (metadataInvalida) {
+        return { comprovado: false, motivo: 'metadata_invalida', campo: metadataInvalida[0] };
+    }
+
+    return {
+        comprovado: true,
+        motivo: 'pagamento_confirmado',
+        gateway_id: paymentIntent.id,
+        valor_recebido_centavos: valorRecebidoCentavos
+    };
+}
+
+async function verificarPagamentoAssinatura({ paymentIntentId, valorEsperado, metadataEsperada = {} }) {
+    const valorEsperadoCentavos = valorEmCentavos(valorEsperado);
+    if (valorEsperadoCentavos <= 0) {
+        return { comprovado: true, motivo: 'sem_cobranca' };
+    }
+
+    if (!paymentIntentId) {
+        return { comprovado: false, motivo: 'pagamento_ausente' };
+    }
+
+    if (modoTeste && String(paymentIntentId).startsWith('test_')) {
+        return avaliarPagamentoAssinatura({
+            id: paymentIntentId,
+            status: 'succeeded',
+            amount_received: valorEsperadoCentavos,
+            currency: 'brl',
+            metadata: Object.fromEntries(
+                Object.entries(metadataEsperada).map(([chave, valor]) => [chave, String(valor)])
+            )
+        }, { valorEsperado, metadataEsperada });
+    }
+
+    if (!stripe) {
+        return { comprovado: false, motivo: 'stripe_nao_configurado' };
+    }
+
+    try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        return avaliarPagamentoAssinatura(paymentIntent, { valorEsperado, metadataEsperada });
+    } catch (error) {
+        return { comprovado: false, motivo: 'gateway_consulta_falhou', erro: error.message };
+    }
+}
+
 // Função para criar pagamento fictício
 async function criarPagamentoTeste(produto, valor, email) {
     if (!modoTeste && !stripe) {
@@ -87,6 +171,8 @@ async function emitirNFSimulada(dados) {
 module.exports = {
     stripe,
     modoTeste,
+    avaliarPagamentoAssinatura,
+    verificarPagamentoAssinatura,
     criarPagamentoTeste,
     estornarPagamento,
     emitirNFSimulada
