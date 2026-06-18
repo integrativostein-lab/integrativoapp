@@ -173,10 +173,14 @@ GET    /api/validacao/status/:prof_id    # Status de validação
 
 ### Assinaturas e Pagamentos
 ```
-POST   /api/financeiro/processar-pagamento  # Processar pagamento
-GET    /api/financeiro/assinaturas/:user_id # Listar assinaturas
-POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
+POST   /api/financeiro/simular-parcelamento     # Simular PIX/cartao antes do checkout
+POST   /api/financeiro/renovar-assinatura       # Criar assinatura pendente de validacao
+POST   /api/financeiro/validar-assinatura-codigo # Ativar assinatura com codigo de 6 digitos
+POST   /api/financeiro/cancelar-assinatura      # Cancelar assinatura ativa e calcular estorno
+GET    /api/financeiro/meus-pagamentos          # Listar pagamentos do usuario autenticado
 ```
+
+Runbook: `arquitecture today/assinaturas-pagamentos.md`
 
 ---
 
@@ -198,11 +202,11 @@ POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 
 ### Checkout
 1. Usuário seleciona plano
-2. Escolhe PIX (5% desconto) ou Cartão (até 12x)
-3. Se cartão: seleciona número de parcelas
-4. Preenche dados pessoais
-5. Submete para `/api/financeiro/processar-pagamento`
-6. Assinatura é ativada por 1 ano
+2. Escolhe PIX (5% desconto, exceto Guardiões da Floresta) ou Cartão (até 12x com juros)
+3. Informa cartão obrigatório para teleconsultas e serviços, inclusive em Freemium/PIX
+4. Submete para `/api/financeiro/renovar-assinatura`
+5. Recebe código por email/WhatsApp e valida em `/api/financeiro/validar-assinatura-codigo`
+6. Após validação, a assinatura é ativada por 1 ano ou marcada como vitalícia quando houver cupom aplicável
 
 ---
 
@@ -251,6 +255,12 @@ PAGSEGURO_TOKEN=seu_token
 PAGBANK_KEY=sua_chave
 ASAAS_API_KEY=sua_chave
 # ... etc
+
+# Checkout, estornos e notificações
+STRIPE_SECRET_KEY=sk_test_...
+EMAIL_WEBHOOK_URL=https://seu-webhook-email
+EVOLUTION_API_URL=https://sua-evolution-api.com
+EVOLUTION_API_KEY=sua_chave
 ```
 
 ---
