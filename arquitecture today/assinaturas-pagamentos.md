@@ -227,17 +227,17 @@ curl -X POST http://localhost:3000/api/financeiro/validar-assinatura-codigo \
 
 ## Troubleshooting
 
-**Erro: "Cartao de credito obrigatorio..."**  
+**Erro: "Cartao de credito obrigatorio..."**
 O checkout deve enviar `cartao_obrigatorio_confirmado: true` e `cartao_final4`. Isso e exigido ate para plano gratuito.
 
-**Assinatura criada, mas usuario continua Freemium**  
+**Assinatura criada, mas usuario continua Freemium**
 Verifique se `/validar-assinatura-codigo` foi chamado com o codigo correto antes da expiracao de 15 minutos.
 
-**Codigo nunca chega**  
+**Codigo nunca chega**
 Sem `EMAIL_WEBHOOK_URL`, o email fica em log como `[EMAIL SIMULADO]`. Para WhatsApp, confira Evolution API ou use `EVOLUTION_SIMULATE=true` em alfa/teste.
 
-**Cancelamento calculou estorno, mas nao enviou ao gateway**  
+**Cancelamento calculou estorno, mas nao enviou ao gateway**
 Confira se `assinaturas.gateway_id` foi preenchido. Sem ele o backend retorna `nao_enviado` e o financeiro deve processar manualmente.
 
-**Erro de coluna na tabela `assinaturas`**  
+**Erro de coluna na tabela `assinaturas`**
 Compare a base com a lista de colunas deste runbook. A migracao SQL principal esta defasada para este fluxo e precisa ser complementada antes do teste de checkout.
