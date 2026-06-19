@@ -178,6 +178,13 @@ GET    /api/financeiro/assinaturas/:user_id # Listar assinaturas
 POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 ```
 
+### Teleconsulta LiveKit
+```
+POST   /api/reunioes/livekit-token          # Gerar token de sala LiveKit autenticada
+```
+
+Detalhes de arquitetura, variaveis e troubleshooting: `arquitecture today/teleconsulta-livekit.md`.
+
 ---
 
 ## 🔄 Fluxos Principais

@@ -95,11 +95,19 @@ Depois de criar o banco, rode as migracoes do projeto nessa base antes de libera
 
 ## LiveKit / Teleconsulta
 
+Runbook tecnico completo:
+
+```text
+arquitecture today/teleconsulta-livekit.md
+```
+
 O backend gera tokens seguros pela rota:
 
 ```text
 POST /api/reunioes/livekit-token
 ```
+
+Essa rota exige `Authorization: Bearer <jwt-da-aplicacao>`, valida o JWT com `JWT_SECRET` e retorna `url`, `token` e `sala`. O nome da sala e normalizado para letras, numeros, `_` e `-`, com limite de 80 caracteres.
 
 O frontend de teste usa:
 
@@ -108,6 +116,22 @@ O frontend de teste usa:
 ```
 
 As chaves reais do LiveKit devem ficar somente em variaveis de ambiente do Render e nos arquivos locais `.env` / `.env.teste`, que nao devem ir para o GitHub.
+
+Variaveis obrigatorias para sala real:
+
+```text
+LIVEKIT_URL
+LIVEKIT_API_KEY
+LIVEKIT_API_SECRET
+JWT_SECRET
+CORS_ORIGINS
+```
+
+Se `LIVEKIT_URL`, `LIVEKIT_API_KEY` ou `LIVEKIT_API_SECRET` estiverem ausentes, `/api/reunioes/livekit-token` retorna `500` com erro de LiveKit nao configurado.
+
+Recursos implementados hoje: conexao WebRTC, audio/video local, video remoto, lista simples de participantes, mute, camera off, compartilhamento de tela e saida da sala.
+
+Recursos ainda nao persistentes: gravacao, download/expurgo de gravacoes, autorizacao formal de gravacao e chat em tempo real. Na tela atual, gravacao e chat sao controles locais de interface.
 
 ## Acesso dos testadores
 

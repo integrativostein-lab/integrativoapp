@@ -1,20 +1,28 @@
-[Profissional inicia teleconsulta]
-        │
-        ├── Sistema gera link único da sala (WebRTC)
-        ├── Paciente recebe link por WhatsApp/Email
-        │
-        ├── [Paciente entra na sala]
-        │       │
-        │       ├── Presença detectada automaticamente
-        │       └── Status: "Em andamento"
-        │
-        ├── [Durante a consulta]
-        │       ├── Chat em tempo real
-        │       ├── Acesso ao prontuário
-        │       ├── Prescrição durante a consulta
-        │       └── Gravação (se autorizada pelo paciente)
-        │
-        └── [Fim da consulta]
-                ├── Status: "Realizado"
-                ├── Gravação disponível por 30 dias (se autorizada)
-                └── NF disponível para emissão
+[Usuario autenticado abre reuniao.html?sala=<sala>]
+        |
+        |-- Frontend le integra_token do localStorage
+        |-- Frontend chama POST /api/reunioes/livekit-token
+        |       |
+        |       |-- Backend valida JWT da aplicacao
+        |       |-- Backend normaliza sala
+        |       |-- Backend gera token LiveKit com TTL de 2h
+        |       `-- Resposta: url, token, sala
+        |
+        |-- Frontend conecta no LiveKit
+        |       |
+        |       |-- Publica camera e microfone locais
+        |       |-- Assina video remoto
+        |       |-- Permite mute/camera off
+        |       `-- Permite compartilhamento de tela
+        |
+        `-- Usuario sai da sala
+                |
+                `-- Frontend chama room.disconnect()
+
+Limites atuais:
+- Chat fica apenas no DOM local da pagina; nao ha chat em tempo real persistente.
+- Gravacao alterna somente estado visual; nao ha arquivo gravado, download ou expurgo automatico.
+- Status do agendamento nao e atualizado automaticamente pela entrada ou saida da sala.
+- Envio de link por WhatsApp/Email nao faz parte deste fluxo implementado.
+
+Runbook: arquitecture today/teleconsulta-livekit.md
