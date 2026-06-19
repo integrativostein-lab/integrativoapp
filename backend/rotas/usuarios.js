@@ -36,7 +36,14 @@ function unicas(lista) {
 }
 
 router.get('/perfil', autenticar, async (req, res) => {
-  const r = await db.query('SELECT id, nome, email, telefone, cpf, tipo, registro_profissional, conselho_classe, uf_conselho, registro_abrath, cnpj, cidade, estado, especialidades, atende_online, atende_presencial, plano, certificado_digital_senha FROM usuarios WHERE id = $1', [req.usuario.id]);
+  const r = await db.query(
+    `SELECT id, nome, email, telefone, cpf, tipo, registro_profissional, conselho_classe,
+            uf_conselho, registro_abrath, cnpj, cidade, estado, especialidades,
+            atende_online, atende_presencial, plano,
+            (certificado_digital_senha IS NOT NULL AND certificado_digital_senha <> '') AS certificado_digital_configurado
+     FROM usuarios WHERE id = $1`,
+    [req.usuario.id]
+  );
   if (r.rows.length === 0) return res.status(404).json({ erro: 'Não encontrado' });
   const u = r.rows[0];
   if (u.tipo === 'paciente') {
