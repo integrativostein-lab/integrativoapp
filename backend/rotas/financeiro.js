@@ -4,7 +4,7 @@ const router = express.Router();
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
-const { estornarPagamento } = require('../config/stripe');
+const { estornarPagamento, stripe, modoTeste } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
 
 // ============================================
@@ -92,6 +92,136 @@ async function criarValidacaoAssinatura({ assinaturaId, usuario }) {
 
 function moeda(valor) {
   return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function valorEmCentavos(valor) {
+  return Math.round((Number(valor) || 0) * 100);
+}
+
+function parseGatewayResposta(valor) {
+  if (!valor) return {};
+  if (typeof valor === 'object') return valor;
+  try {
+    return JSON.parse(valor);
+  } catch {
+    return {};
+  }
+}
+
+function assinaturaTemPagamentoVerificado(ass) {
+  const resposta = parseGatewayResposta(ass.gateway_resposta);
+  return Boolean(
+    ass.gateway_id &&
+    resposta.pagamento_verificado === true &&
+    resposta.gateway_id === ass.gateway_id
+  );
+}
+
+async function validarPagamentoAssinatura({ gatewayId, valorEsperado, usuarioId, plano }) {
+  const valorCentavos = valorEmCentavos(valorEsperado);
+  if (valorCentavos <= 0) {
+    return {
+      ok: true,
+      gatewayId: null,
+      gatewayResposta: {
+        pagamento_verificado: false,
+        status: 'isento',
+        mensagem: 'Plano sem valor a cobrar.'
+      }
+    };
+  }
+
+  const paymentIntentId = String(gatewayId || '').trim();
+  if (!paymentIntentId) {
+    return {
+      ok: false,
+      status: 402,
+      erro: 'Pagamento confirmado pelo gateway é obrigatório para ativar planos pagos.'
+    };
+  }
+
+  if (modoTeste && process.env.ALLOW_SUBSCRIPTION_PAYMENT_SIMULATION === 'true') {
+    const prefixoEsperado = `test_subscription_${usuarioId}_${plano}_`;
+    if (!paymentIntentId.startsWith(prefixoEsperado)) {
+      return {
+        ok: false,
+        status: 402,
+        erro: 'Pagamento simulado inválido para esta assinatura.'
+      };
+    }
+    return {
+      ok: true,
+      gatewayId: paymentIntentId,
+      gatewayResposta: {
+        pagamento_verificado: true,
+        gateway_id: paymentIntentId,
+        status: 'succeeded',
+        amount_received: valorCentavos,
+        currency: 'brl',
+        simulated: true,
+        metadata: { tipo: 'assinatura', usuario_id: String(usuarioId), plano }
+      }
+    };
+  }
+
+  if (!stripe) {
+    return {
+      ok: false,
+      status: 503,
+      erro: 'Gateway de pagamento não configurado para confirmar assinatura.'
+    };
+  }
+
+  let paymentIntent;
+  try {
+    paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  } catch (error) {
+    console.warn('[financeiro/assinatura] falha ao consultar gateway:', error.message);
+    return {
+      ok: false,
+      status: 402,
+      erro: 'Não foi possível confirmar o pagamento informado.'
+    };
+  }
+
+  const metadata = paymentIntent.metadata || {};
+  const amountReceived = Number(paymentIntent.amount_received ?? paymentIntent.amount ?? 0);
+  const currency = String(paymentIntent.currency || '').toLowerCase();
+  const usuarioMetadata = metadata.usuario_id || metadata.usuarioId || metadata.user_id;
+  const tipoMetadata = metadata.tipo || metadata.type;
+  const planoMetadata = metadata.plano || metadata.plan;
+
+  if (
+    paymentIntent.status !== 'succeeded' ||
+    currency !== 'brl' ||
+    amountReceived < valorCentavos ||
+    String(usuarioMetadata) !== String(usuarioId) ||
+    tipoMetadata !== 'assinatura' ||
+    planoMetadata !== plano
+  ) {
+    return {
+      ok: false,
+      status: 402,
+      erro: 'Pagamento não confirmado para este usuário, plano e valor.'
+    };
+  }
+
+  return {
+    ok: true,
+    gatewayId: paymentIntent.id,
+    gatewayResposta: {
+      pagamento_verificado: true,
+      gateway_id: paymentIntent.id,
+      status: paymentIntent.status,
+      amount_received: amountReceived,
+      currency,
+      metadata: {
+        tipo: tipoMetadata,
+        usuario_id: String(usuarioMetadata),
+        plano: planoMetadata
+      }
+    }
+  };
 }
 
 function montarReciboCancelamento({ ass, diasUsados, mesesUsados, mesesRestantes, valorMensalEquivalente, valorRestante, multa, certificadoCobrado, valorEstorno, estornoGateway }) {
@@ -289,6 +419,16 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
       : calcularParcelamento(valor, parcelas || 1, forma_pagamento, plano !== 'guardioes_floresta');
 
+    const pagamentoAssinatura = await validarPagamentoAssinatura({
+      gatewayId: gateway_id,
+      valorEsperado: calc.valorTotal,
+      usuarioId: req.usuario.id,
+      plano
+    });
+    if (!pagamentoAssinatura.ok) {
+      return res.status(pagamentoAssinatura.status).json({ erro: pagamentoAssinatura.erro });
+    }
+
     const dataExpiracao = new Date();
     if (vitalicio) dataExpiracao.setFullYear(2099);
     else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
@@ -296,14 +436,17 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     const gatewayResposta = {
       cartao_final4: cartao_final4 || null,
       cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
-      observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Pagamento registrado sem identificador de gateway; estorno automático depende da administradora configurada.'
+      ...pagamentoAssinatura.gatewayResposta,
+      observacao: pagamentoAssinatura.gatewayResposta.pagamento_verificado
+        ? 'Pagamento confirmado pelo gateway antes da validacao da assinatura.'
+        : 'Assinatura sem valor a cobrar.'
     };
 
     const r = await db.query(
       `INSERT INTO assinaturas (usuario_id, plano, tipo_ciclo, valor, data_inicio, data_expiracao, parcelas, renovacao_automatica, status, forma_pagamento, gateway_id, gateway_resposta)
        VALUES ($1, $2, $3, $4, NOW(), $5, $6, 0, 'pendente_validacao', $7, $8, $9) RETURNING id`,
       [req.usuario.id, plano, vitalicio ? 'vitalicio' : 'anual', calc.valorTotal,
-        dataExpiracao.toISOString().split('T')[0], calc.parcelas, forma_pagamento || null, gateway_id || null, JSON.stringify(gatewayResposta)]
+        dataExpiracao.toISOString().split('T')[0], calc.parcelas, forma_pagamento || null, pagamentoAssinatura.gatewayId, JSON.stringify(gatewayResposta)]
     );
 
     const usuario = await buscarUsuarioContato(req.usuario.id);
@@ -338,6 +481,9 @@ router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
     const ass = a.rows[0];
     if (ass.status !== 'pendente_validacao') {
       return res.status(400).json({ erro: 'Assinatura não está pendente de validação' });
+    }
+    if (Number(ass.valor || 0) > 0 && !assinaturaTemPagamentoVerificado(ass)) {
+      return res.status(402).json({ erro: 'Pagamento confirmado pelo gateway é obrigatório para ativar planos pagos.' });
     }
 
     const v = await db.query(
@@ -431,25 +577,33 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
     };
 
     if (valorEstorno > 0) {
-      try {
-        estornoGateway = await estornarPagamento({
-          paymentIntentId: ass.gateway_id,
-          valor: parseFloat(valorEstorno.toFixed(2)),
-          motivo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS ? 'requested_by_customer' : 'requested_by_customer'
-        });
-        if (estornoGateway.status === 'succeeded') {
-          mensagem += ' Estorno automático enviado à administradora do cartão.';
-        } else if (estornoGateway.status === 'nao_enviado') {
-          mensagem += ' Estorno calculado, mas sem identificador do gateway para envio automático.';
-        } else {
-          mensagem += ' Estorno solicitado à administradora e aguardando confirmação.';
-        }
-      } catch (errEstorno) {
+      if (ass.gateway_id && !assinaturaTemPagamentoVerificado(ass)) {
         estornoGateway = {
-          status: 'erro',
-          erro: errEstorno.message
+          status: 'bloqueado',
+          mensagem: 'Estorno automático bloqueado porque o pagamento não foi confirmado pelo servidor.'
         };
-        mensagem += ' Estorno automático não confirmado; encaminhar para revisão financeira.';
+        mensagem += ' Estorno automático bloqueado; encaminhar para revisão financeira.';
+      } else {
+        try {
+          estornoGateway = await estornarPagamento({
+            paymentIntentId: ass.gateway_id,
+            valor: parseFloat(valorEstorno.toFixed(2)),
+            motivo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS ? 'requested_by_customer' : 'requested_by_customer'
+          });
+          if (estornoGateway.status === 'succeeded') {
+            mensagem += ' Estorno automático enviado à administradora do cartão.';
+          } else if (estornoGateway.status === 'nao_enviado') {
+            mensagem += ' Estorno calculado, mas sem identificador do gateway para envio automático.';
+          } else {
+            mensagem += ' Estorno solicitado à administradora e aguardando confirmação.';
+          }
+        } catch (errEstorno) {
+          estornoGateway = {
+            status: 'erro',
+            erro: errEstorno.message
+          };
+          mensagem += ' Estorno automático não confirmado; encaminhar para revisão financeira.';
+        }
       }
     }
 
@@ -526,3 +680,9 @@ router.get('/dashboard', autenticar, async (req, res) => {
 });
 
 module.exports = router;
+module.exports._internals = {
+  valorEmCentavos,
+  parseGatewayResposta,
+  assinaturaTemPagamentoVerificado,
+  validarPagamentoAssinatura
+};
