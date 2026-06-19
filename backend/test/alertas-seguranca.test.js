@@ -32,12 +32,12 @@ test('verificar does not match interaction when only the practice is present', (
 
 test('verificar applies the most restrictive decision when sources diverge', () => {
   const resultado = motor.verificar({
-    pratica: 'Apiterapia com mel',
-    alergias: ['própolis']
+    pratica: 'Aromaterapia com óleo essencial de alecrim',
+    condicoes: ['epilepsia']
   });
 
-  assert.equal(resultado.maior_gravidade, 'critica');
-  assert.equal(resultado.alertas[0].regra_id, 'APITERAPIA_ALERGIA_001');
+  assert.equal(resultado.maior_gravidade, 'alta');
+  assert.equal(resultado.alertas[0].regra_id, 'AROMATERAPIA_EPILEPSIA_001');
   assert.deepEqual(resultado.alertas[0].divergencia, {
     divergente: true,
     posicao_mais_restritiva: 'contraindicado'
