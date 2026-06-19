@@ -24,6 +24,7 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 
 ## 3. Teleconsulta LiveKit
 
+- Consultar o runbook `arquitecture today/teleconsulta-livekit.md` se houver erro de token, CORS ou permissao de camera/microfone.
 - Abrir `/reuniao.html?sala=teleconsulta-alfa` como profissional.
 - Permitir camera e microfone no navegador.
 - Abrir a mesma sala em outro navegador/dispositivo como paciente.
@@ -32,6 +33,8 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 - Testar desligar camera.
 - Testar compartilhamento de tela.
 - Sair da sala e confirmar que a conexao encerra.
+- Confirmar que a gravacao nao foi tratada como persistente: o botao atual altera apenas o estado visual da pagina.
+- Confirmar que o chat nao foi tratado como recurso em tempo real: a mensagem atual fica somente no DOM local da pagina.
 
 ## 4. Fluxos essenciais
 
@@ -48,4 +51,6 @@ Use este roteiro depois de configurar as variaveis no Render e fazer deploy limp
 
 - Gravacao real da teleconsulta.
 - Transcricao/STT da teleconsulta.
+- Chat em tempo real persistente da teleconsulta.
+- Atualizacao automatica de status do agendamento pela entrada/saida da sala.
 - Banco alfa separado dedicado, se os testes exigirem isolamento completo de dados.

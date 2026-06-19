@@ -13,6 +13,7 @@ Atualizado em: 2026-06-13
 - LiveKit integrado ao backend pela rota `POST /api/reunioes/livekit-token`.
 - Tela `frontend/reuniao.html` conectada ao SDK WebRTC do LiveKit.
 - Variaveis LiveKit previstas em `.env.example` e `render.yaml`.
+- Runbook tecnico da teleconsulta: `arquitecture today/teleconsulta-livekit.md`.
 - Arquivos sensiveis `.env` e `.env.teste` protegidos fora do Git.
 - Frontend alfa configurado para usar o backend espelho `integrativoappespelho`.
 - Backend espelho `https://integrativoappespelho.onrender.com` online em `NODE_ENV=test` e `TEST_MODE=true`.
@@ -53,4 +54,4 @@ Atualizado em: 2026-06-13
 1. Aguardar o deploy do frontend alfa com o endpoint `integrativoappespelho`.
 2. Abrir a URL publica do frontend alfa e confirmar chamadas para `https://integrativoappespelho.onrender.com/api`.
 3. Testar login, cadastro, biblioteca, prescricao e teleconsulta.
-4. Validar LiveKit real quando as chaves finais estiverem no Render.
+4. Validar LiveKit real quando as chaves finais estiverem no Render, seguindo `arquitecture today/teleconsulta-livekit.md`.
