@@ -263,51 +263,40 @@
     </section>
   </main>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
   <script>
     const token = localStorage.getItem('integra_token');
     if (!token) window.location.href = 'login.html';
 
+    const Catalogo = CONFIG.Catalogo || CatalogoTerapeutico;
     const usuarioLocal = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
     let estado = {
       plano: usuarioLocal.plano || 'freemium',
-      limite: CONFIG.PLANOS[usuarioLocal.plano || 'freemium']?.especialidades_inclusas || 1,
+      limite: Catalogo.limitePlano(CONFIG, usuarioLocal.plano || 'freemium'),
       bibliotecas: []
     };
     let termo = '';
     let timerAlertasSeguranca = null;
 
-    const aliases = {
-      'Medicina Tradicional Chinesa': 'MTC',
-      'Yoga (instrutor)': 'Yoga',
-      'Médico (clínico geral)': 'Medicina Tradicional',
-      'Psicólogo(a)': 'Saúde Mental',
-      'Enfermeiro(a)': 'Enfermagem',
-      'Odontólogo(a)': 'Odontologia',
-      'Farmacêutico(a)': 'Farmacologia',
-      'Educador Físico': 'Atividade Física'
-    };
-
     function normalizar(texto) {
-      return String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return Catalogo.normalizarTexto(texto);
     }
 
     function nomesLiberados() {
-      return estado.bibliotecas.map((nome) => aliases[nome] || nome);
+      return Catalogo.resolverNomesBibliotecas(estado.bibliotecas);
     }
 
     function bibliotecaCorresponde(item, nomes) {
-      const alvo = normalizar(item.especialidade);
-      return nomes.some((nome) => {
-        const n = normalizar(nome);
-        return alvo === n || alvo.includes(n) || n.includes(alvo);
-      });
+      return Catalogo.bibliotecaCorresponde(item, nomes);
     }
 
     function filtrar(lista) {
-      const busca = normalizar(termo);
-      if (!busca) return lista;
-      return lista.filter((item) => normalizar(`${item.especialidade} ${item.categoria} ${item.base} ${item.fontes}`).includes(busca));
+      return Catalogo.filtrarPorTermo(
+        lista,
+        termo,
+        (item) => `${item.especialidade} ${item.categoria} ${item.base} ${item.fontes}`
+      );
     }
 
     function card(item) {
@@ -324,8 +313,8 @@
     function renderizar() {
       const nomes = nomesLiberados();
       const todas = CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz;
-      const transversais = todas.filter((item) => item.categoria === 'Biblioteca transversal');
-      const doPlano = todas.filter((item) => item.categoria !== 'Biblioteca transversal' && bibliotecaCorresponde(item, nomes));
+      const transversais = todas.filter(Catalogo.isTransversal);
+      const doPlano = todas.filter((item) => !Catalogo.isTransversal(item) && bibliotecaCorresponde(item, nomes));
       const planoFiltrado = filtrar(doPlano);
       const transversaisFiltradas = filtrar(transversais);
 

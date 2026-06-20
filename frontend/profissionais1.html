@@ -13,9 +13,6 @@
   <title>Para Profissionais — Integrativo.App com Protocolos e Teleconsulta</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
-    /* ============================================
-       ESTILOS GERAIS
-    ============================================ */
     .hero-pro {
       background: linear-gradient(135deg, var(--azul-profundo) 0%, #1f3a5f 60%, var(--verde-destaque) 140%);
       color: var(--branco);
@@ -164,6 +161,7 @@
     }
     .grupo input[readonly] { background: #F1F5F9; cursor: not-allowed; }
 
+    /* Caixa condicional de registro */
     .caixa-registro {
       background: linear-gradient(180deg, #F0FDF4 0%, #FAFFFC 100%);
       border: 1px solid #BBF7D0;
@@ -319,6 +317,7 @@
     .status-pill.warn { background: #FEF3C7; color: #92400E; }
     .status-pill.err  { background: #FEE2E2; color: #991B1B; }
 
+    /* Botões e mensagens */
     .msg { padding: 10px 12px; border-radius: 8px; margin-bottom: 14px; font-size: 13px; display: none; }
     .msg.ok  { display: block; background: #DCFCE7; color: #166534; }
     .msg.err { display: block; background: #FEE2E2; color: #991B1B; }
@@ -340,6 +339,7 @@
     .lgpd { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: var(--texto-suave); margin: 6px 0 4px; }
     .lgpd input { margin-top: 3px; }
 
+    /* Tabela de planos (mesmo estilo da home) */
     .planos-secao { padding: 80px 24px; background: var(--off-white); }
     .planos-secao .container { max-width: 1200px; margin: 0 auto; }
     .planos-secao h2 { text-align: center; margin-bottom: 8px; }
@@ -369,7 +369,7 @@
       .resultado-economia { grid-template-columns: 1fr; }
       .selo-abrath { align-items: flex-start; }
     }
-
+    /* Accordion para bibliotecas */
     .accordion-item {
       border: 1px solid #e2edf2;
       border-radius: 12px;
@@ -407,13 +407,14 @@
       max-height: 400px;
       padding: 16px 18px;
     }
+    /* Estilos para métricas alinhadas */
     .bibliotecas-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 2rem;
-      margin-bottom: 1rem;
+      margin-bottom: 2rem;
     }
     .bibliotecas-head > div:first-child {
       flex: 2;
@@ -441,151 +442,6 @@
       font-size: 0.8rem;
       color: #5e7e93;
     }
-    .grid-padroes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin: 1.5rem 0;
-    }
-    .card-padrao {
-      background: #f8fafc;
-      padding: 1rem;
-      border-radius: 0.8rem;
-    }
-    .card-padrao strong {
-      font-size: 1rem;
-    }
-
-    .bibliotecas-secao {
-      padding: 40px 24px;
-      background: #FAFBFC;
-    }
-    .bibliotecas-card {
-      max-width: 1180px;
-      margin: 0 auto;
-      background: var(--branco);
-      border-radius: 22px;
-      padding: 34px;
-      box-shadow: var(--sombra-elevada);
-      border: 1px solid #E2E8F0;
-    }
-    .tag-plano {
-      display: inline-block;
-      background: #ECFDF5;
-      color: #047857;
-      border-radius: 100px;
-      padding: 4px 14px;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .bibliotecas-subtitulo {
-      color: var(--azul-profundo);
-      font-size: 18px;
-      margin-bottom: 12px;
-    }
-    .protocolos-lista {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .protocolo-item {
-      background: #F1F5F9;
-      padding: 4px 12px;
-      border-radius: 100px;
-      font-size: 12px;
-      color: var(--azul-profundo);
-    }
-    .bibliotecas-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 8px;
-    }
-    .biblioteca-chip {
-      background: #F1F5F9;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      color: var(--azul-profundo);
-      text-align: center;
-    }
-    .fontes-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 8px;
-    }
-    .fonte-card {
-      background: #F8FAFC;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
-      color: var(--texto-principal);
-      border: 1px solid #E2E8F0;
-    }
-
-    /* ============================================
-       ODS - PREENCHENDO A LINHA INTEIRA
-       ============================================ */
-    .ods-bloco {
-      margin: 24px 0;
-      padding: 20px;
-      background: #F8FAFC;
-      border-radius: 16px;
-      border: 1px solid #E2E8F0;
-    }
-    .ods-bloco h3 {
-      color: var(--azul-profundo);
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-    .ods-bloco p {
-      color: var(--texto-suave);
-      font-size: 14px;
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-    .ods-grid {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 12px;
-      width: 100%;
-      overflow-x: auto;
-      padding: 4px 0;
-    }
-    .ods-item {
-      flex: 1 1 0;
-      min-width: 70px;
-      max-width: 120px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #FFF;
-      border-radius: 12px;
-      padding: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      border: 1px solid #E2E8F0;
-      transition: var(--transicao);
-      aspect-ratio: 1 / 1;
-    }
-    .ods-item:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--sombra-elevada);
-      border-color: var(--verde-destaque);
-    }
-    .ods-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-    }
-    @media (max-width: 768px) {
-      .ods-grid { gap: 8px; }
-      .ods-item { min-width: 55px; max-width: 90px; padding: 6px; }
-    }
-    @media (max-width: 480px) {
-      .ods-item { min-width: 45px; max-width: 70px; padding: 4px; }
-      .ods-grid { gap: 6px; }
-    }
   </style>
 </head>
 <body>
@@ -604,7 +460,8 @@
 
   <header class="hero-pro">
     <h1>Cadastre-se como profissional</h1>
-    <p>Tenha sua agenda, prontuário, teleconsulta e pagamentos integrados. Validamos seu registro online junto ao conselho competente.</p>
+    <p>Tenha sua agenda, prontuário, teleconsulta e pagamentos integrados.
+       Validamos seu registro online junto ao conselho competente.</p>
   </header>
 
   <!-- BIBLIOTECAS TERAPÊUTICAS -->
@@ -614,41 +471,46 @@
         <div>
           <span class="tag-plano">Apoio técnico · Segurança clínica</span>
           <h2>Apoio ao profissional com 79 bibliotecas oficiais</h2>
-          <p>Diferente de sistemas baseados em IA, o Integrativo.App utiliza um <strong>algoritmo exclusivo</strong> apoiado em <strong>79 bibliotecas terapêuticas reconhecidas por órgãos oficiais</strong>: ANVISA, OMS (WHO), NCCIH, Ministério da Saúde e diretrizes públicas de PICS.</p>
-          <p>A partir das informações do paciente, o sistema oferece — <strong>em caráter auxiliar</strong> — sugestões contextualizadas, alertas de segurança e protocolos associados, promovendo uma <strong>personalização do tratamento adequada a cada paciente</strong>.</p>
-          <p><strong>⚠️ A decisão clínica final permanece exclusivamente com o profissional de saúde.</strong> A plataforma não substitui médicos, não fecha diagnósticos e nunca age como caixa‑preta.</p>
-          <p><strong>🔍 Tudo é rastreável e auditável.</strong> Cada sugestão pode ser verificada nas fontes públicas que a originaram. <strong>Segurança clínica com transparência, sem achismo de IA.</strong></p>
+          <p>
+            Diferente de sistemas baseados em IA, o Integrativo.App utiliza um <strong>algoritmo exclusivo</strong> apoiado em <strong>79 bibliotecas terapêuticas reconhecidas por órgãos oficiais</strong>: ANVISA, OMS (WHO), NCCIH, Ministério da Saúde e diretrizes públicas de PICS.
+          </p>
+          <p>
+            A partir das informações do paciente, o sistema oferece — <strong>em caráter auxiliar</strong> — sugestões contextualizadas, alertas de segurança e protocolos associados, promovendo uma <strong>personalização do tratamento adequada a cada paciente</strong>.
+          </p>
+          <p>
+            <strong>⚠️ A decisão clínica final permanece exclusivamente com o profissional de saúde.</strong> A plataforma não substitui médicos, não fecha diagnósticos e nunca age como caixa‑preta.
+          </p>
+          <p>
+            <strong>🔍 Tudo é rastreável e auditável.</strong> Cada sugestão pode ser verificada nas fontes públicas que a originaram. <strong>Segurança clínica com transparência, sem achismo de IA.</strong>
+          </p>
         </div>
         <div class="bibliotecas-metricas" id="bibliotecasMetricasProf"></div>
       </div>
 
-      <div class="grid-padroes">
-        <div class="card-padrao">
+      <div class="padroes-saude-grid" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+        <div class="padrao-saude-card" style="flex: 1; background: #f8fafc; padding: 1rem; border-radius: 0.8rem;">
           <strong>FHIR</strong>
           <p style="margin-top: 0.5rem; font-size: 0.85rem;">Organização clínica orientada ao padrão HL7 FHIR para facilitar interoperabilidade, troca estruturada de dados, histórico do paciente, registros de atendimento e integração futura com prontuários e sistemas de saúde.</p>
         </div>
-        <div class="card-padrao">
+        <div class="padrao-saude-card" style="flex: 1; background: #f8fafc; padding: 1rem; border-radius: 0.8rem;">
           <strong>TISS</strong>
           <p style="margin-top: 0.5rem; font-size: 0.85rem;">Estrutura compatível com o padrão TISS da ANS para apoiar guias, eventos assistenciais, informações administrativas e preparação de fluxos de faturamento com operadoras e convênios.</p>
         </div>
       </div>
 
-      <!-- ============================================ -->
-      <!-- ODS - ALINHAMENTO (LINHA COMPLETA)            -->
-      <!-- ============================================ -->
       <div class="ods-bloco" style="margin-bottom: 24px;">
         <h3>Alinhamento com os Objetivos de Desenvolvimento Sustentável</h3>
         <p>O Integrativo.App se alinha aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17 ao fortalecer saúde integrativa, educação profissional, trabalho digno, inovação, redução de desigualdades, proteção ambiental, ética institucional e parcerias. Este alinhamento é institucional e não representa certificação ou endosso oficial da ONU.</p>
         <div class="ods-grid">
-          <span class="ods-item"><img src="img/ods/3.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/4.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/8.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/9.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-03.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-04.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-08.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-09.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
+          <span class="ods-item"><img src="https://sdgs.un.org/sites/default/files/goals/E-WEB-Goal-17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
         </div>
       </div>
 
@@ -690,7 +552,9 @@
     <section class="form-card">
       <h2>Cadastro de Profissional</h2>
       <p class="sub">Preencha seus dados. A verificação do conselho é online e leva poucos segundos.</p>
+
       <div id="msg" class="msg"></div>
+
       <form id="formProfissional" autocomplete="on">
         <!-- DADOS PESSOAIS -->
         <fieldset>
@@ -730,6 +594,7 @@
               <option value="">Selecione sua profissão ou área...</option>
             </select>
           </div>
+
           <div class="grupo caixa-fluxo" id="caixaEspecialidades">
             <label for="especialidade">Especialidade principal</label>
             <select id="especialidade" required disabled>
@@ -926,9 +791,6 @@
   <script src="js/config.js"></script>
   <script src="js/voz.js"></script>
   <script>
-    // ============================================
-    // CÓDIGO JS (mantido o mesmo)
-    // ============================================
     const $ = (s) => document.querySelector(s);
     const msgEl = $('#msg');
     const showMsg = (t, type) => { msgEl.textContent = t; msgEl.className = 'msg ' + (type === 'ok' ? 'ok' : 'err'); };
@@ -945,12 +807,30 @@
     }
 
     // ============================================
-    // CALCULADORA COMPARATIVA
+    // CALCULADORA COMPARATIVA (com comissões corretas)
     // ============================================
     const concorrentes = [
-      { nome: 'Concorrente 1', mensal: 89.90, comissao_pct: 20, recursos: ['Perfil em marketplace', 'Agenda online', 'Chamadas online', 'Repasse por atendimento'], observacao: 'Modelo focado em captação e intermediação.' },
-      { nome: 'Concorrente 2', mensal: 129.00, comissao_pct: 15, recursos: ['Agenda online', 'Página profissional', 'Confirmação de consultas', 'Reputação pública'], observacao: 'Boa vitrine, mas recursos clínicos dependem do plano contratado.' },
-      { nome: 'Concorrente 3', mensal: 189.00, comissao_pct: 8, recursos: ['Gestão clínica', 'Prontuário', 'Financeiro', 'Agenda', 'Módulos administrativos'], observacao: 'Custo tende a crescer com módulos extras e equipe.' }
+      {
+        nome: 'Concorrente 1',
+        mensal: 89.90,
+        comissao_pct: 20,
+        recursos: ['Perfil em marketplace', 'Agenda online', 'Chamadas online', 'Repasse por atendimento'],
+        observacao: 'Modelo focado em captação e intermediação.'
+      },
+      {
+        nome: 'Concorrente 2',
+        mensal: 129.00,
+        comissao_pct: 15,
+        recursos: ['Agenda online', 'Página profissional', 'Confirmação de consultas', 'Reputação pública'],
+        observacao: 'Boa vitrine, mas recursos clínicos dependem do plano contratado.'
+      },
+      {
+        nome: 'Concorrente 3',
+        mensal: 189.00,
+        comissao_pct: 8,
+        recursos: ['Gestão clínica', 'Prontuário', 'Financeiro', 'Agenda', 'Módulos administrativos'],
+        observacao: 'Custo tende a crescer com módulos extras e equipe.'
+      }
     ];
 
     function recursosPlanoIntegrativo(plano) {
@@ -1054,9 +934,6 @@
     $('#calcPlanoIntegrativo').addEventListener('change', renderComparativo);
     renderComparativo();
 
-    // ============================================
-    // PROFISSÕES E ESPECIALIDADES
-    // ============================================
     const PROFISSOES = [
       { id: 'terapias-integrativas', nome: 'Terapeuta integrativo / holístico', filtro: (e) => !e.conselho || e.conselho === 'ABRATH' },
       { id: 'medicina', nome: 'Médico(a)', conselho: 'CRM' },
@@ -1071,7 +948,9 @@
       { id: 'educacao-fisica', nome: 'Educação Física', conselho: 'CREF' }
     ];
 
-    // POPULAR SELECTS
+    // ============================================
+    // POPULAR ESPECIALIDADES E GATEWAYS
+    // ============================================
     (function popular() {
       const profSel = $('#profissao');
       PROFISSOES.forEach(p => {
@@ -1215,7 +1094,8 @@
       conselhoAtual = conselho;
       $('#conselhoSigla').value = conselho;
       $('#caixaTitulo').textContent = `Verificação no ${conselho} — ${cfg.nome}`;
-      $('#caixaInfo').innerHTML = `Esta especialidade exige registro no <strong>${conselho}</strong>. Consulta oficial: <a href="${cfg.url}" target="_blank" rel="noopener">${cfg.url}</a>.`;
+      $('#caixaInfo').innerHTML = `Esta especialidade exige registro no <strong>${conselho}</strong>.
+        Consulta oficial: <a href="${cfg.url}" target="_blank" rel="noopener">${cfg.url}</a>.`;
       $('#ufConselho').parentElement.style.display = cfg.requerUF ? '' : 'none';
       $('#caixaAbrath').classList.remove('show');
       caixa.classList.add('show');
@@ -1239,8 +1119,16 @@
       $('#seloAbrath').classList.remove('show');
       document.querySelectorAll('input[name="temAbrath"]').forEach(r => { r.checked = false; });
 
-      if (!conselho) { mostrarAbrath(); return; }
-      if (conselho === 'ABRATH') { mostrarAbrath(); return; }
+      if (!conselho) {
+        mostrarAbrath();
+        return;
+      }
+
+      if (conselho === 'ABRATH') {
+        mostrarAbrath();
+        return;
+      }
+
       mostrarConselho(conselho);
     });
 
@@ -1268,7 +1156,13 @@
     }
 
     function chaveConsultaRegistro() {
-      return [conselhoAtual, $('#ufConselho').value, $('#numeroRegistro').value.trim(), especialidadeAtual?.id || $('#especialidade').value, $('#nome').value.trim()].join('|');
+      return [
+        conselhoAtual,
+        $('#ufConselho').value,
+        $('#numeroRegistro').value.trim(),
+        especialidadeAtual?.id || $('#especialidade').value,
+        $('#nome').value.trim()
+      ].join('|');
     }
 
     async function verificarRegistroOnline({ manual = false } = {}) {
@@ -1299,12 +1193,16 @@
         if (!r.ok) throw new Error(d.erro || 'Falha na verificação');
 
         registroValidado = !!d.valido;
-        const link = d.consultaPublica ? `<br><a href="${d.consultaPublica}" target="_blank" rel="noopener" style="color:var(--verde-destaque)">Conferir manualmente no site oficial ↗</a>` : '';
+        const link = d.consultaPublica
+          ? `<br><a href="${d.consultaPublica}" target="_blank" rel="noopener" style="color:var(--verde-destaque)">Conferir manualmente no site oficial ↗</a>`
+          : '';
 
         if (d.valido) {
-          out.innerHTML = `<div class="status-pill ok">✓ ${d.mensagem || 'Registro válido'}</div><p style="font-size:11px;color:var(--texto-suave);margin-top:6px">Fonte: ${d.fonte || 'verificação local'}.${link}</p>`;
+          out.innerHTML = `<div class="status-pill ok">✓ ${d.mensagem || 'Registro válido'}</div>
+            <p style="font-size:11px;color:var(--texto-suave);margin-top:6px">Fonte: ${d.fonte || 'verificação local'}.${link}</p>`;
         } else {
-          out.innerHTML = `<div class="status-pill err">✗ ${d.mensagem || 'Registro não encontrado'}</div><p style="font-size:11px;color:var(--texto-suave);margin-top:6px">${link}</p>`;
+          out.innerHTML = `<div class="status-pill err">✗ ${d.mensagem || 'Registro não encontrado'}</div>
+            <p style="font-size:11px;color:var(--texto-suave);margin-top:6px">${link}</p>`;
         }
       } catch (err) {
         registroValidado = false;
@@ -1328,13 +1226,17 @@
       }
 
       out.innerHTML = `<div class="status-pill warn">Verificação automática agendada...</div>`;
-      timerVerificacaoRegistro = setTimeout(() => { verificarRegistroOnline(); }, 800);
+      timerVerificacaoRegistro = setTimeout(() => {
+        verificarRegistroOnline();
+      }, 800);
     }
 
     $('#btnVerificar').addEventListener('click', () => verificarRegistroOnline({ manual: true }));
     $('#numeroRegistro').addEventListener('input', agendarVerificacaoRegistro);
     $('#ufConselho').addEventListener('change', agendarVerificacaoRegistro);
-    $('#nome').addEventListener('blur', () => { if (dadosRegistroProntos()) agendarVerificacaoRegistro(); });
+    $('#nome').addEventListener('blur', () => {
+      if (dadosRegistroProntos()) agendarVerificacaoRegistro();
+    });
 
     // ============================================
     // SUBMIT DO CADASTRO
@@ -1491,16 +1393,16 @@
       document.getElementById('bibliotecasMetricasProf').innerHTML = `
         <div class="bibliotecas-metrica"><strong>${b.total_bibliotecas}</strong><span>Bibliotecas</span></div>
         <div class="bibliotecas-metrica"><strong>${b.total_registros}</strong><span>Registros</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.total_protocolos}</strong><span>Total de protocolos</span></div>
       `;
       document.getElementById('protocolosListaProf').innerHTML = b.tipos.map(tipo => `<span class="protocolo-item">${tipo}</span>`).join('');
       document.getElementById('bibliotecasGridProf').innerHTML = b.itens.map(nome => `<span class="biblioteca-chip">${nome}</span>`).join('');
       document.getElementById('fontesGridProf').innerHTML = b.fontes.map(fonte => `<div class="fonte-card">${fonte}</div>`).join('');
     }
     renderBibliotecasProfissionais();
-
-    // ============================================
-    // ACCORDION
-    // ============================================
+  </script>
+  <script>
+    // Função para abrir/fechar os accordions
     function toggleAccordion(header) {
       const content = header.nextElementSibling;
       const icon = header.querySelector('i');
@@ -1512,6 +1414,13 @@
         icon.style.transform = 'rotate(180deg)';
       }
     }
+
+    // Garantir que os dados das bibliotecas sejam carregados após o DOM pronto
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof renderBibliotecasProfissionais === 'function') {
+        renderBibliotecasProfissionais();
+      }
+    });
   </script>
 </body>
 </html>

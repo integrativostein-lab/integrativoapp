@@ -20,7 +20,7 @@ saude-integrativa/
 │   └── servicos/      (Fornecedores, email, etc.)
 └── docs/              (Documentação)
 
-📚 30 ESPECIALIDADES — 781 REGISTROS
+📚 61 ESPECIALIDADES DE CADASTRO · 79 BIBLIOTECAS · ~1191 REGISTROS
 -------------------------------------
 Fitoterapia, Ayurveda, MTC, Yoga, Massoterapia,
 Aromaterapia, Fisioterapia, Xamanismo, Florais de Bach,

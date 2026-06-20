@@ -1,5 +1,6 @@
 const { Pool } = require('pg');
 require('dotenv').config();
+const { META_CATALOGO } = require('./config/limites-bibliotecas');
 
 const db = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -158,7 +159,7 @@ async function popularBanco() {
     console.log('🏗️ Vastu Shastra...');
 
     console.log('\n🎉 Banco de dados populado com sucesso!');
-    console.log('📊 30 especialidades, 781 registros inseridos.');
+    console.log(`📊 Seed base: ${META_CATALOGO.registrosBase} registros em ${META_CATALOGO.especialidadesBancoSeed} especialidades do banco (catálogo: ${META_CATALOGO.totalBibliotecas} bibliotecas; cadastro: ${META_CATALOGO.totalEspecialidadesCadastro} especialidades).`);
 
   } finally {
     client.release();

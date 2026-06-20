@@ -7,7 +7,7 @@ Contas de Teste:
   • Paciente: paciente@demo.com / demo123
   • Admin: admin@integra.com / admin123
 
-O profissional tem acesso a TODAS as 30 especialidades.
+O profissional demo tem acesso a TODAS as 61 especialidades de cadastro (catálogo com 79 bibliotecas terapêuticas).
 O paciente já tem 3 consultas simuladas para testar.
 
 Dúvidas? Fale com o Maurício.

@@ -1,5 +1,5 @@
 const CACHE_NAME = 'integra-v3';
-const CACHE_FILES = ['/css/estilo.css', '/js/app.js', '/js/config.js', '/js/i18n.js', '/manifest.json'];
+const CACHE_FILES = ['/css/estilo.css', '/js/app.js', '/js/config.js', '/js/catalogo-terapeutico.js', '/js/i18n.js', '/catalogo-terapeutico.json', '/manifest.json'];
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

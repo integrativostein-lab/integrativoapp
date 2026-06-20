@@ -1,0 +1,33 @@
+{
+  "versao": "2026-06-20",
+  "categoriaTransversal": "Biblioteca transversal",
+  "limitesBibliotecasPlano": {
+    "freemium": 1,
+    "guardioes_floresta": 5,
+    "pro": 10,
+    "premium": 20
+  },
+  "aliasesBibliotecas": {
+    "Medicina Tradicional Chinesa": "MTC",
+    "Yoga (instrutor)": "Yoga",
+    "Médico (clínico geral)": "Medicina Tradicional",
+    "Psicólogo(a)": "Saúde Mental",
+    "Enfermeiro(a)": "Enfermagem",
+    "Odontólogo(a)": "Odontologia",
+    "Farmacêutico(a)": "Farmacologia",
+    "Educador Físico": "Atividade Física"
+  },
+  "contagens": {
+    "totalBibliotecas": 79,
+    "bibliotecasTransversais": 12,
+    "bibliotecasPorPratica": 67,
+    "totalEspecialidadesCadastro": 61,
+    "totalItensCatalogo": 67,
+    "registrosBase": 781,
+    "registrosBlocos": 170,
+    "protocolosCriados": 240,
+    "totalRegistros": 1191,
+    "especialidadesBancoSeed": 30,
+    "especialidadesProtocolos": 47
+  }
+}

@@ -3,33 +3,12 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
+const {
+  limiteBibliotecasPorPlano,
+  montarBibliotecasCadastro
+} = require('../utils/bibliotecas');
 
 const VERSAO_CONSENTIMENTO_PESQUISA = 'pesquisa-clinica-anonimizada-2026-06-13';
-const LIMITES_BIBLIOTECAS_PLANO = {
-  freemium: 1,
-  guardioes_floresta: 5,
-  pro: 10,
-  premium: 20,
-  enterprise: 47
-};
-
-function normalizarListaBibliotecas(valor) {
-  if (Array.isArray(valor)) {
-    return valor.map((item) => String(item || '').trim()).filter(Boolean);
-  }
-  if (typeof valor !== 'string' || !valor.trim()) return [];
-  try {
-    const parsed = JSON.parse(valor);
-    if (Array.isArray(parsed)) return normalizarListaBibliotecas(parsed);
-  } catch {
-    // Mantem compatibilidade com listas simples separadas por virgula.
-  }
-  return valor.split(',').map((item) => item.trim()).filter(Boolean);
-}
-
-function unicas(lista) {
-  return Array.from(new Set(lista.filter(Boolean)));
-}
 
 async function garantirTabelaConsentimentoPesquisa() {
   await db.query(`
@@ -257,25 +236,23 @@ router.post('/cadastro-profissional', async (req, res) => {
 
     const hash = await bcrypt.hash(senha, 12);
     const planoInicial = 'freemium';
-    const limiteBibliotecas = LIMITES_BIBLIOTECAS_PLANO[planoInicial];
-    const bibliotecaPrincipal = String(especialidade_nome || especialidade || '').trim();
-    const adicionaisNormalizadas = normalizarListaBibliotecas(especialidades_adicionais)
-      .filter((item) => item !== bibliotecaPrincipal);
-    const bibliotecasSolicitadas = normalizarListaBibliotecas(bibliotecas_selecionadas);
-    const bibliotecasAutorizadas = unicas(
-      bibliotecasSolicitadas.length
-        ? [bibliotecaPrincipal, ...bibliotecasSolicitadas.filter((item) => item !== bibliotecaPrincipal)]
-        : [bibliotecaPrincipal, ...adicionaisNormalizadas]
-    );
+    const limiteBibliotecas = limiteBibliotecasPorPlano(planoInicial);
+    const montagem = montarBibliotecasCadastro({
+      especialidade,
+      especialidadeNome: especialidade_nome,
+      bibliotecasSelecionadas: bibliotecas_selecionadas,
+      especialidadesAdicionais: especialidades_adicionais,
+      limite: limiteBibliotecas,
+      plano: planoInicial
+    });
 
-    if (bibliotecasAutorizadas.length > limiteBibliotecas) {
-      return res.status(400).json({
-        erro: `Seu plano ${planoInicial} permite ${limiteBibliotecas} biblioteca(s), incluindo a especialidade principal.`
-      });
+    if (montagem.erro) {
+      return res.status(400).json({ erro: montagem.erro });
     }
 
+    const { bibliotecaPrincipal, bibliotecas: bibliotecasAutorizadas, adicionais } = montagem;
     const especialidadesJson = JSON.stringify(bibliotecasAutorizadas);
-    const adicionaisAutorizadasJson = JSON.stringify(bibliotecasAutorizadas.slice(1));
+    const adicionaisAutorizadasJson = JSON.stringify(adicionais);
 
     const ins = await db.query(
       `INSERT INTO usuarios (nome, email, senha, tipo, telefone, especialidades, atende_online, atende_presencial, lgpd_consentimento, lgpd_data_consentimento, plano)

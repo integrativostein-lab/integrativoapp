@@ -1,5 +1,5 @@
 // ============================================
-// CONFIGURAÇÃO GLOBAL DO INTEGRATIVO.APP v2.1
+// CONFIGURAÇÃO GLOBAL DO INTEGRATIVO.APP v3.0
 // ============================================
 
 const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname : '';
@@ -25,7 +25,6 @@ const CONFIG = {
 
   // ═══════════════════════════════════════════
   // PLANOS (MODELO 100% ANUAL — 2026)
-  // Pagamento à vista (PIX, 5% off) ou em até 12x com juros do parcelamento.
   // ═══════════════════════════════════════════
   PLANOS: {
     freemium: {
@@ -130,7 +129,7 @@ const CONFIG = {
       api_white_label: true,
       migracao: true,
       conciliacao: true,
-      especialidades_inclusas: 63,
+      especialidades_inclusas: 67,
       max_profissionais: 'ilimitados',
       cobranca_por_profissional: false,
       texto_profissionais: 'Profissionais ilimitados dentro do guarda-chuva institucional, sem cobrança por profissional',
@@ -145,14 +144,9 @@ const CONFIG = {
   // ═══════════════════════════════════════════
   PARCELAMENTO: {
     max_parcelas: 12,
-    juros_mes: 0.0199, // 1,99% ao mês
+    juros_mes: 0.0199,
     desconto_pix_pct: 5,
     desconto_abrath_pct: 8,
-    /**
-     * Tabela Price (juros compostos sobre saldo).
-     * @param {number} valor Valor à vista
-     * @param {number} n     Número de parcelas (1..12)
-     */
     calcular(valor, n) {
       const parcelas = Math.max(1, Math.min(this.max_parcelas, parseInt(n, 10) || 1));
       if (parcelas === 1) {
@@ -199,7 +193,8 @@ const CONFIG = {
   // ESPECIALIDADES — INTEGRATIVAS + REGULAMENTADAS
   // ═══════════════════════════════════════════
   ESPECIALIDADES: [
-    { id: 'fitoterapia',     nome: 'Fitoterapia',                     conselho: null,     categoria: 'Integrativa' },
+    // === SABERES TRADICIONAIS E PICS (SEM CONSELHO) ===
+    { id: 'fitoterapia',     nome: 'Fitoterapia',                     conselho: null,     categoria: 'PICS / Integrativa' },
     { id: 'ayurveda',        nome: 'Ayurveda',                        conselho: null,     categoria: 'Tradicional' },
     { id: 'mtc',             nome: 'Medicina Tradicional Chinesa',    conselho: null,     categoria: 'Tradicional' },
     { id: 'yoga',            nome: 'Yoga (instrutor)',                conselho: null,     categoria: 'Movimento' },
@@ -207,7 +202,7 @@ const CONFIG = {
     { id: 'vastu',           nome: 'Vastu Shastra',                   conselho: null,     categoria: 'Tradicional' },
     { id: 'xamanismo',       nome: 'Xamanismo',                       conselho: null,     categoria: 'Espiritual' },
     { id: 'florais-bach',    nome: 'Florais de Bach',                 conselho: null,     categoria: 'Florais' },
-    { id: 'terapia-florais', nome: 'Terapia de Florais',              conselho: null,     categoria: 'PICS' },
+    { id: 'terapia-florais', nome: 'Terapia de Florais',              conselho: null,     categoria: 'Florais' },
     { id: 'apiterapia',      nome: 'Apiterapia',                      conselho: null,     categoria: 'Produtos Naturais' },
     { id: 'arteterapia',     nome: 'Arteterapia',                     conselho: null,     categoria: 'PICS' },
     { id: 'biodanca',        nome: 'Biodança',                        conselho: null,     categoria: 'PICS' },
@@ -226,6 +221,7 @@ const CONFIG = {
     { id: 'terapia-comunitaria-integrativa', nome: 'Terapia Comunitária Integrativa', conselho: null, categoria: 'PICS' },
     { id: 'termalismo-crenoterapia', nome: 'Termalismo Social / Crenoterapia', conselho: null, categoria: 'PICS' },
 
+    // === COM CONSELHO ABRATH (NÃO É CONSELHO OFICIAL - VAI PARA SABERES) ===
     { id: 'massoterapia',    nome: 'Massoterapia',                    conselho: 'ABRATH', categoria: 'Terapia Manual' },
     { id: 'reflexologia',    nome: 'Reflexologia',                    conselho: 'ABRATH', categoria: 'Terapia Manual' },
     { id: 'reiki',           nome: 'Reiki',                           conselho: 'ABRATH', categoria: 'Energia' },
@@ -236,6 +232,8 @@ const CONFIG = {
     { id: 'osteopatia',      nome: 'Osteopatia',                      conselho: 'ABRATH', categoria: 'Terapia Manual' },
     { id: 'acupuntura',      nome: 'Acupuntura',                      conselho: 'ABRATH', categoria: 'MTC' },
 
+    // === PROFISSÕES REGULAMENTADAS (COM CONSELHO OFICIAL) ===
+    // CRM
     { id: 'medico',                nome: 'Médico (clínico geral)',          conselho: 'CRM', categoria: 'Médica' },
     { id: 'medicina-integrativa',  nome: 'Medicina Integrativa',            conselho: 'CRM', categoria: 'Médica' },
     { id: 'medicina-de-familia',   nome: 'Medicina de Família',             conselho: 'CRM', categoria: 'Médica' },
@@ -245,40 +243,94 @@ const CONFIG = {
     { id: 'psiquiatria',           nome: 'Psiquiatria',                     conselho: 'CRM', categoria: 'Médica' },
     { id: 'emergencia',            nome: 'Emergência',                      conselho: 'CRM', categoria: 'Médica' },
 
+    // CRP
     { id: 'psicologo',         nome: 'Psicólogo(a)',                  conselho: 'CRP',     categoria: 'Psicologia' },
     { id: 'neuropsicologia',   nome: 'Neuropsicologia',               conselho: 'CRP',     categoria: 'Psicologia' },
 
+    // CREFITO
     { id: 'fisioterapia',        nome: 'Fisioterapia',                conselho: 'CREFITO', categoria: 'Reabilitação' },
     { id: 'hidroterapia',        nome: 'Hidroterapia',                conselho: 'CREFITO', categoria: 'Reabilitação' },
     { id: 'equoterapia',         nome: 'Equoterapia',                 conselho: 'CREFITO', categoria: 'Reabilitação' },
     { id: 'terapia-ocupacional', nome: 'Terapia Ocupacional',         conselho: 'CREFITO', categoria: 'Reabilitação' },
 
+    // COREN
     { id: 'enfermeiro',         nome: 'Enfermeiro(a)',                conselho: 'COREN',   categoria: 'Enfermagem' },
     { id: 'tecnico-enfermagem', nome: 'Técnico de Enfermagem',        conselho: 'COREN',   categoria: 'Enfermagem' },
     { id: 'obstetrica',         nome: 'Enfermeiro(a) Obstetra',       conselho: 'COREN',   categoria: 'Enfermagem' },
 
+    // CRN
     { id: 'nutricionista',       nome: 'Nutricionista',               conselho: 'CRN',     categoria: 'Nutrição' },
     { id: 'nutricao-funcional',  nome: 'Nutrição Funcional',          conselho: 'CRN',     categoria: 'Nutrição' },
     { id: 'nutricao-esportiva',  nome: 'Nutrição Esportiva',          conselho: 'CRN',     categoria: 'Nutrição' },
 
+    // CRO
     { id: 'odontologo',     nome: 'Odontólogo(a)',                    conselho: 'CRO',     categoria: 'Odontologia' },
+
+    // CRF
     { id: 'farmaceutico',   nome: 'Farmacêutico(a)',                  conselho: 'CRF',     categoria: 'Farmácia' },
+
+    // CRBM
     { id: 'biomedico',      nome: 'Biomédico(a)',                     conselho: 'CRBM',    categoria: 'Biomedicina' },
+
+    // CRBIO
     { id: 'biologo',        nome: 'Biólogo(a)',                       conselho: 'CRBIO',   categoria: 'Biologia' },
+
+    // CREF
     { id: 'educador-fisico',  nome: 'Educador Físico',                conselho: 'CREF',    categoria: 'Atividade Física' },
     { id: 'personal-trainer', nome: 'Personal Trainer',               conselho: 'CREF',    categoria: 'Atividade Física' }
   ],
 
   // ═══════════════════════════════════════════
-  // BIBLIOTECAS TERAPÊUTICAS — PROTOCOLOS
+  // BIBLIOTECAS TERAPÊUTICAS — PROTOCOLOS (ATUALIZADO)
   // ═══════════════════════════════════════════
   BIBLIOTECAS_TERAPEUTICAS: {
-    total_bibliotecas: 63,
-    total_especialidades: 47,
-    total_registros: 1101,
+    // Totais preenchidos em runtime via shared/catalogo-terapeutico.json (npm run catalogo:sync)
+    total_bibliotecas: 0,
+    total_especialidades: 0,
+    bibliotecas_transversais: 0,
+    bibliotecas_por_pratica: 0,
+    total_registros: 0,
     registros_base: 781,
-    protocolos_criados: 320,
-    fontes: ['OMS/WHO', 'PNPIC/MS', 'Ministério da Saúde', 'Fiocruz/ARCA', 'BIREME/OPAS/BVS', 'RedePICS Brasil', 'Cochrane', 'ANVISA', 'NICE', 'AYUSH', 'NCCIH', 'MSF Medical Guidelines', 'SciELO', 'PubMed/NCBI', 'Diretrizes profissionais', 'Textos clássicos: Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Bhavaprakasha Nighantu, Dhanvantari Nighantu, Kaiyadeva Nighantu, Bṛhat Parāśara Horā Śāstra, Bṛhat Jātaka, Saravali, Phaladeepika, Vastu Shastra, Mayamata e Manasara', 'Dr. Vasant Lad'],
+    registros_blocos: 170,
+    protocolos_criados: 240,
+    especialidades_banco_seed: 30,
+    especialidades_protocolos: 47,
+    fontes: [
+      'OMS/WHO', 
+      'PNPIC/MS', 
+      'Ministério da Saúde', 
+      'Fiocruz/ARCA', 
+      'BIREME/OPAS/BVS', 
+      'RedePICS Brasil', 
+      'Cochrane', 
+      'ANVISA', 
+      'NICE', 
+      'AYUSH', 
+      'NCCIH', 
+      'MSF Medical Guidelines', 
+      'SciELO', 
+      'PubMed/NCBI', 
+      'Diretrizes profissionais', 
+      // === NOVAS FONTES ===
+      'WHO Mental Health Guidance 2025',
+      'mhGAP Guideline 2025',
+      'mhGAP Intervention Guide 2.0',
+      'WHO Mental Health Atlas 2024',
+      'WHO Comprehensive Mental Health Action Plan 2013-2030',
+      'WHO QualityRights',
+      'WHO Cross-Sectoral Mental Health Guidance',
+      'APA Guidelines',
+      'APA Division of Psychotherapy',
+      'APA Division 40 (Clinical Neuropsychology)',
+      'BVS Psicologia',
+      'SATEPSI',
+      'CFP',
+      'Ministério da Saúde/RAPS',
+      'DSM-5-TR',
+      'CID-11',
+      'Textos clássicos: Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Bhavaprakasha Nighantu, Dhanvantari Nighantu, Kaiyadeva Nighantu, Bṛhat Parāśara Horā Śāstra, Bṛhat Jātaka, Saravali, Phaladeepika, Vastu Shastra, Mayamata e Manasara',
+      'Dr. Vasant Lad'
+    ],
     tipos: ['fontes confiáveis', 'protocolos de avaliação', 'tratamentos/intervenções', 'encaminhamentos', 'segurança clínica'],
     itens: [
       'Fitoterapia', 'Ayurveda', 'MTC', 'Yoga', 'Massoterapia', 'Aromaterapia',
@@ -293,7 +345,7 @@ const CONFIG = {
       'Termalismo Social / Crenoterapia',
       'Hidroterapia', 'Acupuntura', 'Medicina Tradicional', 'Farmacologia',
       'Pediatria', 'Ginecologia', 'Geriatria', 'Saúde Mental',
-      'Medicina de Família', 'Emergência',
+      'Medicina de Família', 'Emergência', 'Psicologia', 'Neuropsicologia', 'Psicoterapia', 'Avaliação Psicológica',
       'Anamnese e Semiotécnica Integrativa', 'Sinais de Alarme e Encaminhamento',
       'Contraindicações e Segurança Clínica', 'Interações e Farmacovigilância',
       'Consentimento Informado e LGPD em Saúde', 'Escalas e Desfechos Clínicos',
@@ -302,69 +354,117 @@ const CONFIG = {
       'Protocolos Transversais por Especialidade'
     ],
     matriz: [
-      { especialidade: 'Fitoterapia', categoria: 'PICS / Integrativa', base: 'Oficial e científica', fontes: 'PNPIC/MS; RENISUS/MS; ANVISA; OMS/WHO Monographs; Fiocruz/ARCA' },
-      { especialidade: 'Ayurveda', categoria: 'PICS / Saber tradicional', base: 'Tradicional com diretrizes internacionais', fontes: 'PNPIC/MS; WHO Benchmarks for Training in Ayurveda; Ministry of AYUSH; Charaka Samhita; Sushruta Samhita; Ashtanga Hridaya' },
+      // ============================================
+      // SABERES TRADICIONAIS E PICS
+      // ============================================
+      { especialidade: 'Fitoterapia', categoria: 'PICS / Integrativa', base: 'Oficial e científica', fontes: 'PNPIC/MS; RENISUS/MS; ANVISA; OMS/WHO Monographs; Farmacopeia Brasileira' },
+      { especialidade: 'Ayurveda', categoria: 'PICS / Saber tradicional', base: 'Tradicional com diretrizes internacionais', fontes: 'PNPIC/MS; WHO Benchmarks for Training in Ayurveda; Ministry of AYUSH; Charaka Samhita; Sushruta Samhita; Ashtanga Hridaya; Bhavaprakasha Nighantu; Dhanvantari Nighantu; Kaiyadeva Nighantu; Dr. Vasant Lad' },
       { especialidade: 'Aushadha Dravya', categoria: 'Biblioteca clássica ayurvédica', base: 'Matéria médica ayurvédica: substâncias, ervas, formulações, rasa, guna, virya, vipaka, prabhava, segurança e uso tradicional', fontes: 'Charaka Samhita; Sushruta Samhita; Ashtanga Hridaya; Bhavaprakasha Nighantu; Dhanvantari Nighantu; Kaiyadeva Nighantu; Ministry of AYUSH' },
       { especialidade: 'Ahara', categoria: 'Biblioteca clássica ayurvédica', base: 'Dietética ayurvédica: alimentação, compatibilidade alimentar, rotina, agni, ama, pathya-apathya e orientação alimentar individualizada', fontes: 'Charaka Samhita; Sushruta Samhita; Ashtanga Hridaya; Kashyapa Samhita; Bhavaprakasha Nighantu; Ministry of AYUSH' },
       { especialidade: 'Dinacharya', categoria: 'Biblioteca clássica ayurvédica', base: 'Rotina diária ayurvédica: sono, higiene, oleação, movimento, respiração, alimentação, horários, autocuidado e adaptação ao biotipo/estação', fontes: 'Charaka Samhita; Sushruta Samhita; Ashtanga Hridaya; Ministry of AYUSH; WHO Benchmarks for Training in Ayurveda' },
       { especialidade: 'Ayurveda Clássico: diagnóstico, tratamentos e protocolos', categoria: 'Biblioteca clássica ayurvédica', base: 'Avaliação e cuidado ayurvédico complementar: darshana, sparshana, prashna, prakriti, vikriti, agni, ama, dosha, dhatu, mala, nadi, jihva, nidana, chikitsa, shamana, shodhana, rasayana, dinacharya, ritucharya, ahara, aushadha, encaminhamentos e segurança clínica sem substituir diagnóstico médico', fontes: 'Charaka Samhita; Sushruta Samhita; Ashtanga Hridaya; Madhava Nidana; Bhavaprakasha Nighantu; Dr. Vasant Lad; Ministry of AYUSH; WHO Benchmarks for Training in Ayurveda' },
-      { especialidade: 'MTC', categoria: 'PICS / Saber tradicional', base: 'Tradicional com diretrizes de formação e integração segura', fontes: 'PNPIC/MS; WHO Benchmarks for Training in Traditional Chinese Medicine; OMS/WHO TCIM' },
-      { especialidade: 'Yoga', categoria: 'PICS / Movimento', base: 'Prática mente-corpo com revisões e diretrizes de segurança', fontes: 'PNPIC/MS; OMS/WHO atividade física; Cochrane; NCCIH' },
-      { especialidade: 'Massoterapia', categoria: 'Terapia manual', base: 'Prática manual complementar com triagem de contraindicações', fontes: 'NCCIH; AMTA clinical resources; diretrizes de segurança em terapias manuais' },
-      { especialidade: 'Apiterapia', categoria: 'PICS / Produtos naturais', base: 'Uso complementar com cautela alergênica', fontes: 'PNPIC/MS; ANVISA; literatura de alergia/anafilaxia; Apimondia' },
-      { especialidade: 'Aromaterapia', categoria: 'PICS / Produtos naturais', base: 'Uso complementar com foco em segurança', fontes: 'PNPIC/MS; ANVISA; Tisserand & Young; IFPA safety guidance' },
-      { especialidade: 'Fisioterapia', categoria: 'Reabilitação', base: 'Avaliação cinético-funcional, exercício terapêutico e reabilitação baseada em diretrizes', fontes: 'COFFITO; World Physiotherapy; NICE; diretrizes clínicas por condição' },
+      { especialidade: 'Medicina Tradicional Chinesa', categoria: 'PICS / Saber tradicional', base: 'Tradicional com diretrizes de formação e integração segura', fontes: 'PNPIC/MS; WHO Benchmarks for Training in Traditional Chinese Medicine; OMS/WHO TCIM; Huangdi Neijing; Nan Jing; Shang Han Lun' },
+      { especialidade: 'Yoga (instrutor)', categoria: 'PICS / Movimento', base: 'Prática mente-corpo com revisões e diretrizes de segurança', fontes: 'PNPIC/MS; OMS/WHO atividade física; Cochrane; NCCIH; Yoga Sutras de Patanjali; Hatha Yoga Pradipika; Bhagavad Gita' },
+      { especialidade: 'Jyotish (Astrologia Védica)', categoria: 'Saber tradicional', base: 'Leitura simbólica e cultural para reflexão, sem uso diagnóstico ou determinista', fontes: 'Bṛhat Parāśara Horā Śāstra; Bṛhat Jātaka; Sārāvalī; Phaladīpikā; princípios éticos de aconselhamento; segurança em saúde mental' },
+      { especialidade: 'Vastu Shastra', categoria: 'Saber tradicional', base: 'Organização ambiental não invasiva com foco em bem-estar e segurança do espaço', fontes: 'Vastu Shastra; Mayamata; Manasara; WHO healthy housing principles; ergonomia ambiental' },
       { especialidade: 'Xamanismo', categoria: 'Saber ancestral', base: 'Prática cultural e simbólica com consentimento, segurança cultural e redução de danos', fontes: 'OMS/WHO Traditional Medicine Strategy; PNPIC/MS; literatura de segurança cultural' },
       { especialidade: 'Florais de Bach', categoria: 'Florais', base: 'Biblioteca específica de florais para apoio emocional complementar', fontes: 'Bach Centre; PNPIC/MS; BVS/BIREME' },
-      { especialidade: 'Reiki', categoria: 'PICS / Energia', base: 'Prática complementar de relaxamento e cuidado subjetivo', fontes: 'PNPIC/MS; NCCIH; BVS/BIREME' },
-      { especialidade: 'Arteterapia', categoria: 'PICS / Expressiva', base: 'Prática expressiva complementar', fontes: 'PNPIC/MS; BVS/BIREME; literatura de saúde mental e reabilitação psicossocial' },
+      { especialidade: 'Terapia de Florais', categoria: 'PICS / Complementar', base: 'Prática complementar emocional; não substitui cuidado de saúde mental', fontes: 'PNPIC/MS; Bach Centre; BVS/BIREME' },
+      { especialidade: 'Apiterapia', categoria: 'PICS / Produtos naturais', base: 'Uso complementar com cautela alergênica', fontes: 'PNPIC/MS; ANVISA; literatura de alergia/anafilaxia; Apimondia' },
+      { especialidade: 'Arteterapia', categoria: 'PICS / Expressiva', base: 'Prática expressiva complementar', fontes: 'PNPIC/MS; BVS/BIREME; literatura de saúde mental e reabilitação psicossocial; WHO Mental Health Guidance 2025' },
       { especialidade: 'Biodança', categoria: 'PICS / Movimento', base: 'Prática corporal complementar', fontes: 'PNPIC/MS; BVS/BIREME; RedePICS Brasil' },
       { especialidade: 'Bioenergética', categoria: 'PICS / Corpo-mente', base: 'Prática corporal complementar', fontes: 'PNPIC/MS; BVS/BIREME; literatura de psicoterapia corporal' },
-      { especialidade: 'Constelação Familiar', categoria: 'PICS / Psicossocial', base: 'Prática complementar com necessidade de consentimento e cautela ética', fontes: 'PNPIC/MS; BVS/BIREME; diretrizes de segurança em saúde mental' },
-      { especialidade: 'Cromoterapia', categoria: 'PICS / Complementar', base: 'Prática complementar de baixo risco quando não invasiva', fontes: 'PNPIC/MS; BVS/BIREME; segurança ocular' },
+      { especialidade: 'Constelação Familiar', categoria: 'PICS / Psicossocial', base: 'Prática complementar com necessidade de consentimento e cautela ética', fontes: 'PNPIC/MS; BVS/BIREME; diretrizes de segurança em saúde mental; WHO QualityRights' },
       { especialidade: 'Dança Circular', categoria: 'PICS / Movimento comunitário', base: 'Prática corporal e comunitária complementar', fontes: 'PNPIC/MS; BVS/BIREME; promoção da saúde' },
       { especialidade: 'Geoterapia', categoria: 'PICS / Tradicional', base: 'Saber tradicional com cuidados sanitários', fontes: 'PNPIC/MS; BVS/BIREME; vigilância sanitária e segurança dermatológica' },
-      { especialidade: 'Hipnoterapia', categoria: 'PICS / Mente-corpo', base: 'Prática complementar com literatura clínica', fontes: 'PNPIC/MS; BVS/BIREME; PubMed/NCBI; diretrizes de saúde mental' },
+      { especialidade: 'Hipnoterapia', categoria: 'PICS / Mente-corpo', base: 'Prática complementar com literatura clínica', fontes: 'PNPIC/MS; BVS/BIREME; PubMed/NCBI; diretrizes de saúde mental; mhGAP Guideline 2025' },
       { especialidade: 'Homeopatia', categoria: 'PICS / Racionalidade médica', base: 'Prática reconhecida na PNPIC; uso complementar com limites clínicos', fontes: 'PNPIC/MS; BVS Homeopatia; CFM/CFM especialidade médica quando aplicável' },
       { especialidade: 'Imposição de Mãos', categoria: 'PICS / Energia', base: 'Prática complementar de relaxamento, presença terapêutica e cuidado subjetivo', fontes: 'PNPIC/MS; NCCIH; BVS/BIREME' },
       { especialidade: 'Medicina Antroposófica', categoria: 'PICS / Racionalidade médica', base: 'Prática reconhecida na PNPIC; integração responsável', fontes: 'PNPIC/MS; BVS/BIREME; diretrizes profissionais da área' },
-      { especialidade: 'Meditação', categoria: 'PICS / Mente-corpo', base: 'Prática com evidências em estresse, dor e saúde mental como complemento', fontes: 'PNPIC/MS; NCCIH; Cochrane; PubMed/NCBI' },
-      { especialidade: 'Musicoterapia', categoria: 'PICS / Expressiva', base: 'Prática reconhecida com padrões profissionais', fontes: 'PNPIC/MS; World Federation of Music Therapy; AMTA; BVS/BIREME' },
+      { especialidade: 'Meditação', categoria: 'PICS / Mente-corpo', base: 'Prática com evidências em estresse, dor e saúde mental como complemento', fontes: 'PNPIC/MS; NCCIH; Cochrane; PubMed/NCBI; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Musicoterapia', categoria: 'PICS / Expressiva', base: 'Prática reconhecida com padrões profissionais', fontes: 'PNPIC/MS; World Federation of Music Therapy; AMTA; BVS/BIREME; WHO Mental Health Guidance 2025' },
       { especialidade: 'Naturopatia', categoria: 'PICS / Integrativa', base: 'Prática complementar com enfoque em autocuidado e prevenção', fontes: 'PNPIC/MS; OMS/WHO Traditional Medicine Strategy; BVS/BIREME' },
       { especialidade: 'Osteopatia', categoria: 'PICS / Terapia manual', base: 'Diretrizes internacionais de formação e segurança', fontes: 'PNPIC/MS; WHO Benchmarks for Training in Osteopathy' },
       { especialidade: 'Ozonioterapia', categoria: 'PICS / Procedimento complementar', base: 'Uso depende de regulação, habilitação e segurança', fontes: 'PNPIC/MS; ANVISA; diretrizes profissionais; literatura de segurança clínica' },
       { especialidade: 'Quiropraxia', categoria: 'PICS / Terapia manual', base: 'Diretrizes internacionais de formação e triagem de risco', fontes: 'PNPIC/MS; WHO Guidelines on Basic Training and Safety in Chiropractic' },
       { especialidade: 'Reflexologia', categoria: 'PICS / Terapia manual', base: 'Prática complementar com triagem de pele, circulação e neuropatia', fontes: 'PNPIC/MS; BVS/BIREME; International Council of Reflexologists' },
-      { especialidade: 'Jyotish', categoria: 'Saber tradicional', base: 'Leitura simbólica e cultural para reflexão, sem uso diagnóstico ou determinista', fontes: 'Bṛhat Parāśara Horā Śāstra; Bṛhat Jātaka; Saravali; Phaladeepika; princípios éticos de aconselhamento; segurança em saúde mental' },
-      { especialidade: 'Vastu Shastra', categoria: 'Saber tradicional', base: 'Organização ambiental não invasiva com foco em bem-estar e segurança do espaço', fontes: 'Vastu Shastra; Mayamata; Manasara; WHO healthy housing principles; ergonomia ambiental' },
-      { especialidade: 'Equoterapia', categoria: 'Reabilitação assistida por animal', base: 'Prática interdisciplinar com equipe habilitada e critérios de segurança', fontes: 'ANDE-Brasil; diretrizes de terapia assistida por equinos; segurança em reabilitação' },
       { especialidade: 'Shantala', categoria: 'PICS / Materno-infantil', base: 'Prática de toque/massagem infantil com orientação segura', fontes: 'PNPIC/MS; Caderneta da Criança/MS; BVS/BIREME' },
-      { especialidade: 'Terapia Comunitária Integrativa', categoria: 'PICS / Comunitária', base: 'Prática coletiva de promoção de saúde e rede de apoio', fontes: 'PNPIC/MS; BVS/BIREME; OPAS/OMS promoção da saúde' },
-      { especialidade: 'Terapia de Florais', categoria: 'PICS / Complementar', base: 'Prática complementar emocional; não substitui cuidado de saúde mental', fontes: 'PNPIC/MS; Bach Centre; BVS/BIREME' },
+      { especialidade: 'Terapia Comunitária Integrativa', categoria: 'PICS / Comunitária', base: 'Prática coletiva de promoção de saúde e rede de apoio', fontes: 'PNPIC/MS; BVS/BIREME; OPAS/OMS promoção da saúde; WHO Cross-Sectoral Mental Health Guidance' },
       { especialidade: 'Termalismo Social / Crenoterapia', categoria: 'PICS / Ambiental', base: 'Uso terapêutico de águas minerais com critérios sanitários', fontes: 'PNPIC/MS; BVS/BIREME; vigilância sanitária' },
-      { especialidade: 'Hidroterapia', categoria: 'Reabilitação aquática', base: 'Exercícios aquáticos supervisionados para mobilidade, dor, força e relaxamento', fontes: 'World Physiotherapy aquatic therapy resources; diretrizes de reabilitação aquática' },
+
+      // === ABRATH (VAI PARA SABERES) ===
+      { especialidade: 'Massoterapia', categoria: 'Terapia manual', base: 'Prática manual complementar com triagem de contraindicações', fontes: 'NCCIH; AMTA clinical resources; diretrizes de segurança em terapias manuais' },
+      { especialidade: 'Reiki', categoria: 'PICS / Energia', base: 'Prática complementar de relaxamento e cuidado subjetivo', fontes: 'PNPIC/MS; NCCIH; BVS/BIREME' },
+      { especialidade: 'Aromaterapia', categoria: 'PICS / Produtos naturais', base: 'Uso complementar com foco em segurança', fontes: 'PNPIC/MS; ANVISA; Tisserand & Young; IFPA safety guidance' },
+      { especialidade: 'Cromoterapia', categoria: 'PICS / Complementar', base: 'Prática complementar de baixo risco quando não invasiva', fontes: 'PNPIC/MS; BVS/BIREME; segurança ocular' },
       { especialidade: 'Acupuntura', categoria: 'PICS / MTC', base: 'Prática com diretrizes internacionais de formação e biossegurança', fontes: 'PNPIC/MS; WHO Benchmarks for Training in Acupuncture; diretrizes de biossegurança' },
-      { especialidade: 'Medicina Tradicional', categoria: 'Clínica médica', base: 'Cuidado biomédico baseado em diretrizes, risco, diagnóstico e acompanhamento', fontes: 'Ministério da Saúde; OMS/WHO; protocolos clínicos oficiais; PCDT' },
-      { especialidade: 'Farmacologia', categoria: 'Farmácia / segurança medicamentosa', base: 'Uso racional de medicamentos, interações, farmacovigilância e segurança', fontes: 'ANVISA; bulas profissionais; Micromedex/Lexicomp quando disponível; protocolos oficiais' },
-      { especialidade: 'Medicina Integrativa', categoria: 'Clínica integrativa', base: 'Integração de cuidado baseado em evidências e preferências do paciente', fontes: 'NCCIH; Academic Consortium for Integrative Medicine; OMS/WHO; PNPIC/MS' },
-      { especialidade: 'Medicina de Família', categoria: 'Clínica médica', base: 'Atenção primária e cuidado longitudinal', fontes: 'Ministério da Saúde APS; OPAS/OMS; WONCA; PCDT/linhas de cuidado' },
-      { especialidade: 'Pediatria', categoria: 'Clínica médica', base: 'Diretrizes pediátricas e saúde da criança', fontes: 'Sociedade Brasileira de Pediatria; Ministério da Saúde; Caderneta da Criança; OPAS/OMS' },
-      { especialidade: 'Ginecologia', categoria: 'Clínica médica', base: 'Saúde sexual e reprodutiva, rastreamento e cuidado integral', fontes: 'FEBRASGO; Ministério da Saúde; OPAS/OMS; PCDT/linhas de cuidado' },
-      { especialidade: 'Geriatria', categoria: 'Clínica médica', base: 'Avaliação geriátrica ampla e envelhecimento saudável', fontes: 'SBGG; OMS ICOPE; Ministério da Saúde; Beers Criteria' },
-      { especialidade: 'Saúde Mental', categoria: 'Clínica / Psicossocial', base: 'Rede de atenção psicossocial e diretrizes clínicas', fontes: 'Ministério da Saúde/RAPS; OPAS/OMS; NICE; DSM-5-TR; CID-11' },
-      { especialidade: 'Emergência', categoria: 'Urgência e emergência', base: 'Triagem, suporte inicial e sinais de alarme', fontes: 'Ministério da Saúde; AHA Guidelines; Manchester Triage; MSF Medical Guidelines' },
+
+      // ============================================
+      // PROFISSÕES REGULAMENTADAS (COM CONSELHO)
+      // ============================================
+      // === CRM ===
+      { especialidade: 'Médico (clínico geral)', categoria: 'Médica', base: 'Cuidado biomédico baseado em diretrizes, risco, diagnóstico e acompanhamento', fontes: 'Ministério da Saúde; OMS/WHO; protocolos clínicos oficiais; PCDT; PubMed/NCBI; NICE; OPAS/OMS; Cochrane; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Medicina Integrativa', categoria: 'Médica', base: 'Integração de cuidado baseado em evidências e preferências do paciente', fontes: 'NCCIH; Academic Consortium for Integrative Medicine; OMS/WHO; PNPIC/MS; PubMed/NCBI; Cochrane; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Medicina de Família', categoria: 'Médica', base: 'Atenção primária e cuidado longitudinal', fontes: 'Ministério da Saúde APS; OPAS/OMS; WONCA; PCDT/linhas de cuidado; WHO Cross-Sectoral Mental Health Guidance' },
+      { especialidade: 'Pediatria', categoria: 'Médica', base: 'Diretrizes pediátricas e saúde da criança', fontes: 'Sociedade Brasileira de Pediatria; Ministério da Saúde; Caderneta da Criança; OPAS/OMS; PubMed/NCBI; NICE Pediatrics; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Ginecologia', categoria: 'Médica', base: 'Saúde sexual e reprodutiva, rastreamento e cuidado integral', fontes: 'FEBRASGO; Ministério da Saúde; OPAS/OMS; PCDT/linhas de cuidado; PubMed/NCBI; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Geriatria', categoria: 'Médica', base: 'Avaliação geriátrica ampla e envelhecimento saudável', fontes: 'SBGG; OMS ICOPE; Ministério da Saúde; Beers Criteria; PubMed/NCBI; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Psiquiatria', categoria: 'Médica', base: 'Avaliação e tratamento de transtornos mentais', fontes: 'Ministério da Saúde/RAPS; OPAS/OMS; NICE Mental Health; DSM-5-TR; CID-11; WHO Mental Health Guidance 2025; mhGAP Guideline 2025; WHO QualityRights; PubMed/NCBI; APA; Cochrane Mental Health' },
+      { especialidade: 'Emergência', categoria: 'Médica', base: 'Triagem, suporte inicial e sinais de alarme', fontes: 'Ministério da Saúde; AHA Guidelines; Manchester Triage; MSF Medical Guidelines; mhGAP Intervention Guide 2.0; PubMed/NCBI' },
+
+      // === CRP ===
+      { especialidade: 'Psicólogo(a)', categoria: 'Psicologia', base: 'Avaliação psicológica, psicoterapia, RAPS, testes psicológicos, orientação, intervenção em crise, luto', fontes: 'CFP; Ministério da Saúde/RAPS; PubMed/NCBI; SciELO Psicologia; BVS Psicologia; APA Guidelines; APA Division of Psychotherapy; NICE Mental Health; WHO Mental Health Guidance 2025; mhGAP Guideline 2025; WHO QualityRights; WHO Mental Health Atlas 2024; Cochrane Mental Health' },
+      { especialidade: 'Neuropsicologia', categoria: 'Psicologia', base: 'Avaliação neuropsicológica, reabilitação cognitiva, testes cognitivos, funções executivas', fontes: 'CFP; PubMed/NCBI; SciELO Psicologia; BVS Psicologia; APA Division 40 (Clinical Neuropsychology); NICE; WHO Mental Health Guidance 2025; mhGAP Guideline 2025' },
+
+      // === CREFITO ===
+      { especialidade: 'Fisioterapia', categoria: 'Reabilitação', base: 'Avaliação cinético-funcional, exercício terapêutico e reabilitação baseada em diretrizes', fontes: 'COFFITO; World Physiotherapy; NICE; diretrizes clínicas por condição' },
+      { especialidade: 'Hidroterapia', categoria: 'Reabilitação aquática', base: 'Exercícios aquáticos supervisionados para mobilidade, dor, força e relaxamento', fontes: 'World Physiotherapy aquatic therapy resources; diretrizes de reabilitação aquática' },
+      { especialidade: 'Equoterapia', categoria: 'Reabilitação assistida por animal', base: 'Prática interdisciplinar com equipe habilitada e critérios de segurança', fontes: 'ANDE-Brasil; diretrizes de terapia assistida por equinos; segurança em reabilitação' },
+      { especialidade: 'Terapia Ocupacional', categoria: 'Reabilitação', base: 'Avaliação funcional, atividades de vida diária, reabilitação, orientação, adaptações', fontes: 'COFFITO; WFOT; PubMed/NCBI; diretrizes de reabilitação' },
+
+      // === COREN ===
+      { especialidade: 'Enfermeiro(a)', categoria: 'Enfermagem', base: 'Processo de enfermagem, educação em saúde, cuidado continuado, sinais vitais', fontes: 'COREN; Ministério da Saúde; OPAS/OMS; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Técnico de Enfermagem', categoria: 'Enfermagem', base: 'Cuidados básicos de enfermagem, sinais vitais, curativos, administração de medicamentos', fontes: 'COREN; Ministério da Saúde' },
+      { especialidade: 'Enfermeiro(a) Obstetra', categoria: 'Enfermagem', base: 'Acompanhamento pré-natal, parto, puerpério, saúde da mulher', fontes: 'COREN; Ministério da Saúde; FEBRASGO; WHO Mental Health Guidance 2025' },
+
+      // === CRN ===
+      { especialidade: 'Nutricionista', categoria: 'Nutrição', base: 'Avaliação nutricional, plano alimentar, educação alimentar, antropometria, guia alimentar', fontes: 'CFN; Guia Alimentar para a População Brasileira; Ministério da Saúde; PubMed/NCBI' },
+      { especialidade: 'Nutrição Funcional', categoria: 'Nutrição', base: 'Bioquímica nutricional, suplementação, avaliação, condutas, nutrição personalizada', fontes: 'CFN; PubMed/NCBI; literatura de nutrição funcional' },
+      { especialidade: 'Nutrição Esportiva', categoria: 'Nutrição', base: 'Nutrição para performance, suplementação esportiva, avaliação corporal', fontes: 'CFN; PubMed/NCBI; Sociedade Brasileira de Nutrição Esportiva' },
+
+      // === CRO ===
+      { especialidade: 'Odontólogo(a)', categoria: 'Odontologia', base: 'Prevenção, restauração, saúde bucal, periodontia, endodontia, ortodontia, prótese', fontes: 'CFO; Ministério da Saúde; PubMed/NCBI' },
+
+      // === CRF ===
+      { especialidade: 'Farmacêutico(a)', categoria: 'Farmácia', base: 'Dispensação, farmacovigilância, cuidado farmacêutico, interações, aconselhamento', fontes: 'CFF; ANVISA; PubMed/NCBI' },
+
+      // === CRBM ===
+      { especialidade: 'Biomédico(a)', categoria: 'Biomedicina', base: 'Análises clínicas, diagnóstico laboratorial, coleta, interpretação, microbiologia, hematologia', fontes: 'CFBM; ANVISA; PubMed/NCBI' },
+
+      // === CRBIO ===
+      { especialidade: 'Biólogo(a)', categoria: 'Biologia', base: 'Estudos biológicos, análise ambiental, biotecnologia, educação', fontes: 'CRBIO; Ministério do Meio Ambiente; PubMed/NCBI' },
+
+      // === CREF ===
+      { especialidade: 'Educador Físico', categoria: 'Atividade Física', base: 'Avaliação física, prescrição de exercícios, treinamento, prevenção, atividade física, reabilitação', fontes: 'CONFEF; Ministério da Saúde; PubMed/NCBI; OMS/WHO atividade física' },
+      { especialidade: 'Personal Trainer', categoria: 'Atividade Física', base: 'Prescrição de treinos, avaliação física, acompanhamento individualizado', fontes: 'CONFEF; Ministério da Saúde; PubMed/NCBI' },
+
+      // ============================================
+      // BIBLIOTECAS TRANSVERSAIS
+      // ============================================
       { especialidade: 'Anamnese e Semiotécnica Integrativa', categoria: 'Biblioteca transversal', base: 'Roteiros de entrevista, queixa principal, história clínica, hábitos, medicamentos, objetivos do paciente, contexto social e avaliação integrativa por especialidade', fontes: 'Ministério da Saúde; OPAS/OMS; diretrizes profissionais; boas práticas de prontuário' },
       { especialidade: 'Sinais de Alarme e Encaminhamento', categoria: 'Biblioteca transversal', base: 'Bandeiras vermelhas, critérios de urgência, quando interromper prática complementar, quando acionar rede médica, SAMU ou especialista', fontes: 'Ministério da Saúde; AHA Guidelines; Manchester Triage; MSF Medical Guidelines; NICE' },
       { especialidade: 'Contraindicações e Segurança Clínica', categoria: 'Biblioteca transversal', base: 'Contraindicações por idade, gestação, lactação, fragilidade, cardiopatias, anticoagulação, imunossupressão, risco psiquiátrico e condições agudas', fontes: 'NCCIH; NICE; ANVISA; diretrizes profissionais; literatura de segurança clínica' },
       { especialidade: 'Interações e Farmacovigilância', categoria: 'Biblioteca transversal', base: 'Rastreamento de medicamentos, suplementos, plantas medicinais, óleos essenciais, reações adversas, alergias e notificações de segurança', fontes: 'ANVISA; PubMed/NCBI; Micromedex/Lexicomp quando disponível; WHO pharmacovigilance' },
-      { especialidade: 'Consentimento Informado e LGPD em Saúde', categoria: 'Biblioteca transversal', base: 'Consentimento para práticas, limites terapêuticos, privacidade, dados sensíveis, pesquisa anonimizada, revogação e registro de autorização', fontes: 'LGPD; Ministério da Saúde; CFM/CFP/COFFITO/COFEN e demais conselhos; boas práticas éticas' },
+      { especialidade: 'Consentimento Informado e LGPD em Saúde', categoria: 'Biblioteca transversal', base: 'Consentimento para práticas, limites terapêuticos, privacidade, dados sensíveis, pesquisa anonimizada, revogação e registro de autorização', fontes: 'LGPD; Ministério da Saúde; CFM/CFP/COFFITO/COFEN e demais conselhos; boas práticas éticas; WHO QualityRights' },
       { especialidade: 'Escalas e Desfechos Clínicos', categoria: 'Biblioteca transversal', base: 'Mensuração de dor, sono, ansiedade, funcionalidade, qualidade de vida, evolução subjetiva e resposta terapêutica por especialidade', fontes: 'NICE; PubMed/NCBI; Cochrane; diretrizes clínicas por condição' },
       { especialidade: 'Evolução, Prontuário e SOAP', categoria: 'Biblioteca transversal', base: 'Registro estruturado de evolução, plano terapêutico, metas, retorno, eventos adversos, orientações e comunicação entre profissionais', fontes: 'Ministério da Saúde; HL7 FHIR; boas práticas de prontuário; diretrizes profissionais' },
       { especialidade: 'Teleconsulta Segura', categoria: 'Biblioteca transversal', base: 'Identificação, consentimento, privacidade, limites de atendimento remoto, sinais para encaminhamento presencial e registro da sessão', fontes: 'CFM; CFP; Ministério da Saúde; LGPD; boas práticas de telessaúde' },
       { especialidade: 'Ciclos de Vida', categoria: 'Biblioteca transversal', base: 'Adaptações para crianças, adolescentes, gestantes, puérperas, adultos, idosos, pessoas frágeis e pacientes com deficiência', fontes: 'Ministério da Saúde; OPAS/OMS; SBP; FEBRASGO; SBGG; diretrizes clínicas' },
-      { especialidade: 'Dor, Sono e Estresse', categoria: 'Biblioteca transversal', base: 'Condições frequentes em várias especialidades, com triagem, autocuidado, práticas integrativas, critérios de encaminhamento e acompanhamento', fontes: 'NICE; NCCIH; Cochrane; PubMed/NCBI; Ministério da Saúde' },
+      { especialidade: 'Dor, Sono e Estresse', categoria: 'Biblioteca transversal', base: 'Condições frequentes em várias especialidades, com triagem, autocuidado, práticas integrativas, critérios de encaminhamento e acompanhamento', fontes: 'NICE; NCCIH; Cochrane; PubMed/NCBI; Ministério da Saúde; WHO Mental Health Guidance 2025' },
       { especialidade: 'Educação do Paciente e Autocuidado', categoria: 'Biblioteca transversal', base: 'Orientações compreensíveis, adesão, metas realistas, sinais de alerta, hábitos, prevenção, comunicação de riscos e corresponsabilidade', fontes: 'OPAS/OMS; Ministério da Saúde; diretrizes de promoção da saúde' },
-      { especialidade: 'Protocolos Transversais por Especialidade', categoria: 'Biblioteca transversal', base: 'Modelos reutilizáveis de avaliação, tratamento, encaminhamento, segurança, evolução e revisão periódica para todas as bibliotecas do sistema', fontes: 'PNPIC/MS; OPAS/OMS; BVS/BIREME; diretrizes profissionais; literatura científica e clássica aplicável' }
+      { especialidade: 'Protocolos Transversais por Especialidade', categoria: 'Biblioteca transversal', base: 'Modelos reutilizáveis de avaliação, tratamento, encaminhamento, segurança, evolução e revisão periódica para todas as bibliotecas do sistema', fontes: 'PNPIC/MS; OPAS/OMS; BVS/BIREME; diretrizes profissionais; literatura científica e clássica aplicável' },
+      { especialidade: 'Psicoterapia', categoria: 'Psicologia', base: 'Abordagens terapêuticas: cognitivo-comportamental, psicodinâmica, humanista, sistêmica, EMDR', fontes: 'CFP; APA Division of Psychotherapy; NICE Mental Health; PubMed/NCBI; SciELO Psicologia; BVS Psicologia; WHO Mental Health Guidance 2025' },
+      { especialidade: 'Avaliação Psicológica', categoria: 'Psicologia', base: 'Testes psicológicos, psicometria, entrevista, anamnese, laudos, relatórios', fontes: 'CFP; SATEPSI (Sistema de Avaliação de Testes Psicológicos); BVS Psicologia; PubMed/NCBI; SciELO Psicologia' }
     ]
   },
 
@@ -386,19 +486,31 @@ const CONFIG = {
   },
 
   // ═══════════════════════════════════════════
-  // INTEGRAÇÕES CIENTÍFICAS
+  // INTEGRAÇÕES CIENTÍFICAS (ATUALIZADO)
   // ═══════════════════════════════════════════
   BIBLIOTECAS_CIENTIFICAS: {
     fiocruz:  { nome: 'Biblioteca Fiocruz (ARCA)',  url: 'https://arca.fiocruz.br',          descricao: 'Repositório institucional de pesquisas em saúde pública' },
     redepics: { nome: 'RedePICS Brasil',            url: 'https://redepicsbrasil.org.br',    descricao: 'Rede de pesquisa em Práticas Integrativas e Complementares' },
     bireme:   { nome: 'BIREME / OPAS (BVS)',        url: 'https://www.bireme.org.br',        descricao: 'Centro Latino-Americano e do Caribe de Informação em Ciências da Saúde' },
     pubmed:   { nome: 'PubMed / NCBI',              url: 'https://pubmed.ncbi.nlm.nih.gov',  descricao: 'Base internacional de literatura biomédica' },
-    scielo:   { nome: 'SciELO',                     url: 'https://scielo.org',               descricao: 'Scientific Electronic Library Online' }
+    scielo:   { nome: 'SciELO',                     url: 'https://scielo.org',               descricao: 'Scientific Electronic Library Online' },
+    // === NOVAS BIBLIOTECAS ===
+    bvs_psicologia: { nome: 'BVS Psicologia', url: 'https://bvsalud.org/psi/', descricao: 'Base de dados especializada em psicologia da BVS/BIREME' },
+    satepsi: { nome: 'SATEPSI', url: 'https://satepsi.cfp.org.br', descricao: 'Sistema de Avaliação de Testes Psicológicos do CFP' },
+    who_mh_guidance: { nome: 'WHO Mental Health Guidance 2025', url: 'https://www.who.int/publications', descricao: 'Novo guia da OMS para políticas de saúde mental em todos os setores governamentais' },
+    who_mhgap: { nome: 'mhGAP Guideline 2025', url: 'https://www.who.int/publications', descricao: 'Programa de Ação para Lacunas em Saúde Mental - 48 recomendações' },
+    who_mhgap_guide: { nome: 'mhGAP Intervention Guide 2.0', url: 'https://www.who.int/publications', descricao: 'Guia prático para manejo de condições mentais, neurológicas e uso de substâncias' },
+    who_mh_atlas: { nome: 'WHO Mental Health Atlas 2024', url: 'https://www.who.int/publications', descricao: 'Relatório global com dados de 144 países sobre saúde mental' },
+    who_mh_action_plan: { nome: 'WHO Comprehensive Mental Health Action Plan 2013-2030', url: 'https://www.who.int/publications', descricao: 'Plano de ação atualizado para saúde mental' },
+    who_qualityrights: { nome: 'WHO QualityRights', url: 'https://www.who.int/initiatives/qualityrights', descricao: 'Iniciativa de direitos humanos em saúde mental' },
+    who_cross_sectoral: { nome: 'WHO Cross-Sectoral Mental Health Guidance', url: 'https://www.who.int/publications', descricao: 'Diretrizes para 10 setores governamentais (educação, emprego, justiça, etc.)' },
+    apa: { nome: 'APA Guidelines', url: 'https://www.apa.org', descricao: 'Guias e diretrizes da American Psychological Association' },
+    apa_psychotherapy: { nome: 'APA Division of Psychotherapy', url: 'https://www.apa.org', descricao: 'Divisão de Psicoterapia da APA' },
+    apa_neuropsychology: { nome: 'APA Division 40 (Clinical Neuropsychology)', url: 'https://www.apa.org', descricao: 'Divisão de Neuropsicologia Clínica da APA' }
   },
 
   // ═══════════════════════════════════════════
-  // TEXTOS CANÔNICOS DE JYOTISH (Astrologia Védica Clássica)
-  // Traduções e edições em domínio público / repositórios abertos
+  // TEXTOS CANÔNICOS DE JYOTISH
   // ═══════════════════════════════════════════
   JYOTISH_CANONICOS: [
     {
@@ -406,87 +518,28 @@ const CONFIG = {
       autor: 'Maharishi Parāśara',
       epoca: 'Antiguidade védica (compilação posterior)',
       descricao: 'Tratado raiz do Jyotish — base do sistema Parāśari, com Dashā Vimśottarī, Yogas e cálculo de Bhāvas.',
-      fontes: [
-        'https://archive.org/details/BrihatParasharaHoraShastraEnglishTranslation',
-        'https://www.wisdomlib.org/hinduism/book/brihat-parashara-hora-shastra'
-      ]
+      fontes: ['https://archive.org/details/BrihatParasharaHoraShastraEnglishTranslation', 'https://www.wisdomlib.org/hinduism/book/brihat-parashara-hora-shastra']
     },
     {
       titulo: 'Bṛhat Jātaka',
       autor: 'Varāhamihira',
       epoca: 'Séc. VI d.C.',
       descricao: 'Clássico conciso e fundacional sobre interpretação natal; referência obrigatória.',
-      fontes: [
-        'https://archive.org/details/BrihatJatakaOfVarahamihira',
-        'https://www.wisdomlib.org/hinduism/book/brihat-jataka'
-      ]
+      fontes: ['https://archive.org/details/BrihatJatakaOfVarahamihira', 'https://www.wisdomlib.org/hinduism/book/brihat-jataka']
     },
     {
       titulo: 'Sārāvalī',
       autor: 'Kalyāṇa Varma',
       epoca: 'Séc. VIII–X',
       descricao: 'Compêndio de yogas, dignidades planetárias e técnicas preditivas detalhadas.',
-      fontes: [
-        'https://archive.org/details/saravali',
-        'https://www.wisdomlib.org/hinduism/book/saravali'
-      ]
+      fontes: ['https://archive.org/details/saravali', 'https://www.wisdomlib.org/hinduism/book/saravali']
     },
     {
       titulo: 'Phaladīpikā',
       autor: 'Mantreśvara',
       epoca: 'Séc. XIII–XIV',
       descricao: 'Manual prático de astrologia natal, abrangendo yogas e dashās com exemplos.',
-      fontes: [
-        'https://archive.org/details/phaladeepika-of-mantreswara',
-        'https://www.wisdomlib.org/hinduism/book/phaladeepika'
-      ]
-    },
-    {
-      titulo: 'Jātaka Pārijāta',
-      autor: 'Vaidyanātha Dīkṣita',
-      epoca: 'Séc. XV–XVI',
-      descricao: 'Obra enciclopédica sobre astrologia natal, frequentemente usada em estudos avançados.',
-      fontes: [
-        'https://archive.org/details/JatakaParijata',
-        'https://www.wisdomlib.org/hinduism/book/jataka-parijata'
-      ]
-    },
-    {
-      titulo: 'Uttara Kālāmṛta',
-      autor: 'Atribuído a Kālidāsa',
-      epoca: 'Tradicional',
-      descricao: 'Tratado clássico sobre yogas, casas, kārakas e técnicas de interpretação.',
-      fontes: [
-        'https://archive.org/details/UttaraKalamritaOfKalidasa',
-        'https://www.wisdomlib.org/hinduism/book/uttara-kalamrita'
-      ]
-    },
-    {
-      titulo: 'Horā Sāra',
-      autor: 'Pṛthuyaśas (filho de Varāhamihira)',
-      epoca: 'Séc. VI–VII',
-      descricao: 'Continuação direta do Bṛhat Jātaka, expandindo regras práticas.',
-      fontes: [
-        'https://archive.org/details/HoraSara',
-        'https://www.wisdomlib.org/hinduism/book/hora-sara'
-      ]
-    },
-    {
-      titulo: 'Jaimini Sūtras',
-      autor: 'Maharishi Jaimini',
-      epoca: 'Antiguidade védica',
-      descricao: 'Sistema alternativo (Jaimini), com Chara Kārakas, Argalas e Rāśi Dashās.',
-      fontes: [
-        'https://archive.org/details/JaiminiSutrasInEnglish',
-        'https://www.wisdomlib.org/hinduism/book/jaimini-sutras'
-      ]
-    },
-    {
-      titulo: 'Garga Saṃhitā / Garga Horā',
-      autor: 'Maharishi Garga',
-      epoca: 'Tradicional',
-      descricao: 'Coletânea de aforismos preditivos clássicos atribuída a Garga.',
-      fontes: ['https://www.wisdomlib.org/hinduism/book/garga-samhita']
+      fontes: ['https://archive.org/details/phaladeepika-of-mantreswara', 'https://www.wisdomlib.org/hinduism/book/phaladeepika']
     }
   ],
 
@@ -547,5 +600,47 @@ const CONFIG = {
   }
 };
 
+// ============================================
+// BOOTSTRAP DO CATÁLOGO TERAPÊUTICO
+// ============================================
+function sincronizarCatalogoFallback(cfg) {
+  const bt = cfg.BIBLIOTECAS_TERAPEUTICAS;
+  const categoriaTransversal = 'Biblioteca transversal';
+  bt.total_bibliotecas = bt.matriz.length;
+  bt.total_especialidades = cfg.ESPECIALIDADES.length;
+  bt.bibliotecas_transversais = bt.matriz.filter((item) => item.categoria === categoriaTransversal).length;
+  bt.bibliotecas_por_pratica = bt.total_bibliotecas - bt.bibliotecas_transversais;
+  bt.total_itens_catalogo = bt.itens.length;
+  bt.total_registros = bt.registros_base + bt.registros_blocos + bt.protocolos_criados;
+  cfg.LIMITES_BIBLIOTECAS_PLANO = {
+    freemium: 1,
+    guardioes_floresta: 5,
+    pro: 10,
+    premium: 20,
+    enterprise: bt.bibliotecas_por_pratica
+  };
+  Object.entries(cfg.LIMITES_BIBLIOTECAS_PLANO).forEach(([plano, limite]) => {
+    if (cfg.PLANOS[plano]) cfg.PLANOS[plano].especialidades_inclusas = limite;
+  });
+}
+
+if (typeof CatalogoTerapeutico !== 'undefined') {
+  CatalogoTerapeutico.sincronizar(CONFIG);
+  CONFIG.Catalogo = CatalogoTerapeutico;
+} else if (typeof require !== 'undefined') {
+  try {
+    const CatalogoTerapeuticoNode = require('./catalogo-terapeutico.js');
+    CatalogoTerapeuticoNode.sincronizar(CONFIG);
+    CONFIG.Catalogo = CatalogoTerapeuticoNode;
+  } catch (error) {
+    sincronizarCatalogoFallback(CONFIG);
+  }
+} else {
+  sincronizarCatalogoFallback(CONFIG);
+}
+
+// ============================================
+// EXPORTAÇÃO — ESSENCIAL PARA O FRONTEND
+// ============================================
 if (typeof window !== 'undefined') window.CONFIG = CONFIG;
 if (typeof module !== 'undefined' && module.exports) module.exports = CONFIG;

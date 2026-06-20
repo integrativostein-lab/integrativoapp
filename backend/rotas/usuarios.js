@@ -3,36 +3,17 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
-
-const LIMITES_BIBLIOTECAS_PLANO = {
-  freemium: 1,
-  guardioes_floresta: 5,
-  pro: 10,
-  premium: 20,
-  enterprise: 63
-};
+const {
+  limiteBibliotecasPorPlano,
+  normalizarBibliotecas,
+  unicas
+} = require('../utils/bibliotecas');
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
   catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
-
-function normalizarBibliotecas(valor) {
-  if (Array.isArray(valor)) return valor.map((item) => String(item || '').trim()).filter(Boolean);
-  if (typeof valor !== 'string' || !valor.trim()) return [];
-  try {
-    const parsed = JSON.parse(valor);
-    if (Array.isArray(parsed)) return normalizarBibliotecas(parsed);
-  } catch {
-    // Aceita tambem texto simples separado por virgulas.
-  }
-  return valor.split(',').map((item) => item.trim()).filter(Boolean);
-}
-
-function unicas(lista) {
-  return Array.from(new Set(lista.filter(Boolean)));
 }
 
 router.get('/perfil', autenticar, async (req, res) => {
@@ -68,7 +49,7 @@ router.put('/bibliotecas', autenticar, async (req, res) => {
   }
 
   const plano = usuario.plano || 'freemium';
-  const limite = LIMITES_BIBLIOTECAS_PLANO[plano] || LIMITES_BIBLIOTECAS_PLANO.freemium;
+  const limite = limiteBibliotecasPorPlano(plano);
   const bibliotecas = unicas(normalizarBibliotecas(req.body.bibliotecas));
   if (bibliotecas.length === 0) return res.status(400).json({ erro: 'Informe ao menos a biblioteca principal' });
   if (bibliotecas.length > limite) {
@@ -91,7 +72,7 @@ router.get('/bibliotecas', autenticar, async (req, res) => {
   }
 
   const plano = usuario.plano || 'freemium';
-  const limite = LIMITES_BIBLIOTECAS_PLANO[plano] || LIMITES_BIBLIOTECAS_PLANO.freemium;
+  const limite = limiteBibliotecasPorPlano(plano);
   const bibliotecas = unicas(normalizarBibliotecas(usuario.especialidades));
   res.json({
     plano,

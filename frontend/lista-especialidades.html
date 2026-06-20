@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Especialidades — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    * { box-sizing: border-box; }
+    .page-container { max-width: 1200px; margin: 40px auto; padding: 0 24px; }
+    
+    /* HEADER */
+    .page-header { background: linear-gradient(135deg, #1A365D, #1f3a5f 60%, #10B981); color: #FFF; border-radius: 20px; padding: 28px 36px; margin-bottom: 24px; }
+    .page-header h1 { color: #FFF; font-size: 28px; margin-bottom: 4px; }
+    .page-header p { color: rgba(255,255,255,0.85); font-size: 15px; }
+
+    /* TABELA 1 - STATS (LINHAS) */
+    .stats-linha { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+    .stat-linha { display: flex; align-items: center; padding: 14px 24px; border-radius: 12px; border: 1px solid #E2E8F0; background: #FFF; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .stat-linha .icone { font-size: 20px; margin-right: 14px; }
+    .stat-linha .label { font-weight: 700; color: #1A365D; font-size: 15px; min-width: 200px; }
+    .stat-linha .numero { font-weight: 800; font-size: 20px; color: #1A365D; margin: 0 8px; }
+    .stat-linha .desc { font-size: 14px; color: #4A5568; margin-right: 10px; }
+    .stat-linha .detalhe { font-size: 13px; color: #718096; margin-left: auto; }
+    .stat-linha.saberes { border-left: 5px solid #10B981; }
+    .stat-linha.regulamentadas { border-left: 5px solid #3B82F6; }
+    .stat-linha.total { border-left: 5px solid #805AD5; background: #F8FAFC; }
+    .stat-linha .num-verde { color: #10B981; }
+    .stat-linha .num-azul { color: #3B82F6; }
+    .stat-linha .num-roxo { color: #805AD5; }
+
+    /* SELECT */
+    .select-container { margin-bottom: 24px; }
+    .select-container select { 
+      width: 100%; 
+      max-width: 480px; 
+      padding: 12px 20px; 
+      border: 2px solid #E2E8F0; 
+      border-radius: 12px; 
+      font-size: 16px; 
+      font-weight: 600; 
+      color: #1A365D; 
+      background: #FFF; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      appearance: none; 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231A365D' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); 
+      background-repeat: no-repeat; 
+      background-position: right 16px center; 
+      padding-right: 44px; 
+    }
+    .select-container select:focus { outline: none; border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.12); }
+    .select-container select:hover { border-color: #10B981; }
+
+    /* TABELA 2 - DETALHE DA ESPECIALIDADE */
+    .detalhe-container { 
+      background: #FFF; 
+      border-radius: 16px; 
+      border: 1px solid #E2E8F0; 
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: none;
+    }
+    .detalhe-container.ativo { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .detalhe-header { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 16px 24px; 
+      background: #F8FAFC; 
+      border-bottom: 1px solid #E2E8F0;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .detalhe-header .nome { font-size: 22px; font-weight: 700; color: #1A365D; }
+    .detalhe-header .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .detalhe-header .tag { font-size: 12px; padding: 4px 14px; border-radius: 100px; font-weight: 600; background: #F1F5F9; color: #4A5568; }
+    .detalhe-header .tag.verde { background: #ECFDF5; color: #047857; }
+    .detalhe-header .tag.azul { background: #DBEAFE; color: #1E40AF; }
+    .detalhe-header .tag.dourado { background: #FEF3C7; color: #92400E; }
+
+    .detalhe-body { padding: 0; overflow-x: auto; }
+    .detalhe-body table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .detalhe-body th { 
+      background: #F8FAFC; 
+      padding: 14px 20px; 
+      text-align: left; 
+      font-weight: 700; 
+      color: #1A365D; 
+      font-size: 13px; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+      border-bottom: 2px solid #E2E8F0; 
+    }
+    .detalhe-body td { 
+      padding: 14px 20px; 
+      border-bottom: 1px solid #F1F5F9; 
+      vertical-align: top; 
+      line-height: 1.6;
+    }
+    .detalhe-body tr:last-child td { border-bottom: none; }
+
+    /* COLUNA: CONTEÚDOS - MAIORES E MAIS ESCUROS */
+    .detalhe-body .col-conteudo { 
+      font-size: 14px; 
+      color: #1A202C;
+      line-height: 1.8; 
+    }
+    .detalhe-body .col-conteudo .item { 
+      display: inline-block; 
+      background: #F1F5F9; 
+      padding: 4px 14px; 
+      border-radius: 100px; 
+      font-size: 13px; 
+      margin: 3px 5px; 
+      color: #1A202C;
+      font-weight: 500;
+      border: 1px solid #E2E8F0;
+    }
+    .detalhe-body .col-conteudo .item.destaque { 
+      background: #ECFDF5; 
+      color: #065F46; 
+      border: 1px solid #A7F3D0; 
+      font-weight: 600;
+    }
+    .detalhe-body .col-conteudo .mais { 
+      font-size: 13px; 
+      color: #10B981; 
+      font-weight: 600; 
+      display: inline-block;
+      margin-left: 4px;
+    }
+
+    /* COLUNA: FONTES - MAIORES E MAIS ESCURAS */
+    .detalhe-body .col-fontes { 
+      font-size: 14px; 
+      line-height: 2.4; 
+    }
+    .detalhe-body .col-fontes .fonte-link { 
+      font-size: 14px; 
+      color: #0A3D2C;
+      text-decoration: none; 
+      background: #F0FDF4; 
+      padding: 5px 16px; 
+      border-radius: 100px; 
+      display: inline-block; 
+      margin: 3px 5px; 
+      transition: all 0.2s; 
+      border: 1px solid #D1FAE5; 
+      font-weight: 500;
+    }
+    .detalhe-body .col-fontes .fonte-link:hover { 
+      background: #10B981; 
+      color: #FFF; 
+      border-color: #10B981;
+      transform: scale(1.02);
+    }
+
+    /* CLÁSSICOS - ESTILO ESPECIAL (DOURADO) */
+    .detalhe-body .col-fontes .classico { 
+      background: #FEF3C7; 
+      border-color: #FCD34D; 
+      color: #7C2D12; 
+      font-style: italic;
+      font-weight: 600;
+    }
+    .detalhe-body .col-fontes .classico:hover { 
+      background: #7C2D12; 
+      color: #FFF; 
+      border-color: #7C2D12;
+    }
+
+    .detalhe-body .col-especialidade { 
+      font-weight: 700; 
+      color: #1A365D; 
+      font-size: 16px; 
+    }
+
+    /* SEM SELEÇÃO */
+    .sem-selecao { text-align: center; padding: 50px; color: #A0AEC0; font-size: 15px; }
+    .sem-selecao .icone-grande { font-size: 56px; display: block; margin-bottom: 14px; }
+
+    /* FOOTER */
+    .footer-info { text-align: center; padding: 20px; color: #718096; font-size: 14px; border-top: 1px solid #E2E8F0; margin-top: 40px; }
+
+    @media (max-width: 768px) {
+      .page-header { padding: 20px; }
+      .page-header h1 { font-size: 22px; }
+      .stat-linha { flex-wrap: wrap; gap: 4px; padding: 12px 16px; }
+      .stat-linha .label { min-width: 120px; font-size: 14px; }
+      .stat-linha .detalhe { margin-left: 0; width: 100%; }
+      .select-container select { max-width: 100%; font-size: 15px; }
+      .detalhe-header { flex-direction: column; align-items: flex-start; }
+      .detalhe-header .nome { font-size: 18px; }
+      .detalhe-body td { padding: 10px 14px; font-size: 14px; }
+      .detalhe-body .col-fontes .fonte-link { font-size: 13px; padding: 4px 12px; }
+      .detalhe-body .col-conteudo .item { font-size: 12px; padding: 3px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu">
+      <a href="index.html">Início</a>
+      <a href="busca.html">Busca</a>
+      <a href="bibliotecas-especialidades.html">Bibliotecas</a>
+      <a href="lista-especialidades.html" class="ativo">Especialidades</a>
+      <a href="login.html" class="btn btn-primario">Entrar</a>
+    </div>
+  </nav>
+
+  <div class="page-container">
+    <!-- HEADER -->
+    <div class="page-header">
+      <h1>📋 Especialidades</h1>
+      <p>Organizadas por origem: saberes tradicionais/PICS e profissões regulamentadas.</p>
+    </div>
+
+    <!-- TABELA 1: STATS (LINHAS) -->
+    <div class="stats-linha" id="statsLinha"></div>
+
+    <!-- SELECT -->
+    <div class="select-container">
+      <select id="selectEspecialidade" onchange="mostrarEspecialidade()">
+        <option value="">🔍 Selecione uma especialidade...</option>
+      </select>
+    </div>
+
+    <!-- TABELA 2: DETALHE DA ESPECIALIDADE -->
+    <div class="detalhe-container" id="detalheContainer">
+      <div class="detalhe-header" id="detalheHeader"></div>
+      <div class="detalhe-body" id="detalheBody"></div>
+    </div>
+
+    <!-- SEM SELEÇÃO -->
+    <div class="sem-selecao" id="semSelecao">
+      <span class="icone-grande">📌</span>
+      Escolha uma especialidade no menu acima para ver seus conteúdos e fontes de conhecimento.
+    </div>
+
+    <div class="footer-info">
+      <strong>Total: <span id="totalEspecialidades">0</span> especialidades</strong>
+      &bull; Dados do config.js &bull; Integrativo.App
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    // ============================================
+    // DADOS
+    // ============================================
+    var especialidades = window.CONFIG && window.CONFIG.ESPECIALIDADES ? window.CONFIG.ESPECIALIDADES : [];
+    var bibliotecasMatriz = window.CONFIG && window.CONFIG.BIBLIOTECAS_TERAPEUTICAS && window.CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz ? window.CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz : [];
+
+    // ============================================
+    // CONTEÚDOS PROFUNDOS
+    // ============================================
+    var CONTEUDOS_PROFUNDOS = {
+      'Ayurveda': [
+        'Prakriti (biotipo constitucional) - análise detalhada de Vata, Pitta, Kapha',
+        'Vikriti (desequilíbrio atual) - diagnóstico diferencial dos doshas',
+        'Agni (fogo digestivo) - 13 tipos de agni e sua avaliação clínica',
+        'Ama (toxinas metabólicas) - identificação e protocolos de eliminação',
+        'Srotas (canais do corpo) - avaliação de 13 canais e suas disfunções',
+        'Nadi (pulso) - técnica avançada de diagnóstico pelo pulso',
+        'Jihva (língua) - maping completo da língua por áreas e doshas',
+        'Dhatu (tecidos) - 7 tecidos e sua nutrição sequencial',
+        'Mala (excreções) - análise de fezes, urina e suor',
+        'Dashavidha Pariksha - 10 pontos de avaliação diagnóstica',
+        'Ritucharya (rotina sazonal) - adaptação para cada estação',
+        'Dinacharya (rotina diária) - cronobiologia ayurvédica avançada'
+      ],
+      'Medicina Tradicional Chinesa': [
+        'Diagnóstico pelos 4 pilares: inspeção, ausculta, olfação, palpação, questionamento',
+        'Síndromes de Zang-Fu (órgãos e vísceras) - 5 Zang e 6 Fu',
+        'Canais de energia (meridianos) - 12 meridianos principais + 8 extraordinários',
+        'Pontos de acupuntura - 361 pontos clássicos e suas funções',
+        'Diagnóstico da língua - 28 tipos de saburra e 9 posições',
+        'Diagnóstico do pulso - 28 qualidades de pulso',
+        'Teoria dos Cinco Elementos (Madeira, Fogo, Terra, Metal, Água)',
+        'Qi, Xue (sangue), Jin Ye (líquidos) - fisiologia e patologia',
+        'Síndromes de Wei (defesa), Qi, Ying (nutrição) e Xue (sangue)',
+        'Farmacologia chinesa - classificação de 365 ervas medicinais',
+        'Fórmulas clássicas - 113 fórmulas de Shang Han Lun'
+      ],
+      'Yoga (instrutor)': [
+        'Asanas (posturas) - alinhamento e benefícios terapêuticos de 84 posturas principais',
+        'Pranayama (técnicas respiratórias) - 8 tipos de pranayama e seus efeitos',
+        'Chakras - 7 centros energéticos e sua correlação psicossomática',
+        'Bandhas (travas energéticas) - 3 bandhas e seus efeitos fisiológicos',
+        'Kriyas (técnicas de purificação) - 6 técnicas de shatkarma',
+        'Yoga Nidra - relaxamento profundo e ondas cerebrais',
+        'Mudras (gestos) - 25 mudras e seus efeitos energéticos',
+        'Filosofia do Yoga - 8 membros do Ashtanga Yoga de Patanjali',
+        'Terapêutica do Yoga - adaptação para 50 condições clínicas',
+        'Sequências terapêuticas - para coluna, ansiedade, insônia, etc.'
+      ],
+      'Fitoterapia': [
+        'Farmacologia de plantas medicinais - 120 espécies da RENISUS',
+        'Interações medicamentosas - 150 interações documentadas',
+        'Fitovigilância - sistema de monitoramento de reações adversas',
+        'Preparação galênica - extratos, tinturas, xaropes, cápsulas',
+        'Posologia avançada - cálculo de doses por peso e condição',
+        'Contraindicações - por idade, gestação, comorbidades',
+        'Plantas adaptogênicas - Ashwagandha, Ginseng, Rhodiola',
+        'Plantas para sistema nervoso - Passiflora, Valeriana, Hypericum',
+        'Plantas para sistema cardiovascular - Hawthorn, Garlic, Gingko',
+        'Plantas para sistema digestivo - Peppermint, Ginger, Fennel'
+      ],
+      'Florais de Bach': [
+        'Sistema dos 38 florais - classificação por estados emocionais',
+        'Tipos emocionais - 7 categorias de personalidade',
+        'Seleção floral - metodologia de prescrição individualizada',
+        'Preparo e posologia - método de diluição e administração',
+        'Essências combinadas - sinergias e combinações terapêuticas',
+        'Terapia de resgate (Rescue Remedy) - aplicação em emergências'
+      ],
+      'Massoterapia': [
+        'Técnicas de liberação miofascial - 15 técnicas avançadas',
+        'Pontos gatilho - mapeamento de 50 pontos e tratamentos',
+        'Drenagem linfática manual - sequência completa',
+        'Massagem terapêutica - protocolos para dor crônica',
+        'Avaliação postural - 20 pontos de análise',
+        'Massagem shantala - técnica para bebês e crianças'
+      ],
+      'Médico (clínico geral)': [
+        'Anamnese completa - roteiro sistemático para 20 especialidades',
+        'Exame físico - 10 sistemas avaliados em profundidade',
+        'Diagnóstico diferencial - árvore de decisão para 100 queixas',
+        'Prescrição segura - interações medicamentosas e dose ajustada',
+        'Prevenção quaternária - evitar iatrogenia e sobremedicalização',
+        'Rastreamento de doenças - 15 tipos de câncer e 8 condições crônicas',
+        'Cuidados paliativos - manejo de dor, dispneia, náusea',
+        'Medicina de urgência - triagem e estabilização de emergências'
+      ],
+      'Psiquiatria': [
+        'Avaliação psiquiátrica - entrevista estruturada para 50 transtornos',
+        'Psicofármacos - 10 classes e suas indicações precisas',
+        'RAPS (Rede de Atenção Psicossocial) - fluxos e encaminhamentos',
+        'Crise psiquiátrica - manejo de agitação, suicídio, psicose',
+        'Psicoterapia integrada - TCC, psicodinâmica, terapia sistêmica',
+        'Prevenção ao suicídio - escala de risco e plano de segurança'
+      ],
+      'Psicólogo(a)': [
+        'Avaliação psicológica - 20 testes psicométricos validados (SATEPSI)',
+        'Psicoterapia - 5 abordagens: TCC, Psicodinâmica, Humanista, Sistêmica, Gestalt',
+        'RAPS - fluxos de atendimento na rede pública de saúde mental',
+        'Intervenção em crise - 3 estágios de manejo de crise',
+        'Luto - 5 estágios de Kübler-Ross aplicados na prática clínica',
+        'Avaliação de risco - protocolo para ideação e comportamento suicida',
+        'Relatórios e laudos - estrutura conforme CFP (Resolução 06/2019)',
+        'Psicologia positiva - intervenções baseadas em forças e virtudes',
+        'Transtornos de ansiedade - 7 tipos e protocolos de tratamento',
+        'Transtornos de humor - depressão, bipolaridade e manejo'
+      ],
+      'Neuropsicologia': [
+        'Avaliação neuropsicológica - 15 testes cognitivos padronizados',
+        'Reabilitação cognitiva - 5 domínios: atenção, memória, linguagem, funções executivas, praxia',
+        'Testes cognitivos - MMSE, MoCA, WAIS, WISC, Wisconsin, Stroop, Trail Making',
+        'Funções executivas - avaliação de 8 subcomponentes',
+        'Memória - 5 sistemas de memória e seus testes específicos',
+        'Linguagem - avaliação de afasia e distúrbios da comunicação'
+      ],
+      'Fisioterapia': [
+        'Avaliação cinético-funcional - 20 testes ortopédicos e neurológicos',
+        'Exercício terapêutico - prescrição de 150 exercícios por condição',
+        'Reabilitação ortopédica - protocolos para 30 condições musculoesqueléticas',
+        'Reabilitação neurológica - 5 abordagens (Bobath, Kabat, PNF, etc.)',
+        'Cinesioterapia - 50 técnicas de mobilização articular',
+        'Avaliação postural - 10 pontos de análise alinhamento corporal',
+        'Terapia manual - 20 técnicas de liberação e mobilização'
+      ],
+      'Nutricionista': [
+        'Avaliação nutricional - 10 métodos de avaliação antropométrica',
+        'Plano alimentar - 50 prescrições dietéticas por condição clínica',
+        'Educação alimentar - técnica de grupos focais e entrevista motivacional',
+        'Guia alimentar - aplicação das 10 regras do Guia Alimentar Brasileiro',
+        'Dietoterapia - 30 protocolos para doenças crônicas',
+        'Suplementação - 50 suplementos e suas indicações'
+      ]
+    };
+
+    // ============================================
+    // FUNÇÃO PARA OBTER CONTEÚDOS PROFUNDOS
+    // ============================================
+    function getConteudos(nome) {
+      if (CONTEUDOS_PROFUNDOS[nome]) return CONTEUDOS_PROFUNDOS[nome];
+      for (var key in CONTEUDOS_PROFUNDOS) {
+        if (nome.indexOf(key) !== -1 || key.indexOf(nome) !== -1) {
+          return CONTEUDOS_PROFUNDOS[key];
+        }
+      }
+      return [
+        'Avaliação inicial e anamnese completa',
+        'Diagnóstico diferencial por especialidade',
+        'Plano terapêutico individualizado',
+        'Acompanhamento e reavaliação periódica',
+        'Encaminhamento para equipe multidisciplinar',
+        'Prevenção e promoção da saúde',
+        'Educação e orientação do paciente'
+      ];
+    }
+
+    // ============================================
+    // FUNÇÃO PARA OBTER FONTES (DA MATRIZ)
+    // ============================================
+    function getFontes(nome) {
+      var encontrada = bibliotecasMatriz.find(function(item) {
+        return item.especialidade === nome;
+      });
+
+      if (!encontrada) {
+        for (var i = 0; i < bibliotecasMatriz.length; i++) {
+          if (bibliotecasMatriz[i].especialidade.indexOf(nome) !== -1 || 
+              nome.indexOf(bibliotecasMatriz[i].especialidade) !== -1) {
+            encontrada = bibliotecasMatriz[i];
+            break;
+          }
+        }
+      }
+
+      if (!encontrada || !encontrada.fontes) {
+        return [
+          { nome: 'Ministério da Saúde', url: 'https://www.gov.br/saude', tipo: 'oficial' },
+          { nome: 'BVS/BIREME', url: 'https://bvsalud.org', tipo: 'cientifica' }
+        ];
+      }
+
+      var fontesRaw = encontrada.fontes.split(/[;,]/).map(function(f) { return f.trim(); }).filter(function(f) { return f.length > 2; });
+      
+      var fontes = [];
+      var classicos = ['Charaka', 'Sushruta', 'Ashtanga', 'Bhavaprakasha', 'Dhanvantari', 'Kaiyadeva', 
+                       'Parāśara', 'Jātaka', 'Sārāvalī', 'Phaladīpikā', 'Huangdi', 'Neijing', 'Nan Jing', 
+                       'Shang Han Lun', 'Yoga Sutras', 'Hatha Yoga', 'Bhagavad Gita', 'Vastu', 'Mayamata', 'Manasara'];
+
+      fontesRaw.forEach(function(f) {
+        var tipo = 'oficial';
+        var isClassico = false;
+        
+        classicos.forEach(function(c) {
+          if (f.indexOf(c) !== -1) {
+            isClassico = true;
+            tipo = 'classico';
+          }
+        });
+
+        var url = '#';
+        if (isClassico) {
+          var nomeClean = f.replace(/[📜]/g, '').trim();
+          url = 'https://archive.org/search?query=' + encodeURIComponent(nomeClean);
+        } else if (f.indexOf('PNPIC') !== -1) {
+          url = 'https://www.gov.br/saude/pt-br/composicao/saps/pics';
+        } else if (f.indexOf('ANVISA') !== -1) {
+          url = 'https://www.gov.br/anvisa';
+        } else if (f.indexOf('OMS') !== -1 || f.indexOf('WHO') !== -1) {
+          url = 'https://www.who.int';
+        } else if (f.indexOf('AYUSH') !== -1) {
+          url = 'https://ayush.gov.in';
+        } else if (f.indexOf('NCCIH') !== -1) {
+          url = 'https://www.nccih.nih.gov';
+        } else if (f.indexOf('PubMed') !== -1) {
+          url = 'https://pubmed.ncbi.nlm.nih.gov';
+        } else if (f.indexOf('NICE') !== -1) {
+          url = 'https://www.nice.org.uk/guidance';
+        } else if (f.indexOf('COFFITO') !== -1) {
+          url = 'https://www.coffito.gov.br';
+        } else if (f.indexOf('CFM') !== -1) {
+          url = 'https://portal.cfm.org.br';
+        } else if (f.indexOf('CFP') !== -1) {
+          url = 'https://site.cfp.org.br';
+        } else if (f.indexOf('BVS') !== -1 || f.indexOf('BIREME') !== -1) {
+          url = 'https://bvsalud.org';
+        }
+
+        fontes.push({ nome: f, url: url, tipo: tipo });
+      });
+
+      return fontes;
+    }
+
+    // ============================================
+    // CLASSIFICAR
+    // ============================================
+    function classificar(lista) {
+      var saberes = [];
+      var regulamentadas = [];
+
+      lista.forEach(function(e) {
+        if (!e.conselho || e.conselho === 'ABRATH') {
+          saberes.push(e);
+        } else {
+          regulamentadas.push(e);
+        }
+      });
+
+      saberes.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+      regulamentadas.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+
+      return { saberes: saberes, regulamentadas: regulamentadas };
+    }
+
+    // ============================================
+    // TABELA 1: RENDERIZAR STATS
+    // ============================================
+    function renderizarStats(lista) {
+      var classificados = classificar(lista);
+      var saberes = classificados.saberes;
+      var regulamentadas = classificados.regulamentadas;
+      var total = lista.length;
+
+      var totalConteudos = 0;
+      lista.forEach(function(e) {
+        totalConteudos += getConteudos(e.nome).length;
+      });
+
+      var contSaberes = 0;
+      saberes.forEach(function(e) {
+        contSaberes += getConteudos(e.nome).length;
+      });
+
+      var contRegulamentadas = 0;
+      regulamentadas.forEach(function(e) {
+        contRegulamentadas += getConteudos(e.nome).length;
+      });
+
+      document.getElementById('totalEspecialidades').textContent = total;
+
+      document.getElementById('statsLinha').innerHTML = `
+        <div class="stat-linha saberes">
+          <span class="icone">🌿</span>
+          <span class="label">Saberes e Práticas</span>
+          <span class="numero num-verde">${saberes.length}</span>
+          <span class="desc">especialidades</span>
+          <span class="numero num-verde">${contSaberes}</span>
+          <span class="desc">conteúdos</span>
+          <span class="detalhe">PICS, tradicionais, integrativas e ABRATH</span>
+        </div>
+        <div class="stat-linha regulamentadas">
+          <span class="icone">🏛️</span>
+          <span class="label">Profissões Regulamentadas</span>
+          <span class="numero num-azul">${regulamentadas.length}</span>
+          <span class="desc">especialidades</span>
+          <span class="numero num-azul">${contRegulamentadas}</span>
+          <span class="desc">conteúdos</span>
+          <span class="detalhe">Com conselho profissional oficial</span>
+        </div>
+        <div class="stat-linha total">
+          <span class="icone">📌</span>
+          <span class="label">Total Geral</span>
+          <span class="numero num-roxo">${total}</span>
+          <span class="desc">especialidades</span>
+          <span class="numero num-roxo">${totalConteudos}</span>
+          <span class="desc">conteúdos</span>
+          <span class="detalhe">Todas as especialidades da plataforma</span>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // POPULAR SELECT
+    // ============================================
+    function popularSelect(lista) {
+      var select = document.getElementById('selectEspecialidade');
+      select.innerHTML = '<option value="">🔍 Selecione uma especialidade...</option>';
+
+      var classificados = classificar(lista);
+      var saberes = classificados.saberes;
+      var regulamentadas = classificados.regulamentadas;
+
+      var optTodas = document.createElement('option');
+      optTodas.value = 'todas';
+      optTodas.textContent = '📌 Todas as especialidades';
+      select.appendChild(optTodas);
+
+      var optGroupSaberes = document.createElement('optgroup');
+      optGroupSaberes.label = '🌿 Saberes e Práticas';
+      select.appendChild(optGroupSaberes);
+
+      saberes.forEach(function(e) {
+        var opt = document.createElement('option');
+        opt.value = e.nome;
+        opt.textContent = e.nome;
+        optGroupSaberes.appendChild(opt);
+      });
+
+      var optGroupRegulamentadas = document.createElement('optgroup');
+      optGroupRegulamentadas.label = '🏛️ Profissões Regulamentadas';
+      select.appendChild(optGroupRegulamentadas);
+
+      regulamentadas.forEach(function(e) {
+        var opt = document.createElement('option');
+        opt.value = e.nome;
+        opt.textContent = e.nome;
+        optGroupRegulamentadas.appendChild(opt);
+      });
+    }
+
+    // ============================================
+    // TABELA 2: MOSTRAR ESPECIALIDADE
+    // ============================================
+    function mostrarEspecialidade() {
+      var select = document.getElementById('selectEspecialidade');
+      var valor = select.value;
+      var container = document.getElementById('detalheContainer');
+      var header = document.getElementById('detalheHeader');
+      var body = document.getElementById('detalheBody');
+      var semSelecao = document.getElementById('semSelecao');
+
+      if (!valor) {
+        container.classList.remove('ativo');
+        semSelecao.style.display = 'block';
+        return;
+      }
+
+      semSelecao.style.display = 'none';
+
+      if (valor === 'todas') {
+        container.classList.add('ativo');
+        header.innerHTML = `
+          <span class="nome">📌 Todas as especialidades</span>
+          <div class="tags">
+            <span class="tag verde">${especialidades.length} especialidades</span>
+            <span class="tag azul">Conteúdos disponíveis</span>
+          </div>
+        `;
+
+        var todasHtml = '<table><thead><tr><th>Especialidade</th><th>Conteúdos (10+)</th><th>Fontes de Conhecimento</th></tr></thead><tbody>';
+        var classificados = classificar(especialidades);
+        var todos = classificados.saberes.concat(classificados.regulamentadas);
+        todos.forEach(function(e) {
+          var cont = getConteudos(e.nome);
+          var fontes = getFontes(e.nome);
+          var ehSaber = !e.conselho || e.conselho === 'ABRATH';
+          var tagCor = ehSaber ? 'verde' : 'azul';
+          var tagLabel = ehSaber ? '🌿 Saber' : '🏛️ Regulamentada';
+          
+          var contMostrar = cont.slice(0, 8);
+          var temMais = cont.length > 8;
+          
+          todasHtml += `<tr>
+            <td class="col-especialidade">${e.nome} <span class="tag ${tagCor}" style="font-size:10px;padding:2px 10px;">${tagLabel}</span></td>
+            <td class="col-conteudo">
+              ${contMostrar.map(function(c) { return '<span class="item destaque">' + c + '</span>'; }).join('')}
+              ${temMais ? '<span class="mais">+' + (cont.length - 8) + ' mais...</span>' : ''}
+            </td>
+            <td class="col-fontes">
+              ${fontes.map(function(f) { 
+                var classe = f.tipo === 'classico' ? 'fonte-link classico' : 'fonte-link';
+                return '<a href="' + f.url + '" target="_blank" rel="noopener" class="' + classe + '">' + f.nome + '</a>';
+              }).join('')}
+            </td>
+          </tr>`;
+        });
+        todasHtml += '</tbody></table>';
+
+        body.innerHTML = todasHtml;
+        return;
+      }
+
+      var encontrada = especialidades.find(function(e) { return e.nome === valor; });
+      if (!encontrada) {
+        container.classList.remove('ativo');
+        semSelecao.style.display = 'block';
+        return;
+      }
+
+      var cont = getConteudos(encontrada.nome);
+      var fontes = getFontes(encontrada.nome);
+      var ehSaber = !encontrada.conselho || encontrada.conselho === 'ABRATH';
+      var tagCor = ehSaber ? 'verde' : 'azul';
+      var tagLabel = ehSaber ? '🌿 Saber e Prática' : '🏛️ Regulamentada';
+
+      container.classList.add('ativo');
+
+      header.innerHTML = `
+        <span class="nome">${encontrada.nome}</span>
+        <div class="tags">
+          <span class="tag ${tagCor}">${tagLabel}</span>
+          <span class="tag">${encontrada.categoria || 'Geral'}</span>
+          <span class="tag">${encontrada.conselho || 'Sem conselho'}</span>
+        </div>
+      `;
+
+      var contMostrar = cont.slice(0, 10);
+      var temMais = cont.length > 10;
+
+      body.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th style="width:20%;">Especialidade</th>
+              <th style="width:50%;">Conteúdos</th>
+              <th style="width:30%;">Fontes de Conhecimento</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="col-especialidade">${encontrada.nome}</td>
+              <td class="col-conteudo">
+                ${contMostrar.map(function(c) { 
+                  return '<span class="item destaque">' + c + '</span>'; 
+                }).join('')}
+                ${temMais ? '<span class="mais">+' + (cont.length - 10) + ' mais...</span>' : ''}
+                <div style="margin-top:8px;font-size:13px;color:#4A5568;font-weight:600;">Total: ${cont.length} conteúdos</div>
+              </td>
+              <td class="col-fontes">
+                ${fontes.map(function(f) { 
+                  var classe = f.tipo === 'classico' ? 'fonte-link classico' : 'fonte-link';
+                  return '<a href="' + f.url + '" target="_blank" rel="noopener" class="' + classe + '">' + f.nome + '</a>';
+                }).join('')}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    // ============================================
+    // INICIAR
+    // ============================================
+    renderizarStats(especialidades);
+    popularSelect(especialidades);
+  </script>
+</body>
+</html>

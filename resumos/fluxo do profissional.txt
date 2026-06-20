@@ -79,7 +79,7 @@
                 │       └── Histórico
                 │
                 ├── 📚 Bancos Terapêuticos
-                │       ├── Consultar (30 especialidades)
+                │       ├── Consultar (61 especialidades / 79 bibliotecas)
                 │       ├── Copiar para banco pessoal
                 │       └── Editar banco pessoal
                 │

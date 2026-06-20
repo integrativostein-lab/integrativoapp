@@ -400,21 +400,18 @@
     <p class="nota">Observação: a tabela organiza fontes de apoio profissional e pesquisa. Cada conduta deve respeitar legislação, conselho profissional aplicável, habilitação técnica, consentimento informado e limites clínicos de segurança.</p>
   </main>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
   <script>
     const bibliotecas = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
+    const Catalogo = CONFIG.Catalogo || CatalogoTerapeutico;
     let categoriaAtiva = 'Todas';
     let termoBusca = '';
     let timerAlertasSeguranca = null;
 
-    document.getElementById('metricasBibliotecas').innerHTML = `
-      <div class="metrica"><strong>${bibliotecas.total_bibliotecas}</strong><span>Bibliotecas</span></div>
-      <div class="metrica"><strong>${bibliotecas.total_especialidades}</strong><span>Especialidades</span></div>
-      <div class="metrica"><strong>${bibliotecas.total_registros}</strong><span>Registros</span></div>
-      <div class="metrica"><strong>${bibliotecas.fontes.length}</strong><span>Fontes-base</span></div>
-    `;
+    document.getElementById('metricasBibliotecas').innerHTML = Catalogo.htmlMetricasResumo(bibliotecas);
 
-    const normalizar = (texto) => String(texto || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const normalizar = (texto) => Catalogo.normalizarTexto(texto);
     const categorias = ['Todas', ...Array.from(new Set(bibliotecas.matriz.map((item) => item.categoria)))];
     const nomesBusca = Array.from(new Set([
       ...CONFIG.ESPECIALIDADES.map((item) => item.nome),
