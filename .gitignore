@@ -7,3 +7,7 @@ uploads/
 *.log
 database.sqlite
 .DS_Store
+
+# Credenciais locais (nunca versionar)
+controle interno do mau/link supabase.txt
+**/link supabase.txt
