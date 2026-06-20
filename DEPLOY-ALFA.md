@@ -81,9 +81,11 @@ Depois do deploy, valide:
 ```text
 https://integrativoappespelho.onrender.com/
 https://integrativoappespelho.onrender.com/api/alertas-seguranca?termo=ginkgo%20varfarina
+https://integrativoappespelho.onrender.com/api/tiss/metadata
 ```
 
-O segundo endpoint deve retornar `usa_ia:false` e uma regra como `FITOTERAPIA_ANTICOAGULANTE_001`.
+O endpoint de alertas deve retornar `usa_ia:false` e uma regra como `FITOTERAPIA_ANTICOAGULANTE_001`.
+O endpoint TISS deve retornar `sistema`, `versaoTiss`, `formatos` e a lista de endpoints `/api/tiss`.
 
 Se o servico `integrativoappespelho` ficar indisponivel, use temporariamente o servico existente `integra-backend-ynrd` para teste remoto. Nesse cenario, inclua tambem a URL do frontend alfa em `CORS_ORIGINS` do `integra-backend-ynrd` e ajuste `frontend/js/config.js` enquanto durar a contingencia.
 
