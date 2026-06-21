@@ -382,7 +382,13 @@ router.post('/login', async (req, res) => {
       const demoDb = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
       if (demoDb.rows.length > 0) {
         const u = demoDb.rows[0];
-        if (u.ativo && (await bcrypt.compare(senha, u.senha))) {
+        let senhaOk = false;
+        try {
+          senhaOk = !!u.ativo && !!u.senha && (await bcrypt.compare(senha, u.senha));
+        } catch {
+          senhaOk = false;
+        }
+        if (senhaOk) {
           const token = jwt.sign({ id: u.id, email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
           if (idUsuarioNumerico(u.id)) {
             await processarAssinaturasExpiradas({ usuarioId: Number(u.id) }).catch((err) => {

@@ -5,6 +5,7 @@ const db = require('../database');
  * (status ativa + data_cancelamento + data_expiracao <= agora).
  */
 async function processarAssinaturasExpiradas({ usuarioId = null } = {}) {
+  try {
   const params = [];
   let filtroUsuario = '';
 
@@ -42,6 +43,10 @@ async function processarAssinaturasExpiradas({ usuarioId = null } = {}) {
   }
 
   return { processadas: ids.length, ids };
+  } catch (err) {
+    console.error('[assinaturas-ciclo]', err.message);
+    return { processadas: 0, ids: [] };
+  }
 }
 
 module.exports = { processarAssinaturasExpiradas };

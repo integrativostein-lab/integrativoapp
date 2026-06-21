@@ -33,10 +33,11 @@ async function upsertUsuario(conta) {
   const existente = await db.query('SELECT id, tipo FROM usuarios WHERE email = $1', [conta.email]);
   if (existente.rows.length) {
     const id = existente.rows[0].id;
+    const hash = await bcrypt.hash(conta.senha, 12);
     await db.query(
-      `UPDATE usuarios SET ativo = 1, atende_online = COALESCE($2, atende_online), atende_presencial = COALESCE($3, atende_presencial),
-       especialidades = COALESCE($4, especialidades), plano = COALESCE($5, plano) WHERE id = $1`,
-      [id, conta.atende_online ?? null, conta.atende_presencial ?? null, conta.especialidades ?? null, conta.plano ?? null]
+      `UPDATE usuarios SET ativo = 1, senha = $2, atende_online = COALESCE($3, atende_online), atende_presencial = COALESCE($4, atende_presencial),
+       especialidades = COALESCE($5, especialidades), plano = COALESCE($6, plano) WHERE id = $1`,
+      [id, hash, conta.atende_online ?? null, conta.atende_presencial ?? null, conta.especialidades ?? null, conta.plano ?? null]
     );
     if (conta.tipo === 'paciente') {
       await db.query('INSERT INTO pacientes (usuario_id) VALUES ($1)', [id]).catch(() => {});
