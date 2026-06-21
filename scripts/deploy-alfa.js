@@ -143,6 +143,14 @@ async function configurarRender() {
     jwt = crypto.randomBytes(32).toString('hex');
     console.log('   💡 JWT_SECRET novo — guarde em .env.alfa para não rotacionar nos próximos deploys.');
   }
+
+  if (!process.env.JWT_SECRET && jwt && !FLAGS.dryRun) {
+    const linha = `JWT_SECRET=${jwt}`;
+    if (!fs.readFileSync(ENV_FILE, 'utf8').includes('JWT_SECRET=')) {
+      fs.appendFileSync(ENV_FILE, `\n${linha}\n`);
+      console.log('   ✓ JWT_SECRET salvo em .env.alfa');
+    }
+  }
   const apiRoot = (process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api').replace(/\/api\/?$/, '');
   const cors = process.env.CORS_ORIGINS || 'https://integrativoapp-alfa.vercel.app';
 
@@ -174,7 +182,7 @@ async function configurarRender() {
   }
 
   if (!process.env.JWT_SECRET && jwt && !FLAGS.dryRun) {
-    console.log(`\n   💡 Defina JWT_SECRET no .env.alfa para fixar:\n   ${jwt}`);
+    console.log(`\n   💡 JWT_SECRET ativo neste deploy (primeiros 8 chars): ${jwt.slice(0, 8)}…`);
   }
 
   if (FLAGS.dryRun) {

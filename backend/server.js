@@ -206,23 +206,22 @@ app.use((err, req, res, next) => {
 });
 app.use('*', (req, res) => { res.status(404).json({ erro: 'Rota não encontrada' }); });
 
-// Iniciar servidor
+// Iniciar servidor (listen imediato — Render health check em /)
+app.listen(PORT, () => {
+  console.log('🌿 Integrativo.App v2.1 - Rodando na porta ' + PORT);
+  console.log('🔐 FHIR Brasil: /api/fhir');
+  console.log('✓ Validação de Conselhos: /api/validacao');
+  console.log('✓ Auditoria LGPD: backend/logs/auditoria-lgpd/');
+  console.log('✓ CORS permitido para: ' + allowedOrigins.join(', '));
+  if (ambiente.modoTeste) {
+    console.log('✓ Ambiente de teste ativo: ' + (ambiente.testeDir || 'sem pasta TESTE configurada'));
+  }
+});
+
 auditoria.garantirInfraestrutura()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log('🌿 Integrativo.App v2.1 - Rodando na porta ' + PORT);
-      console.log('🔐 FHIR Brasil: /api/fhir');
-      console.log('✓ Validação de Conselhos: /api/validacao');
-      console.log('✓ Auditoria LGPD: backend/logs/auditoria-lgpd/');
-      console.log('✓ CORS permitido para: ' + allowedOrigins.join(', '));
-      if (ambiente.modoTeste) {
-        console.log('✓ Ambiente de teste ativo: ' + (ambiente.testeDir || 'sem pasta TESTE configurada'));
-      }
-    });
-  })
+  .then(() => console.log('✓ Infraestrutura auditoria LGPD pronta'))
   .catch((err) => {
-    console.error('[FATAL] Falha ao preparar auditoria LGPD:', err.message);
-    process.exit(1);
+    console.error('[AVISO] Falha ao preparar auditoria LGPD:', err.message);
   });
 
 module.exports = app;
