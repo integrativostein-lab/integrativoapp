@@ -103,7 +103,7 @@ async function main() {
 
   console.log('\n✅ GitHub sincronizado.');
   console.log(`   Código oficial: https://github.com/${OWNER}/${REPO_MAIN}`);
-  console.log(`   Site: ${SITE_CANONICO}\n');
+  console.log(`   Site: ${SITE_CANONICO}\n`);
 }
 
 main().catch((err) => {
