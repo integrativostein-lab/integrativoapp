@@ -1,6 +1,10 @@
 require('dotenv').config();
+const dns = require('dns');
 const { Pool } = require('pg');
 const { modoTeste } = require('./config/ambiente');
+
+// Render e outros hosts podem falhar com ENETUNREACH em IPv6 para Supabase.
+dns.setDefaultResultOrder('ipv4first');
 
 // PostgreSQL exclusivamente (Supabase/Render/local). Não há suporte a SQLite.
 
