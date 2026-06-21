@@ -47,19 +47,20 @@ https://integrativoapp-alfa.vercel.app
 - contato@integrativo.app  
 - suporte@integrativo.app  
 
-## Automatizar Render (recomendado)
+## Automatizar infra (recomendado)
 
-Um comando configura **alfa + produção**: repo GitHub, CORS, env e redeploy.
+**GitHub + Render em um comando:**
 
 ```powershell
-cd C:\Users\HP\Dropbox\integrativo-app-v2.1.0-INTEGRADO
-.\scripts\sincronizar-render.ps1
+.\scripts\sincronizar-infra.ps1
 ```
 
-Ou `npm run sync:render` na pasta `backend`.
+| Script | O que faz |
+|--------|-----------|
+| `sincronizar-github.ps1` | Descrição/homepage do repo principal; README + arquiva `integrativoappespelho` |
+| `sincronizar-render.ps1` | CORS, env, repo GitHub e redeploy nos 2 backends Render |
+| `sincronizar-infra.ps1` | Os dois acima |
 
-Pré-requisito: `.env.alfa` com `RENDER_API_KEY` (copie de `.env.alfa.example`).
+Pré-requisitos no `.env.alfa`: `RENDER_API_KEY`, `GITHUB_TOKEN`.
 
-Flags: `--dry-run`, `--alfa-only`, `--prod-only`, `--no-deploy`, `--skip-repo`.
-
-Deploy completo alfa (SQL + Vercel + testes): `npm run deploy:alfa`.
+Deploy alfa completo: `npm run deploy:alfa`.
