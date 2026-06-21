@@ -2,7 +2,7 @@
   const ITENS_BASE = [
     { id: 'inicio', href: 'index.html', i18n: 'nav.inicio' },
     { id: 'busca', href: 'busca.html', i18n: 'nav.busca' },
-    { id: 'profissionais', href: 'profissionais.html', i18n: 'nav.profissionais' },
+    { id: 'profissionais', href: 'profissionais', i18n: 'nav.profissionais' },
     { id: 'bibliotecas', href: 'bibliotecas-especialidades.html', i18n: 'nav.bibliotecas' }
   ];
 

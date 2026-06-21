@@ -3,6 +3,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/profissionais.html",
+      "destination": "/profissionais",
+      "permanent": false
+    },
+    {
       "source": "/(.*).html",
       "destination": "/$1",
       "permanent": false

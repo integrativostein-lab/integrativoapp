@@ -23,7 +23,10 @@ if (modoTeste && !process.env.TESTE_DATABASE_URL) {
 
 const pool = new Pool({
   connectionString,
-  ssl: process.env.PGSSL === 'false' ? false : { rejectUnauthorized: false }
+  ssl: process.env.PGSSL === 'false' ? false : { rejectUnauthorized: false },
+  lookup: (hostname, _options, callback) => {
+    dns.lookup(hostname, { family: 4, all: false }, callback);
+  }
 });
 
 pool.on('error', (err) => {
