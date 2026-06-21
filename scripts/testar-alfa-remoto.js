@@ -86,15 +86,34 @@ async function main() {
 
   if (profToken) {
     try {
-      const logs = await get(`${API}/admin/logs?limite=5`);
-      const headers = { Authorization: `Bearer ${profToken}` };
-      const r = await fetch(`${API}/admin/logs?limite=5`, { headers, signal: AbortSignal.timeout(120000) });
-      ok('6. Admin logs (prof = 403 esperado)', r.status === 403, `HTTP ${r.status}`);
+      const ver = await fetch(`${API}/auth/verificar`, {
+        headers: { Authorization: `Bearer ${profToken}` },
+        signal: AbortSignal.timeout(120000)
+      });
+      ok('6. Verificar token demo prof', ver.status === 200, `HTTP ${ver.status}`);
     } catch (e) {
-      ok('6. Admin logs (prof)', false, e.message);
+      ok('6. Verificar token demo prof', false, e.message);
+    }
+
+    try {
+      const r = await fetch(`${API}/admin/logs?limite=5`, {
+        headers: { Authorization: `Bearer ${profToken}` },
+        signal: AbortSignal.timeout(120000)
+      });
+      ok('7. Admin logs (prof = 403 esperado)', r.status === 403, `HTTP ${r.status}`);
+    } catch (e) {
+      ok('7. Admin logs (prof)', false, e.message);
     }
   } else {
-    ok('6. Admin logs (prof)', false, 'sem token');
+    ok('6. Verificar token demo prof', false, 'sem token');
+    ok('7. Admin logs (prof)', false, 'sem token');
+  }
+
+  try {
+    const regras = await get(`${API}/alertas-seguranca/regras`);
+    ok('8. Regras fechadas sem token', regras.status === 401, `HTTP ${regras.status}`);
+  } catch (e) {
+    ok('8. Regras fechadas sem token', false, e.message);
   }
 
   console.log(`\n=== Resultado: ${falhas === 0 ? 'SUCESSO' : `${falhas} falha(s)`} ===`);

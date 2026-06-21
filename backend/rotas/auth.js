@@ -350,6 +350,10 @@ router.post('/cadastro', async (req, res) => {
   }
 });
 
+function idUsuarioNumerico(id) {
+  return Number.isInteger(Number(id)) && String(id).match(/^\d+$/);
+}
+
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -428,9 +432,11 @@ router.post('/login', async (req, res) => {
     }
     
     const token = jwt.sign({ id: u.id, email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    await processarAssinaturasExpiradas({ usuarioId: u.id }).catch((err) => {
-      console.error('[assinaturas-ciclo/login]', err.message);
-    });
+    if (idUsuarioNumerico(u.id)) {
+      await processarAssinaturasExpiradas({ usuarioId: Number(u.id) }).catch((err) => {
+        console.error('[assinaturas-ciclo/login]', err.message);
+      });
+    }
     const usuarioAtual = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [u.id]);
     const perfil = usuarioAtual.rows[0] || u;
     auditoria.registrar({
@@ -459,9 +465,18 @@ router.get('/verificar', async (req, res) => {
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try {
     const d = jwt.verify(token, process.env.JWT_SECRET);
-    await processarAssinaturasExpiradas({ usuarioId: d.id }).catch((err) => {
-      console.error('[assinaturas-ciclo/verificar]', err.message);
-    });
+    if (d.demo && process.env.TEST_MODE === 'true') {
+      const planoDemo = d.tipo === 'profissional' ? 'pro' : 'freemium';
+      return res.json({
+        valido: true,
+        usuario: { id: d.id, nome: d.tipo === 'profissional' ? 'Dr. João Integrativo' : 'Maria Paciente', email: d.email, tipo: d.tipo, plano: planoDemo }
+      });
+    }
+    if (idUsuarioNumerico(d.id)) {
+      await processarAssinaturasExpiradas({ usuarioId: Number(d.id) }).catch((err) => {
+        console.error('[assinaturas-ciclo/verificar]', err.message);
+      });
+    }
     const result = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [d.id]);
     if (result.rows.length === 0) return res.status(401).json({ erro: 'Usuário não encontrado' });
     res.json({ valido: true, usuario: result.rows[0] });
