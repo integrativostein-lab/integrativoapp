@@ -188,7 +188,7 @@ async function configurarRender() {
   return serviceId;
 }
 
-async function aguardarAuthDemo(maxSeg = 300) {
+async function aguardarAuthDemo(maxSeg = 120) {
   const api = process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api';
   console.log(`   Aguardando login/verificar estáveis (${maxSeg}s max)…`);
   const inicio = Date.now();
@@ -201,6 +201,7 @@ async function aguardarAuthDemo(maxSeg = 300) {
         signal: AbortSignal.timeout(90000)
       });
       const body = await login.json();
+      if (login.status === 429) throw new Error('rate limit');
       if (login.status !== 200 || !body.token) throw new Error('login');
       const ver = await fetch(`${api}/auth/verificar`, {
         headers: { Authorization: `Bearer ${body.token}` },
@@ -212,9 +213,9 @@ async function aguardarAuthDemo(maxSeg = 300) {
       }
     } catch { /* retry */ }
     process.stdout.write('.');
-    await new Promise((r) => setTimeout(r, 15000));
+    await new Promise((r) => setTimeout(r, 20000));
   }
-  console.log('\n   ⚠️ Auth demo ainda instável — pode ser rolling deploy no Render.');
+  console.log('\n   ⚠️ Auth demo ainda instável — aguarde 2 min e rode testar-alfa-remoto.js.');
 }
 
 async function executarMigracao(pool, nome, sql) {

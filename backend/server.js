@@ -3,6 +3,9 @@ require('dotenv').config();
 // ============================================
 // VALIDAÇÃO DE VARIÁVEIS DE AMBIENTE CRÍTICAS
 // ============================================
+if (process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = process.env.JWT_SECRET.trim();
+}
 if (!process.env.JWT_SECRET) {
   console.error('[FATAL] JWT_SECRET não configurado. Defina em .env antes de iniciar.');
   process.exit(1);
@@ -18,6 +21,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const cron = require('node-cron');
+const crypto = require('crypto');
 const ambiente = require('./config/ambiente');
 
 const db = require('./database');
@@ -52,7 +56,7 @@ app.use('/api/', limiter);
 // Rate Limiting agressivo em endpoints sensíveis
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: ambiente.modoTeste ? 120 : 10,
   message: { erro: 'Muitas tentativas. Tente novamente em alguns minutos.' },
   standardHeaders: true,
   legacyHeaders: false
@@ -77,7 +81,10 @@ app.get('/', (req, res) => {
     status: 'online',
     ambiente: process.env.NODE_ENV || 'development',
     modo_teste: ambiente.modoTeste,
-    pasta_teste: ambiente.testeDir
+    pasta_teste: ambiente.testeDir,
+    jwt_fp: ambiente.modoTeste
+      ? crypto.createHash('sha256').update(process.env.JWT_SECRET || '').digest('hex').slice(0, 12)
+      : undefined
   });
 });
 

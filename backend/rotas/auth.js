@@ -515,7 +515,12 @@ router.get('/verificar', async (req, res) => {
     const result = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [d.id]);
     if (result.rows.length === 0) return res.status(401).json({ erro: 'Usuário não encontrado' });
     res.json({ valido: true, usuario: result.rows[0] });
-  } catch { res.status(401).json({ erro: 'Token inválido' }); }
+  } catch (e) {
+    if (ambiente.modoTeste) {
+      return res.status(401).json({ erro: 'Token inválido', motivo: e.message });
+    }
+    res.status(401).json({ erro: 'Token inválido' });
+  }
 });
 
 router.post('/pesquisa-consentimento', autenticar, async (req, res) => {
