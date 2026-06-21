@@ -379,6 +379,26 @@ router.post('/login', async (req, res) => {
     if (!email || !senha) return res.status(400).json({ erro: 'Email e senha obrigatórios' });
 
     if (ambiente.modoTeste && senha === 'demo123') {
+      const demoDb = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+      if (demoDb.rows.length > 0) {
+        const u = demoDb.rows[0];
+        if (u.ativo && (await bcrypt.compare(senha, u.senha))) {
+          const token = jwt.sign({ id: u.id, email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
+          if (idUsuarioNumerico(u.id)) {
+            await processarAssinaturasExpiradas({ usuarioId: Number(u.id) }).catch((err) => {
+              console.error('[assinaturas-ciclo/login-demo]', err.message);
+            });
+          }
+          const perfil = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [u.id]);
+          const usuario = perfil.rows[0] || u;
+          return res.json({
+            mensagem: 'Login demo realizado!',
+            token,
+            usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, tipo: usuario.tipo, plano: usuario.plano }
+          });
+        }
+      }
+
       const usuariosDemo = {
         'profissional@demo.com': { id: 'demo-profissional', nome: 'Dr. João Integrativo', tipo: 'profissional', plano: 'pro' },
         'paciente@demo.com': { id: 'demo-paciente', nome: 'Maria Paciente', tipo: 'paciente', plano: 'freemium' }

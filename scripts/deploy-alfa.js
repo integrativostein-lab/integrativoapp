@@ -183,9 +183,38 @@ async function configurarRender() {
   }
 
   console.log('   Disparando redeploy…');
-  await renderApi('POST', `/services/${serviceId}/deploys`, { clearCache: 'do_not_clear' });
+  await renderApi('POST', `/services/${serviceId}/deploys`, { clearCache: 'clear' });
   console.log('   ✓ Deploy iniciado no Render (aguarde 2–5 min até ficar Live).');
   return serviceId;
+}
+
+async function aguardarAuthDemo(maxSeg = 300) {
+  const api = process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api';
+  console.log(`   Aguardando login/verificar estáveis (${maxSeg}s max)…`);
+  const inicio = Date.now();
+  while (Date.now() - inicio < maxSeg * 1000) {
+    try {
+      const login = await fetch(`${api}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'profissional@demo.com', senha: 'demo123' }),
+        signal: AbortSignal.timeout(90000)
+      });
+      const body = await login.json();
+      if (login.status !== 200 || !body.token) throw new Error('login');
+      const ver = await fetch(`${api}/auth/verificar`, {
+        headers: { Authorization: `Bearer ${body.token}` },
+        signal: AbortSignal.timeout(90000)
+      });
+      if (ver.status === 200) {
+        console.log('   ✓ Auth demo estável (login + verificar).');
+        return;
+      }
+    } catch { /* retry */ }
+    process.stdout.write('.');
+    await new Promise((r) => setTimeout(r, 15000));
+  }
+  console.log('\n   ⚠️ Auth demo ainda instável — pode ser rolling deploy no Render.');
 }
 
 async function executarMigracao(pool, nome, sql) {
@@ -337,7 +366,10 @@ async function main() {
   if (!FLAGS.skipRender) {
     step(2, 'Render — variáveis + redeploy');
     await configurarRender();
-    if (!FLAGS.dryRun) await aguardarBackend();
+    if (!FLAGS.dryRun) {
+      await aguardarBackend();
+      await aguardarAuthDemo();
+    }
   }
 
   if (!FLAGS.skipVercel) {
