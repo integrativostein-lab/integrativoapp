@@ -18,9 +18,16 @@ saude-integrativa/
 ├── backend/           (Node.js, API — Render)
 │   ├── rotas/         (Rotas da API)
 │   └── servicos/      (Fornecedores, email, etc.)
+├── shared/            (JSON compartilhado front/back)
 └── docs/              (Documentação)
 
-📚 61 ESPECIALIDADES DE CADASTRO · 79 BIBLIOTECAS · ~1191 REGISTROS
+🗄️ BANCO DE DADOS — POSTGRESQL (SUPABASE)
+-------------------------------------
+O sistema NÃO utiliza SQLite. Persistência via PostgreSQL (driver pg),
+conectado por DATABASE_URL no backend (Render). Produção: Supabase.
+Migrações: migracao-v2.1.sql · Setup local: SETUP_LOCAL_SUPABASE.md
+
+📚 Catálogo dinâmico (61 especialidades · 79 bibliotecas · ~1191 registros — atualize com npm run catalogo:sync)
 -------------------------------------
 Fitoterapia, Ayurveda, MTC, Yoga, Massoterapia,
 Aromaterapia, Fisioterapia, Xamanismo, Florais de Bach,

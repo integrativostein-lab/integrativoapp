@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../database');
+const auditoria = require('../servicos/auditoria-lgpd');
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -13,24 +14,40 @@ function autenticar(req, res, next) {
 // Banco terapêutico — acesso limitado por sessão (apenas profissional logado)
 router.get('/banco-terapeutico', autenticar, async (req, res) => {
   const { especialidade_id, tipo, busca } = req.query;
-  
-  // Marca d'água invisível: registra quem acessou
-  console.log(`📚 Banco terapêutico acessado por: ${req.usuario.id} (${req.usuario.email}) — ${new Date().toISOString()}`);
-  
+
   let q = 'SELECT bt.*, e.nome as especialidade_nome FROM banco_terapeutico bt JOIN especialidades e ON bt.especialidade_id = e.id WHERE bt.ativo = 1';
   const params = [];
   let i = 1;
-  
+
   if (especialidade_id) { q += ` AND bt.especialidade_id = $${i}`; params.push(especialidade_id); i++; }
   if (tipo) { q += ` AND bt.tipo = $${i}`; params.push(tipo); i++; }
   if (busca) { q += ` AND bt.nome ILIKE $${i}`; params.push(`%${busca}%`); i++; }
-  
-  // Limitar a 50 resultados por requisição
+
   q += ' LIMIT 50';
-  
+
   const r = await db.query(q, params);
-  
-  // Adicionar marca d'água com ID do profissional
+
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.DADOS_SENSIVEIS,
+    acao: 'consulta_banco_terapeutico',
+    base_legal: auditoria.BASE_LEGAL.TUTELA_SAUDE,
+    finalidade: 'apoio clínico profissional com rastreabilidade de acesso',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'banco_terapeutico',
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: {
+      especialidade_id: especialidade_id || null,
+      tipo: tipo || null,
+      busca: busca ? '[informado]' : null,
+      total_retornado: r.rows.length
+    }
+  });
+
   const resultado = r.rows.map(item => ({
     ...item,
     _acessado_por: req.usuario.id,
@@ -88,6 +105,23 @@ router.post('/', autenticar, async (req, res) => {
   );
 
   const resposta = { mensagem: `${tipo === 'prescricao' ? 'Prescrição' : tipo === 'controle_especial' ? 'Receita de Controle Especial' : 'Solicitação'} registrada!`, tipo, id: r.rows[0].id };
+
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.DADOS_SENSIVEIS,
+    acao: 'criacao_prescricao',
+    base_legal: auditoria.BASE_LEGAL.TUTELA_SAUDE,
+    finalidade: 'registro de prescrição ou solicitação clínica',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'prescricao',
+    recurso_id: r.rows[0].id,
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: { paciente_id, tipo, controlado: Boolean(tipo_controlado) }
+  });
 
   if (tipo === 'controle_especial') {
     resposta.vias = 2;

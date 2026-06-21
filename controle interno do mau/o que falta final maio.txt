@@ -460,8 +460,8 @@
         <div class="timeline-item">
           <div class="timeline-icon p0">P0</div>
           <div class="timeline-content">
-            <div class="timeline-title">🐘 Migrar database.js para Supabase/Render</div>
-            <div class="timeline-desc">Executar script SQL, verificar conexão, testar queries principais</div>
+            <div class="timeline-title">🐘 Validar PostgreSQL no Supabase/Render</div>
+            <div class="timeline-desc">Executar migracao-v2.1.sql (PostgreSQL), verificar conexão DATABASE_URL, testar queries principais</div>
             <div class="timeline-time">⏱️ 30 minutos • CRÍTICO</div>
           </div>
         </div>

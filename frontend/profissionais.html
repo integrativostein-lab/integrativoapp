@@ -4,14 +4,15 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cadastre-se no Integrativo.App e tenha agenda, teleconsulta, padrões FHIR/TISS, 79 bibliotecas terapêuticas, 1191 registros, PICS completas e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
+  <meta name="description" content="Cadastre-se no Integrativo.App e tenha agenda, teleconsulta, padrões FHIR/TISS, {{bibliotecas}} bibliotecas terapêuticas, {{registros}} registros, PICS completas e alinhamento aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17.">
   <meta name="keywords" content="cadastro profissional saúde integrativa, software para terapeutas, FHIR, TISS, ODS, Objetivos de Desenvolvimento Sustentável, interoperabilidade em saúde, agenda online, teleconsulta, prontuário, protocolos terapêuticos, ABRATH, Integrativo.App">
   <meta property="og:title" content="Integrativo.App para Profissionais — Gestão, Teleconsulta e Bibliotecas Terapêuticas">
-  <meta property="og:description" content="Plataforma para profissionais com padrões FHIR/TISS, teleconsulta, 79 bibliotecas terapêuticas, PICS completas e alinhamento aos ODS.">
+  <meta property="og:description" content="Plataforma para profissionais com padrões FHIR/TISS, teleconsulta, {{bibliotecas}} bibliotecas terapêuticas, PICS completas e alinhamento aos ODS.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <title>Para Profissionais — Integrativo.App com Protocolos e Teleconsulta</title>
   <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/consentimento-lgpd.css">
   <style>
     /* ============================================
        ESTILOS GERAIS
@@ -589,22 +590,17 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico" data-nav-ativo="profissionais" data-nav-extras='[{"href":"#comparativo","label":"Comparativo","i18n":"nav.comparativo"},{"href":"#planos","label":"Planos","i18n":"nav.planos"}]'>
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="#comparativo">Comparativo</a>
-      <a href="#planos">Planos</a>
-      <a href="login.html" class="btn btn-primario">Entrar</a>
-    </div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <header class="hero-pro">
     <h1>Cadastre-se como profissional</h1>
-    <p>Tenha sua agenda, prontuário, teleconsulta e pagamentos integrados. Validamos seu registro online junto ao conselho competente.</p>
+    <p class="catalogo-token">Tenha agenda, prontuário, teleconsulta e {{bibliotecas}} bibliotecas terapêuticas ({{especialidades}} especialidades de cadastro). Validamos seu registro online junto ao conselho competente.</p>
   </header>
 
   <!-- BIBLIOTECAS TERAPÊUTICAS -->
@@ -613,8 +609,8 @@
       <div class="bibliotecas-head">
         <div>
           <span class="tag-plano">Apoio técnico · Segurança clínica</span>
-          <h2>Apoio ao profissional com 79 bibliotecas oficiais</h2>
-          <p>Diferente de sistemas baseados em IA, o Integrativo.App utiliza um <strong>algoritmo exclusivo</strong> apoiado em <strong>79 bibliotecas terapêuticas reconhecidas por órgãos oficiais</strong>: ANVISA, OMS (WHO), NCCIH, Ministério da Saúde e diretrizes públicas de PICS.</p>
+          <h2 class="catalogo-token">Apoio ao profissional com {{bibliotecas}} bibliotecas oficiais</h2>
+          <p class="catalogo-token-html">Diferente de sistemas baseados em IA, o Integrativo.App utiliza um <strong>algoritmo exclusivo</strong> apoiado em <strong>{{bibliotecas}} bibliotecas terapêuticas reconhecidas por órgãos oficiais</strong>: ANVISA, OMS (WHO), NCCIH, Ministério da Saúde e diretrizes públicas de PICS.</p>
           <p>A partir das informações do paciente, o sistema oferece — <strong>em caráter auxiliar</strong> — sugestões contextualizadas, alertas de segurança e protocolos associados, promovendo uma <strong>personalização do tratamento adequada a cada paciente</strong>.</p>
           <p><strong>⚠️ A decisão clínica final permanece exclusivamente com o profissional de saúde.</strong> A plataforma não substitui médicos, não fecha diagnósticos e nunca age como caixa‑preta.</p>
           <p><strong>🔍 Tudo é rastreável e auditável.</strong> Cada sugestão pode ser verificada nas fontes públicas que a originaram. <strong>Segurança clínica com transparência, sem achismo de IA.</strong></p>
@@ -653,6 +649,10 @@
       </div>
 
       <h3 class="bibliotecas-subtitulo" style="margin-top: 24px;">Explore o conteúdo das bibliotecas</h3>
+      <p style="margin-bottom: 16px;">
+        <a href="bibliotecas-especialidades.html" class="btn btn-primario" style="display:inline-block;">Ver mapa completo de bibliotecas</a>
+        <a href="lista-especialidades.html" class="btn btn-outline" style="display:inline-block;margin-left:10px;border:1px solid var(--azul-profundo);color:var(--azul-profundo);">Conteúdo detalhado por especialidade</a>
+      </p>
 
       <div class="accordion-item">
         <div class="accordion-header" onclick="toggleAccordion(this)">
@@ -835,14 +835,7 @@
           </div>
         </fieldset>
 
-        <label class="lgpd">
-          <input type="checkbox" id="lgpd" required>
-          <span>Concordo com os <a href="termos.html" target="_blank">Termos</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a> (LGPD).</span>
-        </label>
-        <label class="lgpd">
-          <input type="checkbox" id="pesquisaConsentimento">
-          <span>Desejo colaborar, de forma opcional e revogável, com pesquisas clínicas por meio de dados anonimizados, quando houver base legal e sem identificação de pacientes.</span>
-        </label>
+        <div id="consentimentos-lgpd"></div>
 
         <button type="submit" class="btn-submit" id="btnSubmit">Criar conta profissional</button>
       </form>
@@ -917,13 +910,18 @@
         <a href="privacidade.html">Privacidade</a>
         <a href="etica.html">Ética Profissional</a>
         <a href="missao.html">Nossa Missão</a>
+        <a href="bibliotecas-especialidades.html">Bibliotecas</a>
       </div>
       <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
       <p>&copy; 2026 Todos os direitos reservados.</p>
     </div>
   </footer>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
+  <script src="js/consentimento-lgpd.js"></script>
   <script src="js/voz.js"></script>
   <script>
     // ============================================
@@ -1360,15 +1358,15 @@
       const gateway = $('#gateway').value;
       const emailCorp = $('#emailCorp').value.trim();
       const prescricao = $('#prescricao').value;
-      const lgpd = $('#lgpd').checked;
-      const pesquisaConsentimento = $('#pesquisaConsentimento').checked;
       const cartaoObrigatorio = $('#cartaoObrigatorio').checked;
+
+      if (!ConsentimentoLGPD.validar(document)) return showMsg('Aceite todas as autorizações obrigatórias de privacidade.', 'err');
+      const consentPayload = ConsentimentoLGPD.payloadCadastro(document);
 
       if (!nome || !email || !senha || !profissao || !especialidade) return showMsg('Preencha todos os campos obrigatórios.', 'err');
       if (senha.length < 8) return showMsg('A senha precisa ter no mínimo 8 caracteres.', 'err');
       if (senha !== senha2) return showMsg('As senhas não conferem.', 'err');
       if (!cartaoObrigatorio) return showMsg('Confirme que está ciente do cadastro obrigatório do cartão.', 'err');
-      if (!lgpd) return showMsg('É necessário aceitar os termos.', 'err');
       if (bibliotecasSelecionadas.length > limiteBibliotecasCadastro()) {
         return showMsg(`Seu plano permite até ${limiteBibliotecasCadastro()} biblioteca(s), incluindo a principal.`, 'err');
       }
@@ -1399,8 +1397,9 @@
             gateway: gateway || null,
             email_corporativo: emailCorp || null,
             prescricao_eletronica: prescricao || null,
-            lgpd_consentimento: 1,
-            pesquisa_clinica_consentimento: pesquisaConsentimento
+            lgpd_consentimento: consentPayload.lgpd_consentimento,
+            pesquisa_clinica_consentimento: consentPayload.pesquisa_clinica_consentimento,
+            consentimentos: consentPayload.consentimentos
           })
         });
         const d = await r.json();
@@ -1483,6 +1482,13 @@
     }
     renderPlanos();
 
+    ConsentimentoLGPD.render('#consentimentos-lgpd', {
+      perfil: 'profissional',
+      modo: 'cadastro',
+      titulo: 'Autorizações de privacidade (LGPD)',
+      intro: 'Antes de criar sua conta, informamos claramente o que será coletado, a finalidade e a base legal de cada tratamento.'
+    });
+
     // ============================================
     // BIBLIOTECAS TERAPÊUTICAS
     // ============================================
@@ -1490,7 +1496,9 @@
       const b = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
       document.getElementById('bibliotecasMetricasProf').innerHTML = `
         <div class="bibliotecas-metrica"><strong>${b.total_bibliotecas}</strong><span>Bibliotecas</span></div>
-        <div class="bibliotecas-metrica"><strong>${b.total_registros}</strong><span>Registros</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.total_especialidades}</strong><span>Especialidades</span></div>
+        <div class="bibliotecas-metrica"><strong>${b.bibliotecas_por_pratica}</strong><span>Por prática</span></div>
+        <div class="bibliotecas-metrica"><strong>${Number(b.total_registros).toLocaleString('pt-BR')}</strong><span>Registros</span></div>
       `;
       document.getElementById('protocolosListaProf').innerHTML = b.tipos.map(tipo => `<span class="protocolo-item">${tipo}</span>`).join('');
       document.getElementById('bibliotecasGridProf').innerHTML = b.itens.map(nome => `<span class="biblioteca-chip">${nome}</span>`).join('');

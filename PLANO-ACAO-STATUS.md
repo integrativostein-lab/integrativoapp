@@ -1,6 +1,6 @@
 # Status do plano de acao
 
-Atualizado em: 2026-06-13
+Atualizado em: 2026-06-20
 
 ## Feito automaticamente
 
@@ -12,45 +12,40 @@ Atualizado em: 2026-06-13
   - `paciente@demo.com` / `demo123`
 - LiveKit integrado ao backend pela rota `POST /api/reunioes/livekit-token`.
 - Tela `frontend/reuniao.html` conectada ao SDK WebRTC do LiveKit.
-- Variaveis LiveKit previstas em `.env.example` e `render.yaml`.
-- Arquivos sensiveis `.env` e `.env.teste` protegidos fora do Git.
-- Frontend alfa configurado para usar o backend espelho `integrativoappespelho`.
-- Backend espelho `https://integrativoappespelho.onrender.com` online em `NODE_ENV=test` e `TEST_MODE=true`.
-- Motor deterministico de alertas validado no espelho com `usa_ia:false`.
-- Frontend alfa apontado para `https://integrativoappespelho.onrender.com/api`.
-- Ultimo push para GitHub realizado no commit `053abf8`.
+- Fluxo paciente: `painel-paciente.html` abre teleconsulta na mesma sala `teleconsulta-{id}`.
+- Agendamento demo: valores padrão criados automaticamente (`utils/profissional-valores.js`).
+- Bug corrigido em `POST /api/profissionais/valores` (UPDATE/INSERT SQL).
+- Menu publico unificado (`nav-publico.js`) + paginas profissionais/bibliotecas alinhadas.
+- Catalogo sincronizado: 88 bibliotecas, 70 especialidades, 76 por pratica + 12 transversais.
+- Auditoria LGPD: gravacao JSONL testada localmente; PostgreSQL opcional via `DATABASE_URL`.
+- Script `npm run demo:garantir` para recriar contas/valores demo no banco.
 
 ## Verificacoes finais em painel externo
 
-- Confirmar no Render se as variaveis secretas de teleconsulta real estao preenchidas quando o LiveKit real for usado:
+- Confirmar no Render se as variaveis secretas de teleconsulta real estao preenchidas:
   - `LIVEKIT_URL`
   - `LIVEKIT_API_KEY`
   - `LIVEKIT_API_SECRET`
-- Manter `integrativoappespelho` com branch `master`, root directory `backend`, build `npm install` e start `npm start`.
-- Usar o backend principal apenas como fallback temporario se o espelho ficar indisponivel.
-- Confirmar `CORS_ORIGINS=https://integrativoapp-alfa.vercel.app` no servico `integrativoappespelho`.
-- Configurar banco alfa separado se os testes nao puderem usar o banco temporario atual.
-- Confirmar URL publica atual do Vercel alfa.
+- Rodar no ambiente com banco: `cd backend && npm run demo:garantir`
+- Confirmar `CORS_ORIGINS` no servico espelho/producao.
+- Validar teleconsulta com 2 navegadores (terapeuta + paciente) apos chaves LiveKit.
 
 ## Testes finais recomendados
 
 - Login remoto publicado.
-- Teleconsulta com dois participantes reais.
-- Fluxo profissional -> iniciar teleconsulta.
-- Fluxo paciente -> entrar na sala.
-- Cadastro, agendamento, painel terapeuta e painel paciente.
+- Busca → agendar → painel paciente → entrar na teleconsulta.
+- Fluxo profissional → iniciar teleconsulta no painel terapeuta.
+- Cadastro profissional com valores automaticos.
+- Biblioteca, prescricao e consentimentos LGPD.
 
 ## Modulos futuros
 
 - Gravacao real da teleconsulta.
 - Transcricao/STT da teleconsulta.
-- Resumo automatico de consulta.
-- Armazenamento e expiracao real de gravacoes.
-- Servidor BHServer para video/voz/processamento proprio.
+- Integracoes reais PIX/WhatsApp/NF (hoje mock/simulado na alfa).
 
 ## Proxima prioridade
 
-1. Aguardar o deploy do frontend alfa com o endpoint `integrativoappespelho`.
-2. Abrir a URL publica do frontend alfa e confirmar chamadas para `https://integrativoappespelho.onrender.com/api`.
-3. Testar login, cadastro, biblioteca, prescricao e teleconsulta.
-4. Validar LiveKit real quando as chaves finais estiverem no Render.
+1. Ajustar conteudo visual de `profissionais.html` e `bibliotecas-especialidades.html` (em definicao).
+2. Configurar LiveKit no Render e testar audio/video real.
+3. Rodar `npm run demo:garantir` no banco do espelho antes de demonstracoes.

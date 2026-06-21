@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const motor = require('../servicos/alertas-seguranca');
+const auditoria = require('../servicos/auditoria-lgpd');
 
 const router = express.Router();
 
@@ -38,7 +39,26 @@ function registrarAuditoria(req, resultado, origem) {
   const termo = String(req.query?.termo || req.body?.termo || req.body?.pratica || req.body?.produto || '')
     .slice(0, 80)
     .replace(/\s+/g, ' ');
-  console.log(`[alertas-seguranca] origem=${origem} usuario=${req.usuario?.id || 'anonimo'} maior=${resultado.maior_gravidade} regras=${regras} termo="${termo}"`);
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.SEGURANCA_CLINICA,
+    acao: 'verificacao_alertas',
+    base_legal: auditoria.BASE_LEGAL.TUTELA_SAUDE,
+    finalidade: 'consulta determinística de alertas de segurança clínica',
+    usuario_id: req.usuario?.id ?? null,
+    usuario_tipo: req.usuario?.tipo ?? null,
+    email: req.usuario?.email ?? null,
+    recurso: 'alertas_seguranca',
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: {
+      origem,
+      maior_gravidade: resultado.maior_gravidade,
+      regras,
+      termo: termo || null
+    }
+  });
 }
 
 router.get('/regras', autenticarObrigatorio, exigirAdmin, (req, res) => {

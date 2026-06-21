@@ -129,7 +129,7 @@ const CONFIG = {
       api_white_label: true,
       migracao: true,
       conciliacao: true,
-      especialidades_inclusas: 67,
+      especialidades_inclusas: 76,
       max_profissionais: 'ilimitados',
       cobranca_por_profissional: false,
       texto_profissionais: 'Profissionais ilimitados dentro do guarda-chuva institucional, sem cobrança por profissional',
@@ -201,6 +201,18 @@ const CONFIG = {
     { id: 'jyotish',         nome: 'Jyotish (Astrologia Védica)',     conselho: null,     categoria: 'Tradicional' },
     { id: 'vastu',           nome: 'Vastu Shastra',                   conselho: null,     categoria: 'Tradicional' },
     { id: 'xamanismo',       nome: 'Xamanismo',                       conselho: null,     categoria: 'Espiritual' },
+
+    // === MEDICINAS TRADICIONAIS REGIONAIS (i18n / BRICS+ / Ásia / LATAM / África / Europa) ===
+    { id: 'kampo',                      nome: 'Kampo (Medicina Tradicional Japonesa)',              conselho: null, categoria: 'Tradicional' },
+    { id: 'hanbang',                    nome: 'Hanbang (Medicina Tradicional Coreana)',             conselho: null, categoria: 'Tradicional' },
+    { id: 'jamu',                       nome: 'Jamu (Medicina Tradicional Indonésia)',              conselho: null, categoria: 'Tradicional' },
+    { id: 'unani-tibb',                 nome: 'Unani / Tibb (Medicina Tradicional Persa-Islâmica)', conselho: null, categoria: 'Tradicional' },
+    { id: 'siddha',                     nome: 'Siddha (Medicina Tradicional do Sul da Índia)',      conselho: null, categoria: 'Tradicional' },
+    { id: 'medicina-tradicional-russa', nome: 'Medicina Tradicional Russa / Fitoterapia Eslava',    conselho: null, categoria: 'Tradicional' },
+    { id: 'medicina-tradicional-africana', nome: 'Medicina Tradicional Africana (Inyanga / Ubuntu)', conselho: null, categoria: 'Tradicional' },
+    { id: 'herbolaria-latinoamericana', nome: 'Herbolaria Latino-Americana',                        conselho: null, categoria: 'Tradicional' },
+    { id: 'phytotherapie',              nome: 'Phytothérapie (Medicina Tradicional Europeia)',      conselho: null, categoria: 'Tradicional' },
+
     { id: 'florais-bach',    nome: 'Florais de Bach',                 conselho: null,     categoria: 'Florais' },
     { id: 'terapia-florais', nome: 'Terapia de Florais',              conselho: null,     categoria: 'Florais' },
     { id: 'apiterapia',      nome: 'Apiterapia',                      conselho: null,     categoria: 'Produtos Naturais' },
@@ -329,11 +341,20 @@ const CONFIG = {
       'DSM-5-TR',
       'CID-11',
       'Textos clássicos: Charaka Samhita, Sushruta Samhita, Ashtanga Hridaya, Bhavaprakasha Nighantu, Dhanvantari Nighantu, Kaiyadeva Nighantu, Bṛhat Parāśara Horā Śāstra, Bṛhat Jātaka, Saravali, Phaladeepika, Vastu Shastra, Mayamata e Manasara',
-      'Dr. Vasant Lad'
+      'Dr. Vasant Lad',
+      'MHLW Japan Kampo',
+      'MFDS Korea Hanbang',
+      'BPOM Indonesia',
+      'Ministry of AYUSH Siddha/Unani',
+      'WHO African Traditional Medicine Strategy',
+      'ANSES / ESCOP / EMA Herbal Monographs'
     ],
     tipos: ['fontes confiáveis', 'protocolos de avaliação', 'tratamentos/intervenções', 'encaminhamentos', 'segurança clínica'],
     itens: [
       'Fitoterapia', 'Ayurveda', 'MTC', 'Yoga', 'Massoterapia', 'Aromaterapia',
+      'Kampo', 'Hanbang', 'Jamu', 'Unani / Tibb', 'Siddha',
+      'Medicina Tradicional Russa', 'Medicina Tradicional Africana',
+      'Herbolaria Latino-Americana', 'Phytothérapie',
       'Aushadha Dravya (clássicos ayurvédicos)', 'Ahara (dietética ayurvédica clássica)', 'Dinacharya (rotina diária ayurvédica)', 'Ayurveda Clássico: diagnóstico, tratamentos e protocolos',
       'Fisioterapia', 'Xamanismo', 'Florais de Bach', 'Terapia de Florais', 'Reiki', 'Reflexologia',
       'Medicina Integrativa', 'Jyotish', 'Vastu Shastra', 'Quiropraxia',
@@ -368,6 +389,18 @@ const CONFIG = {
       { especialidade: 'Jyotish (Astrologia Védica)', categoria: 'Saber tradicional', base: 'Leitura simbólica e cultural para reflexão, sem uso diagnóstico ou determinista', fontes: 'Bṛhat Parāśara Horā Śāstra; Bṛhat Jātaka; Sārāvalī; Phaladīpikā; princípios éticos de aconselhamento; segurança em saúde mental' },
       { especialidade: 'Vastu Shastra', categoria: 'Saber tradicional', base: 'Organização ambiental não invasiva com foco em bem-estar e segurança do espaço', fontes: 'Vastu Shastra; Mayamata; Manasara; WHO healthy housing principles; ergonomia ambiental' },
       { especialidade: 'Xamanismo', categoria: 'Saber ancestral', base: 'Prática cultural e simbólica com consentimento, segurança cultural e redução de danos', fontes: 'OMS/WHO Traditional Medicine Strategy; PNPIC/MS; literatura de segurança cultural' },
+
+      // === MEDICINAS TRADICIONAIS REGIONAIS (países referenciados no i18n) ===
+      { especialidade: 'Kampo (Medicina Tradicional Japonesa)', categoria: 'PICS / Saber tradicional', base: 'Medicina tradicional japonesa com formulações clássicas adaptadas; uso complementar integrado ao cuidado biomédico', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; MHLW Japan Kampo; WHO Benchmarks for Training in Traditional Chinese Medicine; PNPIC/MS; Shang Han Lun; OMS/WHO TCIM' },
+      { especialidade: 'Hanbang (Medicina Tradicional Coreana)', categoria: 'PICS / Saber tradicional', base: 'Medicina tradicional coreana: diagnóstico constitucional, herbal, acupuntura coreana e integração segura', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; MFDS Korea; Dongui Bogam; WHO Benchmarks for Training in Traditional Chinese Medicine; PNPIC/MS; OMS/WHO TCIM' },
+      { especialidade: 'Jamu (Medicina Tradicional Indonésia)', categoria: 'PICS / Saber tradicional', base: 'Fitoterapia tradicional indonésia (jamu): preparações herbais, rotina, autocuidado e vigilância sanitária', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; BPOM Indonesia; Ministry of Health Indonesia; PNPIC/MS; BVS/BIREME; OMS/WHO Monographs' },
+      { especialidade: 'Unani / Tibb (Medicina Tradicional Persa-Islâmica)', categoria: 'PICS / Saber tradicional', base: 'Medicina greco-árabe-persa: temperamentos, matéria médica, dietética, higiene e integração responsável', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; Ministry of AYUSH Unani; Avicenna Canon of Medicine; PNPIC/MS; OMS/WHO TCIM; diretrizes de segurança clínica' },
+      { especialidade: 'Siddha (Medicina Tradicional do Sul da Índia)', categoria: 'PICS / Saber tradicional', base: 'Sistema tradicional tamil: constituição, matéria médica, alquimia vegetal/mineral com rigor de segurança', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; Ministry of AYUSH Siddha; literatura clássica tamil; PNPIC/MS; WHO Benchmarks for Training in Ayurveda' },
+      { especialidade: 'Medicina Tradicional Russa / Fitoterapia Eslava', categoria: 'PICS / Saber tradicional', base: 'Fitoterapia e práticas tradicionais eslavas integradas a cuidado complementar e triagem clínica', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; Ministério da Saúde Rússia; OMS/WHO Monographs; PNPIC/MS; BVS/BIREME; PubMed/NCBI' },
+      { especialidade: 'Medicina Tradicional Africana (Inyanga / Ubuntu)', categoria: 'PICS / Saber tradicional', base: 'Saberes tradicionais africanos com consentimento, segurança cultural, redução de danos e respeito comunitário', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; WHO African Traditional Medicine Strategy; Department of Health South Africa; SAHPRA; PNPIC/MS; princípios Ubuntu e segurança cultural' },
+      { especialidade: 'Herbolaria Latino-Americana', categoria: 'PICS / Saber tradicional', base: 'Uso tradicional de plantas medicinais na América Latina com rastreabilidade, interações e respeito a saberes indígenas', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; BVS/BIREME; OPAS/OMS; PNPIC/MS; ANVISA; farmacopeias latino-americanas; SciELO' },
+      { especialidade: 'Phytothérapie (Medicina Tradicional Europeia)', categoria: 'PICS / Saber tradicional', base: 'Fitoterapia europeia baseada em monografias oficiais, posologia, interações e farmacovigilância', fontes: 'WHO Global Traditional Medicine Strategy 2025-2034; ANSES France; ESCOP monographs; EMA herbal monographs; NICE; PNPIC/MS; Cochrane; PubMed/NCBI' },
+
       { especialidade: 'Florais de Bach', categoria: 'Florais', base: 'Biblioteca específica de florais para apoio emocional complementar', fontes: 'Bach Centre; PNPIC/MS; BVS/BIREME' },
       { especialidade: 'Terapia de Florais', categoria: 'PICS / Complementar', base: 'Prática complementar emocional; não substitui cuidado de saúde mental', fontes: 'PNPIC/MS; Bach Centre; BVS/BIREME' },
       { especialidade: 'Apiterapia', categoria: 'PICS / Produtos naturais', base: 'Uso complementar com cautela alergênica', fontes: 'PNPIC/MS; ANVISA; literatura de alergia/anafilaxia; Apimondia' },
@@ -591,12 +624,39 @@ const CONFIG = {
   },
 
   // ═══════════════════════════════════════════
-  // IDIOMAS
+  // IDIOMAS — América Latina, BRICS e opções adicionais
   // ═══════════════════════════════════════════
-  IDIOMAS: ['pt-BR', 'en', 'es', 'fr', 'ru', 'hi', 'zh', 'af', 'zu'],
+  IDIOMAS: [
+    'pt-BR', 'es',           // América Latina
+    'zh', 'ru', 'hi', 'en',  // BRICS (China, Rússia, Índia, África do Sul/int.)
+    'ar', 'fa', 'id',        // BRICS+ (Egito/Emirados, Irã, Indonésia)
+    'ja', 'ko',              // Ásia Oriental (Japão, Coreia do Sul)
+    'af', 'zu',              // África do Sul
+    'fr'                     // Outros
+  ],
   IDIOMAS_BANDEIRAS: {
-    'pt-BR': '🇧🇷', 'en': '🇺🇸', 'es': '🇪🇸', 'fr': '🇫🇷', 'ru': '🇷🇺',
-    'hi': '🇮🇳', 'zh': '🇨🇳', 'af': '🇿🇦', 'zu': '🇿🇦'
+    'pt-BR': '🇧🇷', es: '🇲🇽', en: '🇺🇸', zh: '🇨🇳', ru: '🇷🇺', hi: '🇮🇳',
+    ar: '🇪🇬', fa: '🇮🇷', id: '🇮🇩', ja: '🇯🇵', ko: '🇰🇷',
+    af: '🇿🇦', zu: '🇿🇦', fr: '🇫🇷'
+  },
+  IDIOMAS_RTL: ['ar', 'fa'],
+
+  // Bibliotecas tradicionais regionais vinculadas aos idiomas/países de referência
+  IDIOMAS_MEDICINAS_REGIONAIS: {
+    'pt-BR': ['Fitoterapia', 'PNPIC/MS'],
+    es: ['Herbolaria Latino-Americana', 'BVS/BIREME'],
+    zh: ['Medicina Tradicional Chinesa', 'Acupuntura'],
+    ru: ['Medicina Tradicional Russa / Fitoterapia Eslava'],
+    hi: ['Ayurveda', 'Siddha', 'Yoga (instrutor)'],
+    en: ['Medicina Integrativa', 'NCCIH'],
+    ar: ['Unani / Tibb (Medicina Tradicional Persa-Islâmica)'],
+    fa: ['Unani / Tibb (Medicina Tradicional Persa-Islâmica)'],
+    id: ['Jamu (Medicina Tradicional Indonésia)'],
+    ja: ['Kampo (Medicina Tradicional Japonesa)'],
+    ko: ['Hanbang (Medicina Tradicional Coreana)'],
+    af: ['Medicina Tradicional Africana (Inyanga / Ubuntu)'],
+    zu: ['Medicina Tradicional Africana (Inyanga / Ubuntu)'],
+    fr: ['Phytothérapie (Medicina Tradicional Europeia)']
   }
 };
 
@@ -644,3 +704,12 @@ if (typeof CatalogoTerapeutico !== 'undefined') {
 // ============================================
 if (typeof window !== 'undefined') window.CONFIG = CONFIG;
 if (typeof module !== 'undefined' && module.exports) module.exports = CONFIG;
+
+if (typeof window !== 'undefined' && CONFIG.Catalogo?.iniciarPagina) {
+  const iniciar = () => CONFIG.Catalogo.iniciarPagina(CONFIG);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', iniciar);
+  } else {
+    iniciar();
+  }
+}

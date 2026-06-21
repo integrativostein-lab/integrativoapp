@@ -14,16 +14,17 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico" data-nav-ativo="busca">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu"><a href="busca.html">Busca</a> <a href="index.html">Início</a></div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <div class="form-agendamento">
     <h2>Agendar Consulta</h2>
+    <p id="info-profissional" style="font-size:13px;color:var(--texto-medio);margin-bottom:16px;"></p>
     <div id="msg" class="msg"></div>
 
     <div class="form-grupo">
@@ -49,8 +50,23 @@
     <button class="btn btn-primario" onclick="agendar()" style="width:100%;margin-top:10px;">Agendar</button>
   </div>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
   <script>
+    (function preencherProfissional() {
+      var params = new URLSearchParams(window.location.search);
+      var prof = params.get('prof');
+      if (prof) {
+        document.getElementById('profissional_id').value = prof;
+        document.getElementById('info-profissional').textContent = 'Profissional selecionado (ID ' + prof + '). Escolha data, horário e modalidade.';
+      }
+      var amanha = new Date(Date.now() + 86400000);
+      document.getElementById('data').value = amanha.toISOString().split('T')[0];
+      document.getElementById('horario').value = '09:00';
+    })();
+
     async function agendar() {
       const msg = document.getElementById('msg');
       msg.className = 'msg';
@@ -83,7 +99,7 @@
 
       if (r.ok) {
         msg.className = 'msg sucesso';
-        msg.textContent = '✅ Agendamento realizado com sucesso!';
+        msg.textContent = '✅ Agendamento realizado! ID ' + d.id + (d.sala ? ' · Sala: ' + d.sala : '');
       } else {
         msg.className = 'msg erro';
         msg.textContent = d.erro || 'Erro ao agendar.';

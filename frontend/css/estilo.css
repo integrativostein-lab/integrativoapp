@@ -96,6 +96,11 @@ body {
 
 .navbar .menu a:hover { color: var(--verde-destaque); }
 
+.navbar .menu a.ativo {
+  color: var(--azul-profundo);
+  font-weight: 700;
+}
+
 /* Botões Premium */
 .btn { 
   display: inline-block; 
@@ -405,4 +410,20 @@ footer a:hover { color: var(--verde-destaque); }
   .bibliotecas-head { grid-template-columns: 1fr; }
   .bibliotecas-metricas { min-width: 0; grid-template-columns: 1fr; }
   .bibliotecas-card { padding: 24px; }
+}
+
+/* Idiomas RTL (árabe, persa) */
+html[dir='rtl'] body {
+  text-align: right;
+}
+
+html[dir='rtl'] .navbar,
+html[dir='rtl'] .menu {
+  direction: rtl;
+}
+
+html[dir='rtl'] #lang-selector {
+  right: auto;
+  left: 20px;
+  justify-content: flex-start;
 }

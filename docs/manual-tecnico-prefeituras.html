@@ -56,9 +56,10 @@ JWT_SECRET=chave_secreta_gerada_pela_entidade
 FRONTEND_URL=https://saude.SUA_ENTIDADE.org.br
 </pre>
 
-    <h3>2.4. Criar as tabelas</h3>
+    <h3>2.4. Criar as tabelas (PostgreSQL)</h3>
     <pre>
-node database.js
+psql "$DATABASE_URL" -f migracao-v2.1.sql
+node init-db.js
 </pre>
 
     <h3>2.5. Iniciar o servidor</h3>
@@ -124,7 +125,8 @@ cd /opt/integrativo
 git pull origin main
 cd backend
 npm install
-node database.js
+psql "$DATABASE_URL" -f ../migracao-v2.1.sql
+node init-db.js
 pm2 restart integrativo
 </pre>
 

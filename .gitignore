@@ -4,10 +4,16 @@
 
 node_modules/
 uploads/
+backend/logs/
+backend/logs/auditoria-lgpd/**/*.jsonl
 *.log
-database.sqlite
 .DS_Store
 
 # Credenciais locais (nunca versionar)
 controle interno do mau/link supabase.txt
 **/link supabase.txt
+
+# IDE e artefatos locais
+.cursor/
+*.sqlite
+database.sqlite

@@ -1,5 +1,7 @@
 # 🚀 SETUP LOCAL COM SUPABASE — Integrativo.App v2.1
 
+> **Banco de dados:** PostgreSQL exclusivamente (Supabase). O projeto **não utiliza SQLite**.
+
 ## Pré-requisitos
 
 - Node.js 18+

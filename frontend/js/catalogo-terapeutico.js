@@ -186,6 +186,113 @@
       ?? 1;
   }
 
+  function getMetricas(config) {
+    const bt = config?.BIBLIOTECAS_TERAPEUTICAS || {};
+    const limites = config?.LIMITES_BIBLIOTECAS_PLANO || {};
+    return {
+      bibliotecas: bt.total_bibliotecas || 0,
+      especialidades: bt.total_especialidades || config?.ESPECIALIDADES?.length || 0,
+      registros: bt.total_registros || 0,
+      registrosFmt: Number(bt.total_registros || 0).toLocaleString('pt-BR'),
+      transversais: bt.bibliotecas_transversais || 0,
+      porPratica: bt.bibliotecas_por_pratica || 0,
+      fontes: bt.fontes?.length || 0,
+      limiteFreemium: limites.freemium ?? 1,
+      limiteGuardioes: limites.guardioes_floresta ?? 5,
+      limitePro: limites.pro ?? 10,
+      limitePremium: limites.premium ?? 20,
+      limiteEnterprise: limites.enterprise ?? bt.bibliotecas_por_pratica ?? 0
+    };
+  }
+
+  function substituirTokens(texto, config) {
+    const m = getMetricas(config);
+    return String(texto || '')
+      .replace(/\{\{bibliotecas\}\}/g, m.bibliotecas)
+      .replace(/\{\{especialidades\}\}/g, m.especialidades)
+      .replace(/\{\{registros\}\}/g, m.registrosFmt)
+      .replace(/\{\{registros_num\}\}/g, m.registros)
+      .replace(/\{\{transversais\}\}/g, m.transversais)
+      .replace(/\{\{por_pratica\}\}/g, m.porPratica)
+      .replace(/\{\{fontes\}\}/g, m.fontes)
+      .replace(/\{\{limite_freemium\}\}/g, m.limiteFreemium)
+      .replace(/\{\{limite_guardioes\}\}/g, m.limiteGuardioes)
+      .replace(/\{\{limite_pro\}\}/g, m.limitePro)
+      .replace(/\{\{limite_premium\}\}/g, m.limitePremium)
+      .replace(/\{\{limite_enterprise\}\}/g, m.limiteEnterprise)
+      .replace(/\{\{limites_planos\}\}/g, textoLimitesPlanos(config));
+  }
+
+  function textoLimitesPlanos(config) {
+    const m = getMetricas(config);
+    const plural = (n) => (Number(n) === 1 ? 'biblioteca' : 'bibliotecas');
+    return [
+      `O plano Freemium inclui ${m.limiteFreemium} ${plural(m.limiteFreemium)}.`,
+      `Guardiões da Floresta inclui ${m.limiteGuardioes},`,
+      `Pro inclui ${m.limitePro},`,
+      `Premium inclui ${m.limitePremium}`,
+      `e Enterprise inclui acesso às ${m.bibliotecas} bibliotecas (${m.porPratica} por prática + ${m.transversais} transversais).`
+    ].join(' ');
+  }
+
+  function resolverBibliotecaVinculada(nomeEspecialidade, config) {
+    const bt = config?.BIBLIOTECAS_TERAPEUTICAS;
+    if (!bt?.matriz) return null;
+    const porPratica = bt.matriz.filter((item) => !isTransversal(item));
+    const match = porPratica.find((item) => bibliotecaCorresponde(item, [nomeEspecialidade]));
+    return match ? match.especialidade : null;
+  }
+
+  function aplicarTokensDocumento(config, root) {
+    if (typeof document === 'undefined') return;
+    const scope = root || document;
+    const m = getMetricas(config);
+
+    scope.querySelectorAll('[data-catalogo]').forEach((el) => {
+      const mapa = {
+        bibliotecas: m.bibliotecas,
+        especialidades: m.especialidades,
+        registros: m.registrosFmt,
+        transversais: m.transversais,
+        por_pratica: m.porPratica,
+        fontes: m.fontes
+      };
+      const valor = mapa[el.dataset.catalogo];
+      if (valor !== undefined) el.textContent = valor;
+    });
+
+    scope.querySelectorAll('.catalogo-token, [data-catalogo-token]').forEach((el) => {
+      const usarHtml = el.classList.contains('catalogo-token-html')
+        || el.dataset.catalogoToken === 'html';
+      const origem = usarHtml ? el.innerHTML : el.textContent;
+      const atualizado = substituirTokens(origem, config);
+      if (usarHtml) el.innerHTML = atualizado;
+      else el.textContent = atualizado;
+    });
+
+    scope.querySelectorAll('meta[name="description"], meta[property="og:description"]').forEach((meta) => {
+      if (meta.content && meta.content.includes('{{')) {
+        meta.content = substituirTokens(meta.content, config);
+      }
+    });
+  }
+
+  function iniciarPagina(config, opcoes = {}) {
+    if (!config) return config;
+    aplicarEstatisticasHome(config, opcoes.ids);
+    aplicarTokensDocumento(config, opcoes.root);
+    return config;
+  }
+
+  function metricasI18n(config) {
+    const m = getMetricas(config);
+    return {
+      especialidades: m.especialidades,
+      bibliotecas: m.bibliotecas,
+      registros: m.registrosFmt
+    };
+  }
+
   if (typeof window !== 'undefined') {
     carregarMeta();
   }
@@ -209,7 +316,14 @@
     sincronizar,
     htmlMetricasResumo,
     aplicarEstatisticasHome,
-    limitePlano
+    limitePlano,
+    getMetricas,
+    substituirTokens,
+    textoLimitesPlanos,
+    resolverBibliotecaVinculada,
+    aplicarTokensDocumento,
+    iniciarPagina,
+    metricasI18n
   };
 
   global.CatalogoTerapeutico = api;

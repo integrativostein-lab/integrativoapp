@@ -50,14 +50,40 @@ router.get('/buscar', async (req, res) => {
 });
 
 router.post('/valores', autenticar, async (req, res) => {
-  const { especialidade_id, valor_online, valor_presencial, valor_domicilio } = req.body;
-  const ex = await db.query('SELECT id FROM profissional_valores WHERE usuario_id = $1 AND especialidade_id = $2', [req.usuario.id, especialidade_id]);
-  if (ex.rows.length > 0) {
-    await db.query('UPDATE profissional_valores SET valor_online=$1, valor_presencial=$2, valor_domicilio=$4 WHERE id=$3', [valor_online, valor_presencial, valor_domicilio, ex.rows[0].id]);
-  } else {
-    await db.query('INSERT INTO profissional_valores (usuario_id, especialidade_id, valor_online, valor_presencial, valor_domicilio) VALUES ($1,$2,$3,$4)', [req.usuario.id, especialidade_id, valor_online, valor_presencial, valor_domicilio]);
+  try {
+    const { especialidade_id, valor_online, valor_presencial, valor_domicilio, duracao_minutos } = req.body;
+    if (!especialidade_id) return res.status(400).json({ erro: 'especialidade_id é obrigatório' });
+
+    const ex = await db.query(
+      'SELECT id FROM profissional_valores WHERE usuario_id = $1 AND especialidade_id = $2',
+      [req.usuario.id, especialidade_id]
+    );
+
+    if (ex.rows.length > 0) {
+      await db.query(
+        'UPDATE profissional_valores SET valor_online=$1, valor_presencial=$2, valor_domicilio=$3, duracao_minutos=COALESCE($4, duracao_minutos) WHERE id=$5',
+        [valor_online, valor_presencial, valor_domicilio ?? null, duracao_minutos ?? null, ex.rows[0].id]
+      );
+    } else {
+      await db.query(
+        `INSERT INTO profissional_valores
+          (usuario_id, especialidade_id, valor_online, valor_presencial, valor_domicilio, duracao_minutos)
+         VALUES ($1,$2,$3,$4,$5,$6)`,
+        [
+          req.usuario.id,
+          especialidade_id,
+          valor_online,
+          valor_presencial,
+          valor_domicilio ?? null,
+          duracao_minutos ?? 60
+        ]
+      );
+    }
+    res.json({ mensagem: 'Valores salvos!' });
+  } catch (erro) {
+    console.error('[profissionais/valores]', erro.message);
+    res.status(500).json({ erro: 'Erro ao salvar valores' });
   }
-  res.json({ mensagem: 'Valores salvos!' });
 });
 
 module.exports = router;

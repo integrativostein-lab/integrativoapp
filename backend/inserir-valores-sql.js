@@ -1,8 +1,8 @@
 const axios = require('axios');
 const API_URL = 'https://integra-backend-ynrd.onrender.com/api';
 
-async function inserirValoresSQL() {
-  console.log('🔧 Inserindo valores via SQL...\n');
+async function inserirValoresPostgres() {
+  console.log('🔧 Inserindo valores via PostgreSQL...\n');
 
   // Login como admin
   const loginAdmin = await axios.post(`${API_URL}/auth/login`, {
@@ -64,4 +64,4 @@ async function inserirValoresSQL() {
   console.log('\n🎉 Concluído!');
 }
 
-inserirValoresSQL();
+inserirValoresPostgres();

@@ -169,21 +169,21 @@
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────┐
-│                  SERVIDOR LOCAL (Python)                  │
+│              BACKEND (Node.js + Express — Render)         │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
-│  │   Flask     │  │  SQLite     │  │   Stripe    │      │
-│  │    API      │  │  Database   │  │  Gateway    │      │
+│  │   Express   │  │ PostgreSQL  │  │   Stripe    │      │
+│  │    API      │  │  (Supabase) │  │  Gateway    │      │
 │  └─────────────┘  └─────────────┘  └─────────────┘      │
 └─────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────┐
-│                  NUVEM (Dropbox)                         │
+│                  NUVEM (Dropbox — arquivos)              │
 │  ┌─────────────────────────────────────────────────┐    │
-│  │         IntegrativoApp-Demo/                    │    │
-│  │  ├── database.db                                │    │
+│  │         IntegrativoApp/                         │    │
+│  │  ├── uploads/                                   │    │
 │  │  ├── logs/                                      │    │
-│  │  └── backups/                                   │    │
+│  │  └── backups/ (export pg_dump, não .db local)   │    │
 │  └─────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────┘
                 </pre>
@@ -191,7 +191,8 @@
             
             <!-- 2. ESTRUTURA DO BANCO DE DADOS -->
             <div class="section">
-                <h2>2. ESTRUTURA DO BANCO DE DADOS (SQLite)</h2>
+                <h2>2. ESTRUTURA DO BANCO DE DADOS (PostgreSQL)</h2>
+                <p style="margin-bottom:1rem;color:#555;">Persistência em PostgreSQL (Supabase). O sistema não utiliza SQLite.</p>
                 
                 <h3>2.1 Tabela: profissionais</h3>
                 <pre>
@@ -344,14 +345,14 @@ STRIPE_API_VERSION = "2025-01-27"</pre>
                 <h2>5. SINCronização com DROPBOX</h2>
                 
                 <h3>5.1 Estrutura de Pastas</h3>
-                <pre>/IntegrativoApp-Demo/
-├── database.db           # Banco de dados principal
+                <pre>/IntegrativoApp/
+├── uploads/              # Arquivos enviados pelos usuários
 ├── logs/
 │   └── sync_log.json     # Log de sincronização
 ├── backups/
-│   └── backup_YYYYMMDD.db
+│   └── backup_YYYYMMDD.sql   # Export PostgreSQL (pg_dump)
 └── config/
-    └── ambiente_teste.json</pre>
+    └── ambiente.json</pre>
                 
                 <h3>5.2 Frequência de Sincronização</h3>
                 <ul style="margin-left: 25px;">
@@ -379,9 +380,10 @@ STRIPE_API_VERSION = "2025-01-27"</pre>
                 <h2>7. VERSÕES E DEPENDÊNCIAS</h2>
                 <table>
                     <tr><th width="200">Tecnologia</th><th>Versão</th></tr>
-                    <tr><td>Python</td><td>3.9.7+</td></tr>
-                    <tr><td>Flask</td><td>2.3.0</td></tr>
-                    <tr><td>SQLite</td><td>3.36.0</td></tr>
+                    <tr><td>Node.js</td><td>18+</td></tr>
+                    <tr><td>Express</td><td>4.18+</td></tr>
+                    <tr><td>PostgreSQL</td><td>14+ (Supabase)</td></tr>
+                    <tr><td>pg (driver)</td><td>8.x</td></tr>
                     <tr><td>Stripe API</td><td>2025-01-27</td></tr>
                     <tr><td>Dropbox SDK</td><td>11.36.0</td></tr>
                 </table>

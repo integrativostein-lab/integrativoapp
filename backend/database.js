@@ -2,6 +2,8 @@ require('dotenv').config();
 const { Pool } = require('pg');
 const { modoTeste } = require('./config/ambiente');
 
+// PostgreSQL exclusivamente (Supabase/Render/local). Não há suporte a SQLite.
+
 const connectionString = modoTeste && process.env.TESTE_DATABASE_URL
   ? process.env.TESTE_DATABASE_URL
   : process.env.DATABASE_URL;

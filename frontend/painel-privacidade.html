@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Dados e Privacidade — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/consentimento-lgpd.css">
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🌿 Integrativo.App</h3>
+      <nav>
+        <a href="painel-paciente.html" id="nav-paciente">📅 Agendamentos</a>
+        <a href="painel-terapeuta.html" id="nav-profissional">🏠 Painel</a>
+        <a href="painel-privacidade.html" class="ativo">🔒 Privacidade</a>
+        <a href="privacidade.html" target="_blank" rel="noopener">📄 Política completa</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+    <div class="painel-conteudo">
+      <h2>Meus Dados e Privacidade (LGPD)</h2>
+      <p style="color:var(--texto-suave);max-width:760px;line-height:1.6;">
+        Aqui você vê o que coletamos, por que coletamos e pode autorizar ou revogar usos opcionais.
+        Autorizações obrigatórias foram aceitas no cadastro para operar o serviço com segurança.
+      </p>
+      <div id="consentimentos-lgpd"></div>
+      <div class="lgpd-acoes-painel">
+        <button type="button" class="lgpd-btn-salvar" id="btnSalvarConsentimentos">Salvar autorizações</button>
+      </div>
+      <div id="msg-privacidade" class="msg" style="display:none;margin-top:16px;padding:12px;border-radius:10px;"></div>
+      <section style="margin-top:28px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:16px;padding:18px;">
+        <h3 style="color:var(--azul-profundo);margin-bottom:8px;">Seus direitos</h3>
+        <ul style="color:var(--texto-suave);line-height:1.7;padding-left:18px;">
+          <li>Acessar e corrigir seus dados cadastrais no perfil.</li>
+          <li>Revogar consentimentos opcionais a qualquer momento nesta tela.</li>
+          <li>Solicitar exportação ou exclusão conforme a Política de Privacidade.</li>
+          <li>Contato do encarregado (DPO): <a href="mailto:dpo@integra.saude">dpo@integra.saude</a></li>
+        </ul>
+      </section>
+      <section id="historico-consentimentos" style="margin-top:20px;"></section>
+    </div>
+  </div>
+
+  <script src="js/catalogo-terapeutico.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/consentimento-lgpd.js"></script>
+  <script>
+    const token = localStorage.getItem('integra_token');
+    const usuario = JSON.parse(localStorage.getItem('integra_usuario') || 'null');
+    const msgEl = document.getElementById('msg-privacidade');
+    let perfil = 'paciente';
+
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function showMsg(texto, ok) {
+      msgEl.style.display = 'block';
+      msgEl.style.background = ok ? '#DCFCE7' : '#FEE2E2';
+      msgEl.style.color = ok ? '#166534' : '#991B1B';
+      msgEl.textContent = texto;
+    }
+
+    async function iniciar() {
+      if (!token || !usuario) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      perfil = ['profissional', 'admin', 'super_admin'].includes(usuario.tipo) ? 'profissional' : 'paciente';
+      document.getElementById('nav-paciente').style.display = perfil === 'paciente' ? 'block' : 'none';
+      document.getElementById('nav-profissional').style.display = perfil === 'profissional' ? 'block' : 'none';
+
+      const root = ConsentimentoLGPD.render('#consentimentos-lgpd', {
+        perfil,
+        modo: 'painel',
+        titulo: 'Suas autorizações de tratamento de dados',
+        intro: 'Marque ou desmarque apenas as opções facultativas (verde). As obrigatórias permanecem registradas desde o cadastro.'
+      });
+
+      root.querySelectorAll('[data-lgpd-consent][required]').forEach((input) => {
+        input.checked = true;
+        input.disabled = true;
+      });
+
+      try {
+        const dados = await ConsentimentoLGPD.carregarAtuais(token);
+        ConsentimentoLGPD.aplicarEstados(root, dados.atual);
+        renderHistorico(dados.historico || []);
+      } catch (e) {
+        showMsg(e.message || 'Não foi possível carregar suas autorizações.', false);
+      }
+    }
+
+    function renderHistorico(historico) {
+      const sec = document.getElementById('historico-consentimentos');
+      if (!historico.length) {
+        sec.innerHTML = '';
+        return;
+      }
+      sec.innerHTML = `
+        <h3 style="color:var(--azul-profundo);margin-bottom:10px;">Histórico recente</h3>
+        <div style="overflow:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+              <tr style="background:#F1F5F9;text-align:left;">
+                <th style="padding:8px;">Data</th>
+                <th style="padding:8px;">Tipo</th>
+                <th style="padding:8px;">Decisão</th>
+                <th style="padding:8px;">Origem</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${historico.slice(0, 20).map((item) => `
+                <tr style="border-bottom:1px solid #E2E8F0;">
+                  <td style="padding:8px;">${new Date(item.criado_em).toLocaleString('pt-BR')}</td>
+                  <td style="padding:8px;">${item.tipo}</td>
+                  <td style="padding:8px;">${item.consentiu ? 'Autorizado' : 'Revogado'}</td>
+                  <td style="padding:8px;">${item.origem || '—'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    document.getElementById('btnSalvarConsentimentos').addEventListener('click', async () => {
+      const btn = document.getElementById('btnSalvarConsentimentos');
+      btn.disabled = true;
+      try {
+        const mapa = ConsentimentoLGPD.valores(document);
+        const opcionais = {};
+        Object.entries(mapa).forEach(([tipo, valor]) => {
+          const meta = ConsentimentoLGPD.TIPOS[tipo];
+          if (meta && !meta.obrigatorio) opcionais[tipo] = valor;
+        });
+        const res = await ConsentimentoLGPD.salvarLote(opcionais, token, 'painel-privacidade');
+        showMsg(res.mensagem || 'Autorizações salvas.', true);
+        const dados = await ConsentimentoLGPD.carregarAtuais(token);
+        renderHistorico(dados.historico || []);
+      } catch (e) {
+        showMsg(e.message || 'Erro ao salvar.', false);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    iniciar();
+  </script>
+</body>
+</html>

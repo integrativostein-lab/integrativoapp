@@ -112,6 +112,7 @@
         <a href="painel-blog.html">✍️ Blog</a>
         <a href="painel-mensagens.html">📱 WhatsApp</a>
         <a href="painel-bibliotecas.html">🌿 Bibliotecas</a>
+        <a href="painel-privacidade.html">🔒 Privacidade (LGPD)</a>
         <a href="#" data-secao="dominio" onclick="mostrarSecao('dominio')">🌐 Domínio/Email</a>
         <a href="manual.html">📖 Manual</a>
         <a href="#" onclick="logout()">🚪 Sair</a>
@@ -239,7 +240,9 @@
     </div>
   </div>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
   <script>
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
@@ -274,7 +277,7 @@
       var html = '';
       dados.slice(0, 5).forEach(function(a) {
         html += '<div class="agenda-item" onclick="abrirPaciente(' + a.paciente_id + ')">';
-        html += '<div><div class="paciente-nome">' + (a.profissional_nome || 'Paciente') + '</div>';
+        html += '<div><div class="paciente-nome">' + (a.paciente_nome || 'Paciente') + '</div>';
         html += '<div class="paciente-info">' + a.data_agendamento + ' às ' + a.horario_inicio + ' — ' + a.status + '</div></div>';
         if (a.modalidade === 'online' && a.status === 'agendado') {
           html += '<a href="#" class="btn-teleconsulta" onclick="event.stopPropagation(); iniciarTeleconsulta(' + a.id + ')">🎥 Consulta</a>';

@@ -385,6 +385,78 @@ especialidades.push(
     tratamento: 'Usar banhos/águas minerais com tempo, temperatura e supervisão adequados como recurso complementar de bem-estar.',
     encaminhamento: 'Encaminhar em síncope, dor torácica, dispneia, infecção de pele, hipotensão, febre ou descompensação clínica.',
     seguranca: 'Controlar temperatura, tempo de exposição, hidratação, risco de queda e condições sanitárias.'
+  },
+  {
+    nome: 'Kampo (Medicina Tradicional Japonesa)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; MHLW Japan Kampo; WHO Benchmarks for Training in Traditional Chinese Medicine; PNPIC/MS',
+    avaliacao: 'Avaliar queixa, constituição, digestão, sono, medicamentos, alergias, gestação/lactação e diagnóstico biomédico conhecido.',
+    tratamento: 'Selecionar formulação kampo clássica compatível, orientar dieta/rotina e integrar com cuidado médico quando indicado.',
+    encaminhamento: 'Encaminhar em gravidez de risco, hepatopatia, reações adversas, interações medicamentosas ou piora clínica.',
+    seguranca: 'Evitar automedicação prolongada, substituição de tratamento convencional e formulações sem procedência.'
+  },
+  {
+    nome: 'Hanbang (Medicina Tradicional Coreana)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; MFDS Korea; Dongui Bogam; PNPIC/MS',
+    avaliacao: 'Avaliar constituição (saeng/sang), queixas, medicamentos, alergias, função hepática/renal e sinais de gravidade.',
+    tratamento: 'Usar herbal hanbang, acupuntura coreana e orientações de estilo de vida dentro do escopo habilitado.',
+    encaminhamento: 'Encaminhar em dor torácica, dispneia, febre alta, gestação de risco, hepatotoxicidade ou piora progressiva.',
+    seguranca: 'Checar interações, qualidade do produto, contraindicações e consentimento informado.'
+  },
+  {
+    nome: 'Jamu (Medicina Tradicional Indonésia)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; BPOM Indonesia; Ministry of Health Indonesia; PNPIC/MS',
+    avaliacao: 'Avaliar queixa, medicamentos, alergias, gestação/lactação, função hepática/renal e origem/procedência do jamu.',
+    tratamento: 'Orientar uso racional de preparações registradas, dose, tempo de uso e sinais de suspensão.',
+    encaminhamento: 'Encaminhar em reação adversa, icterícia, dor abdominal intensa, gestação de risco ou interação relevante.',
+    seguranca: 'Evitar produtos sem registro, metais/contaminantes, automedicação crônica e promessas terapêuticas.'
+  },
+  {
+    nome: 'Unani / Tibb (Medicina Tradicional Persa-Islâmica)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; Ministry of AYUSH Unani; Avicenna Canon of Medicine; PNPIC/MS',
+    avaliacao: 'Avaliar mizaj (temperamento), queixas, medicamentos, alergias, gestação/lactação e comorbidades.',
+    tratamento: 'Usar dietética, higiene, matéria médica unani e práticas complementares com plano individual e reavaliação.',
+    encaminhamento: 'Encaminhar em sintomas graves, reações adversas, gestação de risco, hepatopatia ou uso de preparações complexas.',
+    seguranca: 'Evitar metais pesados, substituição de tratamento convencional e condutas fora da formação.'
+  },
+  {
+    nome: 'Siddha (Medicina Tradicional do Sul da Índia)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; Ministry of AYUSH Siddha; literatura clássica tamil; PNPIC/MS',
+    avaliacao: 'Avaliar constituição, agni, medicamentos, alergias, gestação/lactação e sinais clínicos de gravidade.',
+    tratamento: 'Usar herbal siddha, rotina, alimentação e práticas mente-corpo dentro do escopo habilitado.',
+    encaminhamento: 'Encaminhar em perda ponderal inexplicada, febre persistente, hepatotoxicidade ou preparações minerais complexas.',
+    seguranca: 'Evitar formulações sem procedência, metais pesados e suspensão de tratamento convencional.'
+  },
+  {
+    nome: 'Medicina Tradicional Russa / Fitoterapia Eslava',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; Ministério da Saúde Rússia; OMS/WHO Monographs; PNPIC/MS',
+    avaliacao: 'Avaliar queixa, medicamentos, alergias, gestação/lactação, função hepática/renal e interações planta-medicamento.',
+    tratamento: 'Selecionar plantas tradicionais eslavas com evidência de segurança, dose definida e tempo limitado de uso.',
+    encaminhamento: 'Encaminhar em reação adversa, gestação de risco, comorbidades graves ou sintomas sistêmicos.',
+    seguranca: 'Evitar automedicação prolongada, misturas sem rastreio e promessas terapêuticas.'
+  },
+  {
+    nome: 'Medicina Tradicional Africana (Inyanga / Ubuntu)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; WHO African Traditional Medicine Strategy; Department of Health South Africa; PNPIC/MS',
+    avaliacao: 'Avaliar contexto cultural, queixa, medicamentos, alergias, rede comunitária, consentimento e sinais de gravidade.',
+    tratamento: 'Usar saberes tradicionais com respeito cultural, redução de danos, registro de procedência e plano compartilhado.',
+    encaminhamento: 'Encaminhar em sintomas graves, reações adversas, gravidez de risco, intoxicação ou sofrimento psíquico intenso.',
+    seguranca: 'Preservar autonomia, confidencialidade, consentimento informado e não substituir cuidado biomédico urgente.'
+  },
+  {
+    nome: 'Herbolaria Latino-Americana',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; BVS/BIREME; OPAS/OMS; PNPIC/MS; ANVISA',
+    avaliacao: 'Avaliar queixa, medicamentos, alergias, gestação/lactação, origem das plantas e risco de interação.',
+    tratamento: 'Orientar uso racional de plantas tradicionais latino-americanas com dose, tempo e monitoramento de resposta.',
+    encaminhamento: 'Encaminhar em reação adversa, gestação de risco, hepatopatia, sintomas sistêmicos ou interação relevante.',
+    seguranca: 'Respeitar saberes indígenas, evitar extrativismo irresponsável, produtos sem rastreio e automedicação crônica.'
+  },
+  {
+    nome: 'Phytothérapie (Medicina Tradicional Europeia)',
+    fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; ANSES France; ESCOP; EMA herbal monographs; NICE; PNPIC/MS',
+    avaliacao: 'Avaliar queixa, medicamentos, alergias, gestação/lactação, função hepática/renal e interações.',
+    tratamento: 'Prescrever fitoterapia europeia com monografias oficiais, posologia, via adequada e reavaliação periódica.',
+    encaminhamento: 'Encaminhar em reação adversa, gestação de risco, comorbidades graves ou falha terapêutica.',
+    seguranca: 'Usar monografias ESCOP/EMA, checar interações, evitar automedicação e registrar farmacovigilância.'
   }
 );
 
@@ -423,7 +495,52 @@ const bibliotecasMedicinasTradicionais = {
       descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; WHO Traditional, Complementary and Integrative Medicine; PNPIC/MS. Usar como referência para evidência, segurança, regulação, respeito cultural, proteção de saberes tradicionais e integração ao sistema de saúde.',
       fonte: 'WHO Global Traditional Medicine Strategy 2025-2034; WHO TCIM; PNPIC/MS'
     }
-  ]
+  ],
+  'Kampo (Medicina Tradicional Japonesa)': [{
+    nome: 'Kampo - Biblioteca validada de Medicina Tradicional Japonesa',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; MHLW Japan Kampo; WHO Benchmarks for Training in Traditional Chinese Medicine. Formulações clássicas, segurança, interações e integração ao cuidado médico.',
+    fonte: 'MHLW Japan Kampo; WHO Global Traditional Medicine Strategy 2025-2034; PNPIC/MS'
+  }],
+  'Hanbang (Medicina Tradicional Coreana)': [{
+    nome: 'Hanbang - Biblioteca validada de Medicina Tradicional Coreana',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; MFDS Korea; Dongui Bogam. Herbal, acupuntura coreana, constituição e integração segura.',
+    fonte: 'MFDS Korea; Dongui Bogam; WHO Global Traditional Medicine Strategy 2025-2034'
+  }],
+  'Jamu (Medicina Tradicional Indonésia)': [{
+    nome: 'Jamu - Biblioteca validada de Medicina Tradicional Indonésia',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; BPOM Indonesia; Ministry of Health Indonesia. Preparados herbais registrados, posologia e farmacovigilância.',
+    fonte: 'BPOM Indonesia; Ministry of Health Indonesia; WHO Global Traditional Medicine Strategy 2025-2034'
+  }],
+  'Unani / Tibb (Medicina Tradicional Persa-Islâmica)': [{
+    nome: 'Unani/Tibb - Biblioteca validada de Medicina Tradicional Persa-Islâmica',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; Ministry of AYUSH Unani; Avicenna Canon of Medicine. Temperamentos, matéria médica, dietética e segurança clínica.',
+    fonte: 'Ministry of AYUSH Unani; Avicenna Canon of Medicine; WHO Global Traditional Medicine Strategy 2025-2034'
+  }],
+  'Siddha (Medicina Tradicional do Sul da Índia)': [{
+    nome: 'Siddha - Biblioteca validada de Medicina Tradicional Tamil',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; Ministry of AYUSH Siddha; literatura clássica tamil. Constituição, herbal e integração responsável.',
+    fonte: 'Ministry of AYUSH Siddha; WHO Global Traditional Medicine Strategy 2025-2034; PNPIC/MS'
+  }],
+  'Medicina Tradicional Russa / Fitoterapia Eslava': [{
+    nome: 'Medicina Tradicional Russa - Biblioteca validada de fitoterapia eslava',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; Ministério da Saúde Rússia; OMS/WHO Monographs. Plantas tradicionais eslavas, interações e uso racional.',
+    fonte: 'Ministério da Saúde Rússia; OMS/WHO Monographs; WHO Global Traditional Medicine Strategy 2025-2034'
+  }],
+  'Medicina Tradicional Africana (Inyanga / Ubuntu)': [{
+    nome: 'Medicina Tradicional Africana - Biblioteca validada com segurança cultural',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; WHO African Traditional Medicine Strategy; Department of Health South Africa; SAHPRA. Consentimento, procedência e integração comunitária.',
+    fonte: 'WHO African Traditional Medicine Strategy; Department of Health South Africa; PNPIC/MS'
+  }],
+  'Herbolaria Latino-Americana': [{
+    nome: 'Herbolaria Latino-Americana - Biblioteca validada regional',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; BVS/BIREME; OPAS/OMS; PNPIC/MS; ANVISA. Plantas medicinais latino-americanas, interações e respeito a saberes tradicionais.',
+    fonte: 'BVS/BIREME; OPAS/OMS; PNPIC/MS; WHO Global Traditional Medicine Strategy 2025-2034'
+  }],
+  'Phytothérapie (Medicina Tradicional Europeia)': [{
+    nome: 'Phytothérapie - Biblioteca validada de fitoterapia europeia',
+    descricao: 'Fontes-base: WHO Global Traditional Medicine Strategy 2025-2034; ANSES France; ESCOP; EMA herbal monographs; NICE. Monografias oficiais, posologia e farmacovigilância.',
+    fonte: 'ESCOP; EMA herbal monographs; ANSES France; WHO Global Traditional Medicine Strategy 2025-2034'
+  }]
 };
 
 function montarItens(e) {

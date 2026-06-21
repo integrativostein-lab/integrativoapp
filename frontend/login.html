@@ -24,12 +24,12 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a></div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <div class="form-login" id="form-login">
@@ -64,6 +64,10 @@
     <p style="text-align:center;font-size:13px;">
       Não tem conta? <a href="cadastro.html">Cadastre-se</a>
     </p>
+    <p style="text-align:center;font-size:12px;color:var(--texto-medio);margin-top:8px;">
+      Ao entrar, você confirma ciência da <a href="privacidade.html">Política de Privacidade</a>.
+      Gerencie autorizações em <a href="painel-privacidade.html">Meus Dados (LGPD)</a>.
+    </p>
   </div>
 
   <!-- TELA DE RECUPERAÇÃO DE SENHA -->
@@ -80,7 +84,10 @@
     </p>
   </div>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
   <script>
     // Mostrar modo teste em localhost
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {

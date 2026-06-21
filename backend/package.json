@@ -9,7 +9,10 @@
     "start:teste": "node -r dotenv/config server.js dotenv_config_path=.env.teste",
     "dev:teste": "nodemon -r dotenv/config server.js dotenv_config_path=.env.teste",
     "populate:protocolos": "node populate-protocolos-especialidades.js",
-    "catalogo:sync": "node ../scripts/sincronizar-catalogo-json.js"
+    "catalogo:sync": "node ../scripts/sincronizar-catalogo-json.js",
+    "test:auditoria-lgpd": "node testar-auditoria-lgpd.js",
+    "demo:garantir": "node garantir-demo.js",
+    "migrate:lgpd": "node ../scripts/aplicar-migracoes-lgpd.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",
@@ -37,6 +40,8 @@
     "saude",
     "integrativa",
     "terapeutas",
+    "postgresql",
+    "supabase",
     "ayurveda",
     "mtc",
     "fhir"

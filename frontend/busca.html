@@ -56,16 +56,12 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico" data-nav-ativo="busca">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="cadastro.html">Cadastro</a>
-      <a href="login.html">Entrar</a>
-    </div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <div class="busca-container">
@@ -75,7 +71,7 @@
       <div class="form-grupo">
         <label>Especialidade</label>
         <select id="filtro-especialidade">
-          <option value="">Todas (47 especialidades)</option>
+          <option value="">Todas as especialidades</option>
         </select>
       </div>
       <div class="form-grupo">
@@ -94,28 +90,52 @@
     </div>
 
     <div class="especialidades-lista">
-      <h3>Especialidades disponíveis</h3>
+      <h3 id="titulo-especialidades">Especialidades disponíveis</h3>
+      <p id="resumo-catalogo" style="font-size:13px;color:var(--texto-medio);margin:-6px 0 12px;">
+        Catálogo sincronizado com as bibliotecas terapêuticas.
+        <a href="bibliotecas-especialidades.html">Ver mapa completo</a>
+      </p>
       <div class="especialidades-grid" id="lista-especialidades"></div>
     </div>
 
     <div id="resultados"></div>
   </div>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
   <script>
-    var select = document.getElementById('filtro-especialidade');
-    var listaEspecialidades = document.getElementById('lista-especialidades');
+    const Catalogo = CONFIG.Catalogo;
+    const metricas = Catalogo.getMetricas(CONFIG);
+
+    document.getElementById('titulo-especialidades').textContent =
+      `Especialidades disponíveis (${metricas.especialidades})`;
+    document.getElementById('resumo-catalogo').innerHTML =
+      `${metricas.especialidades} especialidades vinculadas a ${metricas.bibliotecas} bibliotecas terapêuticas. <a href="bibliotecas-especialidades.html">Ver mapa completo</a>`;
+    document.getElementById('filtro-especialidade').options[0].textContent =
+      `Todas (${metricas.especialidades} especialidades)`;
+
+    const select = document.getElementById('filtro-especialidade');
+    const listaEspecialidades = document.getElementById('lista-especialidades');
+
     CONFIG.ESPECIALIDADES.forEach(function(esp) {
-      var opt = document.createElement('option');
+      const biblioteca = Catalogo.resolverBibliotecaVinculada(esp.nome, CONFIG);
+      const opt = document.createElement('option');
       opt.value = esp.nome;
       opt.textContent = esp.nome;
+      if (biblioteca) opt.dataset.biblioteca = biblioteca;
       select.appendChild(opt);
 
-      var chip = document.createElement('button');
+      const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'especialidade-chip';
       chip.textContent = esp.nome;
       chip.dataset.especialidade = esp.nome;
+      if (biblioteca) {
+        chip.dataset.biblioteca = biblioteca;
+        chip.title = `Biblioteca: ${biblioteca}`;
+      }
       chip.onclick = function() {
         select.value = esp.nome;
         document.querySelectorAll('.especialidade-chip').forEach(function(item) {

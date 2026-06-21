@@ -202,23 +202,20 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico" data-nav-ativo="bibliotecas">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="busca.html">Busca</a>
-      <a href="bibliotecas-especialidades.html">Bibliotecas</a>
-      <a href="lista-especialidades.html" class="ativo">Especialidades</a>
-      <a href="login.html" class="btn btn-primario">Entrar</a>
-    </div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <div class="page-container">
-    <!-- HEADER -->
     <div class="page-header">
+      <p style="background:#EBF4FF;border:1px solid #BFDBFE;border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:18px;">
+        Esta página mostra o conteúdo aprofundado por especialidade. Para o mapa completo de bibliotecas, fontes e filtros, acesse
+        <a href="bibliotecas-especialidades.html"><strong>Mapa de Especialidades e Bibliotecas</strong></a>.
+      </p>
       <h1>📋 Especialidades</h1>
       <p>Organizadas por origem: saberes tradicionais/PICS e profissões regulamentadas.</p>
     </div>
@@ -251,7 +248,10 @@
     </div>
   </div>
 
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
   <script>
     // ============================================
     // DADOS

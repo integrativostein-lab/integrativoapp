@@ -4,7 +4,7 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App - Plataforma de saúde integrativa com profissionais, teleconsulta, 79 bibliotecas terapêuticas e alinhamento aos ODS.">
+  <meta name="description" content="Integrativo.App - Plataforma de saúde integrativa com profissionais, teleconsulta, {{bibliotecas}} bibliotecas terapêuticas e alinhamento aos ODS.">
   <title>Integrativo.App — Saúde Integrativa e Bem-Estar</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
@@ -247,27 +247,20 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico" data-nav-ativo="inicio">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu">
-      <a href="index.html" class="ativo">Início</a>
-      <a href="busca.html">Busca</a>
-      <a href="profissionais.html">Para Profissionais</a>
-      <a href="bibliotecas-especialidades.html">Bibliotecas</a>
-      <a href="lista-especialidades.html">Especialidades</a>
-      <a href="login.html" class="btn btn-primario">Entrar</a>
-    </div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
-    <h1>🌿 Saúde Integrativa para Todos</h1>
-    <p>Conectamos você a profissionais de saúde integrativa, com suporte baseado em 79 bibliotecas terapêuticas, teleconsulta e padrões FHIR/TISS.</p>
+    <h1 data-i18n="hero.titulo">Encontre seu profissional integrativo</h1>
+    <p data-i18n="hero.subtitulo">{{especialidades}} especialidades. Agende online ou presencial.</p>
     <div class="btn-group">
-      <a href="busca.html" class="btn btn-primario">🔍 Encontrar Profissional</a>
+      <a href="busca.html" class="btn btn-primario" data-i18n="hero.buscar">🔍 Encontrar Profissional</a>
       <a href="profissionais.html" class="btn btn-outline">📋 Sou Profissional</a>
     </div>
   </section>
@@ -279,7 +272,7 @@
     <div class="diferenciais-grid">
       <div class="diferencial-card">
         <div class="icone">📚</div>
-        <h3>79 Bibliotecas</h3>
+        <h3 class="catalogo-token-html">{{bibliotecas}} Bibliotecas</h3>
         <p>Acesso a fontes oficiais como PNPIC/MS, OMS/WHO, ANVISA, NCCIH e textos clássicos.</p>
       </div>
       <div class="diferencial-card">
@@ -357,7 +350,7 @@
         <a href="privacidade.html">Privacidade</a>
         <a href="etica.html">Ética Profissional</a>
         <a href="missao.html">Nossa Missão</a>
-        <a href="lista-especialidades.html">Especialidades</a>
+        <a href="bibliotecas-especialidades.html">Bibliotecas</a>
       </div>
       <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
       <p>&copy; 2026 Todos os direitos reservados.</p>
@@ -366,10 +359,7 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script>
-    if (window.CONFIG?.Catalogo) {
-      CONFIG.Catalogo.aplicarEstatisticasHome(CONFIG);
-    }
-  </script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
 </body>
 </html>

@@ -1,4 +1,6 @@
- COMO CONFIGURAR (5 MINUTOS)
+ COMO CONFIGURAR POSTGRESQL NO SUPABASE (5 MINUTOS)
+O Integrativo.App usa PostgreSQL exclusivamente (via DATABASE_URL). Não há SQLite.
+
 Acesse https://supabase.com
 
 Clique em "Start your project"

@@ -43,7 +43,8 @@ function montarJson(config, anterior) {
       pro: 10,
       premium: 20
     },
-    aliasesBibliotecas: anterior?.aliasesBibliotecas || {
+    aliasesBibliotecas: {
+      ...(anterior?.aliasesBibliotecas || {}),
       'Medicina Tradicional Chinesa': 'MTC',
       'Yoga (instrutor)': 'Yoga',
       'Médico (clínico geral)': 'Medicina Tradicional',
@@ -51,7 +52,16 @@ function montarJson(config, anterior) {
       'Enfermeiro(a)': 'Enfermagem',
       'Odontólogo(a)': 'Odontologia',
       'Farmacêutico(a)': 'Farmacologia',
-      'Educador Físico': 'Atividade Física'
+      'Educador Físico': 'Atividade Física',
+      'Kampo (Medicina Tradicional Japonesa)': 'Kampo',
+      'Hanbang (Medicina Tradicional Coreana)': 'Hanbang',
+      'Jamu (Medicina Tradicional Indonésia)': 'Jamu',
+      'Unani / Tibb (Medicina Tradicional Persa-Islâmica)': 'Unani / Tibb',
+      'Siddha (Medicina Tradicional do Sul da Índia)': 'Siddha',
+      'Medicina Tradicional Russa / Fitoterapia Eslava': 'Medicina Tradicional Russa',
+      'Medicina Tradicional Africana (Inyanga / Ubuntu)': 'Medicina Tradicional Africana',
+      'Herbolaria Latino-Americana': 'Herbolaria Latino-Americana',
+      'Phytothérapie (Medicina Tradicional Europeia)': 'Phytothérapie'
     },
     contagens: {
       totalBibliotecas,

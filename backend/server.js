@@ -21,6 +21,8 @@ const cron = require('node-cron');
 const ambiente = require('./config/ambiente');
 
 const db = require('./database');
+const auditoria = require('./servicos/auditoria-lgpd');
+const { auditoriaHttpSensiveis } = require('./middlewares/auditoria-lgpd');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -63,6 +65,7 @@ app.use('/api/auth/cadastro-profissional', authLimiter);
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(auditoriaHttpSensiveis);
 const uploadsDir = ambiente.garantirDiretorio('uploads');
 app.use('/uploads', express.static(uploadsDir));
 
@@ -185,14 +188,22 @@ app.use((err, req, res, next) => {
 app.use('*', (req, res) => { res.status(404).json({ erro: 'Rota não encontrada' }); });
 
 // Iniciar servidor
-app.listen(PORT, () => {
-  console.log('🌿 Integrativo.App v2.1 - Rodando na porta ' + PORT);
-  console.log('🔐 FHIR Brasil: /api/fhir');
-  console.log('✓ Validação de Conselhos: /api/validacao');
-  console.log('✓ CORS permitido para: ' + allowedOrigins.join(', '));
-  if (ambiente.modoTeste) {
-    console.log('✓ Ambiente de teste ativo: ' + (ambiente.testeDir || 'sem pasta TESTE configurada'));
-  }
-});
+auditoria.garantirInfraestrutura()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log('🌿 Integrativo.App v2.1 - Rodando na porta ' + PORT);
+      console.log('🔐 FHIR Brasil: /api/fhir');
+      console.log('✓ Validação de Conselhos: /api/validacao');
+      console.log('✓ Auditoria LGPD: backend/logs/auditoria-lgpd/');
+      console.log('✓ CORS permitido para: ' + allowedOrigins.join(', '));
+      if (ambiente.modoTeste) {
+        console.log('✓ Ambiente de teste ativo: ' + (ambiente.testeDir || 'sem pasta TESTE configurada'));
+      }
+    });
+  })
+  .catch((err) => {
+    console.error('[FATAL] Falha ao preparar auditoria LGPD:', err.message);
+    process.exit(1);
+  });
 
 module.exports = app;

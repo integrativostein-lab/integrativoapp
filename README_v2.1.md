@@ -216,7 +216,7 @@ POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 
 ### Backend
 - Node.js + Express
-- PostgreSQL (Supabase)
+- PostgreSQL (Supabase) — **não utilizamos SQLite**
 - JWT para autenticação
 - Axios para requisições HTTP
 - Node-cron para jobs agendados

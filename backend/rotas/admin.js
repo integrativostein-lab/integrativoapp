@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../database');
+const auditoria = require('../servicos/auditoria-lgpd');
 
 async function autenticarAdmin(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -30,17 +31,72 @@ router.get('/usuarios', autenticarAdmin, async (req, res) => {
 
 router.put('/usuarios/:id/status', autenticarAdmin, async (req, res) => {
   await db.query('UPDATE usuarios SET ativo = $1 WHERE id = $2', [req.body.ativo, req.params.id]);
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.ADMINISTRACAO,
+    acao: 'alteracao_status_usuario',
+    base_legal: auditoria.BASE_LEGAL.OBRIGACAO_LEGAL,
+    finalidade: 'administração de contas e continuidade do serviço',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'usuario',
+    recurso_id: req.params.id,
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: { ativo: req.body.ativo }
+  });
   res.json({ mensagem: 'Status atualizado!' });
 });
 
 router.put('/usuarios/:id/plano', autenticarAdmin, async (req, res) => {
   await db.query('UPDATE usuarios SET plano = $1 WHERE id = $2', [req.body.plano, req.params.id]);
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.ADMINISTRACAO,
+    acao: 'alteracao_plano_usuario',
+    base_legal: auditoria.BASE_LEGAL.EXECUCAO_CONTRATO,
+    finalidade: 'gestão contratual de planos e bibliotecas',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'usuario',
+    recurso_id: req.params.id,
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: { plano: req.body.plano }
+  });
   res.json({ mensagem: 'Plano atualizado!' });
 });
 
 router.get('/logs', autenticarAdmin, async (req, res) => {
-  const r = await db.query('SELECT l.*, u.nome FROM logs_auditoria l LEFT JOIN usuarios u ON l.usuario_id = u.id ORDER BY l.criado_em DESC LIMIT 200');
-  res.json(r.rows);
+  const limite = Math.min(parseInt(req.query.limite, 10) || 200, 500);
+  const offset = parseInt(req.query.offset, 10) || 0;
+  const rows = await auditoria.listar({
+    limite,
+    offset,
+    categoria: req.query.categoria || null,
+    dataInicio: req.query.de || null,
+    dataFim: req.query.ate || null
+  });
+  res.json(rows);
+});
+
+router.get('/logs/arquivo', autenticarAdmin, async (req, res) => {
+  const data = req.query.data || new Date().toISOString().slice(0, 10);
+  const { arquivo, eventos } = auditoria.lerArquivoPorData(data);
+  res.json({
+    data,
+    arquivo,
+    total: eventos.length,
+    eventos
+  });
+});
+
+router.get('/logs/arquivos', autenticarAdmin, async (req, res) => {
+  res.json(auditoria.listarArquivosDisponiveis());
 });
 
 module.exports = router;

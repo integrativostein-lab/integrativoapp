@@ -2,6 +2,8 @@
 
 Acesse o sistema: https://integra-saude-psi.vercel.app
 
+Banco de dados: PostgreSQL (Supabase) — não utilizamos SQLite.
+
 Contas de Teste:
   • Profissional: profissional@demo.com / demo123
   • Paciente: paciente@demo.com / demo123

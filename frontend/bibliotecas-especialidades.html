@@ -288,28 +288,29 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico" data-nav-ativo="bibliotecas">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="profissionais.html">Profissionais</a>
-      <a href="manual.html">Manual</a>
-      <a href="login.html" class="btn btn-primario">Entrar</a>
-    </div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <main class="bibliotecas-page">
     <section class="bibliotecas-hero">
       <span class="tag">PICS completas + bases clínicas + clássicos tradicionais</span>
       <h1>Mapa de Especialidades e Bibliotecas</h1>
-      <p>Visão organizada das bibliotecas clínicas, médicas, científicas, integrativas, tradicionais e ancestrais incorporadas ao Integrativo.App. As fontes priorizam materiais públicos, confiáveis, verificáveis e oficiais quando possível: PNPIC/MS, OPAS/OMS, BVS/BIREME, Fiocruz, Cochrane, PubMed, ANVISA, diretrizes profissionais e textos clássicos nomeados em repositórios abertos.</p>
+      <p class="catalogo-token-html">Visão organizada das <strong>{{bibliotecas}} bibliotecas</strong> clínicas, médicas, científicas, integrativas, tradicionais e ancestrais incorporadas ao Integrativo.App, com <strong>{{especialidades}} especialidades de cadastro</strong> e cerca de <strong>{{registros}} registros</strong> terapêuticos. As fontes priorizam materiais públicos, confiáveis, verificáveis e oficiais quando possível: PNPIC/MS, OPAS/OMS, BVS/BIREME, Fiocruz, Cochrane, PubMed, ANVISA, diretrizes profissionais e textos clássicos nomeados em repositórios abertos.</p>
     </section>
 
     <section class="aviso-apoio">
       <strong>Uso profissional de apoio.</strong> As bibliotecas do Integrativo.App organizam referências, protocolos, fontes e pontos de atenção para estudo e suporte à decisão do profissional habilitado. A plataforma não realiza diagnóstico, não prescreve tratamentos e não substitui avaliação clínica, responsabilidade técnica, conselho profissional ou encaminhamento médico quando necessário.
+    </section>
+
+    <section class="painel-controles" id="secaoRegionais" aria-labelledby="tituloRegionais">
+      <h2 id="tituloRegionais">Medicinas tradicionais por região e idioma</h2>
+      <p>Bibliotecas vinculadas aos idiomas da plataforma. Clique para filtrar o mapa abaixo ou abra o <a href="lista-especialidades.html">conteúdo detalhado por especialidade</a>.</p>
+      <div class="chips-filtro" id="chipsRegionais"></div>
     </section>
 
     <section class="metricas" id="metricasBibliotecas"></section>
@@ -400,8 +401,25 @@
     <p class="nota">Observação: a tabela organiza fontes de apoio profissional e pesquisa. Cada conduta deve respeitar legislação, conselho profissional aplicável, habilitação técnica, consentimento informado e limites clínicos de segurança.</p>
   </main>
 
+  <footer>
+    <div class="container">
+      <div style="margin-bottom: 40px;">
+        <a href="termos.html">Termos</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="etica.html">Ética Profissional</a>
+        <a href="missao.html">Nossa Missão</a>
+        <a href="lista-especialidades.html">Conteúdo por especialidade</a>
+        <a href="profissionais.html">Para Profissionais</a>
+      </div>
+      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
+      <p>&copy; 2026 Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
   <script>
     const bibliotecas = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
     const Catalogo = CONFIG.Catalogo || CatalogoTerapeutico;
@@ -588,7 +606,13 @@
       { fonte: 'ANDE-Brasil', atende: 'Equoterapia, terapia assistida por equinos, critérios de segurança, equipe habilitada e reabilitação interdisciplinar.', url: 'https://equoterapia.org.br' },
       { fonte: 'Sociedades médicas brasileiras', atende: 'Pediatria, ginecologia, geriatria, medicina de família e saúde mental por meio de referências como SBP, FEBRASGO, SBGG, WONCA e diretrizes clínicas.', url: 'https://amb.org.br' },
       { fonte: 'AHA / Manchester Triage / ATLS-PHTLS', atende: 'Urgência e emergência: suporte inicial, classificação de risco, trauma, sinais de alarme e encaminhamento responsável.', url: 'https://www.heart.org' },
-      { fonte: 'Bibliotecas transversais do Integrativo.App', atende: 'Tudo que se repete entre especialidades: anamnese, semiotécnica, sinais de alarme, contraindicações, interações, farmacovigilância, consentimento, LGPD, escalas, evolução SOAP, teleconsulta segura, ciclos de vida, dor, sono, estresse, educação do paciente, autocuidado e protocolos reutilizáveis.', url: 'bibliotecas-especialidades.html' }
+      { fonte: 'Bibliotecas transversais do Integrativo.App', atende: 'Tudo que se repete entre especialidades: anamnese, semiotécnica, sinais de alarme, contraindicações, interações, farmacovigilância, consentimento, LGPD, escalas, evolução SOAP, teleconsulta segura, ciclos de vida, dor, sono, estresse, educação do paciente, autocuidado e protocolos reutilizáveis.', url: 'bibliotecas-especialidades.html' },
+      { fonte: 'MHLW Japan Kampo', atende: 'Medicina tradicional japonesa (Kampo): formulações clássicas, segurança, interações e integração ao cuidado médico no Japão e contexto internacional.', url: 'https://www.mhlw.go.jp/english/' },
+      { fonte: 'MFDS Korea / Dongui Bogam', atende: 'Hanbang (medicina tradicional coreana): constituição, herbal, acupuntura coreana, Dongui Bogam e diretrizes de segurança.', url: 'https://www.mfds.go.kr/eng/' },
+      { fonte: 'BPOM Indonesia', atende: 'Jamu e fitoterapia tradicional indonésia: registro sanitário, posologia, farmacovigilância e uso racional.', url: 'https://www.pom.go.id/new/' },
+      { fonte: 'Ministry of AYUSH (Unani / Siddha)', atende: 'Sistemas tradicionais indianos Unani e Siddha: formação, matéria médica, escopo de prática e integração responsável.', url: 'https://ayush.gov.in' },
+      { fonte: 'WHO African Traditional Medicine Strategy', atende: 'Medicina tradicional africana: segurança cultural, consentimento, procedência, integração comunitária e redução de danos.', url: 'https://www.who.int/teams/primary-health-care/conventional-and-complementary-medicine/traditional-complementary-and-integrative-medicine' },
+      { fonte: 'ESCOP / EMA Herbal Monographs / ANSES', atende: 'Phytothérapie europeia: monografias oficiais, posologia, interações, contraindicações e farmacovigilância.', url: 'https://www.escop.com' }
     ];
 
     document.getElementById('tabelaFontesAtendimento').innerHTML = fontesAtendimento.map((item) => `
@@ -730,10 +754,39 @@
       document.getElementById('buscaBibliotecas').value = '';
       document.getElementById('resultadoAutocomplete').style.display = 'none';
       document.getElementById('resultadoAlertasSeguranca').innerHTML = `<div class="alerta-seguranca"><strong>Aguardando busca</strong><small>Exemplos: ginkgo varfarina, aromaterapia epilepsia, apiterapia alergia, massagem trombose.</small></div>`;
+      document.querySelectorAll('#chipsRegionais .chip-filtro.ativo').forEach((chip) => chip.classList.remove('ativo'));
       renderCategorias();
       renderBibliotecas();
     });
 
+    function renderMedicinasRegionais() {
+      const mapa = CONFIG.IDIOMAS_MEDICINAS_REGIONAIS || {};
+      const bandeiras = CONFIG.IDIOMAS_BANDEIRAS || {};
+      const chips = document.getElementById('chipsRegionais');
+      if (!chips) return;
+
+      chips.innerHTML = Object.entries(mapa).map(([lang, nomes]) => {
+        const nomeBusca = nomes[0] || '';
+        const titulo = nomes.join(' · ');
+        return `<button type="button" class="chip-filtro" data-regional="${nomeBusca.replace(/"/g, '&quot;')}" title="${titulo.replace(/"/g, '&quot;')}">${bandeiras[lang] || lang} ${nomeBusca}</button>`;
+      }).join('');
+
+      chips.addEventListener('click', (event) => {
+        const botao = event.target.closest('[data-regional]');
+        if (!botao) return;
+        chips.querySelectorAll('.chip-filtro').forEach((chip) => chip.classList.remove('ativo'));
+        botao.classList.add('ativo');
+        termoBusca = botao.dataset.regional;
+        categoriaAtiva = 'Todas';
+        document.getElementById('buscaBibliotecas').value = termoBusca;
+        renderCategorias();
+        renderBibliotecas();
+        renderResultadoAutocomplete();
+        agendarAlertasSeguranca();
+      });
+    }
+
+    renderMedicinasRegionais();
     renderCategorias();
     renderBibliotecas();
   </script>

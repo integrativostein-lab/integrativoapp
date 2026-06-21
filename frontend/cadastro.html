@@ -11,6 +11,7 @@
   <meta property="og:type" content="website">
   <title>Cadastro — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/consentimento-lgpd.css">
   <style>
     .form-cadastro { max-width: 500px; margin: 40px auto; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
     .form-cadastro h2 { text-align: center; margin-bottom: 24px; }
@@ -25,12 +26,12 @@
   </style>
 </head>
 <body>
-  <nav class="navbar">
+  <nav class="navbar" data-nav="publico">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu"><a href="index.html">Início</a> <a href="profissionais.html">Planos</a></div>
+    <div class="menu" data-nav-menu></div>
   </nav>
 
   <div class="form-cadastro">
@@ -79,23 +80,17 @@
       <div class="espec-grid" id="espec-grid"></div>
     </div>
 
+    <div id="consentimentos-lgpd"></div>
+
     <button class="btn btn-primario" onclick="cadastrar()" style="width:100%;margin-top:10px;">Criar Conta</button>
     <p style="text-align:center;margin-top:16px;font-size:13px;">Já tem conta? <a href="login.html">Faça login</a></p>
   </div>
 
-  var emailProf = document.getElementById('email_profissional').value.trim();
-if (!emailProf) emailProf = email; // Se não preencher, usa o mesmo email de cadastro
-
-var body = { 
-  nome: nome, 
-  email: email, 
-  email_profissional: emailProf, 
-  senha: senha, 
-  tipo: tipo, 
-  lgpd_consentimento: 1 
-};
-
+  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/nav-publico.js"></script>
+  <script src="js/consentimento-lgpd.js"></script>
   <script>
     function toggleSenha() {
       var s = document.getElementById('senha');
@@ -111,14 +106,28 @@ var body = {
         if (document.getElementById('espec-grid').children.length === 0) {
           var html = '';
           CONFIG.ESPECIALIDADES.forEach(function(esp) {
-            html += '<label><input type="checkbox" class="espec-check" value="' + esp + '"> ' + esp + '</label>';
+            html += '<label><input type="checkbox" class="espec-check" value="' + esp.nome + '"> ' + esp.nome + '</label>';
           });
           document.getElementById('espec-grid').innerHTML = html;
         }
       } else {
         grupo.style.display = 'none';
       }
+      renderConsentimentos();
     });
+
+    function renderConsentimentos() {
+      var tipo = document.getElementById('tipo').value;
+      var perfil = tipo === 'profissional' ? 'profissional' : 'paciente';
+      ConsentimentoLGPD.render('#consentimentos-lgpd', {
+        perfil: perfil,
+        modo: 'cadastro',
+        titulo: 'Autorizações de privacidade (LGPD)',
+        intro: 'Leia o que será coletado e marque as autorizações necessárias para criar sua conta com transparência.'
+      });
+    }
+
+    renderConsentimentos();
 
     async function cadastrar() {
       var msg = document.getElementById('msg');
@@ -146,7 +155,23 @@ var body = {
         return;
       }
 
-      var body = { nome: nome, email: email, email_cadastro: emailCadastro, senha: senha, tipo: tipo, lgpd_consentimento: 1 };
+      if (!ConsentimentoLGPD.validar(document)) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Aceite todas as autorizações obrigatórias para continuar.';
+        return;
+      }
+
+      var consentPayload = ConsentimentoLGPD.payloadCadastro(document);
+      var body = {
+        nome: nome,
+        email: email,
+        email_cadastro: emailCadastro,
+        senha: senha,
+        tipo: tipo,
+        lgpd_consentimento: consentPayload.lgpd_consentimento,
+        pesquisa_clinica_consentimento: consentPayload.pesquisa_clinica_consentimento,
+        consentimentos: consentPayload.consentimentos
+      };
 
       if (tipo === 'profissional') {
         body.atende_online = 1;

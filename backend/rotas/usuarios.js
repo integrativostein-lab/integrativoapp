@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
+const auditoria = require('../servicos/auditoria-lgpd');
 const {
   limiteBibliotecasPorPlano,
   normalizarBibliotecas,
@@ -24,6 +25,22 @@ router.get('/perfil', autenticar, async (req, res) => {
     const p = await db.query('SELECT * FROM pacientes WHERE usuario_id = $1', [req.usuario.id]);
     u.dados_saude = p.rows[0] || null;
   }
+  auditoria.registrar({
+    categoria: u.dados_saude ? auditoria.CATEGORIAS.DADOS_SENSIVEIS : auditoria.CATEGORIAS.DADOS_PESSOAIS,
+    acao: 'consulta_perfil',
+    base_legal: auditoria.BASE_LEGAL.EXECUCAO_CONTRATO,
+    finalidade: 'acesso do titular aos próprios dados cadastrais',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'usuario',
+    recurso_id: req.usuario.id,
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: { inclui_dados_saude: Boolean(u.dados_saude) }
+  });
   res.json(u);
 });
 
@@ -37,6 +54,22 @@ router.put('/perfil', autenticar, async (req, res) => {
   const vals = Object.values(att);
   vals.push(req.usuario.id);
   await db.query(`UPDATE usuarios SET ${sets}, atualizado_em = NOW() WHERE id = $${vals.length}`, vals);
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.DADOS_PESSOAIS,
+    acao: 'alteracao_perfil',
+    base_legal: auditoria.BASE_LEGAL.EXECUCAO_CONTRATO,
+    finalidade: 'atualização cadastral solicitada pelo titular',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'usuario',
+    recurso_id: req.usuario.id,
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent'),
+    detalhes: { campos_alterados: Object.keys(att) }
+  });
   res.json({ mensagem: 'Perfil atualizado!' });
 });
 
@@ -89,6 +122,21 @@ router.put('/senha', autenticar, async (req, res) => {
   if (!ok) return res.status(400).json({ erro: 'Senha atual incorreta' });
   const hash = await bcrypt.hash(nova_senha, 12);
   await db.query('UPDATE usuarios SET senha = $1 WHERE id = $2', [hash, req.usuario.id]);
+  auditoria.registrar({
+    categoria: auditoria.CATEGORIAS.AUTENTICACAO,
+    acao: 'alteracao_senha',
+    base_legal: auditoria.BASE_LEGAL.SEGURANCA,
+    finalidade: 'proteção de credenciais de acesso',
+    usuario_id: req.usuario.id,
+    usuario_tipo: req.usuario.tipo,
+    email: req.usuario.email,
+    recurso: 'usuario',
+    recurso_id: req.usuario.id,
+    rota: req.originalUrl,
+    metodo: req.method,
+    ip: req.ip,
+    user_agent: req.get('user-agent')
+  });
   res.json({ mensagem: 'Senha atualizada!' });
 });
 
