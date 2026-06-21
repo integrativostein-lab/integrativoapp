@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
+const ambiente = require('../config/ambiente');
 const { processarAssinaturasExpiradas } = require('../servicos/assinaturas-ciclo');
 const {
   limiteBibliotecasPorPlano,
@@ -350,6 +351,24 @@ router.post('/cadastro', async (req, res) => {
   }
 });
 
+function respostaUsuarioDemo(payload) {
+  const planoDemo = payload.tipo === 'profissional' ? 'pro' : 'freemium';
+  return {
+    valido: true,
+    usuario: {
+      id: payload.id,
+      nome: payload.tipo === 'profissional' ? 'Dr. João Integrativo' : 'Maria Paciente',
+      email: payload.email,
+      tipo: payload.tipo,
+      plano: planoDemo
+    }
+  };
+}
+
+function tokenDemoValido(payload) {
+  return payload?.demo === true && ambiente.modoTeste;
+}
+
 function idUsuarioNumerico(id) {
   return Number.isInteger(Number(id)) && String(id).match(/^\d+$/);
 }
@@ -359,7 +378,7 @@ router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
     if (!email || !senha) return res.status(400).json({ erro: 'Email e senha obrigatórios' });
 
-    if (process.env.TEST_MODE === 'true' && senha === 'demo123') {
+    if (ambiente.modoTeste && senha === 'demo123') {
       const usuariosDemo = {
         'profissional@demo.com': { id: 'demo-profissional', nome: 'Dr. João Integrativo', tipo: 'profissional', plano: 'pro' },
         'paciente@demo.com': { id: 'demo-paciente', nome: 'Maria Paciente', tipo: 'paciente', plano: 'freemium' }
@@ -465,12 +484,8 @@ router.get('/verificar', async (req, res) => {
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try {
     const d = jwt.verify(token, process.env.JWT_SECRET);
-    if (d.demo && process.env.TEST_MODE === 'true') {
-      const planoDemo = d.tipo === 'profissional' ? 'pro' : 'freemium';
-      return res.json({
-        valido: true,
-        usuario: { id: d.id, nome: d.tipo === 'profissional' ? 'Dr. João Integrativo' : 'Maria Paciente', email: d.email, tipo: d.tipo, plano: planoDemo }
-      });
+    if (tokenDemoValido(d)) {
+      return res.json(respostaUsuarioDemo(d));
     }
     if (idUsuarioNumerico(d.id)) {
       await processarAssinaturasExpiradas({ usuarioId: Number(d.id) }).catch((err) => {

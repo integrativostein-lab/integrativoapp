@@ -10,7 +10,8 @@ function autenticar(req, res, next) {
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
 
   try {
-    req.usuario = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.usuario = payload;
     return next();
   } catch (e) {
     return res.status(401).json({ erro: 'Token inválido ou expirado' });

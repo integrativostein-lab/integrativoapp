@@ -14,12 +14,12 @@ async function processarAssinaturasExpiradas({ usuarioId = null } = {}) {
   }
 
   const r = await db.query(
-    `SELECT a.id, a.usuario_id, a.plano, a.data_expiracao
+    `SELECT a.id, a.usuario_id, a.plano, a.data_fim
      FROM assinaturas a
      WHERE a.status = 'ativa'
-       AND a.data_cancelamento IS NOT NULL
-       AND a.data_expiracao IS NOT NULL
-       AND a.data_expiracao <= NOW()
+       AND a.cancelada_em IS NOT NULL
+       AND a.data_fim IS NOT NULL
+       AND a.data_fim <= CURRENT_DATE
        ${filtroUsuario}`,
     params
   );
@@ -30,9 +30,7 @@ async function processarAssinaturasExpiradas({ usuarioId = null } = {}) {
     await db.query("UPDATE assinaturas SET status = 'expirada' WHERE id = $1", [ass.id]);
     await db.query(
       `UPDATE usuarios
-       SET plano = 'freemium',
-           assinatura_ativa = 0,
-           data_expiracao_assinatura = NULL
+       SET plano = 'freemium'
        WHERE id = $1`,
       [ass.usuario_id]
     );

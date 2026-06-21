@@ -118,9 +118,31 @@ async function upsertEnvRender(serviceId, key, value) {
   }
 }
 
+async function listarEnvRender(serviceId) {
+  const data = await renderApi('GET', `/services/${serviceId}/env-vars?limit=100`);
+  return Array.isArray(data) ? data : (data?.items || data?.envVars || []);
+}
+
+async function obterEnvRender(serviceId, key) {
+  const lista = await listarEnvRender(serviceId);
+  const found = lista.find((item) => {
+    const ev = item.envVar || item;
+    return ev.key === key;
+  });
+  return found?.envVar?.value || found?.value || null;
+}
+
 async function configurarRender() {
   const serviceId = await descobrirServicoRender();
-  const jwt = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
+  let jwt = process.env.JWT_SECRET;
+  if (!jwt) {
+    jwt = await obterEnvRender(serviceId, 'JWT_SECRET');
+    if (jwt) console.log('   ℹ️ JWT_SECRET preservado do Render (sem rotação).');
+  }
+  if (!jwt) {
+    jwt = crypto.randomBytes(32).toString('hex');
+    console.log('   💡 JWT_SECRET novo — guarde em .env.alfa para não rotacionar nos próximos deploys.');
+  }
   const apiRoot = (process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api').replace(/\/api\/?$/, '');
   const cors = process.env.CORS_ORIGINS || 'https://integrativoapp-alfa.vercel.app';
 
@@ -151,8 +173,8 @@ async function configurarRender() {
     await upsertEnvRender(serviceId, k, String(v));
   }
 
-  if (!process.env.JWT_SECRET && !FLAGS.dryRun) {
-    console.log(`\n   💡 JWT_SECRET gerado automaticamente. Guarde se precisar:\n   ${jwt}`);
+  if (!process.env.JWT_SECRET && jwt && !FLAGS.dryRun) {
+    console.log(`\n   💡 Defina JWT_SECRET no .env.alfa para fixar:\n   ${jwt}`);
   }
 
   if (FLAGS.dryRun) {
