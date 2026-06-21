@@ -184,6 +184,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_atualizar_assinaturas_expiradas ON assinaturas;
 CREATE TRIGGER trg_atualizar_assinaturas_expiradas
 AFTER INSERT ON assinaturas
 FOR EACH STATEMENT

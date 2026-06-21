@@ -11,7 +11,6 @@
  *   --skip-render   não configura Render
  *   --skip-vercel   não publica Vercel
  *   --skip-test     não roda testes finais
- *   --skip-uptime   não configura UptimeRobot
  */
 const fs = require('fs');
 const path = require('path');
@@ -21,12 +20,22 @@ const { spawnSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const ENV_FILE = path.join(ROOT, '.env.alfa');
 
+const MIGRACOES_ALFA = [
+  'migracao-base-alfa.sql',
+  'migracao-v2.1.sql',
+  'migracao-auditoria-lgpd.sql',
+  'migracao-consentimentos-lgpd.sql',
+  'migracao-anamnese.sql',
+  'migracao-teleconsulta.sql'
+];
+
+const ERROS_MIGRACAO_IDEMPOTENTE = /already exists|duplicate key|duplicate_object/i;
+
 const FLAGS = {
   skipSql: process.argv.includes('--skip-sql'),
   skipRender: process.argv.includes('--skip-render'),
   skipVercel: process.argv.includes('--skip-vercel'),
   skipTest: process.argv.includes('--skip-test'),
-  skipUptime: process.argv.includes('--skip-uptime'),
   dryRun: process.argv.includes('--dry-run')
 };
 
@@ -157,6 +166,20 @@ async function configurarRender() {
   return serviceId;
 }
 
+async function executarMigracao(pool, nome, sql) {
+  process.stdout.write(`   → ${nome} … `);
+  try {
+    await pool.query(sql);
+    console.log('ok');
+  } catch (err) {
+    if (ERROS_MIGRACAO_IDEMPOTENTE.test(err.message)) {
+      console.log('ok (já aplicado)');
+      return;
+    }
+    throw new Error(`${nome}: ${err.message}`);
+  }
+}
+
 async function rodarMigracoes() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL ausente no .env.alfa');
 
@@ -166,14 +189,7 @@ async function rodarMigracoes() {
     ssl: process.env.PGSSL === 'false' ? false : { rejectUnauthorized: false }
   });
 
-  const arquivos = [
-    'migracao-base-alfa.sql',
-    'migracao-v2.1.sql',
-    'migracao-auditoria-lgpd.sql',
-    'migracao-consentimentos-lgpd.sql',
-    'migracao-anamnese.sql',
-    'migracao-teleconsulta.sql'
-  ].filter((f) => fs.existsSync(path.join(ROOT, f)));
+  const arquivos = MIGRACOES_ALFA.filter((f) => fs.existsSync(path.join(ROOT, f)));
 
   for (const nome of arquivos) {
     const sql = fs.readFileSync(path.join(ROOT, nome), 'utf8');
@@ -181,9 +197,7 @@ async function rodarMigracoes() {
       console.log(`   [dry-run] executaria ${nome}`);
       continue;
     }
-    process.stdout.write(`   → ${nome} … `);
-    await pool.query(sql);
-    console.log('ok');
+    await executarMigracao(pool, nome, sql);
   }
 
   if (!FLAGS.dryRun) await pool.end();
@@ -255,13 +269,14 @@ function deployVercel() {
   console.log(`   ✓ Site alfa: https://${project}.vercel.app`);
 }
 
-async function aguardarBackend(maxSeg = 180) {
+async function aguardarBackend(maxSeg = 240) {
   const root = (process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api').replace(/\/api\/?$/, '');
-  console.log(`   Aguardando backend (${maxSeg}s max)…`);
+  const timeoutReq = Number(process.env.ALFA_BACKEND_TIMEOUT_MS) || 90000;
+  console.log(`   Aguardando backend (${maxSeg}s max, timeout ${timeoutReq / 1000}s por tentativa)…`);
   const inicio = Date.now();
   while (Date.now() - inicio < maxSeg * 1000) {
     try {
-      const r = await fetch(`${root}/`, { signal: AbortSignal.timeout(30000) });
+      const r = await fetch(`${root}/`, { signal: AbortSignal.timeout(timeoutReq) });
       const j = await r.json();
       if (r.ok && j.status === 'online') {
         console.log('   ✓ Backend online.');
@@ -288,25 +303,6 @@ function rodarTestes() {
   if (r.status !== 0) console.log('   ⚠️ Alguns testes falharam — veja acima.');
 }
 
-function configurarUptimeRobot() {
-  if (FLAGS.skipUptime) return;
-  if (!process.env.UPTIMEROBOT_API_KEY) {
-    console.log('   ℹ️ UPTIMEROBOT_API_KEY ausente — pulando (opcional).');
-    return;
-  }
-  if (FLAGS.dryRun) {
-    console.log('   [dry-run] node scripts/configurar-uptimerobot.js');
-    return;
-  }
-  const r = spawnSync('node', [path.join(__dirname, 'configurar-uptimerobot.js')], {
-    cwd: ROOT,
-    env: process.env,
-    stdio: 'inherit',
-    shell: true
-  });
-  if (r.status !== 0) console.log('   ⚠️ UptimeRobot não configurado — veja acima.');
-}
-
 async function main() {
   console.log('\n🚀 Deploy alfa automatizado — Integrativo.App\n');
   loadEnv();
@@ -330,11 +326,6 @@ async function main() {
   if (!FLAGS.skipTest) {
     step(4, 'Testes automáticos');
     rodarTestes();
-  }
-
-  if (!FLAGS.skipUptime) {
-    step(5, 'UptimeRobot — ping Render a cada 5 min');
-    configurarUptimeRobot();
   }
 
   console.log('\n✅ Automação concluída.');
