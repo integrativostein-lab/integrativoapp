@@ -1,4 +1,8 @@
 {
+  "framework": null,
+  "installCommand": "",
+  "buildCommand": "",
+  "outputDirectory": "frontend",
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
