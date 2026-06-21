@@ -11,7 +11,7 @@
  *   --skip-render   não configura Render
  *   --skip-vercel   não publica Vercel
  *   --skip-test     não roda testes finais
- *   --dry-run       só mostra o que faria
+ *   --skip-uptime   não configura UptimeRobot
  */
 const fs = require('fs');
 const path = require('path');
@@ -26,6 +26,7 @@ const FLAGS = {
   skipRender: process.argv.includes('--skip-render'),
   skipVercel: process.argv.includes('--skip-vercel'),
   skipTest: process.argv.includes('--skip-test'),
+  skipUptime: process.argv.includes('--skip-uptime'),
   dryRun: process.argv.includes('--dry-run')
 };
 
@@ -169,7 +170,9 @@ async function rodarMigracoes() {
     'migracao-base-alfa.sql',
     'migracao-v2.1.sql',
     'migracao-auditoria-lgpd.sql',
-    'migracao-consentimentos-lgpd.sql'
+    'migracao-consentimentos-lgpd.sql',
+    'migracao-anamnese.sql',
+    'migracao-teleconsulta.sql'
   ].filter((f) => fs.existsSync(path.join(ROOT, f)));
 
   for (const nome of arquivos) {
@@ -285,6 +288,25 @@ function rodarTestes() {
   if (r.status !== 0) console.log('   ⚠️ Alguns testes falharam — veja acima.');
 }
 
+function configurarUptimeRobot() {
+  if (FLAGS.skipUptime) return;
+  if (!process.env.UPTIMEROBOT_API_KEY) {
+    console.log('   ℹ️ UPTIMEROBOT_API_KEY ausente — pulando (opcional).');
+    return;
+  }
+  if (FLAGS.dryRun) {
+    console.log('   [dry-run] node scripts/configurar-uptimerobot.js');
+    return;
+  }
+  const r = spawnSync('node', [path.join(__dirname, 'configurar-uptimerobot.js')], {
+    cwd: ROOT,
+    env: process.env,
+    stdio: 'inherit',
+    shell: true
+  });
+  if (r.status !== 0) console.log('   ⚠️ UptimeRobot não configurado — veja acima.');
+}
+
 async function main() {
   console.log('\n🚀 Deploy alfa automatizado — Integrativo.App\n');
   loadEnv();
@@ -308,6 +330,11 @@ async function main() {
   if (!FLAGS.skipTest) {
     step(4, 'Testes automáticos');
     rodarTestes();
+  }
+
+  if (!FLAGS.skipUptime) {
+    step(5, 'UptimeRobot — ping Render a cada 5 min');
+    configurarUptimeRobot();
   }
 
   console.log('\n✅ Automação concluída.');
