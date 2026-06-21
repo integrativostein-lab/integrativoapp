@@ -146,7 +146,8 @@
           <a href="painel-prescricao.html" class="modulo-card"><span class="icone">📋</span><strong>Prescrição</strong><span>Emitir prescrições, recomendações, documentos e orientações clínicas.</span></a>
           <a href="painel-bibliotecas.html" class="modulo-card estudo"><span class="icone">🌿</span><strong>Bibliotecas</strong><span>Ler e estudar as bibliotecas liberadas pelo seu plano, sem precisar estar em consulta.</span></a>
           <a href="painel-bibliotecas.html#alertasSeguranca" class="modulo-card alerta"><span class="icone">⚠️</span><strong>Alertas clínicos</strong><span>Consultar contraindicações graves por motor determinístico, sem IA decisória.</span></a>
-          <a href="painel-anamnese-config.html" class="modulo-card"><span class="icone">🧾</span><strong>Anamnese</strong><span>Configurar formulários e campos clínicos do atendimento.</span></a>
+          <a href="painel-anamnese.html" class="modulo-card"><span class="icone">🧾</span><strong>Anamnese</strong><span>Formulário integrativo PICS + medicina ocidental — Parte 1 e Parte 2.</span></a>
+          <a href="painel-anamnese-config.html" class="modulo-card"><span class="icone">⚙️</span><strong>Configurar anamnese</strong><span>Personalizar campos da Parte 1 por especialidade.</span></a>
           <a href="manual.html" class="modulo-card estudo"><span class="icone">📖</span><strong>Manual</strong><span>Leia primeiro para configurar tudo com calma e rodar o sistema sem quebrar a cabeça.</span></a>
         </div>
 
@@ -210,7 +211,8 @@
         <div class="painel-card">
           <p style="color:var(--texto-suave);">Acesse pacientes atendidos, prontuários e histórico clínico. A listagem completa será conectada ao módulo de prontuário.</p>
           <div class="acoes-linha">
-            <a href="painel-anamnese-config.html" class="acao-botao">Configurar anamnese</a>
+            <a href="painel-anamnese.html" class="acao-botao">Nova anamnese</a>
+            <a href="painel-anamnese-config.html" class="acao-botao secundario">Configurar campos</a>
             <a href="painel-prescricao.html" class="acao-botao secundario">Nova prescrição</a>
           </div>
         </div>
@@ -279,7 +281,7 @@
         html += '<div class="agenda-item" onclick="abrirPaciente(' + a.paciente_id + ')">';
         html += '<div><div class="paciente-nome">' + (a.paciente_nome || 'Paciente') + '</div>';
         html += '<div class="paciente-info">' + a.data_agendamento + ' às ' + a.horario_inicio + ' — ' + a.status + '</div></div>';
-        if (a.modalidade === 'online' && a.status === 'agendado') {
+        if (a.modalidade === 'online' && ['agendado', 'em_andamento', 'reagendado'].includes(a.status)) {
           html += '<a href="#" class="btn-teleconsulta" onclick="event.stopPropagation(); iniciarTeleconsulta(' + a.id + ')">🎥 Consulta</a>';
         }
         html += '</div>';
@@ -311,7 +313,7 @@
       var frame = document.getElementById('teleconsulta-frame');
       var panel = document.getElementById('teleconsulta-panel');
       document.getElementById('teleconsulta-info').textContent = 'Sala: ' + sala + ' · aberta dentro do painel profissional.';
-      frame.src = 'reuniao.html?sala=' + encodeURIComponent(sala) + '&embed=1';
+      frame.src = 'reuniao.html?agendamento_id=' + encodeURIComponent(id) + '&embed=1';
       panel.classList.add('ativo');
       panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }

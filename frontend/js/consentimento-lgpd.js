@@ -74,6 +74,18 @@
       retencao: 'Enquanto o consentimento estiver ativo.',
       perfis: ['paciente', 'profissional']
     },
+    teleconsulta_telessaude: {
+      id: 'teleconsulta_telessaude',
+      obrigatorio: false,
+      titulo: 'Telessaúde — consentimento por consulta',
+      resumo: 'Autorizo atendimento remoto conforme Lei 14.510/2022, com registro de TCLE por agendamento antes de cada teleconsulta clínica.',
+      coleta: ['Consentimento por agendamento', 'Registro de início/fim', 'Metadados da sessão', 'Limites informados'],
+      finalidade: 'Teleconsulta conforme Lei 14.510/2022 e Res. CFM 2.314/2022 quando aplicável.',
+      baseLegal: 'Consentimento livre e esclarecido (LGPD Art. 7º, I) e tutela da saúde (Art. 11, II, f).',
+      compartilhamento: 'Profissional do agendamento e trilha auditável do prontuário.',
+      retencao: 'Conforme prontuário e logs de auditoria LGPD.',
+      perfis: ['paciente', 'profissional']
+    },
     teleconsulta_gravacao: {
       id: 'teleconsulta_gravacao',
       obrigatorio: false,

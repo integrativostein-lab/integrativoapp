@@ -7,12 +7,28 @@
   <title>Configurar Anamnese — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
-    .config-container { max-width: 700px; margin: 40px auto; padding: 30px; background: var(--branco); border-radius: var(--raio-borda); box-shadow: var(--sombra); }
-    .campo-lista { margin: 16px 0; }
-    .campo-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #E2E8F0; }
-    .campo-item label { flex: 1; font-size: 14px; }
-    .campo-item input[type="checkbox"] { width: 18px; height: 18px; }
-    .btn-salvar { width: 100%; margin-top: 20px; }
+    .config-wrap { max-width: 960px; margin: 32px auto; padding: 0 20px 40px; }
+    .config-card { background: var(--branco); padding: 28px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .config-card h2 { color: var(--azul-escuro); margin-bottom: 8px; }
+    .config-intro { color: var(--texto-medio); margin-bottom: 20px; line-height: 1.55; }
+    .filtros { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .filtros input, .filtros select { padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 14px; }
+    .filtros input { flex: 1; min-width: 200px; }
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .stat-pill { background: #F1F5F9; border-radius: 999px; padding: 6px 12px; font-size: 12px; color: var(--azul-escuro); font-weight: 700; }
+    .stat-pill.pics { background: #ECFDF5; color: #065F46; }
+    .stat-pill.ocidental { background: #EFF6FF; color: #1D4ED8; }
+    .secao-config { margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 16px; }
+    .secao-config h3 { color: var(--azul-escuro); font-size: 15px; margin-bottom: 10px; }
+    .campo-item { display: grid; grid-template-columns: 24px 1fr auto auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid #F1F5F9; }
+    .campo-item label.nome { font-size: 14px; }
+    .badge-grupo { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 6px; text-transform: uppercase; }
+    .badge-grupo.pics { background: #D1FAE5; color: #065F46; }
+    .badge-grupo.ocidental { background: #DBEAFE; color: #1E40AF; }
+    .badge-grupo.transversal { background: #FEF3C7; color: #92400E; }
+    .acoes-topo { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .btn-salvar { margin-top: 16px; }
+    .aviso-pics { background: #ECFDF5; border-left: 4px solid var(--verde-destaque); padding: 14px; border-radius: 8px; margin-top: 16px; font-size: 13px; line-height: 1.5; }
   </style>
 </head>
 <body>
@@ -21,115 +37,200 @@
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
       <span class="logo-texto">Integrativo.App</span>
     </a>
-    <div class="menu"><a href="painel-terapeuta.html">Painel</a> <a href="manual.html">Manual</a></div>
+    <div class="menu"><a href="painel-terapeuta.html">Painel</a> <a href="painel-anamnese.html">Anamnese clínica</a> <a href="manual.html">Manual</a></div>
   </nav>
 
-  <div class="config-container">
-    <h2>⚙️ Personalizar Anamnese — Parte 1</h2>
-    <p style="color:var(--texto-medio);margin-bottom:20px;">Escolha quais campos o paciente preencherá. Campos em branco serão destacados para você complementar na Parte 2.</p>
+  <div class="config-wrap">
+    <div class="config-card">
+      <h2>🧾 Anamnese integrativa — Parte 1 (pré-consulta)</h2>
+      <p class="config-intro">
+        Formulário completo alinhado à <strong>PNPIC/MS</strong>, com preferência para <strong>PICS</strong> e blocos de <strong>medicina ocidental</strong>.
+        Escolha quais campos o paciente preenche antes da consulta. Campos em branco ou obrigatórios não preenchidos aparecem em destaque na <strong>Parte 2</strong> (profissional).
+      </p>
 
-    <div class="form-grupo">
-      <label>Especialidade</label>
-      <select id="especialidade" onchange="carregarConfig()">
-        <option value="">Selecione...</option>
-      </select>
+      <div class="form-grupo">
+        <label>Especialidade</label>
+        <select id="especialidade" onchange="carregarTudo()"></select>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="filtros">
+        <input type="search" id="busca" placeholder="Buscar campo..." oninput="renderLista()">
+        <select id="filtro-grupo" onchange="renderLista()">
+          <option value="todos">Todos os grupos</option>
+          <option value="pics">PICS</option>
+          <option value="ocidental">Medicina ocidental</option>
+          <option value="transversal">Transversal</option>
+        </select>
+        <select id="filtro-parte" onchange="renderLista()">
+          <option value="todos">Todas as partes</option>
+          <option value="1">Parte 1 — paciente</option>
+          <option value="2">Parte 2 — profissional</option>
+        </select>
+      </div>
+
+      <div class="acoes-topo">
+        <button type="button" class="btn btn-outline" onclick="marcarTodos(true)">Ativar todos</button>
+        <button type="button" class="btn btn-outline" onclick="marcarTodos(false)">Desativar todos</button>
+        <button type="button" class="btn btn-outline" onclick="ativarPadraoPics()">Preset PICS + ocidental essencial</button>
+      </div>
+
+      <div id="lista-campos"></div>
+
+      <div class="aviso-pics">
+        <strong>Base de referência:</strong> PNPIC/MS · RENISUS · contraindicações e farmacovigilância · revisão por sistemas (medicina ocidental) · consentimento informado e LGPD em saúde integrativa.
+      </div>
+
+      <button class="btn btn-primario btn-salvar" onclick="salvar()">Salvar configuração</button>
+      <button class="btn btn-outline btn-salvar" onclick="restaurar()">Restaurar padrão completo</button>
+      <p id="msg-config" style="text-align:center;margin-top:12px;"></p>
     </div>
-
-    <div id="lista-campos" class="campo-lista"></div>
-
-    <div style="background:var(--laranja-claro);padding:14px;border-radius:8px;margin-top:16px;">
-      <strong>💡 Dica:</strong> Campos não preenchidos pelo paciente aparecerão em destaque na Parte 2 para você complementar durante a consulta.
-    </div>
-
-    <button class="btn btn-primario btn-salvar" onclick="salvar()">Salvar Configuração</button>
-    <button class="btn btn-outline btn-salvar" onclick="restaurar()">Restaurar Padrão</button>
   </div>
 
-  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/voz.js"></script>
+  <script src="js/anamnese-ui.js"></script>
   <script>
-    var camposPadrao = [
-      { id: 'altura', nome: 'Altura (cm)', categoria: 'Dados Básicos' },
-      { id: 'peso', nome: 'Peso (kg)', categoria: 'Dados Básicos' },
-      { id: 'tipo_sanguineo', nome: 'Tipo Sanguíneo', categoria: 'Dados Básicos' },
-      { id: 'sono', nome: 'Sono (horas/noite)', categoria: 'Hábitos' },
-      { id: 'apetite', nome: 'Apetite', categoria: 'Hábitos' },
-      { id: 'exercicios', nome: 'Exercícios físicos', categoria: 'Hábitos' },
-      { id: 'fumante', nome: 'Fumante', categoria: 'Hábitos' },
-      { id: 'bebidas', nome: 'Consumo de bebidas', categoria: 'Hábitos' },
-      { id: 'doencas_cronicas', nome: 'Doenças crônicas', categoria: 'Histórico' },
-      { id: 'cirurgias', nome: 'Cirurgias prévias', categoria: 'Histórico' },
-      { id: 'medicamentos_uso', nome: 'Medicamentos em uso', categoria: 'Histórico' },
-      { id: 'alergias', nome: 'Alergias', categoria: 'Histórico' },
-      { id: 'menstruacao', nome: 'Menstruação (se feminino)', categoria: 'Saúde Feminina' },
-      { id: 'gravidez', nome: 'Gravidez (se feminino)', categoria: 'Saúde Feminina' },
-      { id: 'queixa_principal', nome: 'Queixa principal', categoria: 'Queixas' },
-      { id: 'nivel_dor', nome: 'Nível de dor (0-10)', categoria: 'Queixas' },
-      { id: 'expectativa', nome: 'O que espera do tratamento', categoria: 'Expectativas' }
-    ];
+    var schema = [];
+    var estado = { ativos: {}, obrigatorios: {} };
 
-    // Preencher especialidades
     var sel = document.getElementById('especialidade');
-    CONFIG.ESPECIALIDADES.forEach(function(esp) {
+    CONFIG.ESPECIALIDADES.forEach(function (esp) {
       var opt = document.createElement('option');
       opt.value = esp;
       opt.textContent = esp;
       sel.appendChild(opt);
     });
+    if (sel.options.length > 1) sel.selectedIndex = 1;
 
-    function carregarConfig() {
+    async function carregarTudo() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      var rSchema = await fetch(CONFIG.API_URL + '/anamneses/schema', { headers: { Authorization: 'Bearer ' + token } });
+      var dSchema = await rSchema.json();
+      schema = dSchema.campos || [];
+
+      var esp = sel.value;
+      var rCfg = await fetch(CONFIG.API_URL + '/anamneses/config/' + encodeURIComponent(esp), { headers: { Authorization: 'Bearer ' + token } });
+      var cfg = await rCfg.json();
+
+      estado.ativos = {};
+      estado.obrigatorios = {};
+      (cfg.campos_ativos || dSchema.padrao.ativos).forEach(function (id) { estado.ativos[id] = true; });
+      (cfg.campos_obrigatorios || dSchema.padrao.obrigatorios).forEach(function (id) { estado.obrigatorios[id] = true; });
+
+      renderStats();
+      renderLista();
+    }
+
+    function renderStats() {
+      var ativos = schema.filter(function (c) { return estado.ativos[c.id]; });
+      var pics = ativos.filter(function (c) { return c.grupo === 'pics'; }).length;
+      var oc = ativos.filter(function (c) { return c.grupo === 'ocidental'; }).length;
+      document.getElementById('stats').innerHTML =
+        '<span class="stat-pill">' + ativos.length + ' campos ativos</span>' +
+        '<span class="stat-pill pics">' + pics + ' PICS</span>' +
+        '<span class="stat-pill ocidental">' + oc + ' medicina ocidental</span>' +
+        '<span class="stat-pill">' + schema.length + ' total no schema v2.1</span>';
+    }
+
+    function renderLista() {
+      var busca = (document.getElementById('busca').value || '').toLowerCase();
+      var grupo = document.getElementById('filtro-grupo').value;
+      var parte = document.getElementById('filtro-parte').value;
+      var porCat = {};
+
+      schema.forEach(function (c) {
+        if (busca && c.nome.toLowerCase().indexOf(busca) < 0 && c.categoria.toLowerCase().indexOf(busca) < 0) return;
+        if (grupo !== 'todos' && c.grupo !== grupo) return;
+        if (parte === '1' && c.parte === 2) return;
+        if (parte === '2' && c.parte === 1) return;
+        if (!porCat[c.categoria]) porCat[c.categoria] = [];
+        porCat[c.categoria].push(c);
+      });
+
       var html = '';
-      var categorias = {};
-      camposPadrao.forEach(function(c) {
-        if (!categorias[c.categoria]) categorias[c.categoria] = [];
-        categorias[c.categoria].push(c);
-      });
-
-      Object.keys(categorias).forEach(function(cat) {
-        html += '<h3 style="color:var(--azul-escuro);margin-top:16px;">' + cat + '</h3>';
-        categorias[cat].forEach(function(c) {
-          html += '<div class="campo-item"><input type="checkbox" id="campo_' + c.id + '" checked><label for="campo_' + c.id + '">' + c.nome + '</label><label style="font-size:12px;color:var(--texto-medio);"><input type="checkbox" class="obrig-' + c.id + '"> Obrigatório</label></div>';
+      Object.keys(porCat).forEach(function (cat) {
+        html += '<div class="secao-config"><h3>' + AnamneseUI.escapeHtml(cat) + '</h3>';
+        porCat[cat].forEach(function (c) {
+          var badge = c.grupo === 'pics' ? 'pics' : (c.grupo === 'ocidental' ? 'ocidental' : 'transversal');
+          html += '<div class="campo-item">' +
+            '<input type="checkbox" id="ativo_' + c.id + '" ' + (estado.ativos[c.id] ? 'checked' : '') + ' onchange="toggleAtivo(\'' + c.id + '\', this.checked)">' +
+            '<label class="nome" for="ativo_' + c.id + '">' + AnamneseUI.escapeHtml(c.nome) +
+            ' <span class="badge-grupo ' + badge + '">' + badge + '</span>' +
+            (c.parte === 2 ? ' <span style="font-size:11px;color:#64748B">(Parte 2)</span>' : '') +
+            '</label>' +
+            '<label style="font-size:12px;color:var(--texto-medio);white-space:nowrap"><input type="checkbox" id="obr_' + c.id + '" ' + (estado.obrigatorios[c.id] ? 'checked' : '') + ' onchange="estado.obrigatorios[\'' + c.id + '\']=this.checked"> Obrig.</label>' +
+            '</div>';
         });
+        html += '</div>';
       });
 
-      document.getElementById('lista-campos').innerHTML = html;
+      document.getElementById('lista-campos').innerHTML = html || '<p style="color:var(--texto-medio)">Nenhum campo encontrado com os filtros atuais.</p>';
     }
 
-    function salvar() {
-      var ativos = [];
-      var obrigatorios = [];
-      camposPadrao.forEach(function(c) {
-        var el = document.getElementById('campo_' + c.id);
-        if (el && el.checked) {
-          ativos.push(c.id);
-          var obr = document.querySelector('.obrig-' + c.id);
-          if (obr && obr.checked) obrigatorios.push(c.id);
-        }
+    function toggleAtivo(id, on) {
+      estado.ativos[id] = on;
+      if (!on) delete estado.obrigatorios[id];
+      renderStats();
+    }
+
+    function marcarTodos(on) {
+      schema.forEach(function (c) {
+        if (on) estado.ativos[c.id] = true;
+        else { delete estado.ativos[c.id]; delete estado.obrigatorios[c.id]; }
       });
-
-      var dados = {
-        especialidade_id: document.getElementById('especialidade').value,
-        campos_ativos: ativos,
-        campos_obrigatorios: obrigatorios
-      };
-
-      // Salvar no localStorage (em produção, enviaria para API)
-      localStorage.setItem('anamnese_config_' + dados.especialidade_id, JSON.stringify(dados));
-      alert('✅ Configuração salva!');
+      renderStats();
+      renderLista();
     }
 
-    function restaurar() {
-      if (confirm('Restaurar configuração padrão?')) {
-        localStorage.removeItem('anamnese_config_' + document.getElementById('especialidade').value);
-        carregarConfig();
-        alert('✅ Padrão restaurado!');
+    function ativarPadraoPics() {
+      marcarTodos(false);
+      schema.forEach(function (c) {
+        if (c.ativoPadrao !== false) estado.ativos[c.id] = true;
+        if (c.obrigatorioPadrao) estado.obrigatorios[c.id] = true;
+      });
+      renderStats();
+      renderLista();
+    }
+
+    async function salvar() {
+      var token = localStorage.getItem('integra_token');
+      var esp = sel.value;
+      var ativos = Object.keys(estado.ativos).filter(function (k) { return estado.ativos[k]; });
+      var obrigatorios = Object.keys(estado.obrigatorios).filter(function (k) { return estado.obrigatorios[k] && estado.ativos[k]; });
+
+      var r = await fetch(CONFIG.API_URL + '/anamneses/config/' + encodeURIComponent(esp), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ campos_ativos: ativos, campos_obrigatorios: obrigatorios })
+      });
+      var d = await r.json();
+      var msg = document.getElementById('msg-config');
+      if (r.ok) {
+        msg.textContent = '✅ ' + d.mensagem;
+        msg.style.color = 'var(--verde-suave)';
+      } else {
+        msg.textContent = '❌ ' + (d.erro || 'Erro ao salvar.');
+        msg.style.color = 'var(--vermelho)';
       }
     }
 
-    carregarConfig();
+    async function restaurar() {
+      if (!confirm('Restaurar todos os campos padrão do schema v2.1?')) return;
+      marcarTodos(false);
+      schema.forEach(function (c) {
+        if (c.ativoPadrao !== false) estado.ativos[c.id] = true;
+        if (c.obrigatorioPadrao) estado.obrigatorios[c.id] = true;
+      });
+      await salvar();
+      renderStats();
+      renderLista();
+    }
+
+    carregarTudo();
   </script>
-<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
+<footer style="text-align:center;padding:30px 20px;font-size:12px;color:var(--texto-medio);border-top:1px solid #E2E8F0;margin-top:40px;line-height:1.6;">&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
 </body>
 </html>

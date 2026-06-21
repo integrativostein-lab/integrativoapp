@@ -49,8 +49,8 @@
 
   <div class="reuniao-container">
     <div class="reuniao-card">
-      <h2>🎥 Sala de Aula e Consulta</h2>
-      <p style="color:var(--texto-medio);">Ideal para Teleaulas e Consultas — Até 20 participantes — Guardiões da Floresta, Pro, Premium e Enterprise.</p>
+      <h2>🎥 Teleconsulta clínica</h2>
+      <p style="color:var(--texto-medio);">Atendimento remoto conforme Lei 14.510/2022 · consentimento registrado no prontuário · LiveKit</p>
 
       <div class="gravacao-banner" id="gravacao-banner">🔴 GRAVANDO — Esta reunião está sendo gravada</div>
       <div class="status-livekit" id="status-livekit">Conectando à sala segura...</div>
@@ -72,19 +72,10 @@
       </div>
     </div>
 
-    <!-- GRAVAÇÕES SALVAS -->
-    <div class="reuniao-card" id="gravacoes-card">
-      <h3>📼 Gravações Disponíveis</h3>
-      <p style="font-size:13px;color:var(--texto-medio);">As gravações ficam disponíveis para download por <strong>7 dias</strong>. Após esse prazo, são excluídas automaticamente.</p>
-      <div id="lista-gravacoes">
-        <div class="gravacao-info">
-          <strong>📅 Reunião — 25/06/2026</strong><br>
-          Duração: 1h 45min | Tamanho: 320 MB<br>
-          <span class="expiracao-tag">⏰ Expira em: 3 dias</span><br>
-          <a href="#" class="download-btn" style="margin-top:8px;">⬇️ Baixar Gravação</a>
-        </div>
-      </div>
-      <p style="font-size:11px;color:var(--texto-medio);margin-top:8px;">⚠️ Recomendamos baixar em até 7 dias. Após a exclusão, não será possível recuperar.</p>
+    <div class="reuniao-card" id="gravacoes-card" style="display:none;">
+      <h3>📼 Gravação</h3>
+      <p style="font-size:13px;color:var(--texto-medio);">Gravação clínica exige consentimento específico de <strong>todos</strong> os participantes (CFM 2.314/2022). Quando habilitada pela plataforma, a retenção assistencial padrão é de até 7 dias, salvo obrigação legal distinta.</p>
+      <div id="lista-gravacoes"></div>
     </div>
 
     <div class="reuniao-card">
@@ -99,22 +90,16 @@
     </div>
 
     <div class="reuniao-card">
-      <h3>⚙️ Regras de Gravação</h3>
+      <h3>⚙️ Conformidade telessaúde</h3>
       <p style="font-size:13px;color:var(--texto-medio);">
-        ✅ Transmissão própria (WebRTC) — sem app externo<br>
-        ✅ Criptografia ponta a ponta<br>
-        ✅ Compartilhamento de tela<br>
-        ✅ Chat coletivo<br>
-        ✅ Gravação opcional (com autorização de todos)<br>
-        ✅ Até 20 participantes<br>
-        ✅ Qualidade: 480p (comprimido)<br>
-        ✅ Tamanho máximo: 500 MB<br>
-        ✅ Disponível para download: 7 dias<br>
-        ✅ Exclusão automática após 7 dias<br>
-        ✅ Armazenado no servidor do profissional
-      </p>
-      <p style="font-size:11px;color:var(--texto-medio);margin-top:8px;">
-        ⚠️ A gravação só é iniciada após autorização de todos os participantes. Você receberá um lembrete 24h antes da exclusão.
+        ✅ TCLE antes da sala (Lei 14.510/2022)<br>
+        ✅ Registro no prontuário (início/fim, consentimentos, auditoria LGPD)<br>
+        ✅ Token LiveKit vinculado ao agendamento autorizado<br>
+        ✅ Direito de optar por atendimento presencial<br>
+        ✅ Informação sobre limites do atendimento remoto<br>
+        ✅ Gravação apenas com consentimento específico adicional<br>
+        ✅ Criptografia TLS/WebRTC na transmissão<br>
+        ⚠️ Certificação SBIS/NGS2 do SRES: em roadmap — use medidas de segurança da plataforma
       </p>
     </div>
   </div>
@@ -122,17 +107,21 @@
   <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/teleconsulta-conformidade.js"></script>
   <script src="js/i18n.js"></script>
   <script>
     var micOn = true;
     var camOn = true;
     var gravando = false;
+    var gravacaoPermitida = false;
     var room = null;
     var localVideoTrack = null;
     var localAudioTrack = null;
     var screenTrack = null;
     var params = new URLSearchParams(window.location.search);
-    var salaAtual = params.get('sala') || 'teleconsulta-alfa';
+    var agendamentoId = params.get('agendamento_id') || (params.get('sala') || '').replace(/^teleconsulta-/, '') || null;
+    var salaAtual = agendamentoId ? ('teleconsulta-' + agendamentoId) : (params.get('sala') || 'reuniao-interna');
+    var modoClinico = !!agendamentoId;
     if (params.get('embed') === '1') {
       document.body.classList.add('modo-embed');
     }
@@ -192,16 +181,30 @@
       }
 
       try {
-        var resposta = await fetch(CONFIG.API_URL + '/reunioes/livekit-token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + tokenApp
-          },
-          body: JSON.stringify({ sala: salaAtual, nome: nomeUsuario() })
-        });
-        var dados = await resposta.json();
-        if (!resposta.ok) throw new Error(dados.erro || 'Erro ao gerar token da sala.');
+        var dados;
+        if (modoClinico) {
+          try {
+            await TeleconsultaConformidade.fluxoEntrada(agendamentoId, tokenApp);
+          } catch (e) {
+            if (e.message === '__PRESENCIAL__') {
+              await TeleconsultaConformidade.optarPresencial(agendamentoId, tokenApp);
+              atualizarStatus('Preferência por atendimento presencial registrada.');
+              alert('Sua preferência por atendimento presencial foi registrada. Entre em contato com o profissional para remarcar.');
+              return;
+            }
+            throw e;
+          }
+          dados = await TeleconsultaConformidade.obterTokenLiveKit(agendamentoId, tokenApp, nomeUsuario());
+          salaAtual = dados.sala;
+        } else {
+          var resposta = await fetch(CONFIG.API_URL + '/reunioes/livekit-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tokenApp },
+            body: JSON.stringify({ sala: salaAtual, nome: nomeUsuario() })
+          });
+          dados = await resposta.json();
+          if (!resposta.ok) throw new Error(dados.erro || 'Erro ao gerar token da sala.');
+        }
 
         room = new LivekitClient.Room({ adaptiveStream: true, dynacast: true });
         room.on(LivekitClient.RoomEvent.TrackSubscribed, function(track, publication, participant) {
@@ -227,7 +230,16 @@
         });
 
         atualizarParticipantes();
-        atualizarStatus('Conectado à sala: ' + dados.sala);
+        atualizarStatus(modoClinico ? ('Teleconsulta autorizada · sala ' + dados.sala) : ('Conectado · sala ' + dados.sala));
+
+        if (modoClinico) {
+          var prep = await TeleconsultaConformidade.prepararSala(agendamentoId, tokenApp);
+          gravacaoPermitida = prep.gravacao && prep.gravacao.habilitada;
+          if (!gravacaoPermitida) {
+            document.getElementById('btn-gravar').disabled = true;
+            document.getElementById('btn-gravar').title = 'Requer consentimento específico de paciente e profissional';
+          }
+        }
       } catch (e) {
         console.error(e);
         atualizarStatus('Erro ao conectar LiveKit: ' + e.message);
@@ -268,8 +280,12 @@
     }
 
     function toggleGravacao() {
+      if (!gravacaoPermitida) {
+        alert('Gravação exige consentimento específico registrado de paciente e profissional (CFM 2.314/2022).');
+        return;
+      }
       if (!gravando) {
-        if (confirm('Iniciar gravação? Todos os participantes precisam autorizar.\n\n⚠️ Regras:\n• Qualidade: 480p\n• Máximo: 500 MB / 2 horas\n• Disponível: 7 dias\n• Após: exclusão automática')) {
+        if (confirm('Iniciar gravação? Todos os participantes já consentiram. A gravação integra o prontuário assistencial.')) {
           gravando = true;
           document.getElementById('gravacao-banner').style.display = 'block';
           document.getElementById('btn-gravar').textContent = '⏹️ Parar Gravação';
@@ -278,15 +294,18 @@
         gravando = false;
         document.getElementById('gravacao-banner').style.display = 'none';
         document.getElementById('btn-gravar').textContent = '🔴 Gravar';
-        alert('✅ Gravação salva! Disponível para download por 7 dias. Você receberá um lembrete 24h antes da exclusão.');
+        alert('Encerramento de gravação registrado. Retenção conforme política assistencial da plataforma.');
       }
     }
 
-    function sairReuniao() {
-      if (confirm('Sair da reunião?')) {
-        if (room) room.disconnect();
-        window.location.href = 'painel-terapeuta.html';
+    async function sairReuniao() {
+      if (!confirm('Encerrar e sair da sala?')) return;
+      if (modoClinico) {
+        var tokenApp = localStorage.getItem('integra_token');
+        await TeleconsultaConformidade.encerrarSessao(agendamentoId, tokenApp);
       }
+      if (room) room.disconnect();
+      window.location.href = params.get('embed') === '1' ? 'about:blank' : 'painel-terapeuta.html';
     }
 
     function enviarMsg() {

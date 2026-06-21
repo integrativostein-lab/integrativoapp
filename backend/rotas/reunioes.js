@@ -26,6 +26,15 @@ function normalizarSala(valor) {
 }
 
 router.post('/livekit-token', autenticar, async (req, res) => {
+  const salaRaw = req.body.sala || '';
+  const agendamentoId = req.body.agendamento_id;
+  if (agendamentoId || String(salaRaw).startsWith('teleconsulta-')) {
+    return res.status(400).json({
+      erro: 'Teleconsultas clínicas exigem TCLE e validação de agendamento. Use POST /api/teleconsultas/livekit-token.',
+      endpoint: '/api/teleconsultas/livekit-token'
+    });
+  }
+
   const { LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET } = process.env;
 
   if (!LIVEKIT_URL || !LIVEKIT_API_KEY || !LIVEKIT_API_SECRET) {

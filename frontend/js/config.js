@@ -52,7 +52,7 @@ const CONFIG = {
         '15 teleconsultas/mês',
         '30 pacientes',
         '1 especialidade',
-        'Anamnese, prontuário e prescrição',
+        'Anamnese, prontuário e prescrição eletrônica',
         'Sem comissão sobre consultas'
       ]
     },
@@ -130,6 +130,7 @@ const CONFIG = {
       comissao_consulta_pct: 5,
       blog: true,
       loja: true,
+      prescricao: true,
       reuniao_interna: true,
       byos: true,
       ferramentas_gestao: true,
@@ -141,7 +142,7 @@ const CONFIG = {
         'Até 15 profissionais · 3 recepcionistas',
         '1.200 teleconsultas/mês',
         '2.400 mensagens/mês · 3.000 pacientes',
-        'Blog, loja e reunião interna',
+        'Blog, loja, prescrição eletrônica e reunião interna',
         'BYOS para gravações e streamings',
         'Ferramentas administrativas completas',
         'Comissão de 5% sobre consultas'
@@ -160,6 +161,7 @@ const CONFIG = {
       comissao_consulta_pct: 5,
       blog: true,
       loja: true,
+      prescricao: true,
       reuniao_interna: true,
       byos: true,
       ferramentas_gestao: true,
@@ -172,7 +174,7 @@ const CONFIG = {
         'Até 15 profissionais · 3 recepcionistas',
         '1.200 teleconsultas/mês',
         '2.400 mensagens/mês · 3.000 pacientes',
-        'Blog, loja e reunião interna',
+        'Blog, loja, prescrição eletrônica e reunião interna',
         'BYOS para gravações e streamings',
         'Ferramentas administrativas completas',
         'Comissão de 5% sobre consultas'
@@ -190,6 +192,7 @@ const CONFIG = {
       comissao_consulta_pct: 5,
       blog: true,
       loja: true,
+      prescricao: true,
       ferramentas_gestao: true,
       fhir_tiss: true,
       modo_aluno: true,
@@ -200,6 +203,7 @@ const CONFIG = {
       recursos: [
         'Profissionais, módulos e bibliotecas customizáveis',
         'Teleconsultas, teleaulas e mensagens sob medida',
+        'Prescrição eletrônica',
         'Modo aluno (simulação de consultório profissional)',
         'Comissão de 5% sobre consultas',
         'Fale conosco para proposta personalizada'

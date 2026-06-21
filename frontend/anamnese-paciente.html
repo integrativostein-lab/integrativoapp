@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anamnese pré-consulta — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .wrap { max-width: 820px; margin: 24px auto; padding: 0 16px 40px; }
+    .card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .intro { color: var(--texto-medio); line-height: 1.55; margin-bottom: 16px; }
+    .secao-anamnese h3 { font-size: 16px; color: var(--azul-escuro); border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin: 20px 0 14px; }
+    .grid-campos { display: grid; gap: 16px; }
+    .campo-anamnese label { display: block; font-weight: 600; color: var(--azul-escuro); margin-bottom: 6px; font-size: 14px; }
+    .anamnese-input { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 14px; font-family: inherit; }
+    .badge-grupo { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 6px; text-transform: uppercase; }
+    .badge-grupo.pics { background: #D1FAE5; color: #065F46; }
+    .badge-grupo.ocidental { background: #DBEAFE; color: #1E40AF; }
+    .badge-grupo.transversal { background: #FEF3C7; color: #92400E; }
+    .obrigatorio { color: var(--vermelho); }
+    .campo-dica { font-size: 12px; color: var(--texto-medio); margin: -2px 0 8px; }
+    .aviso-lgpd { background: #F0FDF4; border-left: 4px solid var(--verde-destaque); padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu"><a href="painel-paciente.html">Meu painel</a> <a href="manual.html">Manual</a></div>
+  </nav>
+
+  <div class="wrap">
+    <div class="card">
+      <h2>🧾 Anamnese pré-consulta (Parte 1)</h2>
+      <p class="intro">
+        Formulário integrativo completo: práticas complementares (PICS), fitoterapia, hábitos de vida e histórico clínico em medicina ocidental.
+        Campos com <span class="obrigatorio">*</span> são obrigatórios. O profissional complementará na consulta o que faltar.
+      </p>
+
+      <div class="aviso-lgpd">
+        Seus dados de saúde são tratados conforme a LGPD, exclusivamente para seu cuidado. Base legal: tutela da saúde e execução do serviço contratado.
+      </div>
+
+      <div class="form-grupo">
+        <label>Profissional</label>
+        <select id="profissional-id"><option value="">Selecione...</option></select>
+      </div>
+      <div class="form-grupo">
+        <label>Especialidade da consulta</label>
+        <select id="especialidade" onchange="carregarConfigProf()"></select>
+      </div>
+
+      <form id="form-paciente" onsubmit="enviar(event)">
+        <div id="form-campos"></div>
+        <button type="submit" class="btn btn-primario" style="width:100%;margin-top:20px;">Enviar anamnese</button>
+        <p id="msg" style="text-align:center;margin-top:12px;"></p>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Minhas anamneses enviadas</h3>
+      <div id="minhas-lista"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/anamnese-ui.js"></script>
+  <script src="js/voz.js"></script>
+  <script>
+    var schema = [];
+    var configCampos = { campos_ativos: [], campos_obrigatorios: [] };
+
+    async function init() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      var rSchema = await fetch(CONFIG.API_URL + '/anamneses/schema', { headers: { Authorization: 'Bearer ' + token } });
+      schema = (await rSchema.json()).campos || [];
+
+      var selEsp = document.getElementById('especialidade');
+      CONFIG.ESPECIALIDADES.forEach(function (esp) {
+        var opt = document.createElement('option');
+        opt.value = esp;
+        opt.textContent = esp;
+        selEsp.appendChild(opt);
+      });
+      if (selEsp.options.length) selEsp.selectedIndex = 0;
+
+      var ags = await fetch(CONFIG.API_URL + '/agendamentos/meus', { headers: { Authorization: 'Bearer ' + token } });
+      var lista = await ags.json();
+      var profs = {};
+      (Array.isArray(lista) ? lista : []).forEach(function (a) {
+        if (a.profissional_id && a.profissional_nome) profs[a.profissional_id] = a.profissional_nome;
+      });
+      var sel = document.getElementById('profissional-id');
+      Object.keys(profs).forEach(function (id) {
+        var opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = profs[id];
+        sel.appendChild(opt);
+      });
+      sel.onchange = carregarConfigProf;
+
+      if (sel.options.length > 1) {
+        sel.selectedIndex = 1;
+        await carregarConfigProf();
+      }
+
+      carregarMinhas();
+    }
+
+    async function carregarConfigProf() {
+      var token = localStorage.getItem('integra_token');
+      var profId = document.getElementById('profissional-id').value;
+      var esp = document.getElementById('especialidade').value;
+      if (!profId || !esp) return;
+
+      var r = await fetch(
+        CONFIG.API_URL + '/anamneses/config-profissional/' + profId + '/' + encodeURIComponent(esp),
+        { headers: { Authorization: 'Bearer ' + token } }
+      );
+      configCampos = await r.json();
+
+      var campos = AnamneseUI.filtrarCampos(schema, {
+        idsAtivos: configCampos.campos_ativos,
+        parte: 1
+      });
+
+      document.getElementById('form-campos').innerHTML = AnamneseUI.renderFormulario(campos, {}, {
+        obrigatorios: configCampos.campos_obrigatorios
+      });
+    }
+
+    async function enviar(e) {
+      e.preventDefault();
+      var token = localStorage.getItem('integra_token');
+      var profId = document.getElementById('profissional-id').value;
+      var esp = document.getElementById('especialidade').value;
+      if (!profId) { alert('Selecione o profissional.'); return; }
+
+      var respostas = AnamneseUI.coletarRespostas(document.getElementById('form-paciente'));
+      var faltando = (configCampos.campos_obrigatorios || []).filter(function (id) {
+        return !respostas[id] || String(respostas[id]).trim() === '';
+      });
+      if (faltando.length) {
+        alert('Preencha todos os campos obrigatórios (*). Faltam ' + faltando.length + ' campo(s).');
+        return;
+      }
+
+      var r = await fetch(CONFIG.API_URL + '/anamneses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({
+          profissional_id: parseInt(profId, 10),
+          especialidade: esp,
+          parte1_respostas: respostas
+        })
+      });
+      var d = await r.json();
+      var msg = document.getElementById('msg');
+      if (r.ok) {
+        msg.textContent = '✅ Anamnese enviada! O profissional revisará na consulta.';
+        msg.style.color = 'var(--verde-suave)';
+        document.getElementById('form-paciente').reset();
+        carregarMinhas();
+      } else {
+        msg.textContent = '❌ ' + (d.erro || 'Erro ao enviar.');
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+
+    async function carregarMinhas() {
+      var token = localStorage.getItem('integra_token');
+      var r = await fetch(CONFIG.API_URL + '/anamneses/paciente/minhas', { headers: { Authorization: 'Bearer ' + token } });
+      var lista = await r.json();
+      var div = document.getElementById('minhas-lista');
+      if (!Array.isArray(lista) || !lista.length) {
+        div.innerHTML = '<p style="color:var(--texto-medio)">Nenhuma anamnese enviada ainda.</p>';
+        return;
+      }
+      div.innerHTML = lista.map(function (a) {
+        return '<div style="border:1px solid #E2E8F0;border-radius:12px;padding:12px;margin-bottom:8px;">' +
+          '<strong>' + AnamneseUI.escapeHtml(a.profissional_nome) + '</strong> · ' +
+          (a.especialidade || 'Geral') + '<br>' +
+          '<span style="font-size:12px;color:var(--texto-medio)">' + new Date(a.atualizado_em).toLocaleString('pt-BR') + ' · ' + a.status + '</span></div>';
+      }).join('');
+    }
+
+    init();
+  </script>
+<footer style="text-align:center;padding:30px 20px;font-size:12px;color:var(--texto-medio);border-top:1px solid #E2E8F0;margin-top:40px;line-height:1.6;">&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
+</body>
+</html>

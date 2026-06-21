@@ -49,11 +49,11 @@
 
 | Plano | Valor/mês | Comissão consultas | PIX (−5%) | Observações |
 |-------|-----------|-------------------|-----------|-------------|
-| **Freemium** | R$ 0 | 0% | — | Sem mensalidade |
-| **Guardiões da Floresta** | R$ 10 | 0% | — | Condição social · recomendações · sem prescrição |
-| **Pro** | R$ 99,90 | 5% | R$ 94,91 | ABRATH + PIX: ~R$ 87,31 |
-| **Clinic** | R$ 799 | 5% | R$ 759,05 | Até 15 profissionais · ABRATH + PIX: ~R$ 698,33 |
-| **Enterprise** | Sob consulta | 5% | — | Proposta personalizada |
+| **Freemium** | R$ 0 | 0% | — | Prescrição eletrônica · sem mensalidade |
+| **Guardiões da Floresta** | R$ 10 | 0% | — | Recomendações clínicas · sem prescrição eletrônica |
+| **Pro** | R$ 99,90 | 5% | R$ 94,91 | Prescrição eletrônica · ABRATH + PIX: ~R$ 87,31 |
+| **Clinic** | R$ 799 | 5% | R$ 759,05 | Prescrição eletrônica · até 15 profissionais · ABRATH + PIX: ~R$ 698,33 |
+| **Enterprise** | Sob consulta | 5% | — | Prescrição eletrônica · proposta personalizada |
 
 Descontos aplicados com arredondamento em centavos. Guardiões da Floresta não tem desconto PIX adicional.
 

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anamnese clínica — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .anamnese-container { max-width: 920px; margin: 0 auto; }
+    .anamnese-card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 20px; }
+    .anamnese-card h3 { color: var(--azul-escuro); margin-bottom: 12px; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn { border: 1px solid #CBD5E1; background: #F8FAFC; border-radius: 999px; padding: 10px 18px; cursor: pointer; font-weight: 700; color: var(--azul-escuro); }
+    .tab-btn.ativo { background: var(--azul-profundo); color: #FFF; border-color: transparent; }
+    .secao-anamnese { margin-bottom: 24px; }
+    .secao-anamnese h3 { font-size: 16px; color: var(--azul-escuro); border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 14px; }
+    .grid-campos { display: grid; gap: 16px; }
+    .campo-anamnese label { display: block; font-weight: 600; color: var(--azul-escuro); margin-bottom: 6px; font-size: 14px; }
+    .campo-anamnese.pendente { background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 12px; padding: 12px; }
+    .campo-anamnese.pendente label { color: #92400E; }
+    .campo-dica { font-size: 12px; color: var(--texto-medio); margin: -2px 0 8px; }
+    .anamnese-input { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 14px; font-family: inherit; }
+    .badge-grupo { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 6px; text-transform: uppercase; vertical-align: middle; }
+    .badge-grupo.pics { background: #D1FAE5; color: #065F46; }
+    .badge-grupo.ocidental { background: #DBEAFE; color: #1E40AF; }
+    .badge-grupo.transversal { background: #FEF3C7; color: #92400E; }
+    .obrigatorio { color: var(--vermelho); }
+    .aviso-pendente { background: #FFFBEB; border-left: 4px solid #F59E0B; padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+    .historico-item { border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .historico-item button { border: 0; background: var(--azul-profundo); color: #FFF; border-radius: 999px; padding: 8px 14px; cursor: pointer; font-weight: 700; font-size: 12px; }
+    .status-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; }
+    .status-rascunho { background: #F1F5F9; color: #475569; }
+    .status-parte1_concluida { background: #DBEAFE; color: #1D4ED8; }
+    .status-concluida { background: #D1FAE5; color: #065F46; }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <div class="painel-sidebar">
+      <h3>🧾 Anamnese</h3>
+      <nav>
+        <a href="#" class="ativo" onclick="mostrarAba('nova');return false;">Nova / editar</a>
+        <a href="#" onclick="mostrarAba('historico');return false;">Histórico</a>
+        <a href="painel-anamnese-config.html">⚙️ Configurar campos</a>
+        <a href="painel-terapeuta.html">Painel</a>
+        <a href="manual.html">📖 Manual</a>
+        <a href="#" onclick="logout()">🚪 Sair</a>
+      </nav>
+    </div>
+
+    <div class="painel-conteudo anamnese-container">
+      <div id="aba-nova">
+        <h2>Anamnese integrativa</h2>
+        <p style="color:var(--texto-medio);margin-bottom:16px;">Parte 1 (paciente) + Parte 2 (profissional) · PICS + medicina ocidental · schema v2.1</p>
+
+        <div class="anamnese-card">
+          <div class="form-grupo">
+            <label>Paciente</label>
+            <select id="paciente-id" onchange="carregarAnamnesePaciente()"><option value="">Selecione...</option></select>
+          </div>
+          <div class="form-grupo">
+            <label>Especialidade</label>
+            <select id="especialidade"></select>
+          </div>
+          <input type="hidden" id="anamnese-id" value="">
+        </div>
+
+        <div class="tabs">
+          <button type="button" class="tab-btn ativo" id="tab-parte1" onclick="alternarParte(1)">Parte 1 — Paciente</button>
+          <button type="button" class="tab-btn" id="tab-parte2" onclick="alternarParte(2)">Parte 2 — Profissional</button>
+        </div>
+
+        <div id="aviso-pendentes" class="aviso-pendente" style="display:none;"></div>
+
+        <div class="anamnese-card">
+          <form id="form-anamnese" onsubmit="salvarAnamnese(event)">
+            <div id="form-campos"></div>
+            <button type="submit" class="btn btn-primario" style="width:100%;margin-top:16px;">Salvar anamnese</button>
+            <p id="msg-anamnese" style="text-align:center;margin-top:12px;"></p>
+          </form>
+        </div>
+      </div>
+
+      <div id="aba-historico" style="display:none;">
+        <h2>Histórico de anamneses</h2>
+        <div id="lista-historico" class="anamnese-card"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/anamnese-ui.js"></script>
+  <script src="js/voz.js"></script>
+  <script>
+    var schema = [];
+    var configCampos = { ativos: [], obrigatorios: [] };
+    var respostasP1 = {};
+    var respostasP2 = {};
+    var parteAtual = 1;
+    var anamneseId = null;
+
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function mostrarAba(aba) {
+      document.getElementById('aba-nova').style.display = aba === 'nova' ? 'block' : 'none';
+      document.getElementById('aba-historico').style.display = aba === 'historico' ? 'block' : 'none';
+      if (aba === 'historico') carregarHistorico();
+    }
+
+    function alternarParte(n) {
+      parteAtual = n;
+      document.getElementById('tab-parte1').classList.toggle('ativo', n === 1);
+      document.getElementById('tab-parte2').classList.toggle('ativo', n === 2);
+      renderFormulario();
+    }
+
+    async function init() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      var rSchema = await fetch(CONFIG.API_URL + '/anamneses/schema', { headers: { Authorization: 'Bearer ' + token } });
+      schema = (await rSchema.json()).campos || [];
+
+      var selEsp = document.getElementById('especialidade');
+      CONFIG.ESPECIALIDADES.forEach(function (esp) {
+        var opt = document.createElement('option');
+        opt.value = esp;
+        opt.textContent = esp;
+        selEsp.appendChild(opt);
+      });
+      selEsp.onchange = carregarConfig;
+
+      var ags = await fetch(CONFIG.API_URL + '/agendamentos/meus', { headers: { Authorization: 'Bearer ' + token } });
+      var lista = await ags.json();
+      var pacientes = {};
+      (Array.isArray(lista) ? lista : []).forEach(function (a) {
+        if (a.paciente_id && a.paciente_nome) pacientes[a.paciente_id] = a.paciente_nome;
+      });
+      var selPac = document.getElementById('paciente-id');
+      Object.keys(pacientes).forEach(function (id) {
+        var opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = pacientes[id];
+        selPac.appendChild(opt);
+      });
+
+      await carregarConfig();
+      renderFormulario();
+    }
+
+    async function carregarConfig() {
+      var token = localStorage.getItem('integra_token');
+      var esp = document.getElementById('especialidade').value;
+      var r = await fetch(CONFIG.API_URL + '/anamneses/config/' + encodeURIComponent(esp), { headers: { Authorization: 'Bearer ' + token } });
+      configCampos = await r.json();
+      renderFormulario();
+    }
+
+    async function carregarAnamnesePaciente() {
+      var token = localStorage.getItem('integra_token');
+      var pacId = document.getElementById('paciente-id').value;
+      if (!pacId) return;
+
+      var r = await fetch(CONFIG.API_URL + '/anamneses/profissional/lista?paciente_id=' + pacId, { headers: { Authorization: 'Bearer ' + token } });
+      var lista = await r.json();
+      if (!Array.isArray(lista) || !lista.length) {
+        anamneseId = null;
+        respostasP1 = {};
+        respostasP2 = {};
+        document.getElementById('anamnese-id').value = '';
+        renderFormulario();
+        return;
+      }
+
+      var ultima = lista[0];
+      anamneseId = ultima.id;
+      document.getElementById('anamnese-id').value = ultima.id;
+      if (ultima.especialidade) document.getElementById('especialidade').value = ultima.especialidade;
+
+      var det = await fetch(CONFIG.API_URL + '/anamneses/' + ultima.id, { headers: { Authorization: 'Bearer ' + token } });
+      var row = await det.json();
+      respostasP1 = typeof row.parte1_respostas === 'string' ? JSON.parse(row.parte1_respostas) : (row.parte1_respostas || {});
+      respostasP2 = typeof row.parte2_respostas === 'string' ? JSON.parse(row.parte2_respostas) : (row.parte2_respostas || {});
+
+      await carregarConfig();
+      mostrarPendentes(row.campos_pendentes);
+      renderFormulario();
+    }
+
+    function mostrarPendentes(pendentes) {
+      var box = document.getElementById('aviso-pendentes');
+      var arr = typeof pendentes === 'string' ? JSON.parse(pendentes) : (pendentes || []);
+      if (!arr.length) { box.style.display = 'none'; return; }
+      box.style.display = 'block';
+      box.innerHTML = '<strong>Campos pendentes na Parte 1:</strong> ' + arr.length + ' campo(s) obrigatório(s) não preenchido(s) pelo paciente — revise na Parte 2 ou solicite complemento.';
+    }
+
+    function renderFormulario() {
+      var campos = AnamneseUI.filtrarCampos(schema, {
+        idsAtivos: configCampos.campos_ativos,
+        parte: parteAtual
+      });
+      var respostas = parteAtual === 1 ? respostasP1 : respostasP2;
+      var pendentes = parteAtual === 2 ? (configCampos.campos_obrigatorios || []).filter(function (id) {
+        return !respostasP1[id] || String(respostasP1[id]).trim() === '';
+      }) : [];
+
+      document.getElementById('form-campos').innerHTML = AnamneseUI.renderFormulario(campos, respostas, {
+        obrigatorios: configCampos.campos_obrigatorios,
+        pendentes: pendentes
+      });
+    }
+
+    async function salvarAnamnese(e) {
+      e.preventDefault();
+      var token = localStorage.getItem('integra_token');
+      var pacId = document.getElementById('paciente-id').value;
+      var esp = document.getElementById('especialidade').value;
+      if (!pacId) { alert('Selecione o paciente.'); return; }
+
+      var coletado = AnamneseUI.coletarRespostas(document.getElementById('form-anamnese'));
+      if (parteAtual === 1) respostasP1 = Object.assign(respostasP1, coletado);
+      else respostasP2 = Object.assign(respostasP2, coletado);
+
+      var body = {
+        paciente_id: parseInt(pacId, 10),
+        especialidade: esp,
+        parte1_respostas: respostasP1,
+        parte2_respostas: respostasP2
+      };
+
+      var url = CONFIG.API_URL + '/anamneses';
+      var method = 'POST';
+      if (anamneseId) {
+        url = CONFIG.API_URL + '/anamneses/' + anamneseId;
+        method = 'PUT';
+        body = { parte1_respostas: respostasP1, parte2_respostas: respostasP2 };
+      }
+
+      var r = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify(body)
+      });
+      var d = await r.json();
+      var msg = document.getElementById('msg-anamnese');
+      if (r.ok) {
+        if (!anamneseId && d.id) { anamneseId = d.id; document.getElementById('anamnese-id').value = d.id; }
+        msg.textContent = '✅ ' + (d.mensagem || 'Salvo!');
+        msg.style.color = 'var(--verde-suave)';
+        mostrarPendentes(d.campos_pendentes);
+      } else {
+        msg.textContent = '❌ ' + (d.erro || 'Erro ao salvar.');
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
+
+    async function carregarHistorico() {
+      var token = localStorage.getItem('integra_token');
+      var r = await fetch(CONFIG.API_URL + '/anamneses/profissional/lista', { headers: { Authorization: 'Bearer ' + token } });
+      var lista = await r.json();
+      var div = document.getElementById('lista-historico');
+      if (!Array.isArray(lista) || !lista.length) {
+        div.innerHTML = '<p style="color:var(--texto-medio)">Nenhuma anamnese registrada ainda.</p>';
+        return;
+      }
+      div.innerHTML = lista.map(function (a) {
+        return '<div class="historico-item">' +
+          '<div><strong>' + AnamneseUI.escapeHtml(a.paciente_nome) + '</strong><br>' +
+          '<span style="font-size:12px;color:var(--texto-medio)">' + (a.especialidade || 'Geral') + ' · ' + new Date(a.atualizado_em).toLocaleString('pt-BR') + '</span><br>' +
+          '<span class="status-badge status-' + a.status + '">' + a.status.replace('_', ' ') + '</span></div>' +
+          '<button type="button" onclick="abrirAnamnese(' + a.id + ',' + a.paciente_id + ')">Abrir</button></div>';
+      }).join('');
+    }
+
+    async function abrirAnamnese(id, pacienteId) {
+      mostrarAba('nova');
+      document.getElementById('paciente-id').value = pacienteId;
+      anamneseId = id;
+      document.getElementById('anamnese-id').value = id;
+      await carregarAnamnesePaciente();
+    }
+
+    init();
+  </script>
+<footer style="text-align:center;padding:30px 20px;font-size:12px;color:var(--texto-medio);border-top:1px solid #E2E8F0;margin-top:40px;line-height:1.6;">&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
+  <script src="js/arquivo-profissional.js"></script>
+</body>
+</html>

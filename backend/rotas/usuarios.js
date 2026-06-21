@@ -156,13 +156,18 @@ router.get('/status-loja', autenticar, async (req, res) => {
 
 router.put('/configurar-anamnese-parte1', autenticar, async (req, res) => {
   const { especialidade_id, campos_ativos, campos_obrigatorios } = req.body;
-  const ex = await db.query('SELECT id FROM config_anamnese_parte1 WHERE usuario_id = $1 AND especialidade_id = $2', [req.usuario.id, especialidade_id]);
+  const { idsPadraoAtivos, idsPadraoObrigatorios, campoPorId, VERSAO_SCHEMA } = require('../config/anamnese-campos');
+  const esp = especialidade_id || '';
+  const ativos = (campos_ativos || idsPadraoAtivos()).filter((id) => campoPorId(id));
+  const obrigatorios = (campos_obrigatorios || []).filter((id) => ativos.includes(id));
+
+  const ex = await db.query('SELECT id FROM config_anamnese_parte1 WHERE usuario_id = $1 AND especialidade_id = $2', [req.usuario.id, esp]);
   if (ex.rows.length > 0) {
-    await db.query('UPDATE config_anamnese_parte1 SET campos_ativos = $1, campos_obrigatorios = $2 WHERE id = $3', [JSON.stringify(campos_ativos), JSON.stringify(campos_obrigatorios), ex.rows[0].id]);
+    await db.query('UPDATE config_anamnese_parte1 SET campos_ativos = $1, campos_obrigatorios = $2, versao_schema = $3, atualizado_em = NOW() WHERE id = $4', [JSON.stringify(ativos), JSON.stringify(obrigatorios), VERSAO_SCHEMA, ex.rows[0].id]);
   } else {
-    await db.query('INSERT INTO config_anamnese_parte1 (usuario_id, especialidade_id, campos_ativos, campos_obrigatorios) VALUES ($1, $2, $3, $4)', [req.usuario.id, especialidade_id, JSON.stringify(campos_ativos), JSON.stringify(campos_obrigatorios)]);
+    await db.query('INSERT INTO config_anamnese_parte1 (usuario_id, especialidade_id, campos_ativos, campos_obrigatorios, versao_schema) VALUES ($1, $2, $3, $4, $5)', [req.usuario.id, esp, JSON.stringify(ativos), JSON.stringify(obrigatorios), VERSAO_SCHEMA]);
   }
-  res.json({ mensagem: 'Formulário personalizado salvo!' });
+  res.json({ mensagem: 'Formulário personalizado salvo!', campos_ativos: ativos, campos_obrigatorios: obrigatorios });
 });
 
 router.get('/listar', autenticar, async (req, res) => {

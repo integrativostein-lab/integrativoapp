@@ -6,6 +6,8 @@ const PREFIXOS_Sensiveis = [
   '/api/auth',
   '/api/usuarios',
   '/api/prescricoes',
+  '/api/anamneses',
+  '/api/teleconsultas',
   '/api/admin',
   '/api/fhir',
   '/api/alertas-seguranca',
@@ -21,7 +23,7 @@ function rotaSensiveis(pathname) {
 
 function categoriaPorRota(pathname, metodo) {
   if (pathname.startsWith('/api/auth')) return auditoria.CATEGORIAS.AUTENTICACAO;
-  if (pathname.startsWith('/api/prescricoes') || pathname.startsWith('/api/fhir') || pathname.startsWith('/api/sus')) {
+  if (pathname.startsWith('/api/prescricoes') || pathname.startsWith('/api/anamneses') || pathname.startsWith('/api/teleconsultas') || pathname.startsWith('/api/fhir') || pathname.startsWith('/api/sus')) {
     return auditoria.CATEGORIAS.DADOS_SENSIVEIS;
   }
   if (pathname.startsWith('/api/admin')) return auditoria.CATEGORIAS.ADMINISTRACAO;
