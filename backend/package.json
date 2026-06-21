@@ -13,7 +13,8 @@
     "test:auditoria-lgpd": "node testar-auditoria-lgpd.js",
     "demo:garantir": "node garantir-demo.js",
     "migrate:lgpd": "node ../scripts/aplicar-migracoes-lgpd.js",
-    "deploy:alfa": "node ../scripts/deploy-alfa.js"
+    "deploy:alfa": "node ../scripts/deploy-alfa.js",
+    "sync:render": "node ../scripts/sincronizar-render.js"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",
