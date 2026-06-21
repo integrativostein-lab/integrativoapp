@@ -1,12 +1,13 @@
 const axios = require('axios');
 const evolution = require('./evolution-api');
+const { SITE_CANONICO } = require('../config/dominios');
 
 function textoBoasVindas(nome) {
   return `Olá, ${nome}! Seja muito bem-vindo(a) ao Integrativo.App.
 
 Antes de começar, recomendamos ler o manual com calma. Ele foi feito para você configurar o sistema com tranquilidade, deixar tudo rodando direitinho e evitar perda de tempo no dia a dia.
 
-Manual: ${process.env.FRONTEND_URL || 'https://integrativoapp.vercel.app'}/manual.html
+Manual: ${process.env.FRONTEND_URL || SITE_CANONICO}/manual.html
 
 Estamos felizes com a parceria.`;
 }
@@ -77,7 +78,7 @@ async function enviarCodigoAssinatura({ usuario, codigo }) {
 async function enviarBoasVindasAssinatura({ usuario }) {
   const nome = usuario.nome || 'profissional';
   const texto = textoBoasVindas(nome);
-  const manualUrl = `${process.env.FRONTEND_URL || 'https://integrativoapp.vercel.app'}/manual.html`;
+  const manualUrl = `${process.env.FRONTEND_URL || SITE_CANONICO}/manual.html`;
   const html = `<p>Olá, ${nome}!</p><p>Seja muito bem-vindo(a) ao Integrativo.App.</p><p>Antes de começar, recomendamos ler o manual com calma. Ele foi feito para você configurar o sistema com tranquilidade, deixar tudo rodando direitinho e evitar perda de tempo no dia a dia.</p><p><a href="${manualUrl}">Ler o manual do Integrativo.App</a></p><p>Estamos felizes com a parceria.</p>`;
   const resultados = await Promise.allSettled([
     enviarEmail({ para: usuario.email, assunto: 'Bem-vindo(a) ao Integrativo.App', html, texto }),

@@ -57,7 +57,7 @@ async function criarContasDemo() {
     }
   }
 
-  console.log('\n🎉 Pronto! Acesse: https://integra-saude-psi.vercel.app');
+  console.log('\n🎉 Pronto! Acesse: https://integrativo.app');
 }
 
 criarContasDemo();

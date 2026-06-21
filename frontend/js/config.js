@@ -4,6 +4,9 @@
 
 const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname : '';
 
+/** URL canônica de produção — demais domínios redirecionam para ela na Vercel. */
+const SITE_CANONICO = 'https://integrativo.app';
+
 function resolverApiUrl() {
   if (typeof window !== 'undefined' && window.INTEGRATIVO_API_URL) {
     return window.INTEGRATIVO_API_URL;
@@ -18,6 +21,11 @@ function resolverApiUrl() {
 }
 
 const CONFIG = {
+  // ═══════════════════════════════════════════
+  // SITE
+  // ═══════════════════════════════════════════
+  SITE_URL: SITE_CANONICO,
+
   // ═══════════════════════════════════════════
   // API
   // ═══════════════════════════════════════════

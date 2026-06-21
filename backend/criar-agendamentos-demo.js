@@ -92,7 +92,7 @@ async function criarAgendamentosDemo() {
   }
 
   console.log('\n🎉 Agendamentos demo prontos!');
-  console.log('📱 Acesse: https://integra-saude-psi.vercel.app');
+  console.log('📱 Acesse: https://integrativo.app');
   console.log('👨‍⚕️ Profissional: profissional@demo.com / demo123');
   console.log('👩‍🦰 Paciente: paciente@demo.com / demo123');
 }

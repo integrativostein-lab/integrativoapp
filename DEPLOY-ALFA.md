@@ -4,6 +4,17 @@ Este projeto esta preparado para um ambiente alfa separado da producao.
 
 ## URLs sugeridas
 
+### Produção (domínios oficiais)
+
+- **Canônico:** `https://integrativo.app`
+- Espelhos (redirect na Vercel): `integrativo.app.br`, `integrativoapp.com`, `integrativoapp.com.br`
+- Backend: `https://integra-backend-ynrd.onrender.com`
+- API: `https://integra-backend-ynrd.onrender.com/api`
+
+Ver mapa completo em `DOMINIOS.md` (CORS e `FRONTEND_URL` no Render).
+
+### Alfa / teste
+
 - Frontend alfa: `https://integrativoapp-alfa.vercel.app`
 - Backend alfa: `https://integrativoappespelho.onrender.com`
 - API alfa: `https://integrativoappespelho.onrender.com/api`

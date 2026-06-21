@@ -3,7 +3,7 @@
 
 📱 ACESSO AO SISTEMA
 -------------------------------------
-Frontend: https://integra-saude-psi.vercel.app
+Frontend: https://integrativo.app
 Backend:  https://integra-backend-ynrd.onrender.com
 
 👥 CONTAS DE DEMONSTRAÇÃO

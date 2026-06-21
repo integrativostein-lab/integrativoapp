@@ -89,7 +89,7 @@ async function configurarCompleto() {
   }
 
   console.log('\n🎉 Profissional demo configurado com sucesso!');
-  console.log('📱 Acesse: https://integra-saude-psi.vercel.app');
+  console.log('📱 Acesse: https://integrativo.app');
   console.log('👨‍⚕️ profissional@demo.com / demo123');
 }
 
