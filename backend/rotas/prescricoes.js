@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
+const { recursosPlano } = require('../config/planos');
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -94,17 +95,27 @@ router.delete('/banco-terapeutico/:id', autenticar, async (req, res) => {
 // Prescrições
 router.post('/', autenticar, async (req, res) => {
   const { paciente_id, itens, exames_sugeridos, observacoes, tipo_controlado } = req.body;
-  const prof = await db.query('SELECT conselho_classe FROM usuarios WHERE id = $1', [req.usuario.id]);
+  const prof = await db.query('SELECT conselho_classe, plano FROM usuarios WHERE id = $1', [req.usuario.id]);
+  const planoRecursos = recursosPlano(prof.rows[0]?.plano);
+
+  if (tipo_controlado && !planoRecursos.prescricao) {
+    return res.status(403).json({ erro: 'Seu plano permite apenas recomendações clínicas, sem prescrição eletrônica.' });
+  }
+
   let tipo = 'solicitacao';
-  if (prof.rows[0]?.conselho_classe) tipo = 'prescricao';
+  if (planoRecursos.prescricao && prof.rows[0]?.conselho_classe) tipo = 'prescricao';
   if (tipo_controlado) tipo = 'controle_especial';
+
+  const rotuloTipo = !planoRecursos.prescricao
+    ? 'Recomendação'
+    : (tipo === 'prescricao' ? 'Prescrição' : tipo === 'controle_especial' ? 'Receita de Controle Especial' : 'Solicitação');
 
   const r = await db.query(
     'INSERT INTO prescricoes (paciente_id, profissional_id, tipo, itens, exames_sugeridos, observacoes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
     [paciente_id, req.usuario.id, tipo, JSON.stringify(itens), exames_sugeridos ? JSON.stringify(exames_sugeridos) : null, observacoes]
   );
 
-  const resposta = { mensagem: `${tipo === 'prescricao' ? 'Prescrição' : tipo === 'controle_especial' ? 'Receita de Controle Especial' : 'Solicitação'} registrada!`, tipo, id: r.rows[0].id };
+  const resposta = { mensagem: `${rotuloTipo} registrada!`, tipo, id: r.rows[0].id };
 
   auditoria.registrar({
     categoria: auditoria.CATEGORIAS.DADOS_SENSIVEIS,

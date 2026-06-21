@@ -118,6 +118,7 @@ const tissRoutes = require('./rotas/tiss');
 const alertasSegurancaRoutes = require('./rotas/alertas-seguranca');
 const { router: fhirRoutes, atualizarProtocolosFiocruz } = require('./rotas/fhir');
 const { router: validacaoRoutes, atualizarStatusValidacoes } = require('./rotas/validacao-conselhos');
+const { processarAssinaturasExpiradas } = require('./servicos/assinaturas-ciclo');
 
 // ============================================
 // ATIVAÇÃO DAS ROTAS
@@ -174,6 +175,13 @@ cron.schedule('0 2 * * *', () => {
 cron.schedule('0 3 * * *', () => {
   console.log('🔄 Iniciando atualização de status de validações...');
   atualizarStatusValidacoes();
+});
+
+// Expirar assinaturas canceladas (acesso até fim do ciclo) — a cada hora
+cron.schedule('0 * * * *', () => {
+  processarAssinaturasExpiradas().catch((err) => {
+    console.error('[assinaturas-ciclo/cron]', err.message);
+  });
 });
 
 console.log('⏰ Jobs agendados configurados');

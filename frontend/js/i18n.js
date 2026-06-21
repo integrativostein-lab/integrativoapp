@@ -18,16 +18,43 @@ const I18N = {
     zu: '🇿🇦',
     fr: '🇫🇷'
   },
+  isoPaises: {
+    'pt-BR': 'br', es: 'mx', en: 'us', zh: 'cn', ru: 'ru', hi: 'in',
+    ar: 'eg', fa: 'ir', id: 'id', ja: 'jp', ko: 'kr',
+    af: 'za', zu: 'za', fr: 'fr'
+  },
+  rotulos: {
+    'pt-BR': 'PT', es: 'ES', en: 'EN', zh: 'ZH', ru: 'RU', hi: 'HI',
+    ar: 'AR', fa: 'FA', id: 'ID', ja: 'JA', ko: 'KO',
+    af: 'AF', zu: 'ZU', fr: 'FR'
+  },
+  nomesIdiomas: {
+    'pt-BR': 'Português',
+    es: 'Español',
+    en: 'English',
+    zh: '中文',
+    ru: 'Русский',
+    hi: 'हिन्दी',
+    ar: 'العربية',
+    fa: 'فارسی',
+    id: 'Indonesia',
+    ja: '日本語',
+    ko: '한국어',
+    af: 'Afrikaans',
+    zu: 'isiZulu',
+    fr: 'Français'
+  },
 
   translations: {
     'pt-BR': {
       'hero.titulo': 'Encontre seu profissional integrativo',
       'hero.subtitulo': '{{especialidades}} especialidades. Agende online ou presencial.',
-      'hero.buscar': 'Buscar Profissionais',
+      'hero.buscar': '🔍 Encontrar Profissional',
+      'hero.profissional': '📋 Sou Profissional',
       'hero.baixar_app': '📱 Baixe o App Grátis',
       'nav.inicio': 'Início',
       'nav.busca': 'Busca',
-      'nav.profissionais': 'Para Profissionais',
+      'nav.profissionais': 'Sou Profissional',
       'nav.bibliotecas': 'Bibliotecas',
       'nav.entrar': 'Entrar',
       'nav.planos': 'Planos',
@@ -40,11 +67,12 @@ const I18N = {
     en: {
       'hero.titulo': 'Find your integrative professional',
       'hero.subtitulo': '{{especialidades}} specialties. Book online or in-person.',
-      'hero.buscar': 'Find Professionals',
+      'hero.buscar': '🔍 Find Professionals',
+      'hero.profissional': '📋 I\'m a Professional',
       'hero.baixar_app': '📱 Download Free App',
       'nav.inicio': 'Home',
       'nav.busca': 'Search',
-      'nav.profissionais': 'For Professionals',
+      'nav.profissionais': 'I\'m a Professional',
       'nav.bibliotecas': 'Libraries',
       'nav.entrar': 'Login',
       'nav.planos': 'Plans',
@@ -57,11 +85,12 @@ const I18N = {
     es: {
       'hero.titulo': 'Encuentra a tu profesional de salud integrativa',
       'hero.subtitulo': '{{especialidades}} especialidades. Agenda en línea o presencial.',
-      'hero.buscar': 'Buscar profesionales',
+      'hero.buscar': '🔍 Buscar profesionales',
+      'hero.profissional': '📋 Soy Profesional',
       'hero.baixar_app': '📱 Descarga la app gratis',
       'nav.inicio': 'Inicio',
       'nav.busca': 'Búsqueda',
-      'nav.profissionais': 'Para profesionales',
+      'nav.profissionais': 'Soy Profesional',
       'nav.bibliotecas': 'Bibliotecas',
       'nav.entrar': 'Ingresar',
       'nav.planos': 'Planes',
@@ -76,7 +105,7 @@ const I18N = {
       'hero.baixar_app': '📱 Téléchargez l\'App Gratuitement',
       'nav.inicio': 'Accueil',
       'nav.busca': 'Recherche',
-      'nav.profissionais': 'Pour Professionnels',
+      'nav.profissionais': 'Je suis professionnel',
       'nav.bibliotecas': 'Bibliothèques',
       'nav.entrar': 'Connexion',
       'nav.planos': 'Plans',
@@ -91,7 +120,7 @@ const I18N = {
       'hero.baixar_app': '📱 Скачать приложение бесплатно',
       'nav.inicio': 'Главная',
       'nav.busca': 'Поиск',
-      'nav.profissionais': 'Для специалистов',
+      'nav.profissionais': 'Я специалист',
       'nav.bibliotecas': 'Библиотеки',
       'nav.entrar': 'Вход',
       'nav.planos': 'Планы',
@@ -106,7 +135,7 @@ const I18N = {
       'hero.baixar_app': '📱 मुफ्त ऐप डाउनलोड करें',
       'nav.inicio': 'होम',
       'nav.busca': 'खोज',
-      'nav.profissionais': 'पेशेवरों के लिए',
+      'nav.profissionais': 'मैं पेशेवर हूँ',
       'nav.bibliotecas': 'पुस्तकालय',
       'nav.entrar': 'लॉगिन',
       'nav.planos': 'योजनाएं',
@@ -121,7 +150,7 @@ const I18N = {
       'hero.baixar_app': '📱 免费下载应用',
       'nav.inicio': '首页',
       'nav.busca': '搜索',
-      'nav.profissionais': '专业人士',
+      'nav.profissionais': '我是专业人士',
       'nav.bibliotecas': '资料库',
       'nav.entrar': '登录',
       'nav.planos': '方案',
@@ -136,7 +165,7 @@ const I18N = {
       'hero.baixar_app': '📱 Laai die App gratis af',
       'nav.inicio': 'Tuis',
       'nav.busca': 'Soek',
-      'nav.profissionais': 'Vir Professionele',
+      'nav.profissionais': 'Ek is professioneel',
       'nav.bibliotecas': 'Biblioteke',
       'nav.entrar': 'Teken in',
       'nav.planos': 'Planne',
@@ -151,7 +180,7 @@ const I18N = {
       'hero.baixar_app': '📱 Landa uhlelo lokusebenza mahhala',
       'nav.inicio': 'Ikhaya',
       'nav.busca': 'Sesha',
-      'nav.profissionais': 'Ochwepheshe',
+      'nav.profissionais': 'Ngiyisichwepheshe',
       'nav.bibliotecas': 'Amathala',
       'nav.entrar': 'Ngena',
       'nav.planos': 'Izinhlelo',
@@ -166,7 +195,7 @@ const I18N = {
       'hero.baixar_app': '📱 حمّل التطبيق مجاناً',
       'nav.inicio': 'الرئيسية',
       'nav.busca': 'بحث',
-      'nav.profissionais': 'للمختصين',
+      'nav.profissionais': 'أنا مختص',
       'nav.bibliotecas': 'المكتبات',
       'nav.entrar': 'دخول',
       'nav.planos': 'الخطط',
@@ -181,7 +210,7 @@ const I18N = {
       'hero.baixar_app': '📱 اپلیکیشن رایگان را دانلود کنید',
       'nav.inicio': 'خانه',
       'nav.busca': 'جستجو',
-      'nav.profissionais': 'برای متخصصان',
+      'nav.profissionais': 'من متخصص هستم',
       'nav.bibliotecas': 'کتابخانه‌ها',
       'nav.entrar': 'ورود',
       'nav.planos': 'طرح‌ها',
@@ -196,7 +225,7 @@ const I18N = {
       'hero.baixar_app': '📱 Unduh Aplikasi Gratis',
       'nav.inicio': 'Beranda',
       'nav.busca': 'Pencarian',
-      'nav.profissionais': 'Untuk Profesional',
+      'nav.profissionais': 'Saya Profesional',
       'nav.bibliotecas': 'Perpustakaan',
       'nav.entrar': 'Masuk',
       'nav.planos': 'Paket',
@@ -211,7 +240,7 @@ const I18N = {
       'hero.baixar_app': '📱 無料アプリをダウンロード',
       'nav.inicio': 'ホーム',
       'nav.busca': '検索',
-      'nav.profissionais': '専門家向け',
+      'nav.profissionais': '私は専門家です',
       'nav.bibliotecas': 'ライブラリ',
       'nav.entrar': 'ログイン',
       'nav.planos': 'プラン',
@@ -226,7 +255,7 @@ const I18N = {
       'hero.baixar_app': '📱 무료 앱 다운로드',
       'nav.inicio': '홈',
       'nav.busca': '검색',
-      'nav.profissionais': '전문가용',
+      'nav.profissionais': '전문가입니다',
       'nav.bibliotecas': '라이브러리',
       'nav.entrar': '로그인',
       'nav.planos': '요금제',
@@ -243,9 +272,69 @@ const I18N = {
     if (window.CONFIG?.IDIOMAS_BANDEIRAS) {
       this.bandeiras = { ...this.bandeiras, ...CONFIG.IDIOMAS_BANDEIRAS };
     }
+    if (window.CONFIG?.IDIOMAS_ISO) {
+      this.isoPaises = { ...this.isoPaises, ...CONFIG.IDIOMAS_ISO };
+    }
+    if (window.CONFIG?.IDIOMAS_ROTULOS) {
+      this.rotulos = { ...this.rotulos, ...CONFIG.IDIOMAS_ROTULOS };
+    }
     if (window.CONFIG?.IDIOMAS_RTL?.length) {
       this.rtlLangs = CONFIG.IDIOMAS_RTL.slice();
     }
+  },
+
+  isoIdioma(lang) {
+    return this.isoPaises[lang] || String(lang || '').slice(0, 2).toLowerCase();
+  },
+
+  urlBandeira(lang) {
+    return `img/bandeiras/${this.isoIdioma(lang)}.svg`;
+  },
+
+  htmlBandeiraIdioma(lang) {
+    const rotulo = this.rotulos[lang] || lang;
+    return `<img class="lang-flag" src="${this.urlBandeira(lang)}" alt="" width="20" height="14" loading="lazy"><span class="lang-label">${rotulo}</span>`;
+  },
+
+  nomeIdioma(lang) {
+    return this.nomesIdiomas[lang] || lang;
+  },
+
+  montarSeletorDropdown(container, wrapperClass) {
+    container.innerHTML = '';
+    container.setAttribute('data-i18n-no-translate', 'true');
+    if (wrapperClass) container.className = wrapperClass;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'nav-lang-select-wrap';
+
+    const flag = document.createElement('img');
+    flag.className = 'lang-flag lang-flag-select';
+    flag.src = this.urlBandeira(this.currentLang);
+    flag.alt = '';
+    flag.width = 20;
+    flag.height = 14;
+
+    const select = document.createElement('select');
+    select.className = 'nav-lang-select';
+    select.setAttribute('aria-label', this.t('lang.seletor'));
+
+    this.availableLangs.forEach((lang) => {
+      const opt = document.createElement('option');
+      opt.value = lang;
+      opt.textContent = `${this.rotulos[lang] || lang} · ${this.nomeIdioma(lang)}`;
+      if (lang === this.currentLang) opt.selected = true;
+      select.appendChild(opt);
+    });
+
+    select.addEventListener('change', () => {
+      this.setLanguage(select.value, true);
+      flag.src = this.urlBandeira(select.value);
+    });
+
+    wrap.appendChild(flag);
+    wrap.appendChild(select);
+    container.appendChild(wrap);
   },
 
   getLocale() {
@@ -287,6 +376,11 @@ const I18N = {
     if (primary === 'id') return 'id';
     if (primary === 'ja') return 'ja';
     if (primary === 'ko') return 'ko';
+    if (primary === 'ru') return 'ru';
+    if (primary === 'hi') return 'hi';
+    if (primary === 'fr') return 'fr';
+    if (primary === 'af') return 'af';
+    if (primary === 'zu') return 'zu';
 
     const exact = {
       'pt-br': 'pt-BR',
@@ -346,7 +440,7 @@ const I18N = {
     }
     if (navigator.language) lista.push(navigator.language);
     if (navigator.userLanguage) lista.push(navigator.userLanguage);
-    return lista.filter(Boolean);
+    return [...new Set(lista.filter(Boolean))];
   },
 
   detectLanguage() {
@@ -359,10 +453,6 @@ const I18N = {
       return saved;
     }
 
-    if (saved && localStorage.getItem('integra_lang_manual') !== 'false' && !manual) {
-      return saved;
-    }
-
     for (const candidato of this.getSystemLanguages()) {
       const mapped = this.mapLocale(candidato);
       if (mapped && this.availableLangs.includes(mapped)) {
@@ -370,6 +460,10 @@ const I18N = {
         localStorage.setItem('integra_lang_manual', 'false');
         return mapped;
       }
+    }
+
+    if (saved && this.availableLangs.includes(saved)) {
+      return saved;
     }
 
     return 'pt-BR';
@@ -394,9 +488,36 @@ const I18N = {
     localStorage.setItem('integra_lang', lang);
     localStorage.setItem('integra_lang_manual', manual ? 'true' : 'false');
     this.aplicarIdiomaDocumento();
-    this.aplicarTraducoes();
-    this.atualizarSeletorIdioma();
     if (window.NavPublico?.init) window.NavPublico.init();
+    else {
+      this.aplicarTraducoes();
+      this.montarSeletorIdioma();
+    }
+    this.executarTraducaoCompleta();
+  },
+
+  async executarTraducaoCompleta() {
+    this.aplicarTraducoes();
+    await this.garantirAutoTraducao();
+    if (window.I18NAuto?.aplicar) {
+      await window.I18NAuto.aplicar(this);
+    } else if (window.CONFIG?.Catalogo?.iniciarPagina) {
+      window.CONFIG.Catalogo.iniciarPagina(window.CONFIG);
+    }
+    this.atualizarSeletorIdioma();
+  },
+
+  garantirAutoTraducao() {
+    if (window.I18NAuto) return Promise.resolve();
+    return new Promise((resolve) => {
+      const ref = document.querySelector('script[src*="i18n.js"]');
+      const base = ref?.src.replace(/i18n\.js(\?.*)?$/, '') || 'js/';
+      const s = document.createElement('script');
+      s.src = `${base}i18n-auto.js`;
+      s.onload = () => resolve();
+      s.onerror = () => resolve();
+      document.head.appendChild(s);
+    });
   },
 
   aplicarIdiomaDocumento() {
@@ -405,12 +526,16 @@ const I18N = {
     document.documentElement.dir = this.rtlLangs.includes(this.currentLang) ? 'rtl' : 'ltr';
   },
 
-  init() {
+  async init() {
     this.syncFromConfig();
     this.currentLang = this.detectLanguage();
     this.aplicarIdiomaDocumento();
-    this.aplicarTraducoes();
-    this.criarSeletorIdioma();
+    if (window.NavPublico?.init) window.NavPublico.init();
+    else {
+      this.aplicarTraducoes();
+      this.montarSeletorIdioma();
+    }
+    await this.executarTraducaoCompleta();
   },
 
   aplicarTraducoes() {
@@ -426,61 +551,42 @@ const I18N = {
     });
   },
 
-  criarSeletorIdioma() {
-    if (document.getElementById('lang-selector')) return;
+  montarSeletorIdioma() {
+    const navAlvo = document.getElementById('nav-lang-selector');
+    if (navAlvo) {
+      this.montarSeletorDropdown(navAlvo, 'nav-lang-select-container');
+      return;
+    }
 
-    const seletor = document.createElement('div');
-    seletor.id = 'lang-selector';
-    seletor.setAttribute('role', 'group');
-    seletor.setAttribute('aria-label', this.t('lang.seletor'));
-    seletor.style.cssText = `
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 6px;
-      max-width: min(420px, calc(100vw - 24px));
-      background: rgba(255,255,255,0.95);
-      padding: 6px 10px;
-      border-radius: 30px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    let flutuante = document.getElementById('lang-selector');
+    if (!flutuante) {
+      flutuante = document.createElement('div');
+      flutuante.id = 'lang-selector';
+      flutuante.setAttribute('data-i18n-no-translate', 'true');
+      document.body.appendChild(flutuante);
+    }
+
+    flutuante.className = 'lang-selector-flutuante';
+    flutuante.style.cssText = `
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      background: rgba(255,255,255,0.96); padding: 6px 10px;
+      border-radius: 999px; box-shadow: 0 2px 12px rgba(0,0,0,0.12);
     `;
+    this.montarSeletorDropdown(flutuante, 'lang-selector-flutuante');
+  },
 
-    this.availableLangs.forEach((lang) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.dataset.lang = lang;
-      btn.textContent = this.bandeiras[lang] || lang;
-      btn.title = lang;
-      btn.setAttribute('aria-label', lang);
-      btn.style.cssText = `
-        border: none;
-        background: ${lang === this.currentLang ? 'var(--azul-escuro, #1A365D)' : 'transparent'};
-        color: ${lang === this.currentLang ? 'white' : '#333'};
-        padding: 6px 8px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: all 0.2s;
-        line-height: 1;
-      `;
-      btn.onclick = () => this.setLanguage(lang, true);
-      seletor.appendChild(btn);
-    });
-
-    document.body.appendChild(seletor);
+  criarSeletorIdioma() {
+    this.montarSeletorIdioma();
   },
 
   atualizarSeletorIdioma() {
-    const seletor = document.getElementById('lang-selector');
-    if (!seletor) return;
-    seletor.querySelectorAll('button[data-lang]').forEach((btn) => {
-      const ativo = btn.dataset.lang === this.currentLang;
-      btn.style.background = ativo ? 'var(--azul-escuro, #1A365D)' : 'transparent';
-      btn.style.color = ativo ? 'white' : '#333';
+    document.querySelectorAll('.nav-lang-select').forEach((select) => {
+      if (select.querySelector(`option[value="${this.currentLang}"]`)) {
+        select.value = this.currentLang;
+      }
+    });
+    document.querySelectorAll('.lang-flag-select').forEach((img) => {
+      img.src = this.urlBandeira(this.currentLang);
     });
   }
 };
@@ -491,7 +597,7 @@ function iniciarI18n() {
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', iniciarI18n);
+  document.addEventListener('DOMContentLoaded', () => iniciarI18n());
 } else {
   iniciarI18n();
 }

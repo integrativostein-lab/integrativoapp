@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
+const { processarAssinaturasExpiradas } = require('../servicos/assinaturas-ciclo');
 const {
   limiteBibliotecasPorPlano,
   montarBibliotecasCadastro
@@ -45,12 +46,16 @@ const METADADOS_CONSENTIMENTOS = {
   compartilhamento_fhir: {
     finalidade: 'Interoperabilidade clínica FHIR/RNDS quando solicitado',
     base_legal: 'consentimento_art7_I'
+  },
+  cobranca_assinatura: {
+    finalidade: 'Cobrança de assinatura, comissões e gestão do plano',
+    base_legal: 'execucao_contrato_art7_V'
   }
 };
 
 const CONSENTIMENTOS_OBRIGATORIOS = {
   paciente: ['termos_privacidade', 'dados_saude', 'arquivamento_rastreabilidade'],
-  profissional: ['termos_privacidade', 'dados_saude', 'dados_profissionais', 'arquivamento_rastreabilidade']
+  profissional: ['termos_privacidade', 'dados_saude', 'dados_profissionais', 'arquivamento_rastreabilidade', 'cobranca_assinatura']
 };
 
 async function garantirTabelaConsentimentosLgpd() {
@@ -423,6 +428,11 @@ router.post('/login', async (req, res) => {
     }
     
     const token = jwt.sign({ id: u.id, email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    await processarAssinaturasExpiradas({ usuarioId: u.id }).catch((err) => {
+      console.error('[assinaturas-ciclo/login]', err.message);
+    });
+    const usuarioAtual = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [u.id]);
+    const perfil = usuarioAtual.rows[0] || u;
     auditoria.registrar({
       categoria: auditoria.CATEGORIAS.AUTENTICACAO,
       acao: 'login_sucesso',
@@ -437,7 +447,7 @@ router.post('/login', async (req, res) => {
       ip: req.ip,
       user_agent: req.get('user-agent')
     });
-    res.json({ mensagem: 'Login realizado!', token, usuario: { id: u.id, nome: u.nome, email: u.email, tipo: u.tipo, plano: u.plano } });
+    res.json({ mensagem: 'Login realizado!', token, usuario: { id: perfil.id, nome: perfil.nome, email: perfil.email, tipo: perfil.tipo, plano: perfil.plano } });
   } catch (e) {
     console.error(e);
     res.status(500).json({ erro: 'Erro interno' });
@@ -449,6 +459,9 @@ router.get('/verificar', async (req, res) => {
   if (!token) return res.status(401).json({ erro: 'Não autorizado' });
   try {
     const d = jwt.verify(token, process.env.JWT_SECRET);
+    await processarAssinaturasExpiradas({ usuarioId: d.id }).catch((err) => {
+      console.error('[assinaturas-ciclo/verificar]', err.message);
+    });
     const result = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [d.id]);
     if (result.rows.length === 0) return res.status(401).json({ erro: 'Usuário não encontrado' });
     res.json({ valido: true, usuario: result.rows[0] });
@@ -521,13 +534,28 @@ router.post('/consentimentos', autenticar, async (req, res) => {
 // CADASTRO ESPECÍFICO DE PROFISSIONAL
 // ============================================
 // Cria usuário tipo='profissional' e (opcional) já dispara validação no conselho
+const PLANOS_CADASTRO_PROF = ['freemium', 'guardioes_floresta', 'pro', 'clinic', 'premium'];
+
+function validarSenhaCadastroProfissional(senha) {
+  if (typeof senha !== 'string' || senha.length < 12) {
+    return 'Senha deve ter no mínimo 12 caracteres';
+  }
+  if (!/[A-Za-z]/.test(senha)) return 'Senha deve incluir letras';
+  if (!/\d/.test(senha)) return 'Senha deve incluir números';
+  if (!/[^A-Za-z0-9\s]/.test(senha)) return 'Senha deve incluir símbolos';
+  return null;
+}
+
 router.post('/cadastro-profissional', async (req, res) => {
   try {
     const {
       nome, email, senha, telefone,
       especialidade, especialidade_nome, bibliotecas_selecionadas,
       conselho, uf_conselho, numero_registro,
-      registro_abrath,
+      registro_abrath, tem_abrath, abrath_verificada,
+      cpf, data_nascimento, cep, logradouro, numero_endereco, complemento, cidade, estado,
+      tem_registro_profissional, ocupacao_secundaria, ocupacao_terciaria,
+      modalidade_atendimento, renovacao_automatica, plano,
       especialidades_adicionais, gateway, email_corporativo,
       prescricao_eletronica, lgpd_consentimento, pesquisa_clinica_consentimento, consentimentos
     } = req.body;
@@ -537,9 +565,17 @@ router.post('/cadastro-profissional', async (req, res) => {
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) return res.status(400).json({ erro: 'Email inválido' });
-    if (typeof senha !== 'string' || senha.length < 8) {
-      return res.status(400).json({ erro: 'Senha deve ter no mínimo 8 caracteres' });
-    }
+    const erroSenha = validarSenhaCadastroProfissional(senha);
+    if (erroSenha) return res.status(400).json({ erro: erroSenha });
+
+    const planoInicial = PLANOS_CADASTRO_PROF.includes(plano) ? plano : 'freemium';
+    const modalidade = modalidade_atendimento || 'ambos';
+    const atendeOnline = modalidade === 'presencial' ? 0 : 1;
+    const atendePresencial = modalidade === 'online' ? 0 : 1;
+
+    const adicionaisInformados = Array.isArray(especialidades_adicionais)
+      ? especialidades_adicionais
+      : [ocupacao_secundaria, ocupacao_terciaria].filter(Boolean);
 
     const mapaConsentimentos = consentimentos && typeof consentimentos === 'object'
       ? consentimentos
@@ -548,6 +584,7 @@ router.post('/cadastro-profissional', async (req, res) => {
         dados_saude: Boolean(lgpd_consentimento),
         dados_profissionais: Boolean(lgpd_consentimento),
         arquivamento_rastreabilidade: Boolean(lgpd_consentimento),
+        cobranca_assinatura: Boolean(lgpd_consentimento),
         pesquisa_anonimizada: Boolean(pesquisa_clinica_consentimento),
         notificacoes: false
       };
@@ -563,13 +600,12 @@ router.post('/cadastro-profissional', async (req, res) => {
     if (existe.rows.length > 0) return res.status(400).json({ erro: 'Email já cadastrado' });
 
     const hash = await bcrypt.hash(senha, 12);
-    const planoInicial = 'freemium';
     const limiteBibliotecas = limiteBibliotecasPorPlano(planoInicial);
     const montagem = montarBibliotecasCadastro({
       especialidade,
       especialidadeNome: especialidade_nome,
       bibliotecasSelecionadas: bibliotecas_selecionadas,
-      especialidadesAdicionais: especialidades_adicionais,
+      especialidadesAdicionais: adicionaisInformados,
       limite: limiteBibliotecas,
       plano: planoInicial
     });
@@ -584,8 +620,8 @@ router.post('/cadastro-profissional', async (req, res) => {
 
     const ins = await db.query(
       `INSERT INTO usuarios (nome, email, senha, tipo, telefone, especialidades, atende_online, atende_presencial, lgpd_consentimento, lgpd_data_consentimento, plano)
-       VALUES ($1, $2, $3, 'profissional', $4, $5, 1, 1, $6, NOW(), $7) RETURNING id`,
-      [nome, email, hash, telefone || null, especialidadesJson, (mapaConsentimentos.termos_privacidade ? 1 : 0), planoInicial]
+       VALUES ($1, $2, $3, 'profissional', $4, $5, $6, $7, $8, NOW(), $9) RETURNING id`,
+      [nome, email, hash, telefone || null, especialidadesJson, atendeOnline, atendePresencial, (mapaConsentimentos.termos_privacidade ? 1 : 0), planoInicial]
     );
     const userId = ins.rows[0].id;
 
@@ -602,6 +638,26 @@ router.post('/cadastro-profissional', async (req, res) => {
       console.warn('[cadastro-profissional] valores padrão não criados:', err.message);
     });
 
+    const dadosCadastroExtra = {
+      cpf: cpf || null,
+      data_nascimento: data_nascimento || null,
+      endereco: {
+        cep: cep || null,
+        logradouro: logradouro || null,
+        numero: numero_endereco || null,
+        complemento: complemento || null,
+        cidade: cidade || null,
+        estado: estado || null
+      },
+      tem_registro_profissional: Boolean(tem_registro_profissional),
+      tem_abrath: tem_abrath || null,
+      abrath_verificada: Boolean(abrath_verificada),
+      modalidade_atendimento: modalidade,
+      renovacao_automatica: renovacao_automatica !== false,
+      ocupacao_secundaria: ocupacao_secundaria || null,
+      ocupacao_terciaria: ocupacao_terciaria || null
+    };
+
     // Persistir registros profissionais se as colunas existirem no ambiente.
     try {
       await db.query(
@@ -615,6 +671,15 @@ router.post('/cadastro-profissional', async (req, res) => {
       );
     } catch (errRegistro) {
       console.warn('[cadastro-profissional] registros profissionais não persistidos em usuarios:', errRegistro.message);
+    }
+
+    try {
+      await db.query(
+        `UPDATE usuarios SET cpf = $1, data_nascimento = $2 WHERE id = $3`,
+        [cpf || null, data_nascimento || null, userId]
+      );
+    } catch (errCpf) {
+      console.warn('[cadastro-profissional] cpf/data_nascimento não persistidos:', errCpf.message);
     }
 
     // Registrar dados profissionais (best-effort — tabela pode não existir em todos os ambientes)
@@ -647,13 +712,30 @@ router.post('/cadastro-profissional', async (req, res) => {
       detalhes: {
         biblioteca_principal: bibliotecaPrincipal,
         total_bibliotecas: bibliotecasAutorizadas.length,
-        lgpd_consentimento: Boolean(lgpd_consentimento)
+        lgpd_consentimento: Boolean(lgpd_consentimento),
+        plano: planoInicial,
+        modalidade_atendimento: modalidade,
+        renovacao_automatica: renovacao_automatica !== false,
+        abrath_verificada: Boolean(abrath_verificada)
       }
     });
     res.status(201).json({
       mensagem: 'Cadastro profissional realizado!',
       token,
-      usuario: { id: userId, nome, email, tipo: 'profissional', plano: planoInicial, especialidade: bibliotecaPrincipal, especialidades: bibliotecasAutorizadas }
+      usuario: {
+        id: userId,
+        nome,
+        email,
+        tipo: 'profissional',
+        plano: planoInicial,
+        especialidade: bibliotecaPrincipal,
+        especialidades: bibliotecasAutorizadas,
+        modalidade_atendimento: modalidade,
+        renovacao_automatica: renovacao_automatica !== false,
+        abrath_verificada: Boolean(abrath_verificada),
+        registro_abrath: registro_abrath || null,
+        dados_cadastro: dadosCadastroExtra
+      }
     });
   } catch (e) {
     console.error('[auth/cadastro-profissional]', e.message);

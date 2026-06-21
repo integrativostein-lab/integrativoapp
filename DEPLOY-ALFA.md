@@ -161,3 +161,28 @@ O endpoint `/api/alertas-seguranca/regras` e restrito a `admin` e `super_admin`.
 Quando Vercel e Render estiverem conectados ao repositorio, qualquer novo commit em `master` dispara um novo deploy.
 
 Se precisar forcar um redeploy sem alterar regra de negocio, atualize este guia ou outro arquivo de documentacao e faca push para o GitHub.
+
+## Deploy automatizado (1 comando)
+
+Depois de obter os tokens (uma unica vez), o script faz SQL + Render + Vercel + testes:
+
+1. Copie `.env.alfa.example` para `.env.alfa`
+2. Preencha:
+   - `DATABASE_URL` (Supabase → Database → Connection string)
+   - `RENDER_API_KEY` (Render → Account Settings → API Keys)
+   - `VERCEL_TOKEN` (vercel.com/account/tokens → Create Token)
+3. Execute:
+
+```powershell
+cd C:\Users\HP\Dropbox\integrativo-app-v2.1.0-INTEGRADO
+.\scripts\deploy-alfa.ps1
+```
+
+Ou: `npm run deploy:alfa` (pasta `backend`).
+
+Flags uteis: `--skip-vercel`, `--skip-render`, `--dry-run`.
+
+**O que ainda exige voce uma vez (nao da para automatizar sem login):**
+- Criar projeto Supabase e copiar a connection string
+- Ter o servico `integrativoappespelho` criado no Render (conectado ao GitHub)
+- Gerar os 3 tokens acima (tokens antigos nao podem ser recuperados — crie novos)

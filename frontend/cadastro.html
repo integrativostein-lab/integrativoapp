@@ -88,10 +88,18 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/i18n.js"></script>
   <script src="js/nav-publico.js"></script>
+  <script src="js/i18n.js"></script>
   <script src="js/consentimento-lgpd.js"></script>
   <script>
+    (function redirecionarProfissionalParaLgpd() {
+      const params = new URLSearchParams(window.location.search);
+      const plano = params.get('plano') || 'freemium';
+      if (params.get('tipo') === 'profissional' || params.has('plano')) {
+        window.location.replace(`lgpd-profissional.html?plano=${encodeURIComponent(plano)}`);
+      }
+    })();
+
     function toggleSenha() {
       var s = document.getElementById('senha');
       var btn = document.querySelector('.olhinho');
@@ -100,19 +108,12 @@
     }
 
     document.getElementById('tipo').addEventListener('change', function() {
-      var grupo = document.getElementById('grupo-especialidades');
       if (this.value === 'profissional') {
-        grupo.style.display = 'block';
-        if (document.getElementById('espec-grid').children.length === 0) {
-          var html = '';
-          CONFIG.ESPECIALIDADES.forEach(function(esp) {
-            html += '<label><input type="checkbox" class="espec-check" value="' + esp.nome + '"> ' + esp.nome + '</label>';
-          });
-          document.getElementById('espec-grid').innerHTML = html;
-        }
-      } else {
-        grupo.style.display = 'none';
+        window.location.href = 'lgpd-profissional.html?plano=freemium';
+        return;
       }
+      var grupo = document.getElementById('grupo-especialidades');
+      grupo.style.display = 'none';
       renderConsentimentos();
     });
 

@@ -97,6 +97,18 @@
       compartilhamento: 'Sistemas de saúde autorizados pelo titular ou por lei.',
       retencao: 'Conforme necessidade da interoperabilidade e registro de exportação.',
       perfis: ['paciente', 'profissional']
+    },
+    cobranca_assinatura: {
+      id: 'cobranca_assinatura',
+      obrigatorio: true,
+      titulo: 'Cobrança, assinatura e meios de pagamento',
+      resumo: 'Autorizo o tratamento dos dados necessários para cobrança da assinatura, comissões sobre consultas quando aplicável, emissão de recibos/notas e gestão do plano contratado.',
+      coleta: ['Dados de pagamento tokenizados', 'Histórico de assinatura', 'Plano contratado', 'Comissões sobre consultas'],
+      finalidade: 'Faturamento recorrente ou pontual, conciliação financeira, cumprimento fiscal e transparência comercial.',
+      baseLegal: 'Execução de contrato (Art. 7º, V) e cumprimento de obrigação legal (Art. 7º, II).',
+      compartilhamento: 'Gateways de pagamento e prestadores fiscais/contábeis contratados.',
+      retencao: 'Pelo prazo legal e enquanto houver relação contratual ou obrigação fiscal.',
+      perfis: ['profissional']
     }
   };
 

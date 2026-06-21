@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Autorizações LGPD para profissionais de saúde integrativa no Integrativo.App — transparência, segurança e conformidade antes do cadastro e assinatura.">
+  <title>Passo 1 — Privacidade e autorizações | Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/consentimento-lgpd.css">
+  <link rel="stylesheet" href="css/cadastro-profissional.css">
+</head>
+<body>
+  <nav class="navbar" data-nav="publico" data-nav-ativo="profissionais">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu" data-nav-menu></div>
+  </nav>
+
+  <main class="fluxo-prof">
+    <section class="fluxo-hero">
+      <span class="tag">Passo 1 de 3 · LGPD</span>
+      <h1>Autorizações para profissionais</h1>
+      <p>Antes do cadastro, apresentamos com clareza o que será coletado, por qual finalidade e com qual base legal. Este passo protege você, seus pacientes e a integridade clínica da plataforma.</p>
+      <ol class="fluxo-etapas" id="fluxoEtapas" aria-label="Etapas do cadastro profissional"></ol>
+    </section>
+
+    <section class="fluxo-card">
+      <div class="plano-resumo">
+        <strong id="plano-nome">Plano</strong>
+        <span id="plano-descricao"></span>
+        <div style="margin-top:8px;font-weight:800;color:var(--azul-profundo);" id="plano-preco"></div>
+      </div>
+
+      <div id="consentimentos-lgpd"></div>
+
+      <div class="aviso-legal info">
+        Você pode revogar autorizações facultativas a qualquer momento em <strong>Meus Dados e Privacidade</strong>. As obrigatórias são necessárias para operar sua conta profissional com segurança, cobrança e conformidade.
+      </div>
+
+      <button type="button" class="btn-fluxo" id="btnContinuarLgpd">Li, compreendi e autorizo — continuar para o cadastro</button>
+      <p style="text-align:center;margin-top:14px;font-size:13px;">
+        <a href="profissionais.html#planos">← Voltar aos planos</a>
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
+      <p>&copy; 2026 Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/catalogo-terapeutico.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/nav-publico.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/consentimento-lgpd.js"></script>
+  <script src="js/cadastro-profissional-flow.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => CadastroProfissionalFlow.initLgpdProfissional());
+  </script>
+</body>
+</html>

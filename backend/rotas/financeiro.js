@@ -6,26 +6,22 @@ const { autenticar } = require('../middlewares/autenticar');
 const { verificarRegistroABRATH } = require('../servicos/abrath');
 const { estornarPagamento } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
+const planosConfig = require('../config/planos');
 
 // ============================================
-// CONSTANTES DE NEGÓCIO
+// CONSTANTES DE NEGÓCIO (planos mensais — ver backend/config/planos.js)
 // ============================================
-const VALORES_ANUAIS = {
-  freemium: 0,
-  guardioes_floresta: 200,
-  pro: 899,
-  premium: 4799,
-  enterprise: 9990
-};
-const JUROS_MES = 0.0199;          // 1,99% a.m. — Tabela Price
-const MAX_PARCELAS = 12;
-const DESCONTO_PIX = 0.05;         // 5% à vista
-const DESCONTO_ABRATH = 0.08;      // 8% sobre assinaturas Pro e Premium
-const PLANOS_COM_DESCONTO_ABRATH = ['pro', 'premium'];
-const PRAZO_ARREPENDIMENTO_DIAS = 15;
-const MULTA_APOS_PRAZO = 0.20;     // 20% sobre saldo proporcional
-const VALOR_CERTIFICADO_A1 = 260.00;
-const PLANOS_COM_CERTIFICADO_A1 = ['premium', 'enterprise'];
+const {
+  PLANOS_COM_DESCONTO_ABRATH,
+  PLANOS_SEM_DESCONTO_PIX,
+  DESCONTO_PIX,
+  DESCONTO_ABRATH,
+  PRAZO_ARREPENDIMENTO_DIAS,
+  valorMensalPlano,
+  planoCheckoutValido,
+  normalizarPlano,
+  calcularDataExpiracao
+} = planosConfig;
 
 async function garantirColunasAssinaturaPagamento() {
   await db.query("ALTER TABLE assinaturas ADD COLUMN IF NOT EXISTS forma_pagamento VARCHAR(30)").catch(() => {});
@@ -78,6 +74,18 @@ async function buscarUsuarioContato(usuarioId) {
   return r.rows[0] || {};
 }
 
+async function ehPrimeiraAssinaturaPaga(usuarioId, assinaturaId) {
+  const r = await db.query(
+    `SELECT COUNT(*) AS total FROM assinaturas
+     WHERE usuario_id = $1
+       AND id != $2
+       AND COALESCE(valor, 0) > 0
+       AND status IN ('ativa', 'cancelada', 'expirada', 'suspensa')`,
+    [usuarioId, assinaturaId]
+  );
+  return parseInt(r.rows[0].total, 10) === 0;
+}
+
 async function criarValidacaoAssinatura({ assinaturaId, usuario }) {
   await garantirTabelaValidacaoAssinatura();
   const codigo = gerarCodigoValidacao();
@@ -94,20 +102,35 @@ function moeda(valor) {
   return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-function montarReciboCancelamento({ ass, diasUsados, mesesUsados, mesesRestantes, valorMensalEquivalente, valorRestante, multa, certificadoCobrado, valorEstorno, estornoGateway }) {
-  const linhas = [
-    ['Plano', ass.plano],
-    ['Valor pago no ciclo anual', moeda(ass.valor)],
-    ['Data de início', new Date(ass.data_inicio).toLocaleDateString('pt-BR')],
-    ['Tempo utilizado', `${diasUsados} dia(s), equivalente a ${mesesUsados} mês(es) para cálculo proporcional`],
-    ['Meses restantes no ciclo anual', `${mesesRestantes} mês(es)`],
-    ['Valor mensal equivalente', moeda(valorMensalEquivalente)],
-    ['Saldo proporcional restante', moeda(valorRestante)],
-    ['Retenção/multa de 20% sobre o saldo restante', moeda(multa)],
-    ['Certificado A1 emitido pela plataforma', certificadoCobrado > 0 ? moeda(certificadoCobrado) : 'Não cobrado'],
-    ['Valor final de reembolso', moeda(valorEstorno)],
-    ['Status do estorno', estornoGateway?.status || 'não solicitado']
-  ];
+function arredondarMoeda(valor) {
+  return Math.round(Number(valor || 0) * 100) / 100;
+}
+
+function aplicarDescontoPct(valor, pctDecimal) {
+  return arredondarMoeda(Number(valor || 0) * (1 - pctDecimal));
+}
+
+function montarReciboCancelamento({ ass, diasUsados, valorEstorno, estornoGateway, acessoAte, tipo }) {
+  const linhas = tipo === 'fim_ciclo'
+    ? [
+      ['Plano', ass.plano],
+      ['Valor pago no ciclo mensal', moeda(ass.valor)],
+      ['Data de início', new Date(ass.data_inicio).toLocaleDateString('pt-BR')],
+      ['Cancelamento solicitado em', new Date().toLocaleDateString('pt-BR')],
+      ['Multa', 'Não aplicável'],
+      ['Reembolso', 'Não aplicável — ciclo mensal já pago'],
+      ['Acesso até', acessoAte],
+      ['Renovação automática', 'Desativada — sem nova cobrança mensal']
+    ]
+    : [
+      ['Plano', ass.plano],
+      ['Valor pago no ciclo mensal', moeda(ass.valor)],
+      ['Data de início', new Date(ass.data_inicio).toLocaleDateString('pt-BR')],
+      ['Dias utilizados', `${diasUsados} dia(s)`],
+      ['Multa', 'Não aplicável'],
+      ['Valor final de reembolso', moeda(valorEstorno)],
+      ['Status do estorno', estornoGateway?.status || 'não solicitado']
+    ];
 
   return {
     texto: linhas.map(([k, v]) => `${k}: ${v}`).join('\n'),
@@ -116,41 +139,27 @@ function montarReciboCancelamento({ ass, diasUsados, mesesUsados, mesesRestantes
 }
 
 /**
- * Calcula parcelamento Tabela Price.
- * - PIX ou 1x => sem juros, com 5% off no PIX
- * - 2x..12x  => juros compostos de 1,99% a.m.
+ * Calcula valor da assinatura com descontos.
+ * - PIX => 5% off (2 casas decimais)
+ * - Cartão => apenas 1x, sem juros
  */
 function calcularParcelamento(valor, parcelas, formaPagamento, aplicarDescontoPix = true) {
-  let valorBase = valor;
+  let valorBase = arredondarMoeda(valor);
   let descontoPix = 0;
 
   if (formaPagamento === 'pix' && aplicarDescontoPix) {
-    descontoPix = valor * DESCONTO_PIX;
-    valorBase = valor - descontoPix;
+    descontoPix = arredondarMoeda(valorBase * DESCONTO_PIX);
+    valorBase = arredondarMoeda(valorBase - descontoPix);
   }
 
-  const n = Math.max(1, Math.min(MAX_PARCELAS, parseInt(parcelas, 10) || 1));
-  if (n === 1 || formaPagamento === 'pix') {
-    return {
-      parcelas: n,
-      valorParcela: parseFloat(valorBase.toFixed(2)),
-      valorTotal: parseFloat(valorBase.toFixed(2)),
-      juros: 0,
-      desconto_pix: parseFloat(descontoPix.toFixed(2))
-    };
-  }
-
-  const i = JUROS_MES;
-  const fator = (i * Math.pow(1 + i, n)) / (Math.pow(1 + i, n) - 1);
-  const valorParcela = valorBase * fator;
-  const valorTotal = valorParcela * n;
+  const n = 1;
 
   return {
     parcelas: n,
-    valorParcela: parseFloat(valorParcela.toFixed(2)),
-    valorTotal: parseFloat(valorTotal.toFixed(2)),
-    juros: parseFloat((valorTotal - valorBase).toFixed(2)),
-    desconto_pix: 0
+    valorParcela: valorBase,
+    valorTotal: valorBase,
+    juros: 0,
+    desconto_pix: descontoPix
   };
 }
 
@@ -158,11 +167,19 @@ function calcularParcelamento(valor, parcelas, formaPagamento, aplicarDescontoPi
 // SIMULAÇÃO DE PARCELAMENTO (público / pré-checkout)
 // ============================================
 router.post('/simular-parcelamento', (req, res) => {
-  const { plano, parcelas, forma_pagamento } = req.body || {};
-  const valorBase = VALORES_ANUAIS[plano];
-  if (valorBase == null) return res.status(400).json({ erro: 'Plano inválido' });
-  if (valorBase === 0) return res.json({ plano, parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 });
-  res.json({ plano, ...calcularParcelamento(valorBase, parcelas, forma_pagamento, plano !== 'guardioes_floresta') });
+  const { plano, forma_pagamento } = req.body || {};
+  if (!planoCheckoutValido(plano)) return res.status(400).json({ erro: 'Plano inválido' });
+  const valorBase = valorMensalPlano(plano);
+  if (valorBase === 0) {
+    return res.json({ plano, parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 });
+  }
+  const aplicarPix = !PLANOS_SEM_DESCONTO_PIX.includes(plano);
+  res.json({
+    plano,
+    ciclo: 'mensal',
+    valor_mensal: valorBase,
+    ...calcularParcelamento(valorBase, 1, forma_pagamento, aplicarPix)
+  });
 });
 
 // ============================================
@@ -237,16 +254,22 @@ router.post('/nota-fiscal', autenticar, async (req, res) => {
 });
 
 // ============================================
-// ASSINATURA — APENAS ANUAL (ou Freemium)
+// ASSINATURA — MODELO MENSAL (ou Freemium)
 // ============================================
 router.post('/renovar-assinatura', autenticar, async (req, res) => {
   try {
     await garantirColunasAssinaturaPagamento();
     await garantirColunasCartaoUsuario();
     await garantirTabelaValidacaoAssinatura();
-    const { plano, forma_pagamento, parcelas, codigo_cupom, abrath_registro, abrath_nome, gateway_id, cartao_final4, cartao_obrigatorio_confirmado } = req.body || {};
-    if (VALORES_ANUAIS[plano] == null) {
-      return res.status(400).json({ erro: 'Plano inválido' });
+    const { plano: planoBody, forma_pagamento, codigo_cupom, abrath_registro, abrath_nome, gateway_id, cartao_final4, cartao_obrigatorio_confirmado } = req.body || {};
+    const plano = normalizarPlano(planoBody);
+
+    if (!planoCheckoutValido(plano)) {
+      return res.status(400).json({
+        erro: plano === 'enterprise'
+          ? 'Plano Enterprise é sob consulta. Fale conosco para proposta personalizada.'
+          : 'Plano inválido'
+      });
     }
     if (!cartao_obrigatorio_confirmado || !cartao_final4) {
       return res.status(400).json({ erro: 'Cartão de crédito obrigatório para cobrança automática de teleconsultas.' });
@@ -256,13 +279,22 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       [String(cartao_final4).slice(-4), req.usuario.id]
     ).catch(() => {});
 
-    const valorBase = VALORES_ANUAIS[plano];
+    const valorBase = arredondarMoeda(valorMensalPlano(plano));
     let valor = valorBase;
     let vitalicio = false;
     let descontoAplicado = 0;
+    const tipoCiclo = 'mensal';
+
+    const perfil = await db.query(
+      'SELECT nome, registro_abrath FROM usuarios WHERE id = $1',
+      [req.usuario.id]
+    ).catch(() => ({ rows: [] }));
+    const registroAbrathUsuario = perfil.rows[0]?.registro_abrath || null;
+    const nomeAbrath = abrath_nome || perfil.rows[0]?.nome || req.usuario.nome;
+    const registroAbrath = abrath_registro || registroAbrathUsuario;
 
     // Cupom vitalício especial (single-use)
-    if (codigo_cupom && codigo_cupom.toUpperCase() === 'PRESENTEDOMAU' && plano === 'premium') {
+    if (codigo_cupom && codigo_cupom.toUpperCase() === 'PRESENTEDOMAU' && ['premium', 'clinic'].includes(plano)) {
       const cup = await db.query("SELECT valor FROM configuracoes WHERE chave = 'cupom_presentedomau_usado'").catch(() => ({ rows: [] }));
       if (cup.rows.length === 0 || cup.rows[0].valor !== 'true') {
         vitalicio = true;
@@ -275,23 +307,24 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     }
 
     // Desconto ABRATH 8% — vale para Pro e Premium, independente da forma de pagamento.
-    if (!vitalicio && abrath_registro && abrath_nome && PLANOS_COM_DESCONTO_ABRATH.includes(plano)) {
-      const verificado = await verificarRegistroABRATH(abrath_registro, abrath_nome);
+    if (!vitalicio && registroAbrath && nomeAbrath && PLANOS_COM_DESCONTO_ABRATH.includes(plano)) {
+      const verificado = abrath_registro
+        ? await verificarRegistroABRATH(abrath_registro, abrath_nome)
+        : Boolean(registroAbrathUsuario);
       if (verificado) {
         descontoAplicado = Math.max(descontoAplicado, DESCONTO_ABRATH * 100);
-        valor = valorBase * (1 - DESCONTO_ABRATH);
+        valor = aplicarDescontoPct(valorBase, DESCONTO_ABRATH);
       }
     }
 
+    const aplicarDescontoPix = !PLANOS_SEM_DESCONTO_PIX.includes(plano);
     const calc = plano === 'freemium'
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
       : vitalicio
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
-      : calcularParcelamento(valor, parcelas || 1, forma_pagamento, plano !== 'guardioes_floresta');
+      : calcularParcelamento(valor, 1, forma_pagamento, aplicarDescontoPix);
 
-    const dataExpiracao = new Date();
-    if (vitalicio) dataExpiracao.setFullYear(2099);
-    else dataExpiracao.setFullYear(dataExpiracao.getFullYear() + 1);
+    const dataExpiracao = calcularDataExpiracao({ vitalicio, tipoCiclo });
 
     const gatewayResposta = {
       cartao_final4: cartao_final4 || null,
@@ -302,7 +335,7 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     const r = await db.query(
       `INSERT INTO assinaturas (usuario_id, plano, tipo_ciclo, valor, data_inicio, data_expiracao, parcelas, renovacao_automatica, status, forma_pagamento, gateway_id, gateway_resposta)
        VALUES ($1, $2, $3, $4, NOW(), $5, $6, 0, 'pendente_validacao', $7, $8, $9) RETURNING id`,
-      [req.usuario.id, plano, vitalicio ? 'vitalicio' : 'anual', calc.valorTotal,
+      [req.usuario.id, plano, vitalicio ? 'vitalicio' : tipoCiclo, calc.valorTotal,
         dataExpiracao.toISOString().split('T')[0], calc.parcelas, forma_pagamento || null, gateway_id || null, JSON.stringify(gatewayResposta)]
     );
 
@@ -314,7 +347,8 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       precisa_validacao: true,
       vitalicio,
       plano,
-      tipo_ciclo: vitalicio ? 'vitalicio' : 'anual',
+      tipo_ciclo: vitalicio ? 'vitalicio' : tipoCiclo,
+      valor_mensal: valorBase,
       valor_base: valorBase,
       desconto_pct: descontoAplicado,
       ...calc,
@@ -380,7 +414,7 @@ router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
 });
 
 // ============================================
-// CANCELAR ASSINATURA — janela de arrependimento de 15 dias
+// CANCELAR ASSINATURA — arrependimento (1ª assinatura, 15 dias) ou fim de ciclo sem multa
 // ============================================
 router.post('/cancelar-assinatura', autenticar, async (req, res) => {
   try {
@@ -395,98 +429,105 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
     const hoje = new Date();
     const inicio = new Date(ass.data_inicio);
     const diasUsados = Math.floor((hoje - inicio) / (1000 * 60 * 60 * 24));
-    const mesesUsados = Math.min(12, Math.max(1, Math.ceil(diasUsados / 30)));
-    const mesesRestantes = Math.max(0, 12 - mesesUsados);
     const valorAssinatura = parseFloat(ass.valor) || 0;
-    const valorMensalEquivalente = valorAssinatura / 12;
-    const valorRestante = valorMensalEquivalente * mesesRestantes;
-
-    let multa = 0;
+    const primeiraAssinatura = await ehPrimeiraAssinaturaPaga(req.usuario.id, assinatura_id);
+    const elegivelArrependimento = primeiraAssinatura && diasUsados <= PRAZO_ARREPENDIMENTO_DIAS;
     let valorEstorno = 0;
-    let certificadoCobrado = 0;
     let mensagem = '';
-
-    if (diasUsados <= PRAZO_ARREPENDIMENTO_DIAS) {
-      valorEstorno = valorAssinatura;
-      mensagem = `Cancelamento dentro do prazo de ${PRAZO_ARREPENDIMENTO_DIAS} dias — reembolso calculado conforme regras de cancelamento.`;
-    } else if (ass.tipo_ciclo === 'anual') {
-      multa = valorRestante * MULTA_APOS_PRAZO;
-      valorEstorno = Math.max(0, valorRestante - multa);
-      mensagem = `Cancelamento após ${PRAZO_ARREPENDIMENTO_DIAS} dias — retenção de 20% aplicada sobre o saldo dos ${mesesRestantes} mês(es) restante(s) do ciclo anual.`;
-    } else {
-      mensagem = 'Assinatura cancelada.';
-    }
-
-    if (PLANOS_COM_CERTIFICADO_A1.includes(ass.plano) && ass.certificado_a1_emitido_plataforma === true) {
-      certificadoCobrado = VALOR_CERTIFICADO_A1;
-      valorEstorno = Math.max(0, valorEstorno - certificadoCobrado);
-      mensagem += ` Certificado A1 emitido pela plataforma será cobrado no valor de R$ ${VALOR_CERTIFICADO_A1.toFixed(2)}.`;
-    } else if (PLANOS_COM_CERTIFICADO_A1.includes(ass.plano)) {
-      mensagem += ' Certificado A1 não foi cobrado porque não consta como emitido pela plataforma.';
-    }
+    let recibo = null;
+    let acessoAte = null;
 
     let estornoGateway = {
       status: 'sem_estorno',
       mensagem: 'Não havia valor a estornar.'
     };
 
-    if (valorEstorno > 0) {
-      try {
-        estornoGateway = await estornarPagamento({
-          paymentIntentId: ass.gateway_id,
-          valor: parseFloat(valorEstorno.toFixed(2)),
-          motivo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS ? 'requested_by_customer' : 'requested_by_customer'
-        });
-        if (estornoGateway.status === 'succeeded') {
-          mensagem += ' Estorno automático enviado à administradora do cartão.';
-        } else if (estornoGateway.status === 'nao_enviado') {
-          mensagem += ' Estorno calculado, mas sem identificador do gateway para envio automático.';
-        } else {
-          mensagem += ' Estorno solicitado à administradora e aguardando confirmação.';
-        }
-      } catch (errEstorno) {
-        estornoGateway = {
-          status: 'erro',
-          erro: errEstorno.message
-        };
-        mensagem += ' Estorno automático não confirmado; encaminhar para revisão financeira.';
-      }
-    }
+    if (elegivelArrependimento) {
+      valorEstorno = valorAssinatura;
+      mensagem = `Cancelamento na primeira assinatura, dentro do prazo de ${PRAZO_ARREPENDIMENTO_DIAS} dias — reembolso integral do valor pago.`;
 
-    const recibo = valorEstorno > 0
-      ? montarReciboCancelamento({
+      if (valorEstorno > 0) {
+        try {
+          estornoGateway = await estornarPagamento({
+            paymentIntentId: ass.gateway_id,
+            valor: parseFloat(valorEstorno.toFixed(2)),
+            motivo: 'requested_by_customer'
+          });
+          if (estornoGateway.status === 'succeeded') {
+            mensagem += ' Estorno automático enviado à administradora do cartão.';
+          } else if (estornoGateway.status === 'nao_enviado') {
+            mensagem += ' Estorno calculado, mas sem identificador do gateway para envio automático.';
+          } else {
+            mensagem += ' Estorno solicitado à administradora e aguardando confirmação.';
+          }
+        } catch (errEstorno) {
+          estornoGateway = {
+            status: 'erro',
+            erro: errEstorno.message
+          };
+          mensagem += ' Estorno automático não confirmado; encaminhar para revisão financeira.';
+        }
+      }
+
+      recibo = montarReciboCancelamento({
         ass,
         diasUsados,
-        mesesUsados,
-        mesesRestantes,
-        valorMensalEquivalente,
-        valorRestante,
-        multa,
-        certificadoCobrado,
         valorEstorno,
-        estornoGateway
-      })
-      : null;
+        estornoGateway,
+        tipo: 'reembolso'
+      });
 
-    await db.query("UPDATE assinaturas SET status = 'cancelada', data_cancelamento = NOW() WHERE id = $1", [assinatura_id]);
-    await db.query(
-      `UPDATE assinaturas
-       SET valor_estornado = $1,
-           estorno_gateway_id = $2,
-           estorno_status = $3,
-           estorno_resposta = $4,
-           cancelamento_recibo = $5
-       WHERE id = $6`,
-      [
-        parseFloat(valorEstorno.toFixed(2)),
-        estornoGateway.id || null,
-        estornoGateway.status || null,
-        JSON.stringify(estornoGateway),
-        recibo ? JSON.stringify(recibo) : null,
-        assinatura_id
-      ]
-    );
-    await db.query("UPDATE usuarios SET assinatura_ativa = 0, plano = 'freemium' WHERE id = $1", [req.usuario.id]);
+      await db.query("UPDATE assinaturas SET status = 'cancelada', data_cancelamento = NOW(), renovacao_automatica = false WHERE id = $1", [assinatura_id]);
+      await db.query(
+        `UPDATE assinaturas
+         SET valor_estornado = $1,
+             estorno_gateway_id = $2,
+             estorno_status = $3,
+             estorno_resposta = $4,
+             cancelamento_recibo = $5
+         WHERE id = $6`,
+        [
+          parseFloat(valorEstorno.toFixed(2)),
+          estornoGateway.id || null,
+          estornoGateway.status || null,
+          JSON.stringify(estornoGateway),
+          JSON.stringify(recibo),
+          assinatura_id
+        ]
+      );
+      await db.query("UPDATE usuarios SET assinatura_ativa = 0, plano = 'freemium' WHERE id = $1", [req.usuario.id]);
+    } else {
+      const dataExpiracao = ass.data_expiracao ? new Date(ass.data_expiracao) : calcularDataExpiracao({ tipoCiclo: ass.tipo_ciclo || 'mensal' });
+      acessoAte = dataExpiracao.toLocaleDateString('pt-BR');
+      mensagem = `Cancelamento registrado sem multa. Seu acesso permanece ativo até ${acessoAte}. Não haverá nova cobrança mensal.`;
+
+      recibo = montarReciboCancelamento({
+        ass,
+        diasUsados,
+        valorEstorno: 0,
+        estornoGateway,
+        acessoAte,
+        tipo: 'fim_ciclo'
+      });
+
+      await db.query(
+        `UPDATE assinaturas
+         SET renovacao_automatica = false,
+             data_cancelamento = NOW(),
+             valor_estornado = 0,
+             estorno_gateway_id = NULL,
+             estorno_status = $1,
+             estorno_resposta = $2,
+             cancelamento_recibo = $3
+         WHERE id = $4`,
+        [
+          estornoGateway.status,
+          JSON.stringify(estornoGateway),
+          JSON.stringify(recibo),
+          assinatura_id
+        ]
+      );
+    }
 
     const usuario = await buscarUsuarioContato(req.usuario.id);
     await notificacoes.enviarCancelamento({ usuario, recibo });
@@ -494,14 +535,12 @@ router.post('/cancelar-assinatura', autenticar, async (req, res) => {
     res.json({
       mensagem,
       dias_usados: diasUsados,
-      meses_usados: mesesUsados,
-      meses_restantes: mesesRestantes,
-      dentro_do_prazo: diasUsados <= PRAZO_ARREPENDIMENTO_DIAS,
-      valor_mensal_equivalente: parseFloat(valorMensalEquivalente.toFixed(2)),
-      saldo_proporcional_restante: parseFloat(valorRestante.toFixed(2)),
-      multa: parseFloat(multa.toFixed(2)),
-      certificado_cobrado: parseFloat(certificadoCobrado.toFixed(2)),
+      primeira_assinatura: primeiraAssinatura,
+      elegivel_arrependimento: elegivelArrependimento,
+      multa: 0,
       valor_estorno: parseFloat(valorEstorno.toFixed(2)),
+      acesso_ate: acessoAte,
+      renovacao_automatica: false,
       estorno_gateway: estornoGateway,
       recibo
     });

@@ -28,30 +28,30 @@
     const ativo = nav.getAttribute('data-nav-ativo') || '';
     const extras = parseExtras(nav);
 
-    let html = ITENS_BASE.map((item) => {
-      const cls = item.id === ativo ? ' class="ativo"' : '';
-      return `<a href="${item.href}"${cls} data-i18n="${item.i18n}">${t(item.i18n)}</a>`;
-    }).join('');
+    let links = ITENS_BASE
+      .filter((item) => item.id !== ativo)
+      .map((item) => `<a href="${item.href}" data-i18n="${item.i18n}">${t(item.i18n)}</a>`)
+      .join('');
 
     extras.forEach((extra) => {
       const i18nAttr = extra.i18n ? ` data-i18n="${extra.i18n}"` : '';
-      html += `<a href="${extra.href}"${i18nAttr}>${extra.i18n ? t(extra.i18n) : extra.label}</a>`;
+      links += `<a href="${extra.href}"${i18nAttr}>${extra.i18n ? t(extra.i18n) : extra.label}</a>`;
     });
 
-    html += `<a href="login.html" class="btn btn-primario" data-i18n="nav.entrar">${t('nav.entrar')}</a>`;
-    menu.innerHTML = html;
+    menu.innerHTML = `
+      <div class="nav-links">${links}</div>
+      <div class="nav-actions">
+        <a href="login.html" class="btn btn-primario nav-entrar" data-i18n="nav.entrar">${t('nav.entrar')}</a>
+        <div id="nav-lang-selector" class="nav-lang-select-container" data-i18n-no-translate aria-label="${t('lang.seletor', 'Idioma')}"></div>
+      </div>
+    `;
   }
 
   function init() {
     document.querySelectorAll('[data-nav="publico"]').forEach(render);
+    if (global.I18N?.montarSeletorIdioma) global.I18N.montarSeletorIdioma();
     if (global.I18N?.aplicarTraducoes) global.I18N.aplicarTraducoes();
   }
 
   global.NavPublico = { init, render };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
 })(window);

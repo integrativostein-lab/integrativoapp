@@ -24,118 +24,186 @@ const CONFIG = {
   API_URL: resolverApiUrl(),
 
   // ═══════════════════════════════════════════
-  // PLANOS (MODELO 100% ANUAL — 2026)
+  // PLANOS (MODELO MENSAL — 2026)
+  // Comissão paga: 5% (menor do mercado). Freemium: sem comissão.
   // ═══════════════════════════════════════════
   PLANOS: {
     freemium: {
       nome: 'Freemium',
+      valor_mensal: 0,
       valor_anual: 0,
-      valor_mensal_equivalente: 0,
-      descricao: 'Para começar a explorar a plataforma',
-      teleconsultas_mes: 20,
+      descricao: 'Para começar sem custo fixo',
+      max_profissionais: 1,
+      teleconsultas_mes: 15,
       max_pacientes: 30,
-      whatsapp_mensagens_mes: 25,
-      comissao_consulta_pct: 6.5,
+      whatsapp_mensagens_mes: 0,
+      comissao_consulta_pct: 0,
       blog: false,
-      white_label: false,
-      api_white_label: false,
-      migracao: false,
-      conciliacao: false,
+      loja: false,
+      prescricao: true,
+      anamnese: true,
+      prontuario: true,
+      ferramentas_gestao: false,
+      fhir_tiss: false,
       especialidades_inclusas: 1,
-      certificado_a1_gratis: false,
-      destaque: false
-    },
-    pro: {
-      nome: 'Pro',
-      valor_anual: 899,
-      valor_mensal_equivalente: 74.92,
-      descricao: 'Para profissionais independentes',
-      teleconsultas_mes: 100,
-      max_pacientes: 150,
-      whatsapp_mensagens_mes: 500,
-      comissao_consulta_pct: 3.5,
-      parcelamento: 'Até 12x com juros (PIX 5% off)',
-      desconto_pix: 5,
-      desconto_abrath: true,
-      blog: true,
-      white_label: false,
-      api_white_label: false,
-      migracao: false,
-      conciliacao: false,
-      especialidades_inclusas: 10,
-      ferramentas_gestao: true,
-      certificado_a1_gratis: false,
-      destaque: true
-    },
-    premium: {
-      nome: 'Premium',
-      valor_anual: 4799,
-      valor_mensal_equivalente: 399.92,
-      descricao: 'Para clínicas e equipes pequenas',
-      teleconsultas_mes: 500,
-      max_pacientes: 500,
-      whatsapp_mensagens_mes: 2500,
-      comissao_consulta_pct: 3.5,
-      parcelamento: 'Até 12x com juros (PIX 5% off)',
-      desconto_pix: 5,
-      desconto_abrath: true,
-      blog: true,
-      white_label: true,
-      api_white_label: false,
-      migracao: true,
-      conciliacao: true,
-      especialidades_inclusas: 20,
-      max_profissionais: 10,
-      cobranca_por_profissional: false,
-      texto_profissionais: 'Até 10 profissionais no mesmo valor, sem cobrança extra por profissional',
-      ferramentas_gestao: true,
-      certificado_a1_gratis: true,
-      destaque: false
+      destaque: false,
+      recursos: [
+        '1 profissional',
+        '15 teleconsultas/mês',
+        '30 pacientes',
+        '1 especialidade',
+        'Anamnese, prontuário e prescrição',
+        'Sem comissão sobre consultas'
+      ]
     },
     guardioes_floresta: {
       nome: 'Guardiões da Floresta',
-      valor_anual: 200,
-      valor_mensal_equivalente: 16.67,
-      descricao: 'Plano social para Guardiões da Floresta',
+      valor_mensal: 10,
+      valor_anual: 120,
+      descricao: 'Reconhecimento público · condição social',
+      max_profissionais: 1,
       teleconsultas_mes: 30,
       max_pacientes: 50,
-      whatsapp_mensagens_mes: 150,
-      comissao_consulta_pct: 3.5,
-      parcelamento: 'Condição social anual',
-      desconto_pix: 0,
-      blog: true,
-      white_label: false,
-      api_white_label: false,
-      migracao: false,
-      conciliacao: false,
-      especialidades_inclusas: 5,
-      certificado_a1_gratis: false,
+      whatsapp_mensagens_mes: 0,
+      comissao_consulta_pct: 0,
+      blog: false,
+      loja: false,
+      anamnese: true,
+      prontuario: true,
+      prescricao: false,
+      recomendacao: true,
+      ferramentas_gestao: false,
+      fhir_tiss: false,
+      especialidades_inclusas: 3,
       plano_social: true,
-      destaque: false
+      destaque: false,
+      recursos: [
+        '1 profissional',
+        '30 teleconsultas/mês',
+        '50 pacientes',
+        '3 especialidades',
+        'Anamnese e prontuário',
+        'Recomendações clínicas auxiliares (bibliotecas terapêuticas)',
+        'Sem comissão sobre consultas',
+        'Sem prescrição eletrônica',
+        'Mediante reconhecimento público Guardiões da Floresta'
+      ]
+    },
+    pro: {
+      nome: 'Pro',
+      valor_mensal: 99.9,
+      valor_anual: 1198.8,
+      descricao: 'Para profissionais independentes',
+      max_profissionais: 1,
+      max_recepcionistas: 1,
+      teleconsultas_mes: 100,
+      max_pacientes: 300,
+      whatsapp_mensagens_mes: 200,
+      comissao_consulta_pct: 5,
+      blog: true,
+      loja: true,
+      prescricao: true,
+      ferramentas_gestao: true,
+      fhir_tiss: true,
+      especialidades_inclusas: 10,
+      destaque: true,
+      recursos: [
+        '1 profissional · 1 recepcionista',
+        '100 teleconsultas/mês',
+        '200 mensagens/mês',
+        '300 pacientes · 10 especialidades',
+        'Blog, loja e prescrição eletrônica',
+        'Ferramentas administrativas: financeiro, RH, contábil e NF',
+        'Comissão de 5% sobre consultas'
+      ]
+    },
+    clinic: {
+      nome: 'Clinic',
+      valor_mensal: 799,
+      valor_anual: 9588,
+      descricao: 'Para clínicas com até 15 profissionais',
+      max_profissionais: 15,
+      max_recepcionistas: 3,
+      teleconsultas_mes: 1200,
+      max_pacientes: 3000,
+      whatsapp_mensagens_mes: 2400,
+      comissao_consulta_pct: 5,
+      blog: true,
+      loja: true,
+      reuniao_interna: true,
+      byos: true,
+      ferramentas_gestao: true,
+      fhir_tiss: true,
+      especialidades_inclusas: 67,
+      cobranca_por_profissional: false,
+      destaque: false,
+      recursos: [
+        'Até 15 profissionais · 3 recepcionistas',
+        '1.200 teleconsultas/mês',
+        '2.400 mensagens/mês · 3.000 pacientes',
+        'Blog, loja e reunião interna',
+        'BYOS para gravações e streamings',
+        'Ferramentas administrativas completas',
+        'Comissão de 5% sobre consultas'
+      ]
+    },
+    premium: {
+      nome: 'Clinic',
+      valor_mensal: 799,
+      valor_anual: 9588,
+      descricao: 'Para clínicas com até 15 profissionais',
+      max_profissionais: 15,
+      max_recepcionistas: 3,
+      teleconsultas_mes: 1200,
+      max_pacientes: 3000,
+      whatsapp_mensagens_mes: 2400,
+      comissao_consulta_pct: 5,
+      blog: true,
+      loja: true,
+      reuniao_interna: true,
+      byos: true,
+      ferramentas_gestao: true,
+      fhir_tiss: true,
+      especialidades_inclusas: 67,
+      cobranca_por_profissional: false,
+      legado_id: 'premium',
+      destaque: false,
+      recursos: [
+        'Até 15 profissionais · 3 recepcionistas',
+        '1.200 teleconsultas/mês',
+        '2.400 mensagens/mês · 3.000 pacientes',
+        'Blog, loja e reunião interna',
+        'BYOS para gravações e streamings',
+        'Ferramentas administrativas completas',
+        'Comissão de 5% sobre consultas'
+      ]
     },
     enterprise: {
       nome: 'Enterprise',
-      valor_anual: 9990,
-      valor_mensal_equivalente: 832.50,
-      descricao: 'Para grandes redes e instituições',
-      teleconsultas_mes: 'ilimitadas',
-      max_pacientes: 'ilimitados',
-      whatsapp_mensagens_mes: 10000,
-      comissao_consulta_pct: 3.5,
-      parcelamento: 'Até 12x com juros (PIX 5% off)',
-      desconto_pix: 5,
+      valor_mensal: null,
+      valor_anual: null,
+      descricao: 'Solução institucional sob medida',
+      max_profissionais: 'sob consulta',
+      teleconsultas_mes: 'sob consulta',
+      max_pacientes: 'sob consulta',
+      whatsapp_mensagens_mes: 'sob consulta',
+      comissao_consulta_pct: 5,
       blog: true,
-      white_label: true,
-      api_white_label: true,
-      migracao: true,
-      conciliacao: true,
-      especialidades_inclusas: 76,
-      max_profissionais: 'ilimitados',
-      cobranca_por_profissional: false,
-      texto_profissionais: 'Profissionais ilimitados dentro do guarda-chuva institucional, sem cobrança por profissional',
+      loja: true,
       ferramentas_gestao: true,
-      certificado_a1_gratis: true,
-      destaque: false
+      fhir_tiss: true,
+      modo_aluno: true,
+      teleaulas: true,
+      especialidades_inclusas: 'sob consulta',
+      sob_consulta: true,
+      destaque: false,
+      recursos: [
+        'Profissionais, módulos e bibliotecas customizáveis',
+        'Teleconsultas, teleaulas e mensagens sob medida',
+        'Modo aluno (simulação de consultório profissional)',
+        'Comissão de 5% sobre consultas',
+        'Fale conosco para proposta personalizada'
+      ]
     }
   },
 
@@ -143,14 +211,21 @@ const CONFIG = {
   // PARCELAMENTO (Tabela Price)
   // ═══════════════════════════════════════════
   PARCELAMENTO: {
-    max_parcelas: 12,
+    max_parcelas: 1,
     juros_mes: 0.0199,
     desconto_pix_pct: 5,
     desconto_abrath_pct: 8,
+    arredondarMoeda(valor) {
+      return Math.round(Number(valor || 0) * 100) / 100;
+    },
+    aplicarDescontoPct(valor, pct) {
+      return this.arredondarMoeda(Number(valor || 0) * (1 - pct / 100));
+    },
     calcular(valor, n) {
       const parcelas = Math.max(1, Math.min(this.max_parcelas, parseInt(n, 10) || 1));
+      const base = this.arredondarMoeda(valor);
       if (parcelas === 1) {
-        return { valorParcela: valor, valorTotal: valor, juros: 0, parcelas: 1 };
+        return { valorParcela: base, valorTotal: base, juros: 0, parcelas: 1 };
       }
       const i = this.juros_mes;
       const fator = (i * Math.pow(1 + i, parcelas)) / (Math.pow(1 + i, parcelas) - 1);
@@ -170,9 +245,11 @@ const CONFIG = {
   // ═══════════════════════════════════════════
   CANCELAMENTO: {
     prazo_arrependimento_dias: 15,
+    arrependimento_apenas_primeira_assinatura: true,
     reembolso_integral_dentro_prazo: true,
-    multa_apos_prazo_pct: 20,
-    mensagem: 'Cancelamento em até 15 dias. Certificado A1 incluído/emitido será cobrado. Após esse prazo, multa proporcional de 20% sobre os meses restantes.'
+    multa_apos_prazo_pct: 0,
+    acesso_ate_fim_ciclo: true,
+    mensagem: 'Cancelamento a qualquer momento, sem multa. Na primeira assinatura, até 15 dias: reembolso integral. Renovações: sem reembolso — o acesso continua até o fim do ciclo mensal pago e a renovação não é cobrada. Certificado digital não está incluído nos planos; compra opcional à parte.'
   },
 
   // ═══════════════════════════════════════════
@@ -639,6 +716,16 @@ const CONFIG = {
     ar: '🇪🇬', fa: '🇮🇷', id: '🇮🇩', ja: '🇯🇵', ko: '🇰🇷',
     af: '🇿🇦', zu: '🇿🇦', fr: '🇫🇷'
   },
+  IDIOMAS_ISO: {
+    'pt-BR': 'br', es: 'mx', en: 'us', zh: 'cn', ru: 'ru', hi: 'in',
+    ar: 'eg', fa: 'ir', id: 'id', ja: 'jp', ko: 'kr',
+    af: 'za', zu: 'za', fr: 'fr'
+  },
+  IDIOMAS_ROTULOS: {
+    'pt-BR': 'PT', es: 'ES', en: 'EN', zh: 'ZH', ru: 'RU', hi: 'HI',
+    ar: 'AR', fa: 'FA', id: 'ID', ja: 'JA', ko: 'KO',
+    af: 'AF', zu: 'ZU', fr: 'FR'
+  },
   IDIOMAS_RTL: ['ar', 'fa'],
 
   // Bibliotecas tradicionais regionais vinculadas aos idiomas/países de referência
@@ -674,9 +761,10 @@ function sincronizarCatalogoFallback(cfg) {
   bt.total_registros = bt.registros_base + bt.registros_blocos + bt.protocolos_criados;
   cfg.LIMITES_BIBLIOTECAS_PLANO = {
     freemium: 1,
-    guardioes_floresta: 5,
+    guardioes_floresta: 3,
     pro: 10,
-    premium: 20,
+    clinic: 67,
+    premium: 67,
     enterprise: bt.bibliotecas_por_pratica
   };
   Object.entries(cfg.LIMITES_BIBLIOTECAS_PLANO).forEach(([plano, limite]) => {
@@ -705,8 +793,14 @@ if (typeof CatalogoTerapeutico !== 'undefined') {
 if (typeof window !== 'undefined') window.CONFIG = CONFIG;
 if (typeof module !== 'undefined' && module.exports) module.exports = CONFIG;
 
-if (typeof window !== 'undefined' && CONFIG.Catalogo?.iniciarPagina) {
-  const iniciar = () => CONFIG.Catalogo.iniciarPagina(CONFIG);
+if (typeof window !== 'undefined' && CONFIG.Catalogo) {
+  const iniciar = () => {
+    if (CONFIG.Catalogo.atualizarPagina) {
+      CONFIG.Catalogo.atualizarPagina(CONFIG);
+    } else if (CONFIG.Catalogo.iniciarPagina) {
+      CONFIG.Catalogo.iniciarPagina(CONFIG);
+    }
+  };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', iniciar);
   } else {

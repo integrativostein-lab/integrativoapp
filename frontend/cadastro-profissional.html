@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadastro profissional completo no Integrativo.App — dados pessoais, credenciais, modalidade de atendimento e preferências de cobrança.">
+  <title>Cadastro profissional | Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/cadastro-profissional.css">
+</head>
+<body>
+  <nav class="navbar" data-nav="publico" data-nav-ativo="profissionais">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu" data-nav-menu></div>
+  </nav>
+
+  <main class="fluxo-prof">
+    <section class="fluxo-hero">
+      <span class="tag">Passo 2 de 3 · Cadastro</span>
+      <h1>Complete seu perfil profissional</h1>
+      <p>Preencha seus dados com atenção. Eles compõem sua identidade clínica na plataforma, habilitam cobrança e permitem validação de credenciais quando aplicável.</p>
+      <ol class="fluxo-etapas" id="fluxoEtapas" aria-label="Etapas do cadastro profissional"></ol>
+    </section>
+
+    <section class="fluxo-card">
+      <div class="plano-resumo">
+        <strong id="plano-nome">Plano</strong>
+        <span id="plano-descricao"></span>
+        <div style="margin-top:8px;font-weight:800;color:var(--azul-profundo);" id="plano-preco"></div>
+        <div class="descontos-tags" id="descontos-tags"></div>
+      </div>
+
+      <div id="msg-fluxo" class="msg-fluxo" role="alert"></div>
+
+      <!-- Dados pessoais -->
+      <div class="form-secao">
+        <h2>Dados pessoais</h2>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="nome">Nome completo *</label>
+            <input type="text" id="nome" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="cpf">CPF *</label>
+            <input type="text" id="cpf" required placeholder="000.000.000-00" maxlength="14">
+          </div>
+          <div class="form-group">
+            <label for="dataNascimento">Data de nascimento *</label>
+            <input type="date" id="dataNascimento" required>
+          </div>
+          <div class="form-group">
+            <label for="telefone">Telefone / WhatsApp *</label>
+            <input type="tel" id="telefone" required autocomplete="tel">
+          </div>
+          <div class="form-group">
+            <label for="email">E-mail *</label>
+            <input type="email" id="email" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="cep">CEP *</label>
+            <input type="text" id="cep" required placeholder="00000-000" maxlength="9">
+          </div>
+          <div class="form-group full">
+            <label for="logradouro">Logradouro *</label>
+            <input type="text" id="logradouro" required>
+          </div>
+          <div class="form-group">
+            <label for="numeroEndereco">Número *</label>
+            <input type="text" id="numeroEndereco" required>
+          </div>
+          <div class="form-group">
+            <label for="complemento">Complemento</label>
+            <input type="text" id="complemento">
+          </div>
+          <div class="form-group">
+            <label for="cidade">Cidade *</label>
+            <input type="text" id="cidade" required>
+          </div>
+          <div class="form-group">
+            <label for="estado">UF *</label>
+            <input type="text" id="estado" required maxlength="2" placeholder="SP">
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados profissionais -->
+      <div class="form-secao">
+        <h2>Dados profissionais</h2>
+        <div class="form-group">
+          <label for="temRegistroProfissional">Possui registro em conselho profissional? *</label>
+          <select id="temRegistroProfissional" required>
+            <option value="">Selecione...</option>
+            <option value="sim">Sim, tenho registro profissional</option>
+            <option value="nao">Não tenho registro em conselho</option>
+          </select>
+        </div>
+
+        <div id="painelRegistro" class="painel-condicional">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="conselhoSigla">Conselho *</label>
+              <select id="conselhoSigla">
+                <option value="">Carregando conselhos...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ufConselho">UF do registro</label>
+              <select id="ufConselho">
+                <option value="">UF</option>
+                <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+                <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+                <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+                <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                <option>SP</option><option>SE</option><option>TO</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="numeroRegistro">Número do registro *</label>
+              <input type="text" id="numeroRegistro" placeholder="Ex.: 123456">
+            </div>
+            <div class="form-group full">
+              <label for="especialidadeRegistro">Especialidade *</label>
+              <select id="especialidadeRegistro">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="btn-secundario" id="btnVerificarRegistro">Validar registro no conselho</button>
+          <div id="resultadoVerificacao" style="margin-top:10px;"></div>
+        </div>
+
+        <div id="painelAbrath" class="painel-condicional">
+          <p class="hint">Sem registro em conselho tradicional, informe se possui credencial ABRATH.</p>
+          <div class="form-group">
+            <span class="label-inline">Possui registro ABRATH? *</span>
+            <label class="radio-inline"><input type="radio" name="temAbrath" value="sim"> Sim</label>
+            <label class="radio-inline"><input type="radio" name="temAbrath" value="nao"> Não</label>
+          </div>
+          <div id="grupoRegistroAbrath" class="form-group" style="display:none;">
+            <label for="registroAbrath">Número de registro ABRATH *</label>
+            <input type="text" id="registroAbrath" placeholder="Registro ABRATH">
+            <label for="especialidadeAbrath" style="margin-top:12px;display:block;">Especialidade / ocupação principal *</label>
+            <select id="especialidadeAbrath">
+              <option value="">Selecione...</option>
+            </select>
+            <p class="hint destaque">Associados ABRATH têm <strong>8% de desconto</strong> em planos elegíveis (cumulável com 5% no PIX).</p>
+          </div>
+        </div>
+
+        <div id="painelOcupacoes" class="painel-condicional">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="ocupacaoPrincipal">Ocupação principal *</label>
+              <select id="ocupacaoPrincipal">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="ocupacaoSecundaria">Ocupação secundária (opcional)</label>
+              <select id="ocupacaoSecundaria">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="ocupacaoTerciaria">Ocupação terciária (opcional)</label>
+              <select id="ocupacaoTerciaria">
+                <option value="">Selecione...</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top:18px;">
+          <span class="label-inline">Modalidade de atendimento *</span>
+          <label class="radio-inline"><input type="radio" name="modalidadeAtendimento" value="presencial"> Presencial</label>
+          <label class="radio-inline"><input type="radio" name="modalidadeAtendimento" value="online"> Online</label>
+          <label class="radio-inline"><input type="radio" name="modalidadeAtendimento" value="ambos" checked> Ambos</label>
+        </div>
+      </div>
+
+      <!-- Cobrança -->
+      <div class="form-secao">
+        <h2>Cobrança e assinatura</h2>
+        <label class="checkbox-row">
+          <input type="checkbox" id="renovacaoAutomatica" checked>
+          <span>Autorizo <strong>renovação automática</strong> mensal no cartão cadastrado</span>
+        </label>
+        <div id="avisoRenovacao" class="aviso-legal info"></div>
+        <div class="aviso-legal">
+          <strong>Primeira assinatura:</strong> você tem até <strong>15 dias</strong> para exercer o direito de arrependimento, conforme o Código de Defesa do Consumidor.
+        </div>
+        <div class="aviso-legal info">
+          Pagamento via <strong>PIX</strong> garante <strong>5% de desconto</strong> adicional. Associados ABRATH: 8% + 5% PIX quando aplicável.
+        </div>
+      </div>
+
+      <!-- Acesso -->
+      <div class="form-secao">
+        <h2>Acesso à plataforma</h2>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="senha">Senha * <small>(mín. 12 caracteres, letras, números e símbolos)</small></label>
+            <div class="senha-row">
+              <input type="password" id="senha" required autocomplete="new-password" minlength="12">
+              <button type="button" class="btn-secundario" id="btnSugerirSenha">Sugerir senha forte</button>
+            </div>
+            <div id="senha-forca" class="senha-forca"></div>
+          </div>
+          <div class="form-group full">
+            <label for="senha2">Confirmar senha *</label>
+            <input type="password" id="senha2" required autocomplete="new-password" minlength="12">
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-fluxo" id="btnCadastrar">Concluir cadastro e continuar</button>
+      <p style="text-align:center;margin-top:14px;font-size:13px;">
+        <a id="linkVoltarLgpd" href="lgpd-profissional.html">← Revisar autorizações LGPD</a>
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
+      <p>&copy; 2026 Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/catalogo-terapeutico.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/nav-publico.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/cadastro-profissional-flow.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const plano = CadastroProfissionalFlow.obterPlanoUrl();
+      document.getElementById('linkVoltarLgpd').href = `lgpd-profissional.html?plano=${encodeURIComponent(plano)}`;
+      CadastroProfissionalFlow.initCadastroProfissional();
+    });
+  </script>
+</body>
+</html>

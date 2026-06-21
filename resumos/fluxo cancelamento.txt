@@ -1,16 +1,11 @@
 [Cancelar Assinatura]
         │
         ├── Plano Mensal:
-        │       ├── Sem multa
-        │       └── Acesso até o fim do ciclo
+        │       ├── Sem multa a qualquer momento
+        │       ├── 1ª assinatura paga + até 15 dias: reembolso integral
+        │       └── Renovações ou após 15 dias: sem reembolso — acesso até o fim do ciclo pago; renovação desativada
         │
-        ├── Plano Semestral/Anual:
-        │       ├── Certificado A1 incluído/emitido é cobrado no cancelamento
-        │       ├── Multa proporcional de 20% sobre os meses restantes
-        │       ├── Cálculo automático do estorno
-        │       └── Mensagem acolhedora de despedida
-        │
-        └── Após cancelamento:
+        └── Após cancelamento efetivo (fim do ciclo ou reembolso imediato):
                 ├── 60 dias para download dos dados
                 ├── Após 60 dias: exclusão permanente
                 └── Convite para retornar com mesmas condições

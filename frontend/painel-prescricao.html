@@ -119,8 +119,24 @@
       var r = await fetch(`${CONFIG.API_URL}/usuarios/perfil`, { headers: { 'Authorization': `Bearer ${token}` } });
       var dados = await r.json();
 
-      // Verificar se tem conselho
-      if (dados.conselho_classe) {
+      // Verificar plano e conselho
+      const planoCfg = CONFIG.PLANOS[dados.plano] || CONFIG.PLANOS.freemium;
+      const apenasRecomendacao = planoCfg.prescricao === false;
+
+      if (apenasRecomendacao) {
+        document.getElementById('aviso-com-conselho').style.display = 'none';
+        document.getElementById('link-conselho').style.display = 'none';
+        document.getElementById('aviso-sem-conselho').style.display = 'block';
+        document.getElementById('aviso-sem-conselho').innerHTML = `
+          <h3>Recomendações clínicas</h3>
+          <p>Seu plano <strong>${planoCfg.nome || 'Guardiões da Floresta'}</strong> inclui <strong>recomendações auxiliares</strong> com base nas bibliotecas terapêuticas, sem prescrição eletrônica.</p>
+          <p style="font-size:14px;color:var(--texto-medio);">O documento emitido é orientativo e não substitui prescrição de profissional regulamentado quando exigida por lei.</p>`;
+        document.querySelector('.prescricao-card h3').textContent = 'Nova Recomendação';
+        document.getElementById('tipo-prescricao').value = 'solicitacao';
+        document.getElementById('tipo-prescricao').querySelector('option[value="prescricao"]').disabled = true;
+        document.getElementById('tipo-prescricao').querySelector('option[value="controle_especial"]').disabled = true;
+        document.getElementById('tipo-prescricao').querySelector('option[value="solicitacao"]').textContent = 'Recomendação clínica';
+      } else if (dados.conselho_classe) {
         document.getElementById('aviso-com-conselho').style.display = 'block';
         document.getElementById('conselho-nome').textContent = dados.conselho_classe;
         

@@ -4,7 +4,7 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Busque profissionais de saúde integrativa por especialidade, modalidade e localização no Integrativo.App. Encontre atendimento online, presencial e teleconsulta segura.">
+  <meta name="description" content="Busque profissionais de saúde integrativa por especialidade, modalidade e localização. {{especialidades}} especialidades de cadastro e teleconsulta segura no Integrativo.App.">
   <meta name="keywords" content="buscar profissionais saúde integrativa, terapeuta online, teleconsulta, Ayurveda, MTC, Yoga, Fitoterapia, Integrativo.App">
   <meta property="og:title" content="Buscar Profissionais — Integrativo.App">
   <meta property="og:description" content="Encontre profissionais de saúde integrativa por especialidade e modalidade.">
@@ -12,46 +12,438 @@
   <title>Buscar Profissionais — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
-    .busca-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-    .filtros { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
-    .filtros .form-grupo { margin-bottom: 0; flex: 1; min-width: 150px; }
-    .resultado-card { background: var(--branco); padding: 24px; border-radius: var(--raio-borda); box-shadow: var(--sombra); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
-    .resultado-card h3 { color: var(--azul-escuro); margin-bottom: 4px; }
-    .resultado-card p { color: var(--texto-medio); font-size: 13px; }
-    .sem-resultados { text-align: center; padding: 40px; color: var(--texto-medio); }
-    .especialidades-lista {
-      background: var(--branco);
-      padding: 20px;
-      border-radius: var(--raio-borda);
-      box-shadow: var(--sombra);
-      margin-bottom: 24px;
+    .busca-page {
+      max-width: 1180px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
     }
-    .especialidades-lista h3 {
-      color: var(--azul-escuro);
-      font-size: 16px;
+
+    .busca-hero {
+      background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f 65%, var(--verde-destaque));
+      border-radius: 28px;
+      box-shadow: var(--sombra-elevada);
+      color: var(--branco);
+      margin-top: 28px;
+      padding: 42px;
+    }
+
+    .busca-hero .tag {
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: rgba(255, 255, 255, 0.95);
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+      padding: 6px 14px;
+      text-transform: uppercase;
+    }
+
+    .busca-hero h1 {
+      color: var(--branco);
+      font-size: 38px;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
       margin-bottom: 12px;
     }
+
+    .busca-hero p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+      line-height: 1.65;
+      max-width: 760px;
+    }
+
+    .metricas-busca {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      margin: 24px 0;
+    }
+
+    .metricas-busca .metrica {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      box-shadow: var(--sombra-suave);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .metricas-busca .metrica strong {
+      color: var(--azul-profundo);
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .metricas-busca .metrica span {
+      color: var(--texto-suave);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .painel-card {
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 22px;
+      box-shadow: var(--sombra-suave);
+      margin-bottom: 24px;
+      padding: 24px;
+    }
+
+    .painel-card h2 {
+      color: var(--azul-profundo);
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+
+    .painel-card .sub {
+      color: var(--texto-suave);
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .filtros-grid {
+      align-items: end;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 2fr 1fr 1fr auto;
+    }
+
+    .form-grupo label {
+      color: var(--azul-profundo);
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .form-grupo select,
+    .form-grupo input {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      color: var(--texto-principal);
+      font-size: 14px;
+      padding: 12px 14px;
+      width: 100%;
+    }
+
+    .form-grupo select:focus,
+    .form-grupo input:focus {
+      border-color: var(--verde-destaque);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .filtros-acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #CBD5E1;
+      color: var(--azul-profundo);
+    }
+
+    .btn-outline:hover {
+      background: #F8FAFC;
+      transform: translateY(-1px);
+    }
+
+    .campo-busca-chips {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr auto;
+      margin-bottom: 14px;
+    }
+
+    .campo-busca-chips input {
+      border: 1px solid #CBD5E1;
+      border-radius: 999px;
+      font-size: 15px;
+      padding: 12px 18px;
+      width: 100%;
+    }
+
+    .campo-busca-chips button {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      border-radius: 999px;
+      color: var(--azul-profundo);
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0 18px;
+      white-space: nowrap;
+    }
+
     .especialidades-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      max-height: 220px;
+      overflow: auto;
+      padding-right: 4px;
     }
+
     .especialidade-chip {
-      border: 1px solid #E2E8F0;
       background: #F8FAFC;
-      color: var(--azul-escuro);
+      border: 1px solid #CBD5E1;
       border-radius: 999px;
-      padding: 8px 12px;
+      color: var(--azul-profundo);
+      cursor: pointer;
       font-size: 12px;
       font-weight: 700;
-      cursor: pointer;
+      padding: 8px 12px;
       transition: var(--transicao);
     }
+
     .especialidade-chip:hover,
     .especialidade-chip.ativa {
       background: var(--verde-destaque);
       border-color: var(--verde-destaque);
       color: var(--branco);
+    }
+
+    .especialidade-chip.oculta {
+      display: none;
+    }
+
+    .resultados-head {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .resultados-head h2 {
+      font-size: 24px;
+      margin-bottom: 0;
+    }
+
+    .resultados-contagem {
+      background: var(--verde-menta);
+      border-radius: 999px;
+      color: var(--verde-destaque);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+    }
+
+    .resultado-card {
+      align-items: center;
+      background: var(--branco);
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      box-shadow: var(--sombra-suave);
+      display: flex;
+      gap: 18px;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      padding: 22px;
+      transition: var(--transicao);
+    }
+
+    .resultado-card:hover {
+      border-color: rgba(16, 185, 129, 0.35);
+      box-shadow: var(--sombra-elevada);
+      transform: translateY(-2px);
+    }
+
+    .resultado-main {
+      align-items: flex-start;
+      display: flex;
+      flex: 1;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .resultado-avatar {
+      align-items: center;
+      background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f);
+      border-radius: 16px;
+      color: var(--branco);
+      display: flex;
+      flex-shrink: 0;
+      font-size: 18px;
+      font-weight: 800;
+      height: 56px;
+      justify-content: center;
+      width: 56px;
+    }
+
+    .resultado-info h3 {
+      color: var(--azul-profundo);
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .resultado-info .especialidades {
+      color: var(--texto-suave);
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .resultado-meta {
+      color: var(--texto-suave);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 13px;
+      gap: 8px 14px;
+    }
+
+    .badge {
+      background: #F1F5F9;
+      border-radius: 999px;
+      color: var(--azul-profundo);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+    }
+
+    .badge.online {
+      background: #DCFCE7;
+      color: #166534;
+    }
+
+    .badge.presencial {
+      background: #DBEAFE;
+      color: #1D4ED8;
+    }
+
+    .resultado-acoes {
+      align-items: flex-end;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .resultado-preco {
+      color: var(--azul-profundo);
+      font-size: 14px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .estado-vazio,
+    .estado-erro,
+    .estado-carregando {
+      background: var(--branco);
+      border: 1px dashed #CBD5E1;
+      border-radius: 20px;
+      color: var(--texto-suave);
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .estado-vazio .icone,
+    .estado-erro .icone,
+    .estado-carregando .icone {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .estado-vazio h3,
+    .estado-erro h3 {
+      color: var(--azul-profundo);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .estado-vazio p,
+    .estado-erro p {
+      font-size: 14px;
+      margin: 0 auto;
+      max-width: 480px;
+    }
+
+    .banner-busca {
+      background: linear-gradient(135deg, #1A365D, #1f3a5f);
+      border-radius: 20px;
+      color: var(--branco);
+      margin-top: 32px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .banner-busca h2 {
+      color: var(--branco);
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .banner-busca p {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+
+    .banner-busca .btn {
+      background: var(--verde-destaque);
+      border-radius: 999px;
+      color: var(--branco);
+      font-weight: 700;
+      padding: 12px 28px;
+      text-decoration: none;
+    }
+
+    .banner-busca .btn:hover {
+      background: #0E9F6E;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 900px) {
+      .filtros-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filtros-grid .form-grupo:first-child {
+        grid-column: 1 / -1;
+      }
+
+      .filtros-grid .btn-primario {
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .busca-hero {
+        padding: 28px;
+      }
+
+      .busca-hero h1 {
+        font-size: 30px;
+      }
+
+      .filtros-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .resultado-card {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .resultado-acoes {
+        align-items: stretch;
+      }
+
+      .resultado-acoes .btn {
+        text-align: center;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -64,128 +456,337 @@
     <div class="menu" data-nav-menu></div>
   </nav>
 
-  <div class="busca-container">
-    <h2 style="margin-bottom:20px;">Buscar Profissionais</h2>
+  <main class="busca-page">
+    <section class="busca-hero">
+      <span class="tag">Teleconsulta · Presencial · Saúde integrativa</span>
+      <h1>Buscar profissionais</h1>
+      <p class="catalogo-token-html">Encontre terapeutas e profissionais de saúde integrativa entre <strong>{{especialidades}} especialidades de cadastro</strong>, com apoio de <strong>{{bibliotecas}} bibliotecas terapêuticas</strong> e agendamento online ou presencial.</p>
+    </section>
 
-    <div class="filtros">
-      <div class="form-grupo">
-        <label>Especialidade</label>
-        <select id="filtro-especialidade">
-          <option value="">Todas as especialidades</option>
-        </select>
-      </div>
-      <div class="form-grupo">
-        <label>Modalidade</label>
-        <select id="filtro-modalidade">
-          <option value="">Todas</option>
-          <option value="online">Online</option>
-          <option value="presencial">Presencial</option>
-        </select>
-      </div>
-      <div class="form-grupo">
-        <label>CEP</label>
-        <input type="text" id="filtro-cep" placeholder="01310-100">
-      </div>
-      <button class="btn btn-primario" onclick="buscar()">Buscar</button>
-    </div>
+    <section class="metricas-busca" id="metricasBusca" aria-label="Resumo do catálogo"></section>
 
-    <div class="especialidades-lista">
-      <h3 id="titulo-especialidades">Especialidades disponíveis</h3>
-      <p id="resumo-catalogo" style="font-size:13px;color:var(--texto-medio);margin:-6px 0 12px;">
-        Catálogo sincronizado com as bibliotecas terapêuticas.
-        <a href="bibliotecas-especialidades.html">Ver mapa completo</a>
-      </p>
+    <section class="painel-card" aria-labelledby="tituloFiltros">
+      <h2 id="tituloFiltros">Filtrar profissionais</h2>
+      <p class="sub">Escolha especialidade, modalidade e, para atendimento presencial, informe o CEP para aproximar por cidade.</p>
+      <div class="filtros-grid">
+        <div class="form-grupo">
+          <label for="filtro-especialidade">Especialidade</label>
+          <select id="filtro-especialidade">
+            <option value="">Todas as especialidades</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label for="filtro-modalidade">Modalidade</label>
+          <select id="filtro-modalidade">
+            <option value="">Todas</option>
+            <option value="online">Online</option>
+            <option value="presencial">Presencial</option>
+          </select>
+        </div>
+        <div class="form-grupo">
+          <label for="filtro-cep">CEP (presencial)</label>
+          <input type="text" id="filtro-cep" placeholder="01310-100" maxlength="9" inputmode="numeric">
+        </div>
+        <button type="button" class="btn btn-primario" id="btnBuscar">Buscar</button>
+      </div>
+      <div class="filtros-acoes">
+        <button type="button" class="btn btn-outline" id="btnLimpar">Limpar filtros</button>
+      </div>
+    </section>
+
+    <section class="painel-card" aria-labelledby="titulo-especialidades">
+      <h2 id="titulo-especialidades">Especialidades disponíveis</h2>
+      <p class="sub" id="resumo-catalogo">Catálogo sincronizado com as bibliotecas terapêuticas.</p>
+      <div class="campo-busca-chips">
+        <input type="search" id="busca-especialidade" placeholder="Filtrar especialidades, ex.: Ayurveda, Yoga, Fisioterapia...">
+        <button type="button" id="btnLimparChips">Limpar</button>
+      </div>
       <div class="especialidades-grid" id="lista-especialidades"></div>
-    </div>
+    </section>
 
-    <div id="resultados"></div>
-  </div>
+    <section class="resultados-secao" aria-live="polite">
+      <div class="resultados-head">
+        <h2>Profissionais encontrados</h2>
+        <span class="resultados-contagem" id="contagem-resultados">Carregando...</span>
+      </div>
+      <div id="resultados"></div>
+    </section>
+
+    <section class="banner-busca">
+      <h2>É profissional de saúde integrativa?</h2>
+      <p class="catalogo-token">Cadastre-se gratuitamente, tenha agenda, prontuário, teleconsulta e acesso às {{bibliotecas}} bibliotecas terapêuticas. Menor comissão do mercado: 5%.</p>
+      <a href="profissionais.html" class="btn">Quero me cadastrar</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div style="margin-bottom: 40px;">
+        <a href="termos.html">Termos</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="etica.html">Ética Profissional</a>
+        <a href="missao.html">Nossa Missão</a>
+        <a href="bibliotecas-especialidades.html">Bibliotecas</a>
+      </div>
+      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
+      <p>&copy; 2026 Todos os direitos reservados.</p>
+    </div>
+  </footer>
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/i18n.js"></script>
   <script src="js/nav-publico.js"></script>
+  <script src="js/i18n.js"></script>
   <script>
     const Catalogo = CONFIG.Catalogo;
-    const metricas = Catalogo.getMetricas(CONFIG);
-
-    document.getElementById('titulo-especialidades').textContent =
-      `Especialidades disponíveis (${metricas.especialidades})`;
-    document.getElementById('resumo-catalogo').innerHTML =
-      `${metricas.especialidades} especialidades vinculadas a ${metricas.bibliotecas} bibliotecas terapêuticas. <a href="bibliotecas-especialidades.html">Ver mapa completo</a>`;
-    document.getElementById('filtro-especialidade').options[0].textContent =
-      `Todas (${metricas.especialidades} especialidades)`;
-
     const select = document.getElementById('filtro-especialidade');
     const listaEspecialidades = document.getElementById('lista-especialidades');
+    const contagemEl = document.getElementById('contagem-resultados');
+    const resultadosEl = document.getElementById('resultados');
 
-    CONFIG.ESPECIALIDADES.forEach(function(esp) {
-      const biblioteca = Catalogo.resolverBibliotecaVinculada(esp.nome, CONFIG);
-      const opt = document.createElement('option');
-      opt.value = esp.nome;
-      opt.textContent = esp.nome;
-      if (biblioteca) opt.dataset.biblioteca = biblioteca;
-      select.appendChild(opt);
+    function escapeHtml(texto) {
+      return String(texto || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
 
-      const chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = 'especialidade-chip';
-      chip.textContent = esp.nome;
-      chip.dataset.especialidade = esp.nome;
-      if (biblioteca) {
-        chip.dataset.biblioteca = biblioteca;
-        chip.title = `Biblioteca: ${biblioteca}`;
+    function iniciais(nome) {
+      return String(nome || '?')
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((parte) => parte.charAt(0).toUpperCase())
+        .join('') || '?';
+    }
+
+    function formatMoeda(valor) {
+      const n = Number(valor);
+      if (!Number.isFinite(n) || n <= 0) return null;
+      return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function resumoPreco(profissional, modalidade) {
+      const valores = profissional.valores || [];
+      if (!valores.length) return 'Valores sob consulta';
+
+      const online = valores.map((v) => Number(v.valor_online)).filter((v) => v > 0);
+      const presencial = valores.map((v) => Number(v.valor_presencial)).filter((v) => v > 0);
+
+      if (modalidade === 'online' && online.length) {
+        return `A partir de ${formatMoeda(Math.min(...online))} (online)`;
       }
-      chip.onclick = function() {
-        select.value = esp.nome;
-        document.querySelectorAll('.especialidade-chip').forEach(function(item) {
-          item.classList.toggle('ativa', item.dataset.especialidade === esp.nome);
-        });
-        buscar();
-      };
-      listaEspecialidades.appendChild(chip);
-    });
+      if (modalidade === 'presencial' && presencial.length) {
+        return `A partir de ${formatMoeda(Math.min(...presencial))} (presencial)`;
+      }
 
-    select.addEventListener('change', function() {
-      var selecionada = select.value;
-      document.querySelectorAll('.especialidade-chip').forEach(function(item) {
-        item.classList.toggle('ativa', item.dataset.especialidade === selecionada);
+      const todos = [...online, ...presencial];
+      if (!todos.length) return 'Valores sob consulta';
+      return `A partir de ${formatMoeda(Math.min(...todos))}`;
+    }
+
+    function renderMetricas() {
+      const m = Catalogo.getMetricas(CONFIG);
+      document.getElementById('metricasBusca').innerHTML = `
+        <div class="metrica"><strong>${m.especialidades}</strong><span>Especialidades</span></div>
+        <div class="metrica"><strong>${m.bibliotecas}</strong><span>Bibliotecas</span></div>
+        <div class="metrica"><strong>${m.registrosFmt}</strong><span>Registros</span></div>
+        <div class="metrica"><strong>${m.fontes}</strong><span>Fontes-base</span></div>
+      `;
+    }
+
+    function atualizarResumoCatalogo() {
+      const metricas = Catalogo.getMetricas(CONFIG);
+      document.getElementById('titulo-especialidades').textContent =
+        `Especialidades disponíveis (${metricas.especialidades})`;
+      document.getElementById('resumo-catalogo').innerHTML =
+        `${metricas.especialidades} especialidades vinculadas a ${metricas.bibliotecas} bibliotecas terapêuticas. <a href="bibliotecas-especialidades.html">Ver mapa completo</a>`;
+      if (select.options.length) {
+        select.options[0].textContent = `Todas (${metricas.especialidades} especialidades)`;
+      }
+      renderMetricas();
+    }
+
+    function marcarChipAtivo(nome) {
+      document.querySelectorAll('.especialidade-chip').forEach((item) => {
+        item.classList.toggle('ativa', item.dataset.especialidade === nome);
       });
-    });
+    }
+
+    function montarEspecialidades() {
+      select.options.length = 1;
+      listaEspecialidades.innerHTML = '';
+
+      CONFIG.ESPECIALIDADES.forEach((esp) => {
+        const biblioteca = Catalogo.resolverBibliotecaVinculada(esp.nome, CONFIG);
+        const opt = document.createElement('option');
+        opt.value = esp.nome;
+        opt.textContent = esp.nome;
+        if (biblioteca) opt.dataset.biblioteca = biblioteca;
+        select.appendChild(opt);
+
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'especialidade-chip';
+        chip.textContent = esp.nome;
+        chip.dataset.especialidade = esp.nome;
+        if (biblioteca) {
+          chip.dataset.biblioteca = biblioteca;
+          chip.title = `Biblioteca: ${biblioteca}`;
+        }
+        chip.onclick = function() {
+          select.value = esp.nome;
+          marcarChipAtivo(esp.nome);
+          buscar();
+        };
+        listaEspecialidades.appendChild(chip);
+      });
+    }
+
+    function filtrarChipsVisiveis() {
+      const termo = document.getElementById('busca-especialidade').value.trim().toLowerCase();
+      document.querySelectorAll('.especialidade-chip').forEach((chip) => {
+        const visivel = !termo || chip.textContent.toLowerCase().includes(termo);
+        chip.classList.toggle('oculta', !visivel);
+      });
+    }
+
+    function limparFiltros() {
+      select.value = '';
+      document.getElementById('filtro-modalidade').value = '';
+      document.getElementById('filtro-cep').value = '';
+      document.getElementById('busca-especialidade').value = '';
+      marcarChipAtivo('');
+      filtrarChipsVisiveis();
+      buscar();
+    }
+
+    function renderCarregando() {
+      contagemEl.textContent = 'Buscando...';
+      resultadosEl.innerHTML = `
+        <div class="estado-carregando">
+          <div class="icone">🔍</div>
+          <p>Buscando profissionais com os filtros selecionados...</p>
+        </div>
+      `;
+    }
+
+    function renderVazio(filtrosAtivos) {
+      contagemEl.textContent = '0 profissionais';
+      resultadosEl.innerHTML = `
+        <div class="estado-vazio">
+          <div class="icone">🩺</div>
+          <h3>Nenhum profissional encontrado</h3>
+          <p>${filtrosAtivos
+            ? 'Tente outra especialidade, mude a modalidade ou limpe os filtros para ver mais resultados.'
+            : 'Ainda não há profissionais cadastrados com estes critérios. Volte em breve ou cadastre-se como profissional.'}</p>
+        </div>
+      `;
+    }
+
+    function renderErro(mensagem) {
+      contagemEl.textContent = 'Erro na busca';
+      resultadosEl.innerHTML = `
+        <div class="estado-erro">
+          <div class="icone">⚠️</div>
+          <h3>Não foi possível carregar os resultados</h3>
+          <p>${escapeHtml(mensagem || 'Verifique sua conexão e tente novamente.')}</p>
+        </div>
+      `;
+    }
+
+    function renderResultados(dados, modalidade) {
+      contagemEl.textContent = dados.length === 1
+        ? '1 profissional'
+        : `${dados.length} profissionais`;
+
+      resultadosEl.innerHTML = dados.map((p) => {
+        const especialidades = p.especialidades_lista && p.especialidades_lista.length
+          ? p.especialidades_lista.join(', ')
+          : 'Especialidades não informadas';
+        const local = [p.cidade, p.estado].filter(Boolean).join(' / ') || 'Local não informado';
+        const badges = [
+          p.atende_online ? '<span class="badge online">Online</span>' : '',
+          p.atende_presencial ? '<span class="badge presencial">Presencial</span>' : ''
+        ].filter(Boolean).join('');
+
+        return `
+          <article class="resultado-card">
+            <div class="resultado-main">
+              <div class="resultado-avatar" aria-hidden="true">${escapeHtml(iniciais(p.nome))}</div>
+              <div class="resultado-info">
+                <h3>${escapeHtml(p.nome)}</h3>
+                <p class="especialidades">${escapeHtml(especialidades)}</p>
+                <div class="resultado-meta">
+                  <span>📍 ${escapeHtml(local)}</span>
+                  ${badges}
+                  ${p.registro_profissional ? `<span>🪪 ${escapeHtml(p.registro_profissional)}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div class="resultado-acoes">
+              <div class="resultado-preco">${escapeHtml(resumoPreco(p, modalidade))}</div>
+              <a href="agendamento.html?prof=${encodeURIComponent(p.id)}" class="btn btn-primario">Agendar consulta</a>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
 
     async function buscar() {
-      var esp = document.getElementById('filtro-especialidade').value;
-      var mod = document.getElementById('filtro-modalidade').value;
-      var cep = document.getElementById('filtro-cep').value;
-      var params = new URLSearchParams();
+      const esp = select.value;
+      const mod = document.getElementById('filtro-modalidade').value;
+      const cep = document.getElementById('filtro-cep').value;
+      const params = new URLSearchParams();
       if (esp) params.append('especialidade', esp);
       if (mod) params.append('modalidade', mod);
       if (cep) params.append('cep', cep);
 
-      var r = await fetch(`${CONFIG.API_URL}/profissionais/buscar?${params.toString()}`);
-      var dados = await r.json();
-      var div = document.getElementById('resultados');
+      renderCarregando();
 
-      if (dados.length === 0) {
-        div.innerHTML = '<div class="sem-resultados">Nenhum profissional encontrado.</div>';
-        return;
+      try {
+        const r = await fetch(`${CONFIG.API_URL}/profissionais/buscar?${params.toString()}`);
+        const dados = await r.json();
+
+        if (!r.ok) {
+          renderErro(dados.erro || 'Erro ao buscar profissionais.');
+          return;
+        }
+
+        if (!Array.isArray(dados) || dados.length === 0) {
+          renderVazio(Boolean(esp || mod || cep));
+          return;
+        }
+
+        renderResultados(dados, mod);
+      } catch (erro) {
+        renderErro('Não foi possível conectar ao servidor de busca.');
       }
-
-      div.innerHTML = dados.map(function(p) {
-        return `
-        <div class="resultado-card">
-          <div>
-            <h3>${p.nome}</h3>
-            <p>${p.especialidades_lista ? p.especialidades_lista.join(', ') : 'Não informado'}</p>
-            <p>${p.cidade || ''} ${p.estado || ''}</p>
-            <p>🟢 Online: ${p.atende_online ? 'Sim' : 'Não'} | 📍 Presencial: ${p.atende_presencial ? 'Sim' : 'Não'}</p>
-          </div>
-          <a href="agendamento.html?prof=${p.id}" class="btn btn-primario" style="font-size:13px;">Agendar</a>
-        </div>`;
-      }).join('');
     }
+
+    montarEspecialidades();
+    atualizarResumoCatalogo();
+    document.addEventListener('catalogo:atualizado', atualizarResumoCatalogo);
+
+    select.addEventListener('change', function() {
+      marcarChipAtivo(select.value);
+      buscar();
+    });
+
+    document.getElementById('filtro-modalidade').addEventListener('change', buscar);
+    document.getElementById('filtro-cep').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') buscar();
+    });
+    document.getElementById('btnBuscar').addEventListener('click', buscar);
+    document.getElementById('btnLimpar').addEventListener('click', limparFiltros);
+    document.getElementById('busca-especialidade').addEventListener('input', filtrarChipsVisiveis);
+    document.getElementById('btnLimparChips').addEventListener('click', () => {
+      document.getElementById('busca-especialidade').value = '';
+      filtrarChipsVisiveis();
+    });
+
     buscar();
   </script>
-<footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Finalize sua assinatura anual do Integrativo.App com PIX, cartão, desconto ABRATH para Pro e Premium e regras transparentes de cancelamento.">
+  <meta name="description" content="Finalize sua assinatura mensal do Integrativo.App com PIX, cartão em 1x, desconto ABRATH e regras transparentes de cancelamento.">
   <meta name="keywords" content="checkout Integrativo.App, assinatura saúde integrativa, plano Pro, plano Premium, desconto ABRATH, teleconsulta">
   <meta property="og:title" content="Checkout — Integrativo.App">
   <meta property="og:description" content="Assine o Integrativo.App com planos anuais, PIX, cartão e condições transparentes.">
@@ -322,13 +322,18 @@
         </div>
 
         <div class="resumo-linha">
-          <span>Assinatura Anual:</span>
-          <span id="valorAnual">R$ 0,00</span>
+          <span>Assinatura mensal:</span>
+          <span id="valorMensal">R$ 0,00</span>
+        </div>
+
+        <div class="resumo-linha" id="linhaDescontoAbrath" style="display: none;">
+          <span>Desconto ABRATH (8%):</span>
+          <span id="valorDescontoAbrath" style="color: #10b981;">-R$ 0,00</span>
         </div>
 
         <div class="resumo-linha" id="linhaDesconto" style="display: none;">
           <span>Desconto PIX (5%):</span>
-          <span id="valorDesconto" style="color: #10b981;">-R$ 44,95</span>
+          <span id="valorDesconto" style="color: #10b981;">-R$ 0,00</span>
         </div>
 
         <div class="resumo-linha total">
@@ -343,7 +348,7 @@
 
         <div class="garantia">
           <strong>✓ Garantia de Satisfação</strong>
-          Você pode cancelar em até 15 dias. Quando houver transação de cartão vinculada, o estorno é enviado automaticamente à administradora. Certificado A1 incluído será cobrado em caso de cancelamento; após 15 dias, há multa proporcional de 20% sobre os meses restantes.
+          Você pode cancelar a qualquer momento, sem multa. Na <strong>primeira assinatura</strong>, em até 15 dias: reembolso integral. Nas renovações ou após 15 dias: sem reembolso — o acesso continua até o fim do ciclo mensal pago e não há nova cobrança. Certificado digital é opcional e pago à parte — não está incluído em nenhum plano.
         </div>
       </div>
 
@@ -357,11 +362,6 @@
             <label>Selecione seu Plano</label>
             <select id="selectPlano" onchange="atualizarPlano()" required>
               <option value="">Escolha um plano...</option>
-              <option value="freemium">Freemium — R$ 0/ano</option>
-              <option value="guardioes_floresta">Guardiões da Floresta — R$ 200/ano</option>
-              <option value="pro">Pro — R$ 899/ano</option>
-              <option value="premium">Premium — R$ 4.799/ano</option>
-              <option value="enterprise">Enterprise — R$ 9.990/ano</option>
             </select>
           </div>
 
@@ -378,21 +378,15 @@
               <label class="opcao-pagamento">
                 <input type="radio" name="pagamento" value="cartao" onchange="atualizarPagamento()">
                 <div class="opcao-pagamento-titulo">💰 Cartão</div>
-                <div class="opcao-pagamento-descricao">Até 12 parcelas</div>
-                <div class="opcao-pagamento-destaque">Com juros</div>
+                <div class="opcao-pagamento-descricao">Pagamento em 1x</div>
+                <div class="opcao-pagamento-destaque">Sem parcelamento</div>
               </label>
             </div>
           </div>
 
           <div class="cartao-obrigatorio-info">
             <strong>Cartão de crédito obrigatório para ativação profissional.</strong><br>
-            Mesmo no Freemium ou em assinatura paga por PIX, o cartão fica vinculado para cobrança automática das teleconsultas, consultas, multas de cancelamento/reagendamento e serviços efetivamente utilizados. A assinatura Freemium não gera cobrança anual.
-          </div>
-
-          <!-- OPÇÕES DE PARCELAMENTO -->
-          <div class="parcelas-info" id="parcelasInfo">
-            <h4>Escolha o número de parcelas:</h4>
-            <div class="parcelas-grid" id="parcelasGrid"></div>
+            Mesmo no Freemium ou em assinatura paga por PIX, o cartão fica vinculado para cobrança automática das teleconsultas, consultas, multas de cancelamento/reagendamento e serviços efetivamente utilizados. A assinatura Freemium não gera cobrança mensal. Pagamento com cartão é sempre em <strong>uma única parcela</strong>.
           </div>
 
           <!-- DADOS DO PAGADOR -->
@@ -461,30 +455,91 @@
   <script src="js/config.js"></script>
   <script src="js/i18n.js"></script>
   <script>
-    const PLANOS_VALORES = {
-      freemium: 0,
-      guardioes_floresta: 200,
-      pro: 899,
-      premium: 4799,
-      enterprise: 9990
-    };
+    const PLANOS_CHECKOUT = ['freemium', 'guardioes_floresta', 'pro', 'clinic', 'enterprise'];
+    const PLANOS_ABRATH = ['pro', 'clinic'];
 
-    const JUROS_CARTAO = 1.0199; // 1.99% ao mês
+    function normalizarPlanoCheckout(plano) {
+      if (plano === 'premium') return 'clinic';
+      return plano;
+    }
+
+    function valorPlano(id) {
+      const plano = CONFIG.PLANOS[id];
+      return plano ? plano.valor_mensal : undefined;
+    }
+
+    function rotuloPlano(id) {
+      const plano = CONFIG.PLANOS[id];
+      if (!plano) return id;
+      if (plano.valor_mensal == null) return `${plano.nome} — Sob consulta`;
+      if (plano.valor_mensal === 0) return `${plano.nome} — Grátis`;
+      return `${plano.nome} — R$ ${fmtBRL(plano.valor_mensal)}/mês`;
+    }
+
+    function popularSelectPlanos() {
+      const select = document.getElementById('selectPlano');
+      PLANOS_CHECKOUT.forEach((id) => {
+        if (!CONFIG.PLANOS[id]) return;
+        const opt = document.createElement('option');
+        opt.value = id;
+        opt.textContent = rotuloPlano(id);
+        select.appendChild(opt);
+      });
+    }
+
+    const JUROS_CARTAO = 1.0199; // legado — assinatura não parcela
     let assinaturaPendenteId = null;
     let planoPendente = null;
+
+    function arredondarMoeda(valor) {
+      return Math.round(Number(valor || 0) * 100) / 100;
+    }
+
+    function fmtBRL(valor) {
+      return arredondarMoeda(valor).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function obterUsuarioLogado() {
+      try {
+        return JSON.parse(localStorage.getItem('integra_usuario') || 'null');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function calcularValorComDescontos(valorBase, plano, pagamento, planoConfig) {
+      let valor = arredondarMoeda(valorBase);
+      let descontoAbrath = 0;
+      let descontoPix = 0;
+      const planosAbrath = PLANOS_ABRATH;
+      const usuario = obterUsuarioLogado();
+      const temAbrath = Boolean(usuario?.abrath_verificada || usuario?.registro_abrath);
+
+      if (temAbrath && planosAbrath.includes(plano)) {
+        descontoAbrath = arredondarMoeda(valor * 0.08);
+        valor = arredondarMoeda(valor - descontoAbrath);
+      }
+
+      if (pagamento === 'pix' && !planoConfig?.plano_social) {
+        descontoPix = arredondarMoeda(valor * 0.05);
+        valor = arredondarMoeda(valor - descontoPix);
+      }
+
+      return { valorFinal: valor, descontoAbrath, descontoPix, temAbrath };
+    }
 
     function atualizarPlano() {
       const plano = document.getElementById('selectPlano').value;
       if (!plano) return;
 
-      const valor = PLANOS_VALORES[plano];
+      const valor = valorPlano(plano);
       const planoConfig = CONFIG.PLANOS[plano];
 
       document.getElementById('planoNome').textContent = planoConfig.nome;
       document.getElementById('planoDescricao').textContent = planoConfig.texto_profissionais
         ? `${planoConfig.descricao}. ${planoConfig.texto_profissionais}.`
         : planoConfig.descricao;
-      document.getElementById('valorAnual').textContent = `R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+      document.getElementById('valorMensal').textContent = `R$ ${fmtBRL(valor ?? 0)}`;
 
       atualizarPagamento();
     }
@@ -495,73 +550,48 @@
 
       if (!plano) return;
 
-      const valor = PLANOS_VALORES[plano];
+      const valor = valorPlano(plano);
       const planoConfig = CONFIG.PLANOS[plano];
-      const descontoPixPct = planoConfig?.plano_social ? 0 : 0.05;
-      const desconto = pagamento === 'pix' ? valor * descontoPixPct : 0;
-      const valorFinal = valor - desconto;
+      const calc = calcularValorComDescontos(valor, plano, pagamento, planoConfig);
 
-      // Atualizar resumo
+      document.getElementById('linhaDescontoAbrath').style.display = calc.descontoAbrath > 0 ? 'flex' : 'none';
+      document.getElementById('valorDescontoAbrath').textContent = `-R$ ${fmtBRL(calc.descontoAbrath)}`;
+
       if (valor === 0) {
         document.getElementById('linhaDesconto').style.display = 'none';
         document.getElementById('descricaoPix').style.display = 'block';
         document.getElementById('descricaoPix').innerHTML = `<strong>Plano Freemium sem cobrança de assinatura.</strong><br>O cartão é obrigatório apenas para cobrança automática de teleconsultas e serviços utilizados.`;
-        document.getElementById('parcelasInfo').classList.remove('ativo');
         document.getElementById('valorTotal').textContent = 'R$ 0,00';
         document.getElementById('btnPagar').textContent = 'Ativar Freemium — R$ 0,00';
         return;
       }
 
       if (pagamento === 'pix') {
-        document.getElementById('linhaDesconto').style.display = desconto > 0 ? 'flex' : 'none';
-        document.getElementById('valorDesconto').textContent = `-R$ ${desconto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+        document.getElementById('linhaDesconto').style.display = calc.descontoPix > 0 ? 'flex' : 'none';
+        document.getElementById('valorDesconto').textContent = `-R$ ${fmtBRL(calc.descontoPix)}`;
         document.getElementById('descricaoPix').style.display = 'block';
         document.getElementById('descricaoPix').innerHTML = planoConfig?.plano_social
-          ? `<strong>Condição social Guardiões da Floresta</strong><br>Plano anual por R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}, com ${planoConfig.teleconsultas_mes} teleconsultas/mês, ${planoConfig.max_pacientes} pacientes e ${planoConfig.especialidades_inclusas} especialidades.`
-          : `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}${planoConfig?.desconto_abrath ? `<br>ABRATH no cartão: R$ ${(valor * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}<br>PIX + ABRATH: R$ ${(valorFinal * (1 - CONFIG.PARCELAMENTO.desconto_abrath_pct / 100)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : ''}`;
-        document.getElementById('parcelasInfo').classList.remove('ativo');
+          ? `<strong>Condição social Guardiões da Floresta</strong><br>Plano mensal por R$ ${fmtBRL(valor)}: anamnese, prontuário, recomendações clínicas auxiliares, sem prescrição eletrônica e <strong>sem comissão</strong> sobre consultas. ${planoConfig.teleconsultas_mes} teleconsultas/mês · ${planoConfig.max_pacientes} pacientes · ${planoConfig.especialidades_inclusas} especialidades.`
+          : `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${fmtBRL(calc.valorFinal)}${calc.temAbrath ? ' (já inclui desconto ABRATH de 8%)' : ''}`;
       } else {
         document.getElementById('linhaDesconto').style.display = 'none';
-        document.getElementById('descricaoPix').style.display = 'none';
-        document.getElementById('parcelasInfo').classList.add('ativo');
-        gerarOpcoesParcelas(valor);
+        document.getElementById('descricaoPix').style.display = 'block';
+        document.getElementById('descricaoPix').innerHTML = `<strong>Cartão em 1x:</strong> cobrança única de R$ ${fmtBRL(calc.valorFinal)}${calc.temAbrath ? ' (com desconto ABRATH de 8%)' : ''}.`;
       }
 
-      document.getElementById('valorTotal').textContent = `R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-      document.getElementById('btnPagar').textContent = `Pagar com ${pagamento === 'pix' ? 'PIX' : 'Cartão'} — R$ ${valorFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-    }
-
-    function gerarOpcoesParcelas(valor) {
-      const grid = document.getElementById('parcelasGrid');
-      grid.innerHTML = '';
-
-      for (let i = 2; i <= 12; i++) {
-        const valorParcela = (valor * Math.pow(JUROS_CARTAO, i - 1)) / i;
-        const jurosTotal = (valorParcela * i) - valor;
-
-        const btn = document.createElement('div');
-        btn.className = 'parcela-opcao';
-        btn.dataset.parcelas = String(i);
-        btn.textContent = `${i}x R$ ${valorParcela.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-        btn.onclick = () => selecionarParcela(btn, i, valorParcela);
-        grid.appendChild(btn);
-      }
-    }
-
-    function selecionarParcela(element, parcelas, valor) {
-      document.querySelectorAll('.parcela-opcao').forEach(el => el.classList.remove('selecionada'));
-      element.classList.add('selecionada');
-      document.getElementById('btnPagar').textContent = `Pagar ${parcelas}x de R$ ${valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+      document.getElementById('valorTotal').textContent = `R$ ${fmtBRL(calc.valorFinal)}`;
+      document.getElementById('btnPagar').textContent = pagamento === 'pix'
+        ? `Pagar com PIX — R$ ${fmtBRL(calc.valorFinal)}`
+        : `Pagar no cartão (1x) — R$ ${fmtBRL(calc.valorFinal)}`;
     }
 
     (function selecionarPlanoInicial() {
+      popularSelectPlanos();
       const params = new URLSearchParams(window.location.search);
-      const planoUrl = params.get('plano');
+      const planoUrl = normalizarPlanoCheckout(params.get('plano') || '');
       const select = document.getElementById('selectPlano');
-      if (planoUrl && PLANOS_VALORES[planoUrl]) {
+      if (planoUrl && CONFIG.PLANOS[planoUrl]) {
         select.value = planoUrl;
-      } else if (planoUrl === 'freemium') {
-        select.value = 'freemium';
       } else {
         select.value = 'freemium';
       }
@@ -590,8 +620,8 @@
 
       const dados = {
         plano,
-        forma_pagamento: PLANOS_VALORES[plano] === 0 ? 'cartao_cadastro' : pagamento,
-        parcelas: pagamento === 'cartao' ? Number(document.querySelector('.parcela-opcao.selecionada')?.dataset.parcelas || 1) : 1,
+        forma_pagamento: valorPlano(plano) === 0 ? 'cartao_cadastro' : pagamento,
+        parcelas: 1,
         cartao_obrigatorio_confirmado: true,
         cartao_final4: numeroCartao.slice(-4),
         nome_titular: document.getElementById('nomeCompleto').value,

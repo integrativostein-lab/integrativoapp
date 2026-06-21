@@ -418,8 +418,8 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/i18n.js"></script>
   <script src="js/nav-publico.js"></script>
+  <script src="js/i18n.js"></script>
   <script>
     const bibliotecas = CONFIG.BIBLIOTECAS_TERAPEUTICAS;
     const Catalogo = CONFIG.Catalogo || CatalogoTerapeutico;
@@ -428,6 +428,12 @@
     let timerAlertasSeguranca = null;
 
     document.getElementById('metricasBibliotecas').innerHTML = Catalogo.htmlMetricasResumo(bibliotecas);
+
+    function atualizarMetricasCatalogo() {
+      document.getElementById('metricasBibliotecas').innerHTML =
+        Catalogo.htmlMetricasResumo(CONFIG.BIBLIOTECAS_TERAPEUTICAS);
+    }
+    document.addEventListener('catalogo:atualizado', atualizarMetricasCatalogo);
 
     const normalizar = (texto) => Catalogo.normalizarTexto(texto);
     const categorias = ['Todas', ...Array.from(new Set(bibliotecas.matriz.map((item) => item.categoria)))];
@@ -762,13 +768,16 @@
     function renderMedicinasRegionais() {
       const mapa = CONFIG.IDIOMAS_MEDICINAS_REGIONAIS || {};
       const bandeiras = CONFIG.IDIOMAS_BANDEIRAS || {};
+      const isoMap = CONFIG.IDIOMAS_ISO || {};
       const chips = document.getElementById('chipsRegionais');
       if (!chips) return;
 
       chips.innerHTML = Object.entries(mapa).map(([lang, nomes]) => {
         const nomeBusca = nomes[0] || '';
         const titulo = nomes.join(' · ');
-        return `<button type="button" class="chip-filtro" data-regional="${nomeBusca.replace(/"/g, '&quot;')}" title="${titulo.replace(/"/g, '&quot;')}">${bandeiras[lang] || lang} ${nomeBusca}</button>`;
+        const iso = isoMap[lang] || lang.slice(0, 2).toLowerCase();
+        const flag = `<img class="chip-flag" src="img/bandeiras/${iso}.svg" alt="" width="18" height="13" loading="lazy">`;
+        return `<button type="button" class="chip-filtro" data-regional="${nomeBusca.replace(/"/g, '&quot;')}" title="${titulo.replace(/"/g, '&quot;')}">${flag}${nomeBusca}</button>`;
       }).join('');
 
       chips.addEventListener('click', (event) => {

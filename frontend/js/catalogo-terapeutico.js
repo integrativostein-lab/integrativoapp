@@ -4,9 +4,10 @@
 
   const LIMITES_FALLBACK = {
     freemium: 1,
-    guardioes_floresta: 5,
+    guardioes_floresta: 3,
     pro: 10,
-    premium: 20
+    clinic: 67,
+    premium: 67
   };
 
   function resolverCaminhoJson() {
@@ -48,6 +49,30 @@
     }
 
     return null;
+  }
+
+  function carregarMetaAsync() {
+    if (metaCache) return Promise.resolve(metaCache);
+
+    if (typeof window !== 'undefined' && window.CATALOGO_TERAPEUTICO_META) {
+      metaCache = window.CATALOGO_TERAPEUTICO_META;
+      return Promise.resolve(metaCache);
+    }
+
+    if (typeof fetch === 'undefined') {
+      return Promise.resolve(carregarMeta());
+    }
+
+    return fetch(resolverCaminhoJson())
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) metaCache = data;
+        return metaCache;
+      })
+      .catch((error) => {
+        console.warn('[CatalogoTerapeutico] Falha ao carregar JSON (async):', error.message);
+        return null;
+      });
   }
 
   function getMeta() {
@@ -261,7 +286,7 @@
       if (valor !== undefined) el.textContent = valor;
     });
 
-    scope.querySelectorAll('.catalogo-token, [data-catalogo-token]').forEach((el) => {
+    scope.querySelectorAll('.catalogo-token, .catalogo-token-html, [data-catalogo-token]').forEach((el) => {
       const usarHtml = el.classList.contains('catalogo-token-html')
         || el.dataset.catalogoToken === 'html';
       const origem = usarHtml ? el.innerHTML : el.textContent;
@@ -275,6 +300,10 @@
         meta.content = substituirTokens(meta.content, config);
       }
     });
+
+    if (scope === document && document.title && document.title.includes('{{')) {
+      document.title = substituirTokens(document.title, config);
+    }
   }
 
   function iniciarPagina(config, opcoes = {}) {
@@ -282,6 +311,26 @@
     aplicarEstatisticasHome(config, opcoes.ids);
     aplicarTokensDocumento(config, opcoes.root);
     return config;
+  }
+
+  function atualizarPagina(config, opcoes = {}) {
+    if (!config) return config;
+    sincronizar(config);
+    iniciarPagina(config, opcoes);
+    if (typeof document !== 'undefined') {
+      document.dispatchEvent(new CustomEvent('catalogo:atualizado', { detail: { config } }));
+    }
+    return config;
+  }
+
+  function bootstrapCatalogoPagina() {
+    if (typeof window === 'undefined' || !window.CONFIG) return;
+    const config = window.CONFIG;
+    if (!metaCache) {
+      carregarMetaAsync().then(() => {
+        if (metaCache) atualizarPagina(config);
+      });
+    }
   }
 
   function metricasI18n(config) {
@@ -295,6 +344,11 @@
 
   if (typeof window !== 'undefined') {
     carregarMeta();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapCatalogoPagina);
+    } else {
+      bootstrapCatalogoPagina();
+    }
   }
 
   const metaAtual = getMeta();
@@ -307,6 +361,7 @@
       enterprise: metaAtual?.contagens?.bibliotecasPorPratica
     },
     carregarMeta,
+    carregarMetaAsync,
     getMeta,
     normalizarTexto,
     resolverNomesBibliotecas,
@@ -323,10 +378,21 @@
     resolverBibliotecaVinculada,
     aplicarTokensDocumento,
     iniciarPagina,
+    atualizarPagina,
+    bootstrapCatalogoPagina,
     metricasI18n
   };
 
   global.CatalogoTerapeutico = api;
+
+  if (typeof window !== 'undefined') {
+    carregarMeta();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bootstrapCatalogoPagina);
+    } else {
+      bootstrapCatalogoPagina();
+    }
+  }
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = api;

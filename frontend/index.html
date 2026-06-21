@@ -117,67 +117,7 @@
       line-height: 1.5;
     }
 
-    /* ODS - PREENCHENDO A LINHA INTEIRA */
-    .ods-bloco {
-      margin: 24px 0;
-      padding: 20px;
-      background: #F8FAFC;
-      border-radius: 16px;
-      border: 1px solid #E2E8F0;
-    }
-    .ods-bloco h3 {
-      color: var(--azul-profundo);
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-    .ods-bloco p {
-      color: var(--texto-suave);
-      font-size: 14px;
-      margin-bottom: 16px;
-      line-height: 1.6;
-    }
-    .ods-grid {
-      display: flex;
-      flex-wrap: nowrap;
-      gap: 12px;
-      width: 100%;
-      overflow-x: auto;
-      padding: 4px 0;
-    }
-    .ods-item {
-      flex: 1 1 0;
-      min-width: 70px;
-      max-width: 120px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #FFF;
-      border-radius: 12px;
-      padding: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      border: 1px solid #E2E8F0;
-      transition: var(--transicao);
-      aspect-ratio: 1 / 1;
-    }
-    .ods-item:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--sombra-elevada);
-      border-color: var(--verde-destaque);
-    }
-    .ods-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-    }
-    @media (max-width: 768px) {
-      .ods-grid { gap: 8px; }
-      .ods-item { min-width: 55px; max-width: 90px; padding: 6px; }
-    }
-    @media (max-width: 480px) {
-      .ods-item { min-width: 45px; max-width: 70px; padding: 4px; }
-      .ods-grid { gap: 6px; }
-    }
+    /* ODS — grade 2 linhas centralizadas (estilos em css/estilo.css) */
 
     /* BANNER DE PLANOS */
     .banner-planos {
@@ -261,7 +201,7 @@
     <p data-i18n="hero.subtitulo">{{especialidades}} especialidades. Agende online ou presencial.</p>
     <div class="btn-group">
       <a href="busca.html" class="btn btn-primario" data-i18n="hero.buscar">🔍 Encontrar Profissional</a>
-      <a href="profissionais.html" class="btn btn-outline">📋 Sou Profissional</a>
+      <a href="profissionais.html" class="btn btn-outline" data-i18n="hero.profissional">📋 Sou Profissional</a>
     </div>
   </section>
 
@@ -297,15 +237,15 @@
   <section class="secao" style="padding-top: 0;">
     <div class="stats-home">
       <div class="stat-item">
-        <div class="numero" id="stat-bibliotecas">79</div>
-        <div class="rotulo">Bibliotecas Terapêuticas</div>
+        <div class="numero" id="stat-especialidades">—</div>
+        <div class="rotulo">Especialidades de cadastro</div>
       </div>
       <div class="stat-item">
-        <div class="numero" id="stat-especialidades">61</div>
-        <div class="rotulo">Especialidades</div>
+        <div class="numero" id="stat-bibliotecas">—</div>
+        <div class="rotulo">Bibliotecas terapêuticas</div>
       </div>
       <div class="stat-item">
-        <div class="numero" id="stat-registros">1.191</div>
+        <div class="numero" id="stat-registros">—</div>
         <div class="rotulo">Registros de Conhecimento</div>
       </div>
       <div class="stat-item">
@@ -321,15 +261,19 @@
       <h3>🌍 Alinhamento com os Objetivos de Desenvolvimento Sustentável</h3>
       <p>O Integrativo.App se alinha aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17 ao fortalecer saúde integrativa, educação profissional, trabalho digno, inovação, redução de desigualdades, proteção ambiental, ética institucional e parcerias. Este alinhamento é institucional e não representa certificação ou endosso oficial da ONU.</p>
       <div class="ods-grid">
-        <span class="ods-item"><img src="img/ods/3.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/4.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/8.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/9.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
-        <span class="ods-item"><img src="img/ods/17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
+        <div class="ods-row ods-row-4">
+          <span class="ods-item"><img src="img/ods/3.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/4.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/8.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/9.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
+        </div>
+        <div class="ods-row ods-row-5">
+          <span class="ods-item"><img src="img/ods/10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -338,7 +282,7 @@
   <section class="secao">
     <div class="banner-planos">
       <h2>🚀 Para Profissionais de Saúde</h2>
-      <p>Cadastre-se e tenha agenda, prontuário, teleconsulta e bibliotecas terapêuticas em um só lugar. Planos a partir de R$ 0/mês.</p>
+      <p class="catalogo-token">{{especialidades}} especialidades de cadastro e {{bibliotecas}} bibliotecas terapêuticas — <strong>5% de comissão, a menor do mercado</strong>. Planos a partir de R$ 0/mês.</p>
       <a href="profissionais.html" class="btn">Quero me cadastrar</a>
     </div>
   </section>
@@ -359,7 +303,7 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/i18n.js"></script>
   <script src="js/nav-publico.js"></script>
+  <script src="js/i18n.js"></script>
 </body>
 </html>

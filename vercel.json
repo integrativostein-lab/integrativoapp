@@ -8,12 +8,6 @@
       "permanent": false
     }
   ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/frontend/$1"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",

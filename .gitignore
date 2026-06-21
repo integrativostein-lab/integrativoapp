@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.example
+!.env.alfa.example
 
 node_modules/
 uploads/
@@ -17,3 +18,4 @@ controle interno do mau/link supabase.txt
 .cursor/
 *.sqlite
 database.sqlite
+.vercel

@@ -34,23 +34,28 @@
 - ✅ **Jobs agendados** — Atualização diária
 
 #### Fase 5: Assinaturas e Pagamentos
-- ✅ **Modelo Anual** com 4 planos
-- ✅ **PIX com 5% de desconto** à vista
-- ✅ **Cartão com até 12x** com juros
-- ✅ **Cancelamento em 15 dias**, com certificado A1 cobrado quando incluído/emitido e multa proporcional de 20% sobre meses restantes após esse prazo
+- ✅ **Modelo mensal** (Freemium, Guardiões, Pro, Clinic, Enterprise)
+- ✅ **Fluxo profissional:** LGPD → cadastro → pagamento
+- ✅ **PIX com 5% de desconto** (2 casas decimais)
+- ✅ **ABRATH: 8%** em planos elegíveis (cumulável com PIX)
+- ✅ **Cartão em 1x** (sem parcelamento)
+- ✅ **Cancelamento sem multa** a qualquer momento; **na 1ª assinatura**, até 15 dias com reembolso integral; renovações: acesso até o fim do ciclo mensal pago (sem nova cobrança)
+- ✅ **Comissão de 5%** sobre consultas nos planos pagos (Freemium e Guardiões: 0%)
 - ✅ **8 Gateways de Pagamento** integrados
 
 ---
 
-## 💰 Valores dos Planos (Anuais)
+## 💰 Valores dos Planos (Mensais)
 
-| Plano | Valor Anual | Parcelamento | Desconto PIX |
-|-------|------------|--------------|-------------|
-| **Freemium** | R$ 0 | Gratuito | - |
-| **Guardiões da Floresta** | R$ 200 | Condição social anual | Sem desconto adicional |
-| **Pro** | R$ 899 | Até 12x com juros | 5% (R$ 854) |
-| **Premium** | R$ 4.799 | Até 12x com juros | 5% (R$ 4.559) |
-| **Enterprise** | R$ 9.990 | Até 12x com juros | 5% (R$ 9.491) |
+| Plano | Valor/mês | Comissão consultas | PIX (−5%) | Observações |
+|-------|-----------|-------------------|-----------|-------------|
+| **Freemium** | R$ 0 | 0% | — | Sem mensalidade |
+| **Guardiões da Floresta** | R$ 10 | 0% | — | Condição social · recomendações · sem prescrição |
+| **Pro** | R$ 99,90 | 5% | R$ 94,91 | ABRATH + PIX: ~R$ 87,31 |
+| **Clinic** | R$ 799 | 5% | R$ 759,05 | Até 15 profissionais · ABRATH + PIX: ~R$ 698,33 |
+| **Enterprise** | Sob consulta | 5% | — | Proposta personalizada |
+
+Descontos aplicados com arredondamento em centavos. Guardiões da Floresta não tem desconto PIX adicional.
 
 ---
 
@@ -189,20 +194,19 @@ POST   /api/financeiro/cancelar-assinatura  # Cancelar assinatura
 4. Recebe confirmação e é redirecionado para login
 
 ### Cadastro de Profissional
-1. Usuário acessa `profissionais.html`
-2. Preenche dados pessoais e profissionais
-3. Seleciona especialidade → conselho é preenchido automaticamente
-4. Insere número de registro → validação automática
-5. Seleciona gateway de pagamento → abre modal
-6. Submete para `/api/auth/cadastro-profissional`
+1. Usuário acessa `profissionais.html` e escolhe o plano
+2. **Passo 1 — LGPD:** autorizações em `lgpd-profissional.html`
+3. **Passo 2 — Cadastro:** dados pessoais, profissionais e cobrança em `cadastro-profissional.html`
+4. Validação de conselho (quando aplicável) e regras ABRATH/ocupações
+5. **Passo 3 — Pagamento:** checkout (planos pagos) ou painel (Freemium)
+6. Submete para `/api/auth/cadastro-profissional` e `/api/financeiro/renovar-assinatura`
 
 ### Checkout
-1. Usuário seleciona plano
-2. Escolhe PIX (5% desconto) ou Cartão (até 12x)
-3. Se cartão: seleciona número de parcelas
-4. Preenche dados pessoais
-5. Submete para `/api/financeiro/processar-pagamento`
-6. Assinatura é ativada por 1 ano
+1. Usuário seleciona plano mensal
+2. Escolhe PIX (5% desconto) ou Cartão (1x)
+3. Preenche dados pessoais e cartão (obrigatório para teleconsultas)
+4. Submete para `/api/financeiro/renovar-assinatura`
+5. Valida código por WhatsApp/email e assinatura é ativada por **1 mês**
 
 ---
 
