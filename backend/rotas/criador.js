@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const db = require('../database');
 const crypto = require('crypto');
+const auditoria = require('../servicos/auditoria-lgpd');
 
 async function autenticarCriador(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -11,7 +12,9 @@ async function autenticarCriador(req, res, next) {
     const d = jwt.verify(token, process.env.JWT_SECRET);
     const uResult = await db.query('SELECT email, tipo FROM usuarios WHERE id = $1', [d.id]);
     const u = uResult.rows[0];
-    if (u?.email !== 'admin@integra.com') return res.status(403).json({ erro: 'Exclusivo do criador' });
+    if (!u || (u.tipo !== 'super_admin' && u.email !== 'admin@integra.com')) {
+      return res.status(403).json({ erro: 'Exclusivo do criador' });
+    }
     req.criador = d;
     next();
   } catch { res.status(401).json({ erro: 'Token inválido' }); }
@@ -135,6 +138,39 @@ router.post('/verificar-chave', async (req, res) => {
     console.error('[criador/verificar-chave]', e.message);
     res.status(500).json({ erro: 'Erro ao verificar chave.' });
   }
+});
+
+router.get('/logs', autenticarCriador, async (req, res) => {
+  try {
+    const limite = Math.min(parseInt(req.query.limite, 10) || 200, 500);
+    const offset = parseInt(req.query.offset, 10) || 0;
+    const resultado = await auditoria.listar({
+      limite,
+      offset,
+      categoria: req.query.categoria || null,
+      dataInicio: req.query.de || null,
+      dataFim: req.query.ate || null,
+      data: req.query.data || null
+    });
+    res.json(resultado);
+  } catch (error) {
+    res.status(500).json({ erro: 'Falha ao listar logs de auditoria.', detalhe: error.message });
+  }
+});
+
+router.get('/logs/arquivo', autenticarCriador, async (req, res) => {
+  const data = req.query.data || new Date().toISOString().slice(0, 10);
+  const { arquivo, eventos } = auditoria.lerArquivoPorData(data);
+  res.json({
+    data,
+    arquivo,
+    total: eventos.length,
+    eventos: eventos.map(auditoria.normalizarEventoArquivo)
+  });
+});
+
+router.get('/logs/arquivos', autenticarCriador, async (req, res) => {
+  res.json(auditoria.listarArquivosDisponiveis());
 });
 
 module.exports = router;

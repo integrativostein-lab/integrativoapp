@@ -251,39 +251,114 @@ function registrar(dados) {
   return evento.evento_id;
 }
 
-async function listar({ limite = 200, offset = 0, categoria = null, dataInicio = null, dataFim = null } = {}) {
+function normalizarEventoArquivo(evento) {
+  return {
+    evento_id: evento.evento_id,
+    criado_em: evento.timestamp,
+    categoria: evento.categoria,
+    acao: evento.acao,
+    usuario_id: evento.ator?.usuario_id ?? null,
+    usuario_tipo: evento.ator?.usuario_tipo ?? null,
+    usuario_nome: evento.ator?.email_mascarado || null,
+    recurso: evento.recurso,
+    recurso_id: evento.recurso_id,
+    base_legal: evento.base_legal,
+    finalidade: evento.finalidade,
+    ip: evento.ip,
+    rota: evento.rota,
+    metodo: evento.metodo,
+    resultado: evento.resultado,
+    detalhes: evento.detalhes || {}
+  };
+}
+
+function filtrarEventos(eventos, { categoria = null, dataInicio = null, dataFim = null } = {}) {
+  return eventos.filter((evento) => {
+    if (categoria && evento.categoria !== categoria) return false;
+    const quando = new Date(evento.criado_em || evento.timestamp);
+    if (dataInicio && quando < new Date(dataInicio)) return false;
+    if (dataFim && quando > new Date(dataFim)) return false;
+    return true;
+  });
+}
+
+function listarDoArquivo({ limite = 200, offset = 0, categoria = null, dataInicio = null, dataFim = null, data = null } = {}) {
+  let brutos = [];
+
+  if (data) {
+    brutos = lerArquivoPorData(data).eventos;
+  } else {
+    const arquivos = listarArquivosDisponiveis().slice(0, 31);
+    arquivos.forEach((item) => {
+      if (!fs.existsSync(item.caminho_absoluto)) return;
+      const linhas = fs.readFileSync(item.caminho_absoluto, 'utf8').split('\n').filter(Boolean);
+      linhas.forEach((linha) => {
+        try {
+          brutos.push(JSON.parse(linha));
+        } catch {
+          /* linha corrompida */
+        }
+      });
+    });
+  }
+
+  const normalizados = filtrarEventos(
+    brutos.map(normalizarEventoArquivo),
+    { categoria, dataInicio, dataFim }
+  ).sort((a, b) => new Date(b.criado_em) - new Date(a.criado_em));
+
+  return {
+    origem: 'arquivo',
+    total: normalizados.length,
+    eventos: normalizados.slice(offset, offset + limite)
+  };
+}
+
+async function listar({ limite = 200, offset = 0, categoria = null, dataInicio = null, dataFim = null, data = null } = {}) {
   const db = obterDb();
   if (!db) {
-    throw new Error('Banco de dados não configurado para listar logs de auditoria.');
-  }
-  const params = [];
-  const filtros = ['1=1'];
-  let i = 1;
-
-  if (categoria) {
-    filtros.push(`l.categoria = $${i++}`);
-    params.push(categoria);
-  }
-  if (dataInicio) {
-    filtros.push(`l.criado_em >= $${i++}`);
-    params.push(dataInicio);
-  }
-  if (dataFim) {
-    filtros.push(`l.criado_em <= $${i++}`);
-    params.push(dataFim);
+    return listarDoArquivo({ limite, offset, categoria, dataInicio, dataFim, data });
   }
 
-  params.push(limite, offset);
-  const sql = `
-    SELECT l.*, u.nome AS usuario_nome
-    FROM logs_auditoria l
-    LEFT JOIN usuarios u ON l.usuario_id = u.id
-    WHERE ${filtros.join(' AND ')}
-    ORDER BY l.criado_em DESC
-    LIMIT $${i++} OFFSET $${i}
-  `;
-  const r = await db.query(sql, params);
-  return r.rows;
+  try {
+    await garantirTabelaLogsAuditoria();
+    const params = [];
+    const filtros = ['1=1'];
+    let i = 1;
+
+    if (categoria) {
+      filtros.push(`l.categoria = $${i++}`);
+      params.push(categoria);
+    }
+    if (dataInicio) {
+      filtros.push(`l.criado_em >= $${i++}`);
+      params.push(dataInicio);
+    }
+    if (dataFim) {
+      filtros.push(`l.criado_em <= $${i++}`);
+      params.push(dataFim);
+    }
+
+    params.push(limite, offset);
+    const sql = `
+      SELECT l.*, u.nome AS usuario_nome
+      FROM logs_auditoria l
+      LEFT JOIN usuarios u ON l.usuario_id = u.id
+      WHERE ${filtros.join(' AND ')}
+      ORDER BY l.criado_em DESC
+      LIMIT $${i++} OFFSET $${i}
+    `;
+    const r = await db.query(sql, params);
+    return {
+      origem: 'banco',
+      total: r.rows.length,
+      eventos: r.rows
+    };
+  } catch (error) {
+    const fallback = listarDoArquivo({ limite, offset, categoria, dataInicio, dataFim, data });
+    fallback.aviso = error.message;
+    return fallback;
+  }
 }
 
 function lerArquivoPorData(dataIso) {
@@ -331,6 +406,8 @@ module.exports = {
   registrar,
   registrarAguardar,
   listar,
+  listarDoArquivo,
+  normalizarEventoArquivo,
   lerArquivoPorData,
   listarArquivosDisponiveis,
   mascararEmail,

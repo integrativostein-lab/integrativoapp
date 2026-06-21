@@ -72,16 +72,21 @@ router.put('/usuarios/:id/plano', autenticarAdmin, async (req, res) => {
 });
 
 router.get('/logs', autenticarAdmin, async (req, res) => {
-  const limite = Math.min(parseInt(req.query.limite, 10) || 200, 500);
-  const offset = parseInt(req.query.offset, 10) || 0;
-  const rows = await auditoria.listar({
-    limite,
-    offset,
-    categoria: req.query.categoria || null,
-    dataInicio: req.query.de || null,
-    dataFim: req.query.ate || null
-  });
-  res.json(rows);
+  try {
+    const limite = Math.min(parseInt(req.query.limite, 10) || 200, 500);
+    const offset = parseInt(req.query.offset, 10) || 0;
+    const resultado = await auditoria.listar({
+      limite,
+      offset,
+      categoria: req.query.categoria || null,
+      dataInicio: req.query.de || null,
+      dataFim: req.query.ate || null,
+      data: req.query.data || null
+    });
+    res.json(resultado);
+  } catch (error) {
+    res.status(500).json({ erro: 'Falha ao listar logs de auditoria.', detalhe: error.message });
+  }
 });
 
 router.get('/logs/arquivo', autenticarAdmin, async (req, res) => {
@@ -91,7 +96,7 @@ router.get('/logs/arquivo', autenticarAdmin, async (req, res) => {
     data,
     arquivo,
     total: eventos.length,
-    eventos
+    eventos: eventos.map(auditoria.normalizarEventoArquivo)
   });
 });
 

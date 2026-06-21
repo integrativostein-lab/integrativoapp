@@ -133,6 +133,8 @@
           // Redirecionar baseado no tipo
           setTimeout(function() {
             if (d.usuario.tipo === 'paciente') window.location.href = 'painel-paciente.html';
+            else if (d.usuario.tipo === 'super_admin') window.location.href = 'painel-criador.html';
+            else if (d.usuario.tipo === 'admin') window.location.href = 'painel-admin.html';
             else if (d.usuario.tipo === 'rh') window.location.href = 'painel-rh.html';
             else if (d.usuario.tipo === 'recepcionista') window.location.href = 'painel-recepcao.html';
             else if (d.usuario.tipo === 'financeiro') window.location.href = 'painel-financeiro.html';

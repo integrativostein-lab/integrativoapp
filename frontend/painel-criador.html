@@ -18,14 +18,13 @@
     <div class="painel-sidebar">
       <h3>👑 Criador</h3>
       <nav>
-        <a href="#" class="ativo">📊 Dashboard</a>
-        <a href="#">💰 Vendas</a>
-        <a href="#">👥 Usuários</a>
-        <a href="#">🎟️ Cupons</a>
-        <a href="#">📋 Logs</a>
+        <a href="#" class="ativo" data-secao="dashboard" onclick="mostrarSecao('dashboard'); return false;">📊 Dashboard</a>
+        <a href="#" data-secao="logs" onclick="mostrarSecao('logs'); return false;">📋 Logs LGPD</a>
+        <a href="painel-admin.html">⚙️ Admin</a>
+        <a href="#" onclick="logout(); return false;">🚪 Sair</a>
       </nav>
     </div>
-    <div class="painel-conteudo">
+    <div class="painel-conteudo" id="conteudo">
       <h2>Dashboard do Criador</h2>
       <p style="color:var(--texto-medio);margin-bottom:24px;">Visão total do sistema — acesso exclusivo.</p>
 
@@ -46,23 +45,78 @@
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/painel-logs-lgpd.js"></script>
   <script>
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    function marcarMenu(secao) {
+      document.querySelectorAll('.painel-sidebar nav a[data-secao]').forEach(function (link) {
+        link.classList.toggle('ativo', link.getAttribute('data-secao') === secao);
+      });
+    }
+
+    function mostrarSecao(secao) {
+      marcarMenu(secao);
+      var c = document.getElementById('conteudo');
+
+      if (secao === 'logs') {
+        c.innerHTML = '<div id="logs-container"></div>';
+        PainelLogsLgpd.render('logs-container', '/criador');
+        return;
+      }
+
+      c.innerHTML = `
+        <h2>Dashboard do Criador</h2>
+        <p style="color:var(--texto-medio);margin-bottom:24px;">Visão total do sistema — acesso exclusivo.</p>
+        <div class="metricas">
+          <div class="metrica"><div class="valor" id="met-terapeutas">-</div><div class="rotulo">Terapeutas</div></div>
+          <div class="metrica"><div class="valor" id="met-pacientes">-</div><div class="rotulo">Pacientes</div></div>
+          <div class="metrica"><div class="valor" id="met-assinaturas">-</div><div class="rotulo">Assinaturas Ativas</div></div>
+          <div class="metrica"><div class="valor" id="met-faturamento">-</div><div class="rotulo">Faturamento Total</div></div>
+        </div>
+        <div style="background:var(--branco);border-radius:var(--raio-borda);padding:24px;box-shadow:var(--sombra);">
+          <h3>🎟️ Cupom PRESENTEDOMAU</h3>
+          <p style="color:var(--texto-medio);">Usos: <strong id="cupom-usos">-</strong></p>
+        </div>
+      `;
+      carregarDashboard();
+    }
+
     async function carregarDashboard() {
       const token = localStorage.getItem('integra_token');
       if (!token) return;
       try {
-        const r = await fetch(`${CONFIG.API_URL}/criador/dashboard`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const r = await fetch(`${CONFIG.API_URL}/criador/dashboard`, { headers: { Authorization: 'Bearer ' + token } });
         const d = await r.json();
-        document.getElementById('met-terapeutas').textContent = d.terapeutas || 0;
-        document.getElementById('met-pacientes').textContent = d.pacientes || 0;
-        document.getElementById('met-assinaturas').textContent = d.assinaturas || 0;
-        document.getElementById('met-faturamento').textContent = 'R$ ' + (d.faturamento || 0).toFixed(2);
-        document.getElementById('cupom-usos').textContent = d.cupons_usados || 0;
-      } catch(e) {}
+        if (!r.ok) throw new Error(d.erro || 'Erro ao carregar dashboard');
+        const m = d.metricas || d;
+        document.getElementById('met-terapeutas').textContent = m.profissionais || d.terapeutas || 0;
+        document.getElementById('met-pacientes').textContent = m.pacientes || d.pacientes || 0;
+        document.getElementById('met-assinaturas').textContent = m.assinaturas || d.assinaturas || 0;
+        document.getElementById('met-faturamento').textContent = 'R$ ' + Number((d.financeiro && d.financeiro.faturamento) || d.faturamento || 0).toFixed(2);
+        document.getElementById('cupom-usos').textContent = (d.cupons && d.cupons.presentes_domau) || d.cupons_usados || 0;
+      } catch (e) {
+        console.warn('[criador/dashboard]', e.message);
+      }
     }
-    document.addEventListener('DOMContentLoaded', () => {
-      const token = prompt('Token de acesso do criador:');
-      if (token) { localStorage.setItem('integra_token', token); carregarDashboard(); }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var token = localStorage.getItem('integra_token');
+      var usuario = null;
+      try { usuario = JSON.parse(localStorage.getItem('integra_usuario') || 'null'); } catch (e) {}
+
+      if (!token || !usuario) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      var ehCriador = usuario.tipo === 'super_admin' || usuario.email === 'admin@integra.com';
+      if (!ehCriador) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      carregarDashboard();
     });
   </script>
 <footer style='text-align:center; padding:30px 20px; font-size:12px; color:var(--texto-medio); border-top:1px solid #E2E8F0; margin-top:40px; line-height:1.6;'>&copy; 2026 Integrativo.App&reg; &bull; Todos os direitos reservados.<br>Desenvolvido por Integrativo.App &bull; CPF: 089.106.448-69</footer>

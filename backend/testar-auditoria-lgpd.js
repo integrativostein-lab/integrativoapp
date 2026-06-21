@@ -71,13 +71,15 @@ async function main() {
 
   if (auditoria.temBancoConfigurado()) {
     try {
-      const rows = await auditoria.listar({ limite: 5 });
-      ok('espelho PostgreSQL', Array.isArray(rows), `${rows.length} linha(s)`);
+      const resultado = await auditoria.listar({ limite: 5 });
+      ok('espelho PostgreSQL', Array.isArray(resultado.eventos), `${resultado.eventos.length} linha(s) (${resultado.origem})`);
     } catch (error) {
       falhas += 1;
       console.error(`❌ espelho PostgreSQL — ${error.message}`);
     }
   } else {
+    const resultado = await auditoria.listar({ limite: 5 });
+    ok('listagem via arquivo', Array.isArray(resultado.eventos), `${resultado.eventos.length} evento(s) (${resultado.origem})`);
     console.log('ℹ️ DATABASE_URL ausente — teste de arquivo concluído sem PostgreSQL.');
   }
 
