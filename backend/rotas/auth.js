@@ -373,6 +373,10 @@ function idUsuarioNumerico(id) {
   return Number.isInteger(Number(id)) && String(id).match(/^\d+$/);
 }
 
+function serializarId(id) {
+  return typeof id === 'bigint' ? Number(id) : id;
+}
+
 router.post('/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
@@ -389,7 +393,7 @@ router.post('/login', async (req, res) => {
           senhaOk = false;
         }
         if (senhaOk) {
-          const token = jwt.sign({ id: u.id, email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
+          const token = jwt.sign({ id: serializarId(u.id), email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
           if (idUsuarioNumerico(u.id)) {
             await processarAssinaturasExpiradas({ usuarioId: Number(u.id) }).catch((err) => {
               console.error('[assinaturas-ciclo/login-demo]', err.message);
@@ -400,7 +404,13 @@ router.post('/login', async (req, res) => {
           return res.json({
             mensagem: 'Login demo realizado!',
             token,
-            usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, tipo: usuario.tipo, plano: usuario.plano }
+            usuario: {
+              id: serializarId(usuario.id),
+              nome: usuario.nome,
+              email: usuario.email,
+              tipo: usuario.tipo,
+              plano: usuario.plano
+            }
           });
         }
       }
@@ -476,7 +486,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ erro: 'Email ou senha incorretos' });
     }
     
-    const token = jwt.sign({ id: u.id, email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: serializarId(u.id), email: u.email, tipo: u.tipo }, process.env.JWT_SECRET, { expiresIn: '7d' });
     if (idUsuarioNumerico(u.id)) {
       await processarAssinaturasExpiradas({ usuarioId: Number(u.id) }).catch((err) => {
         console.error('[assinaturas-ciclo/login]', err.message);
@@ -498,10 +508,13 @@ router.post('/login', async (req, res) => {
       ip: req.ip,
       user_agent: req.get('user-agent')
     });
-    res.json({ mensagem: 'Login realizado!', token, usuario: { id: perfil.id, nome: perfil.nome, email: perfil.email, tipo: perfil.tipo, plano: perfil.plano } });
+    res.json({ mensagem: 'Login realizado!', token, usuario: { id: serializarId(perfil.id), nome: perfil.nome, email: perfil.email, tipo: perfil.tipo, plano: perfil.plano } });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ erro: 'Erro interno' });
+    res.status(500).json({
+      erro: 'Erro interno',
+      ...(ambiente.modoTeste ? { detalhe: e.message } : {})
+    });
   }
 });
 
@@ -520,7 +533,8 @@ router.get('/verificar', async (req, res) => {
     }
     const result = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [d.id]);
     if (result.rows.length === 0) return res.status(401).json({ erro: 'Usuário não encontrado' });
-    res.json({ valido: true, usuario: result.rows[0] });
+    const row = result.rows[0];
+    res.json({ valido: true, usuario: { ...row, id: serializarId(row.id) } });
   } catch (e) {
     if (ambiente.modoTeste) {
       return res.status(401).json({ erro: 'Token inválido', motivo: e.message });
