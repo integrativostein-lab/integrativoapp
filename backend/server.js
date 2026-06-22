@@ -97,6 +97,7 @@ app.get('/api/config/publica', (req, res) => {
     modo_lancamento: modoLancamento.modoLancamento,
     recursos_clinicos_ativos: modoLancamento.recursosClinicosAtivos,
     ambiente_teste: ambiente.modoTeste,
+    ignorar_lgpd: ambiente.ignorarLgpd,
     versao: '2.1.0'
   });
 });

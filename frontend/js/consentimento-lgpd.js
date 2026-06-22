@@ -220,6 +220,27 @@
     return alvo;
   }
 
+  function lgpdIgnorado() {
+    return !!(global.CONFIG && global.CONFIG.AMBIENTE_TESTE);
+  }
+
+  function consentimentosAlfa(perfil) {
+    const mapa = {};
+    tiposParaPerfil(perfil || 'paciente', 'cadastro').forEach((tipo) => {
+      mapa[tipo.id] = !!tipo.obrigatorio;
+    });
+    return mapa;
+  }
+
+  function payloadCadastroAlfa(perfil) {
+    const mapa = consentimentosAlfa(perfil);
+    return {
+      lgpd_consentimento: 1,
+      pesquisa_clinica_consentimento: false,
+      consentimentos: mapa
+    };
+  }
+
   function valores(root) {
     const base = root || document;
     const saida = {};
@@ -230,6 +251,7 @@
   }
 
   function validar(root) {
+    if (lgpdIgnorado()) return true;
     const base = root || document;
     const erroEl = base.querySelector('[data-lgpd-erro]');
     const faltando = [];
@@ -248,7 +270,8 @@
     return faltando.length === 0;
   }
 
-  function payloadCadastro(root) {
+  function payloadCadastro(root, perfil) {
+    if (lgpdIgnorado()) return payloadCadastroAlfa(perfil || 'paciente');
     const mapa = valores(root);
     return {
       lgpd_consentimento: mapa.termos_privacidade && mapa.dados_saude ? 1 : 0,
@@ -296,6 +319,9 @@
     VERSAO,
     TIPOS,
     tiposParaPerfil,
+    lgpdIgnorado,
+    consentimentosAlfa,
+    payloadCadastroAlfa,
     render,
     valores,
     validar,

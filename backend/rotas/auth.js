@@ -83,12 +83,52 @@ async function garantirTabelaConsentimentosLgpd() {
 }
 
 function validarConsentimentosObrigatorios(tipoUsuario, consentimentos) {
+  if (ambiente.ignorarLgpd) return [];
   const obrigatorios = CONSENTIMENTOS_OBRIGATORIOS[tipoUsuario] || CONSENTIMENTOS_OBRIGATORIOS.paciente;
   const faltando = obrigatorios.filter((tipo) => !consentimentos || consentimentos[tipo] !== true);
   return faltando;
 }
 
+function mapaConsentimentosAlfa(tipoUsuario) {
+  const obrigatorios = CONSENTIMENTOS_OBRIGATORIOS[tipoUsuario] || CONSENTIMENTOS_OBRIGATORIOS.paciente;
+  const mapa = {};
+  obrigatorios.forEach((tipo) => { mapa[tipo] = true; });
+  return mapa;
+}
+
+function resolverMapaConsentimentos(tipoUsuario, { consentimentos, lgpd_consentimento, pesquisa_clinica_consentimento }) {
+  if (ambiente.ignorarLgpd) {
+    return mapaConsentimentosAlfa(tipoUsuario);
+  }
+  if (consentimentos && typeof consentimentos === 'object') {
+    return consentimentos;
+  }
+  const base = Boolean(lgpd_consentimento);
+  if (tipoUsuario === 'profissional') {
+    return {
+      termos_privacidade: base,
+      dados_saude: base,
+      dados_profissionais: base,
+      arquivamento_rastreabilidade: base,
+      cobranca_assinatura: base,
+      pesquisa_anonimizada: Boolean(pesquisa_clinica_consentimento),
+      notificacoes: false
+    };
+  }
+  return {
+    termos_privacidade: base,
+    dados_saude: base,
+    arquivamento_rastreabilidade: base,
+    pesquisa_anonimizada: Boolean(pesquisa_clinica_consentimento),
+    notificacoes: false
+  };
+}
+
 async function salvarConsentimentosLote({ usuarioId, consentimentos, req, origem, tipoUsuario, exigirObrigatorios = false }) {
+  if (ambiente.ignorarLgpd && tipoUsuario) {
+    consentimentos = mapaConsentimentosAlfa(tipoUsuario);
+    exigirObrigatorios = false;
+  }
   if (!consentimentos || typeof consentimentos !== 'object') return;
   await garantirTabelaConsentimentosLgpd();
 
@@ -249,15 +289,11 @@ router.post('/cadastro', async (req, res) => {
     const TIPOS_PUBLICOS = ['paciente', 'profissional'];
     const tipoFinal = TIPOS_PUBLICOS.includes(tipo) ? tipo : 'paciente';
 
-    const mapaConsentimentos = consentimentos && typeof consentimentos === 'object'
-      ? consentimentos
-      : {
-        termos_privacidade: Boolean(lgpd_consentimento),
-        dados_saude: Boolean(lgpd_consentimento),
-        arquivamento_rastreabilidade: Boolean(lgpd_consentimento),
-        pesquisa_anonimizada: Boolean(pesquisa_clinica_consentimento),
-        notificacoes: false
-      };
+    const mapaConsentimentos = resolverMapaConsentimentos(tipoFinal, {
+      consentimentos,
+      lgpd_consentimento,
+      pesquisa_clinica_consentimento
+    });
     const faltando = validarConsentimentosObrigatorios(tipoFinal, mapaConsentimentos);
     if (faltando.length) {
       return res.status(400).json({
@@ -660,17 +696,11 @@ router.post('/cadastro-profissional', async (req, res) => {
       ? especialidades_adicionais
       : [ocupacao_secundaria, ocupacao_terciaria].filter(Boolean);
 
-    const mapaConsentimentos = consentimentos && typeof consentimentos === 'object'
-      ? consentimentos
-      : {
-        termos_privacidade: Boolean(lgpd_consentimento),
-        dados_saude: Boolean(lgpd_consentimento),
-        dados_profissionais: Boolean(lgpd_consentimento),
-        arquivamento_rastreabilidade: Boolean(lgpd_consentimento),
-        cobranca_assinatura: Boolean(lgpd_consentimento),
-        pesquisa_anonimizada: Boolean(pesquisa_clinica_consentimento),
-        notificacoes: false
-      };
+    const mapaConsentimentos = resolverMapaConsentimentos('profissional', {
+      consentimentos,
+      lgpd_consentimento,
+      pesquisa_clinica_consentimento
+    });
     const faltando = validarConsentimentosObrigatorios('profissional', mapaConsentimentos);
     if (faltando.length) {
       return res.status(400).json({

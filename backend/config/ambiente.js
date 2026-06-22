@@ -15,8 +15,12 @@ function garantirDiretorio(...partes) {
   return dir;
 }
 
+/** Alfa / TEST_MODE: dados fictícios — fluxos de consentimento LGPD são dispensados. */
+const ignorarLgpd = modoTeste;
+
 module.exports = {
   modoTeste,
+  ignorarLgpd,
   testeDir,
   caminhoDados,
   garantirDiretorio

@@ -85,6 +85,9 @@
       const r = await fetch(`${base}/api/config/publica`, { signal: AbortSignal.timeout(6000) });
       if (r.ok) {
         const d = await r.json();
+        if (d.ignorar_lgpd) {
+          try { global.CONFIG.AMBIENTE_TESTE = true; } catch (_) { /* ignore */ }
+        }
         return !!d.ambiente_teste;
       }
     } catch (_) { /* offline ou CORS */ }

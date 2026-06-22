@@ -20,13 +20,22 @@
     return global.CONFIG?.PLANOS?.[plano] || global.CONFIG?.PLANOS?.freemium;
   }
 
+  function lgpdIgnorado() {
+    return !!(global.CONFIG?.AMBIENTE_TESTE || global.ConsentimentoLGPD?.lgpdIgnorado?.());
+  }
+
+  function passoCadastro() {
+    return lgpdIgnorado() ? 1 : 2;
+  }
+
   function montarFluxoEtapas(container, passoAtual, plano) {
     const el = typeof container === 'string' ? document.querySelector(container) : container;
     if (!el) return;
     const cfg = obterPlanoConfig(plano);
     const isFree = !cfg?.valor_mensal && !cfg?.sob_consulta;
     const etapa3 = isFree ? 'Ativação' : 'Pagamento';
-    const labels = ['LGPD', 'Cadastro', etapa3];
+    const ignoraLgpd = lgpdIgnorado();
+    const labels = ignoraLgpd ? ['Cadastro', etapa3] : ['LGPD', 'Cadastro', etapa3];
     el.innerHTML = labels.map((label, idx) => {
       const num = idx + 1;
       let cls = '';
@@ -54,6 +63,7 @@
   }
 
   function exigirLgpdAprovada(plano) {
+    if (lgpdIgnorado()) return true;
     const sessao = carregarSessao();
     if (!sessao?.lgpd?.consentimentos || sessao.plano !== plano) {
       window.location.href = `lgpd-profissional.html?plano=${encodeURIComponent(plano)}`;
@@ -150,6 +160,11 @@
 
   function initLgpdProfissional() {
     const plano = obterPlanoUrl();
+    if (lgpdIgnorado()) {
+      salvarSessao({ plano, lgpd: global.ConsentimentoLGPD.payloadCadastroAlfa('profissional') });
+      window.location.replace(`cadastro-profissional.html?plano=${encodeURIComponent(plano)}`);
+      return;
+    }
     const cfg = obterPlanoConfig(plano);
     if (plano === 'enterprise') {
       window.location.href = 'mailto:contato@integrativo.app?subject=Plano%20Enterprise%20Integrativo.App';
@@ -190,7 +205,15 @@
 
     document.getElementById('plano-nome').textContent = cfg?.nome || plano;
     document.getElementById('plano-descricao').textContent = cfg?.descricao || '';
-    montarFluxoEtapas('#fluxoEtapas', 2, plano);
+    montarFluxoEtapas('#fluxoEtapas', passoCadastro(), plano);
+    const tagHero = document.querySelector('.fluxo-hero .tag');
+    if (tagHero) {
+      tagHero.textContent = lgpdIgnorado()
+        ? `Passo ${passoCadastro()} de 2 · Cadastro`
+        : 'Passo 2 de 3 · Cadastro';
+    }
+    const linkLgpd = document.getElementById('linkVoltarLgpd');
+    if (linkLgpd) linkLgpd.style.display = lgpdIgnorado() ? 'none' : '';
     atualizarResumoPreco();
 
     const senhaEl = document.getElementById('senha');
@@ -340,7 +363,7 @@
 
       const modalidade = document.querySelector('input[name="modalidadeAtendimento"]:checked')?.value || 'ambos';
       const renovacaoAutomatica = document.getElementById('renovacaoAutomatica').checked;
-      const lgpd = sessao.lgpd;
+      const lgpd = sessao.lgpd || global.ConsentimentoLGPD.payloadCadastroAlfa('profissional');
 
       btn.disabled = true;
       btn.textContent = 'Criando conta...';

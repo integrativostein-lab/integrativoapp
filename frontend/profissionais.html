@@ -677,18 +677,18 @@
         <p>O Integrativo.App se alinha aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17 ao fortalecer saúde integrativa, educação profissional, trabalho digno, inovação, redução de desigualdades, proteção ambiental, ética institucional e parcerias. Este alinhamento é institucional e não representa certificação ou endosso oficial da ONU.</p>
         <div class="ods-grid">
           <div class="ods-row ods-row-4">
-            <span class="ods-item"><img src="img/ods/3.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/4.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/8.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/9.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/3.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/4.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/8.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/9.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
           </div>
           <div class="ods-row ods-row-5">
-            <span class="ods-item"><img src="img/ods/10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
-            <span class="ods-item"><img src="img/ods/17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
-          </div>
+          <span class="ods-item"><img src="img/ods/10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
+          <span class="ods-item"><img src="img/ods/17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
+        </div>
         </div>
       </div>
 
@@ -704,16 +704,16 @@
           <span>1 · LGPD</span>
           <span>2 · Cadastro</span>
           <span>3 · Pagamento</span>
-        </div>
+          </div>
         <p>Ao clicar em <strong>Assinar</strong> ou <strong>Começar grátis</strong>, você inicia pelo <strong>passo 1 — autorizações LGPD</strong>. Só depois preenche o cadastro profissional completo.</p>
-      </div>
+            </div>
       <div class="planos-comissao-bar">
         <div class="pct">5%</div>
-        <div>
+              <div>
           <strong>A menor comissão do mercado</strong>
           <span>Sobre consultas nos planos pagos. No Freemium, a comissão é zero.</span>
-        </div>
-      </div>
+              </div>
+            </div>
       <p class="planos-info">Cancele quando quiser, sem multa. O acesso continua até o fim do ciclo mensal pago. Na <strong>1ª assinatura</strong>, 15 dias de arrependimento com reembolso integral. <strong>Associados ABRATH:</strong> 8% de desconto em planos elegíveis · <strong>PIX:</strong> mais 5% (cumulativo).</p>
       <div class="planos-grid" id="planosGrid"></div>
       <p class="planos-padroes-nota" data-recurso-clinico="fhir"><strong>Planos Pro, Clinic e Enterprise</strong> incluem interoperabilidade com padrões <strong>FHIR</strong> (HL7) e <strong>TISS</strong> (ANS), preparando sua operação para troca estruturada de dados clínicos e fluxos administrativos com operadoras.</p>
@@ -843,10 +843,18 @@
           : (isFree ? 'Grátis' : `${fmtMoeda(p.valor_mensal)} <small>/ mês</small>`);
         const detalhe = textoDetalhePlano(p);
         const recursos = (p.recursos || []).map((item) => `<li>${item}</li>`).join('');
+        const ignoraLgpd = CONFIG.AMBIENTE_TESTE;
         const href = isEnterprise
           ? 'mailto:contato@integrativo.app?subject=Plano%20Enterprise%20Integrativo.App'
-          : `lgpd-profissional.html?plano=${encodeURIComponent(key)}`;
+          : (ignoraLgpd
+            ? `cadastro-profissional.html?plano=${encodeURIComponent(key)}`
+            : `lgpd-profissional.html?plano=${encodeURIComponent(key)}`);
         const rotulo = isEnterprise ? 'Fale conosco' : (isFree ? 'Começar grátis' : 'Assinar plano');
+        const notaFluxo = isEnterprise
+          ? ''
+          : (ignoraLgpd
+            ? '<span class="plano-fluxo-nota">Ambiente de teste · cadastro direto</span>'
+            : '<span class="plano-fluxo-nota">Passo 1 de 3 · LGPD</span>');
 
         return `
           <div class="plano ${p.destaque ? 'destaque' : ''}">
@@ -858,10 +866,10 @@
             <a href="${href}"
                class="btn ${p.destaque ? 'btn-primario' : ''}"
                style="${p.destaque ? '' : 'background:#F1F5F9;color:var(--azul-profundo);'} text-align:center;width:100%;padding:11px;font-size:13px;"
-               title="Inicia pelo passo 1: autorizações LGPD">
+               title="${ignoraLgpd ? 'Cadastro profissional (ambiente de teste)' : 'Inicia pelo passo 1: autorizações LGPD'}">
               ${rotulo}
             </a>
-            ${isEnterprise ? '' : '<span class="plano-fluxo-nota">Passo 1 de 3 · LGPD</span>'}
+            ${notaFluxo}
           </div>`;
       }).join('');
     }
@@ -957,7 +965,7 @@
     renderPlanos();
     renderComparativo();
     document.addEventListener('catalogo:atualizado', () => {
-      renderBibliotecasProfissionais();
+    renderBibliotecasProfissionais();
       renderPlanos();
     });
   </script>

@@ -93,6 +93,7 @@
   <script src="js/consentimento-lgpd.js"></script>
   <script>
     (function redirecionarProfissionalParaLgpd() {
+      if (CONFIG.AMBIENTE_TESTE) return;
       const params = new URLSearchParams(window.location.search);
       const plano = params.get('plano') || 'freemium';
       if (params.get('tipo') === 'profissional' || params.has('plano')) {
@@ -109,7 +110,11 @@
 
     document.getElementById('tipo').addEventListener('change', function() {
       if (this.value === 'profissional') {
-        window.location.href = 'lgpd-profissional.html?plano=freemium';
+        if (CONFIG.AMBIENTE_TESTE) {
+          window.location.href = 'cadastro-profissional.html?plano=freemium';
+        } else {
+          window.location.href = 'lgpd-profissional.html?plano=freemium';
+        }
         return;
       }
       var grupo = document.getElementById('grupo-especialidades');
@@ -118,6 +123,11 @@
     });
 
     function renderConsentimentos() {
+      if (CONFIG.AMBIENTE_TESTE) {
+        document.getElementById('consentimentos-lgpd').innerHTML =
+          '<p class="aviso-legal info" style="margin:12px 0;">Ambiente de teste — autorizações LGPD dispensadas (dados fictícios).</p>';
+        return;
+      }
       var tipo = document.getElementById('tipo').value;
       var perfil = tipo === 'profissional' ? 'profissional' : 'paciente';
       ConsentimentoLGPD.render('#consentimentos-lgpd', {
@@ -162,7 +172,10 @@
         return;
       }
 
-      var consentPayload = ConsentimentoLGPD.payloadCadastro(document);
+      var consentPayload = ConsentimentoLGPD.payloadCadastro(
+        document,
+        tipo === 'profissional' ? 'profissional' : 'paciente'
+      );
       var body = {
         nome: nome,
         email: email,
