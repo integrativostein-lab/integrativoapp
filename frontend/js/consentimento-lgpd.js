@@ -125,7 +125,9 @@
   };
 
   function tiposParaPerfil(perfil) {
+    const modoLancamento = typeof global !== 'undefined' && global.CONFIG?.MODO_LANCAMENTO?.ativo;
     return Object.values(TIPOS).filter((tipo) => {
+      if (modoLancamento && tipo.id === 'compartilhamento_fhir') return false;
       if (!tipo.perfis) return true;
       return tipo.perfis.includes(perfil);
     });

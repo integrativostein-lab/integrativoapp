@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
 const ambiente = require('../config/ambiente');
+const modoLancamento = require('../config/modo-lancamento');
 const { processarAssinaturasExpiradas } = require('../servicos/assinaturas-ciclo');
 const {
   limiteBibliotecasPorPlano,
@@ -642,6 +643,13 @@ router.post('/cadastro-profissional', async (req, res) => {
     if (!emailRegex.test(email)) return res.status(400).json({ erro: 'Email inválido' });
     const erroSenha = validarSenhaCadastroProfissional(senha);
     if (erroSenha) return res.status(400).json({ erro: erroSenha });
+
+    if (modoLancamento.modoLancamento && (tem_registro_profissional || conselho)) {
+      return res.status(503).json({
+        erro: modoLancamento.mensagemBloqueio,
+        codigo: 'RECURSO_CLINICO_DORMENTE'
+      });
+    }
 
     const planoInicial = PLANOS_CADASTRO_PROF.includes(plano) ? plano : 'freemium';
     const modalidade = modalidade_atendimento || 'ambos';

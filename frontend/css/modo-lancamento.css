@@ -1,0 +1,95 @@
+/* Modo lançamento — ocultação de recursos clínicos regulados + marca d'água alfa */
+
+body.modo-lancamento [data-recurso-clinico],
+body.modo-lancamento .recurso-clinico {
+  display: none !important;
+}
+
+body.modo-lancamento .recurso-clinico-bloqueado {
+  display: block !important;
+}
+
+.aviso-modo-lancamento {
+  background: linear-gradient(135deg, #ecfdf5 0%, #f0f9ff 100%);
+  border: 1px solid #6ee7b7;
+  border-left: 5px solid #059669;
+  border-radius: 12px;
+  color: #064e3b;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 20px;
+  padding: 14px 16px;
+}
+
+.aviso-modo-lancamento strong {
+  color: #047857;
+}
+
+.pagina-recurso-dormante {
+  max-width: 640px;
+  margin: 48px auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.pagina-recurso-dormante .icone {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.pagina-recurso-dormante h2 {
+  color: var(--azul-profundo, #1e3a5f);
+  margin-bottom: 10px;
+}
+
+.pagina-recurso-dormante p {
+  color: var(--texto-suave, #64748b);
+  line-height: 1.6;
+}
+
+.pagina-recurso-dormante a {
+  color: var(--verde-destaque, #059669);
+  font-weight: 700;
+}
+
+/* Marca d'água — ambiente alfa / teste */
+body.ambiente-alfa::before {
+  content: "AMBIENTE DE TESTES · NÃO COMERCIAL";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 99999;
+  transform: translate(-50%, -50%) rotate(-28deg);
+  pointer-events: none;
+  user-select: none;
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: rgba(220, 38, 38, 0.08);
+  white-space: nowrap;
+  text-shadow: 0 0 1px rgba(220, 38, 38, 0.04);
+}
+
+body.ambiente-alfa::after {
+  content: "Integrativo.App · Alfa";
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  z-index: 99998;
+  pointer-events: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(220, 38, 38, 0.85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media print {
+  body.ambiente-alfa::before,
+  body.ambiente-alfa::after {
+    display: none;
+  }
+}

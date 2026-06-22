@@ -129,7 +129,11 @@
   }
 
   function especialidadesFiltradas(filtroFn) {
-    return (global.CONFIG?.ESPECIALIDADES || []).filter(filtroFn || (() => true));
+    let lista = global.CONFIG?.ESPECIALIDADES || [];
+    if (global.ModoLancamento?.ativo?.()) {
+      lista = global.ModoLancamento.especialidadesVisiveis(lista);
+    }
+    return lista.filter(filtroFn || (() => true));
   }
 
   function montarSelectEspecialidades(selectEl, lista, placeholder) {
@@ -214,15 +218,17 @@
     const selOcup2 = document.getElementById('ocupacaoSecundaria');
     const selOcup3 = document.getElementById('ocupacaoTerciaria');
 
-    carregarConselhos().then((lista) => {
-      selConselho.innerHTML = '<option value="">Selecione o conselho...</option>';
-      lista.forEach((item) => {
-        const opt = document.createElement('option');
-        opt.value = item.sigla;
-        opt.textContent = `${item.sigla} — ${item.nome}`;
-        selConselho.appendChild(opt);
+    if (!global.CONFIG?.MODO_LANCAMENTO?.ativo) {
+      carregarConselhos().then((lista) => {
+        selConselho.innerHTML = '<option value="">Selecione o conselho...</option>';
+        lista.forEach((item) => {
+          const opt = document.createElement('option');
+          opt.value = item.sigla;
+          opt.textContent = `${item.sigla} — ${item.nome}`;
+          selConselho.appendChild(opt);
+        });
       });
-    });
+    }
 
     montarSelectEspecialidades(selEspRegistro, especialidadesFiltradas(), 'Selecione a especialidade...');
     const selEspAbrath = document.getElementById('especialidadeAbrath');
@@ -295,7 +301,9 @@
         return;
       }
 
-      const temRegistro = document.getElementById('temRegistroProfissional').value === 'sim';
+      const temRegistro = global.CONFIG?.MODO_LANCAMENTO?.ativo
+        ? false
+        : document.getElementById('temRegistroProfissional').value === 'sim';
       const temAbrath = document.querySelector('input[name="temAbrath"]:checked')?.value;
       let especialidade = '';
       let conselho = null;

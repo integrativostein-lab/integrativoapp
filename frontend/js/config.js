@@ -20,6 +20,13 @@ function resolverApiUrl() {
   return 'https://integra-backend-ynrd.onrender.com/api';
 }
 
+/** Até certificações: recursos clínicos regulados ficam dormentes. Defina window.INTEGRATIVO_RECURSOS_CLINICOS = true para liberar. */
+function resolverModoLancamento() {
+  if (typeof window !== 'undefined' && window.INTEGRATIVO_RECURSOS_CLINICOS === true) return false;
+  if (typeof window !== 'undefined' && window.INTEGRATIVO_RECURSOS_CLINICOS === false) return true;
+  return true;
+}
+
 const CONFIG = {
   // ═══════════════════════════════════════════
   // SITE
@@ -30,6 +37,18 @@ const CONFIG = {
   // API
   // ═══════════════════════════════════════════
   API_URL: resolverApiUrl(),
+
+  // ═══════════════════════════════════════════
+  // MODO LANÇAMENTO — terapeutas integrativos (sem conselho regulado)
+  // ═══════════════════════════════════════════
+  MODO_LANCAMENTO: {
+    ativo: resolverModoLancamento(),
+    marcaAguaAlfa: true,
+    publico: 'terapeutas integrativos sem conselho profissional regulado',
+    aviso:
+      'Prescrição eletrônica, validação de conselhos e integrações FHIR/TISS/SUS estão temporariamente indisponíveis ' +
+      'enquanto concluímos certificações. Bibliotecas terapêuticas, agenda, anamnese e teleconsulta permanecem ativas.'
+  },
 
   // ═══════════════════════════════════════════
   // PLANOS (MODELO MENSAL — 2026)
@@ -799,6 +818,31 @@ if (typeof CatalogoTerapeutico !== 'undefined') {
   sincronizarCatalogoFallback(CONFIG);
 }
 
+// Ajustes de planos e especialidades no modo lançamento
+if (CONFIG.MODO_LANCAMENTO?.ativo) {
+  Object.values(CONFIG.PLANOS).forEach((plano) => {
+    plano.prescricao = false;
+    plano.fhir_tiss = false;
+    if (Array.isArray(plano.recursos)) {
+      plano.recursos = plano.recursos.map((r) =>
+        r
+          .replace(/prescrição eletrônica/gi, 'bibliotecas terapêuticas')
+          .replace(/prescrições?,? /gi, '')
+          .replace(/FHIR[^,]*/gi, '')
+          .replace(/TISS[^,]*/gi, '')
+          .replace(/,\s*,/g, ',')
+          .replace(/\s{2,}/g, ' ')
+          .trim()
+      ).filter(Boolean);
+    }
+  });
+  CONFIG.ESPECIALIDADES = CONFIG.ESPECIALIDADES.filter((esp) => {
+    if (!esp.conselho) return true;
+    if (esp.conselho === 'ABRATH') return true;
+    return false;
+  });
+}
+
 // ============================================
 // EXPORTAÇÃO — ESSENCIAL PARA O FRONTEND
 // ============================================
@@ -818,4 +862,12 @@ if (typeof window !== 'undefined' && CONFIG.Catalogo) {
   } else {
     iniciar();
   }
+}
+
+if (typeof window !== 'undefined' && !document.getElementById('modo-lancamento-js')) {
+  const ml = document.createElement('script');
+  ml.id = 'modo-lancamento-js';
+  ml.src = 'js/modo-lancamento.js';
+  ml.defer = true;
+  document.head.appendChild(ml);
 }

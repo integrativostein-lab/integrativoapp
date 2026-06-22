@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
 const { recursosPlano } = require('../config/planos');
+const { bloquearRecursosClinicos } = require('../middlewares/bloquear-recursos-clinicos');
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -92,8 +93,8 @@ router.delete('/banco-terapeutico/:id', autenticar, async (req, res) => {
   res.json({ mensagem: 'Item removido!' });
 });
 
-// Prescrições
-router.post('/', autenticar, async (req, res) => {
+// Prescrições — bloqueadas em modo lançamento (biblioteca permanece ativa)
+router.post('/', autenticar, bloquearRecursosClinicos, async (req, res) => {
   const { paciente_id, itens, exames_sugeridos, observacoes, tipo_controlado } = req.body;
   const prof = await db.query('SELECT conselho_classe, plano FROM usuarios WHERE id = $1', [req.usuario.id]);
   const planoRecursos = recursosPlano(prof.rows[0]?.plano);
@@ -143,7 +144,7 @@ router.post('/', autenticar, async (req, res) => {
   res.status(201).json(resposta);
 });
 
-router.get('/minhas', autenticar, async (req, res) => {
+router.get('/minhas', autenticar, bloquearRecursosClinicos, async (req, res) => {
   const r = await db.query('SELECT * FROM prescricoes WHERE paciente_id = $1 ORDER BY data_prescricao DESC', [req.usuario.id]);
   res.json(r.rows);
 });

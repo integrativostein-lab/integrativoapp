@@ -23,6 +23,8 @@ const rateLimit = require('express-rate-limit');
 const cron = require('node-cron');
 const crypto = require('crypto');
 const ambiente = require('./config/ambiente');
+const modoLancamento = require('./config/modo-lancamento');
+const { bloquearRecursosClinicos } = require('./middlewares/bloquear-recursos-clinicos');
 
 const db = require('./database');
 const auditoria = require('./servicos/auditoria-lgpd');
@@ -81,10 +83,21 @@ app.get('/', (req, res) => {
     status: 'online',
     ambiente: process.env.NODE_ENV || 'development',
     modo_teste: ambiente.modoTeste,
+    modo_lancamento: modoLancamento.modoLancamento,
+    recursos_clinicos_ativos: modoLancamento.recursosClinicosAtivos,
     pasta_teste: ambiente.testeDir,
     jwt_fp: ambiente.modoTeste
       ? crypto.createHash('sha256').update(process.env.JWT_SECRET || '').digest('hex').slice(0, 12)
       : undefined
+  });
+});
+
+app.get('/api/config/publica', (req, res) => {
+  res.json({
+    modo_lancamento: modoLancamento.modoLancamento,
+    recursos_clinicos_ativos: modoLancamento.recursosClinicosAtivos,
+    ambiente_teste: ambiente.modoTeste,
+    versao: '2.1.0'
   });
 });
 
@@ -164,10 +177,10 @@ app.use('/api/pagamento', pagamentoRoutes);
 app.use('/api/reunioes', reunioesRoutes);
 app.use('/api/teleconsultas', teleconsultaRoutes);
 app.use('/api/arquivo-profissional', arquivoProfissionalRoutes);
-app.use('/api/sus', susRoutes);
-app.use('/api/tiss', tissRoutes);
-app.use('/api/fhir', fhirRoutes);
-app.use('/api/validacao', validacaoRoutes);
+app.use('/api/sus', bloquearRecursosClinicos, susRoutes);
+app.use('/api/tiss', bloquearRecursosClinicos, tissRoutes);
+app.use('/api/fhir', bloquearRecursosClinicos, fhirRoutes);
+app.use('/api/validacao', bloquearRecursosClinicos, validacaoRoutes);
 app.use('/api/alertas-seguranca', alertasSegurancaRoutes);
 
 console.log('✅ Todas as rotas carregadas');
