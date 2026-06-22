@@ -4,7 +4,7 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prescrição — Integrativo.App</title>
+  <title>Recomendações — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
     .prescricao-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
@@ -25,9 +25,9 @@
 <body>
   <div class="painel">
     <div class="painel-sidebar">
-      <h3>📋 Prescrição</h3>
+      <h3>📋 Recomendações</h3>
       <nav>
-        <a href="#" class="ativo">Nova Prescrição</a>
+        <a href="#" class="ativo">Nova recomendação</a>
         <a href="#">Histórico</a>
         <a href="manual.html">📖 Manual</a>
         <a href="#" onclick="logout()">🚪 Sair</a>
@@ -51,9 +51,9 @@
           <p>Sua prescrição terá validade jurídica com assinatura digital ICP-Brasil.</p>
         </div>
 
-        <!-- FORMULÁRIO DE PRESCRIÇÃO -->
-        <div class="prescricao-card">
-          <h3>Nova Prescrição</h3>
+        <!-- FORMULÁRIO -->
+        <div class="prescricao-card" id="card-formulario">
+          <h3 id="titulo-formulario">Nova recomendação</h3>
           
           <div class="form-grupo">
             <label>Paciente</label>
@@ -81,7 +81,7 @@
             <textarea id="obs-prescricao" rows="2" data-voz data-voz-continuo="true" placeholder="Orientações adicionais..."></textarea>
           </div>
 
-          <button class="btn btn-primario" onclick="emitirPrescricao()" style="width:100%;">Emitir</button>
+          <button class="btn btn-primario" id="btn-emitir" onclick="emitirPrescricao()" style="width:100%;">Emitir recomendação</button>
           <p id="msg-prescricao" style="text-align:center;margin-top:12px;"></p>
         </div>
 
@@ -111,36 +111,31 @@
   <script>
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
-    async function carregar() {
-      var token = localStorage.getItem('integra_token');
-      if (!token) { window.location.href = 'login.html'; return; }
+    function configurarModoRecomendacao(planoCfg) {
+      document.title = 'Recomendações — Integrativo.App';
+      document.querySelector('.painel-sidebar h3').textContent = '📋 Recomendações';
+      document.getElementById('aviso-com-conselho').style.display = 'none';
+      document.getElementById('link-conselho').style.display = 'none';
+      document.getElementById('aviso-sem-conselho').style.display = 'block';
+      document.getElementById('aviso-sem-conselho').innerHTML = `
+        <h3>Receituário de recomendações</h3>
+        <p>Documento <strong>orientativo</strong> com base nas bibliotecas terapêuticas — disponível em todos os planos.</p>
+        <p style="font-size:14px;color:var(--texto-medio);">Não substitui prescrição de profissional regulamentado quando exigida por lei.</p>`;
+      document.getElementById('titulo-formulario').textContent = 'Nova recomendação';
+      document.getElementById('btn-emitir').textContent = 'Emitir recomendação';
+      const sel = document.getElementById('tipo-prescricao');
+      sel.value = 'solicitacao';
+      sel.querySelector('option[value="prescricao"]').disabled = true;
+      sel.querySelector('option[value="controle_especial"]').disabled = true;
+      const optSol = sel.querySelector('option[value="solicitacao"]');
+      if (optSol) optSol.textContent = 'Recomendação terapêutica';
+    }
 
-      // Buscar perfil do profissional
-      var r = await fetch(`${CONFIG.API_URL}/usuarios/perfil`, { headers: { 'Authorization': `Bearer ${token}` } });
-      var dados = await r.json();
-
-      // Verificar plano e conselho
-      const planoCfg = CONFIG.PLANOS[dados.plano] || CONFIG.PLANOS.freemium;
-      const apenasRecomendacao = planoCfg.prescricao === false;
-
-      if (apenasRecomendacao) {
-        document.getElementById('aviso-com-conselho').style.display = 'none';
-        document.getElementById('link-conselho').style.display = 'none';
-        document.getElementById('aviso-sem-conselho').style.display = 'block';
-        document.getElementById('aviso-sem-conselho').innerHTML = `
-          <h3>Recomendações clínicas</h3>
-          <p>Seu plano <strong>${planoCfg.nome || 'Guardiões da Floresta'}</strong> inclui <strong>recomendações auxiliares</strong> com base nas bibliotecas terapêuticas, sem prescrição eletrônica.</p>
-          <p style="font-size:14px;color:var(--texto-medio);">O documento emitido é orientativo e não substitui prescrição de profissional regulamentado quando exigida por lei.</p>`;
-        document.querySelector('.prescricao-card h3').textContent = 'Nova Recomendação';
-        document.getElementById('tipo-prescricao').value = 'solicitacao';
-        document.getElementById('tipo-prescricao').querySelector('option[value="prescricao"]').disabled = true;
-        document.getElementById('tipo-prescricao').querySelector('option[value="controle_especial"]').disabled = true;
-        document.getElementById('tipo-prescricao').querySelector('option[value="solicitacao"]').textContent = 'Recomendação clínica';
-      } else if (dados.conselho_classe) {
+    function configurarModoPrescricao(dados) {
+      document.getElementById('aviso-sem-conselho').style.display = 'none';
+      if (dados.conselho_classe) {
         document.getElementById('aviso-com-conselho').style.display = 'block';
         document.getElementById('conselho-nome').textContent = dados.conselho_classe;
-        
-        // Mostrar link do portal do conselho
         var links = {
           'CRM': 'https://portal.cfm.org.br',
           'CREFITO': 'https://www.crefito.org.br',
@@ -150,7 +145,6 @@
           'COREN': 'https://www.portalcoren.com.br',
           'CRP': 'https://site.cfp.org.br'
         };
-        
         if (links[dados.conselho_classe]) {
           document.getElementById('link-conselho').style.display = 'block';
           document.getElementById('link-conselho-url').href = links[dados.conselho_classe];
@@ -160,6 +154,23 @@
         document.getElementById('tipo-prescricao').value = 'solicitacao';
         document.getElementById('tipo-prescricao').querySelector('option[value="prescricao"]').disabled = true;
         document.getElementById('tipo-prescricao').querySelector('option[value="controle_especial"]').disabled = true;
+      }
+    }
+
+    async function carregar() {
+      var token = localStorage.getItem('integra_token');
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      var r = await fetch(`${CONFIG.API_URL}/usuarios/perfil`, { headers: { 'Authorization': `Bearer ${token}` } });
+      var dados = await r.json();
+
+      const planoCfg = CONFIG.PLANOS[dados.plano] || CONFIG.PLANOS.freemium;
+      const somenteRecomendacao = CONFIG.MODO_LANCAMENTO?.ativo || planoCfg.prescricao === false;
+
+      if (somenteRecomendacao) {
+        configurarModoRecomendacao(planoCfg);
+      } else {
+        configurarModoPrescricao(dados);
       }
     }
 

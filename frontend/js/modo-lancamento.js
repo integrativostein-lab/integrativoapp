@@ -1,6 +1,6 @@
 /**
  * Modo lançamento — terapeutas integrativos sem conselho regulado.
- * Oculta prescrição, validação de conselhos, FHIR/TISS/SUS até certificações.
+ * Oculta validação de conselhos, FHIR/TISS/SUS até certificações. Recomendações permanecem ativas.
  */
 (function (global) {
   const CONSELHOS_REGULADOS = new Set([
@@ -115,23 +115,6 @@
     alvo.prepend(div);
   }
 
-  function bloquearPaginaPrescricao() {
-    if (!/painel-prescricao\.html/i.test(global.location.pathname)) return;
-    const cont = document.querySelector('.prescricao-container') || document.getElementById('conteudo') || document.body;
-    cont.innerHTML = `
-      <div class="pagina-recurso-dormante">
-        <div class="icone">🔒</div>
-        <h2>Prescrição eletrônica em preparação</h2>
-        <p>
-          Estamos concluindo certificações para habilitar prescrições, validação de conselhos
-          e integrações regulatórias (FHIR/TISS). Enquanto isso, utilize as
-          <a href="painel-bibliotecas.html">bibliotecas terapêuticas</a> para apoio ao seu trabalho
-          como terapeuta integrativo.
-        </p>
-        <p style="margin-top:16px;"><a href="painel-terapeuta.html">← Voltar ao painel</a></p>
-      </div>`;
-  }
-
   function ajustarCadastroProfissional() {
     const sel = document.getElementById('temRegistroProfissional');
     if (!sel) return;
@@ -140,8 +123,7 @@
     inserirAvisoLancamento(blocoRegistro, `
       <strong>Modo terapeuta integrativo.</strong>
       No lançamento inicial, o cadastro é voltado a profissionais sem conselho regulado (CRM, CRP, etc.).
-      Informe sua ocupação principal nas práticas integrativas. Validação de conselho e prescrição eletrônica
-      serão liberadas após certificações.`);
+      Informe sua ocupação principal nas práticas integrativas.`);
 
     sel.value = 'nao';
     sel.closest('.form-group')?.setAttribute('data-recurso-clinico', 'conselho');
@@ -180,7 +162,6 @@
     await aplicarBannerTeste();
     if (!ativo()) return;
     ocultarRecursosClinicos();
-    bloquearPaginaPrescricao();
     ajustarCadastroProfissional();
     substituirTextosPlanos();
     inserirAvisoGlobal();

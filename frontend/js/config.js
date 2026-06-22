@@ -73,8 +73,7 @@ const CONFIG = {
     marcaAguaAlfa: true,
     publico: 'terapeutas integrativos sem conselho profissional regulado',
     aviso:
-      'Prescrição eletrônica, validação de conselhos e integrações FHIR/TISS/SUS estão temporariamente indisponíveis ' +
-      'enquanto concluímos certificações. Bibliotecas terapêuticas, agenda, anamnese e teleconsulta permanecem ativas.'
+      'Bibliotecas terapêuticas, agenda, anamnese, teleconsulta e emissão de recomendações permanecem ativas.'
   },
 
   // ═══════════════════════════════════════════
@@ -849,11 +848,13 @@ if (typeof CatalogoTerapeutico !== 'undefined') {
 if (CONFIG.MODO_LANCAMENTO?.ativo) {
   Object.values(CONFIG.PLANOS).forEach((plano) => {
     plano.prescricao = false;
+    plano.recomendacao = true;
     plano.fhir_tiss = false;
     if (Array.isArray(plano.recursos)) {
       plano.recursos = plano.recursos.map((r) =>
         r
-          .replace(/prescrição eletrônica/gi, 'bibliotecas terapêuticas')
+          .replace(/prescrição eletrônica/gi, 'recomendações terapêuticas')
+          .replace(/sem prescrição eletrônica/gi, 'recomendações terapêuticas')
           .replace(/prescrições?,? /gi, '')
           .replace(/FHIR[^,]*/gi, '')
           .replace(/TISS[^,]*/gi, '')
@@ -861,6 +862,9 @@ if (CONFIG.MODO_LANCAMENTO?.ativo) {
           .replace(/\s{2,}/g, ' ')
           .trim()
       ).filter(Boolean);
+      if (!plano.recursos.some((r) => /recomenda/i.test(r))) {
+        plano.recursos.push('Recomendações terapêuticas (receituário orientativo)');
+      }
     }
   });
   CONFIG.ESPECIALIDADES = CONFIG.ESPECIALIDADES.filter((esp) => {

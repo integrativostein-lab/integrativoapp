@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
 const { recursosPlano } = require('../config/planos');
-const { bloquearRecursosClinicos } = require('../middlewares/bloquear-recursos-clinicos');
+const modoLancamento = require('../config/modo-lancamento');
 
 function autenticar(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
@@ -93,21 +93,26 @@ router.delete('/banco-terapeutico/:id', autenticar, async (req, res) => {
   res.json({ mensagem: 'Item removido!' });
 });
 
-// Prescrições — bloqueadas em modo lançamento (biblioteca permanece ativa)
-router.post('/', autenticar, bloquearRecursosClinicos, async (req, res) => {
+// Recomendações / receituário orientativo (prescrição eletrônica só quando habilitada)
+router.post('/', autenticar, async (req, res) => {
   const { paciente_id, itens, exames_sugeridos, observacoes, tipo_controlado } = req.body;
   const prof = await db.query('SELECT conselho_classe, plano FROM usuarios WHERE id = $1', [req.usuario.id]);
   const planoRecursos = recursosPlano(prof.rows[0]?.plano);
+  const somenteRecomendacao = modoLancamento.modoLancamento || !planoRecursos.prescricao;
+
+  if (somenteRecomendacao && tipo_controlado) {
+    return res.status(403).json({ erro: 'Seu plano permite recomendações terapêuticas, sem prescrição eletrônica.' });
+  }
 
   if (tipo_controlado && !planoRecursos.prescricao) {
     return res.status(403).json({ erro: 'Seu plano permite apenas recomendações clínicas, sem prescrição eletrônica.' });
   }
 
   let tipo = 'solicitacao';
-  if (planoRecursos.prescricao && prof.rows[0]?.conselho_classe) tipo = 'prescricao';
-  if (tipo_controlado) tipo = 'controle_especial';
+  if (!somenteRecomendacao && planoRecursos.prescricao && prof.rows[0]?.conselho_classe) tipo = 'prescricao';
+  if (tipo_controlado && planoRecursos.prescricao) tipo = 'controle_especial';
 
-  const rotuloTipo = !planoRecursos.prescricao
+  const rotuloTipo = somenteRecomendacao || !planoRecursos.prescricao
     ? 'Recomendação'
     : (tipo === 'prescricao' ? 'Prescrição' : tipo === 'controle_especial' ? 'Receita de Controle Especial' : 'Solicitação');
 
@@ -144,7 +149,7 @@ router.post('/', autenticar, bloquearRecursosClinicos, async (req, res) => {
   res.status(201).json(resposta);
 });
 
-router.get('/minhas', autenticar, bloquearRecursosClinicos, async (req, res) => {
+router.get('/minhas', autenticar, async (req, res) => {
   const r = await db.query('SELECT * FROM prescricoes WHERE paciente_id = $1 ORDER BY data_prescricao DESC', [req.usuario.id]);
   res.json(r.rows);
 });

@@ -41,10 +41,18 @@ function normalizarPlano(plano) {
   return plano;
 }
 
+const modoLancamento = require('./modo-lancamento');
+
 function recursosPlano(plano) {
   const key = normalizarPlano(plano);
-  if (key === 'guardioes_floresta') return PLANOS_RECURSOS.guardioes_floresta;
-  return PLANOS_RECURSOS[key] || PLANOS_RECURSOS.pro;
+  let rec;
+  if (key === 'guardioes_floresta') rec = { ...PLANOS_RECURSOS.guardioes_floresta };
+  else rec = { ...(PLANOS_RECURSOS[key] || PLANOS_RECURSOS.pro) };
+  if (modoLancamento.modoLancamento) {
+    rec.prescricao = false;
+    rec.recomendacao = true;
+  }
+  return rec;
 }
 
 function comissaoConsultaPct(plano) {
