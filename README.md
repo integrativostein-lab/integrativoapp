@@ -1,6 +1,8 @@
-# Integrativo.App
+# Integrativo.App v2.1.0
 
 Plataforma de saúde integrativa — frontend estático (Vercel) + API Node.js (Render).
+
+Versão canônica: `shared/versao.js` · `backend/package.json` · `GET /api/config/publica`.
 
 | Ambiente | Site | API |
 |----------|------|-----|

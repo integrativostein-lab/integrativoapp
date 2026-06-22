@@ -1,6 +1,9 @@
 // ============================================
-// CONFIGURAÇÃO GLOBAL DO INTEGRATIVO.APP v3.0
+// CONFIGURAÇÃO GLOBAL DO INTEGRATIVO.APP v2.1
+// Versão canônica: shared/versao.js · backend/package.json · /api/config/publica
 // ============================================
+
+const VERSAO_APP = '2.1.0';
 
 const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname : '';
 
@@ -50,6 +53,7 @@ function resolverModoLancamento() {
 }
 
 const CONFIG = {
+  VERSAO: VERSAO_APP,
   // ═══════════════════════════════════════════
   // SITE
   // ═══════════════════════════════════════════
@@ -190,38 +194,6 @@ const CONFIG = {
       fhir_tiss: true,
       especialidades_inclusas: 67,
       cobranca_por_profissional: false,
-      destaque: false,
-      recursos: [
-        'Até 15 profissionais · 3 recepcionistas',
-        '1.200 teleconsultas/mês',
-        '2.400 mensagens/mês · 3.000 pacientes',
-        'Blog, loja, prescrição eletrônica e reunião interna',
-        'BYOS para gravações e streamings',
-        'Ferramentas administrativas completas',
-        'Comissão de 5% sobre consultas'
-      ]
-    },
-    premium: {
-      nome: 'Clinic',
-      valor_mensal: 799,
-      valor_anual: 9588,
-      descricao: 'Para clínicas com até 15 profissionais',
-      max_profissionais: 15,
-      max_recepcionistas: 3,
-      teleconsultas_mes: 1200,
-      max_pacientes: 3000,
-      whatsapp_mensagens_mes: 2400,
-      comissao_consulta_pct: 5,
-      blog: true,
-      loja: true,
-      prescricao: true,
-      reuniao_interna: true,
-      byos: true,
-      ferramentas_gestao: true,
-      fhir_tiss: true,
-      especialidades_inclusas: 67,
-      cobranca_por_profissional: false,
-      legado_id: 'premium',
       destaque: false,
       recursos: [
         'Até 15 profissionais · 3 recepcionistas',
@@ -821,7 +793,6 @@ function sincronizarCatalogoFallback(cfg) {
     guardioes_floresta: 3,
     pro: 10,
     clinic: 67,
-    premium: 67,
     enterprise: bt.bibliotecas_por_pratica
   };
   Object.entries(cfg.LIMITES_BIBLIOTECAS_PLANO).forEach(([plano, limite]) => {

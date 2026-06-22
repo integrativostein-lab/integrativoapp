@@ -235,7 +235,7 @@
           <p style="color:var(--texto-suave);">Organize domínio próprio, email profissional e recursos white label para sua clínica ou guarda-chuva institucional.</p>
           <div class="acoes-linha">
             <a href="painel-white-label.html" class="acao-botao">Configurar white label</a>
-            <a href="checkout.html?plano=premium" class="acao-botao secundario">Ver plano Premium</a>
+            <a href="checkout.html?plano=clinic" class="acao-botao secundario">Ver plano Clinic</a>
           </div>
         </div>
       </div>
@@ -279,8 +279,8 @@
       var html = '';
       dados.slice(0, 5).forEach(function(a) {
         html += '<div class="agenda-item" onclick="abrirPaciente(' + a.paciente_id + ')">';
-        html += '<div><div class="paciente-nome">' + (a.paciente_nome || 'Paciente') + '</div>';
-        html += '<div class="paciente-info">' + a.data_agendamento + ' às ' + a.horario_inicio + ' — ' + a.status + '</div></div>';
+        html += '<div><div class="paciente-nome">' + escapeHtml(a.paciente_nome || 'Paciente') + '</div>';
+        html += '<div class="paciente-info">' + escapeHtml(a.data_agendamento) + ' às ' + escapeHtml(a.horario_inicio) + ' — ' + escapeHtml(a.status) + '</div></div>';
         if (a.modalidade === 'online' && ['agendado', 'em_andamento', 'reagendado'].includes(a.status)) {
           html += '<a href="#" class="btn-teleconsulta" onclick="event.stopPropagation(); iniciarTeleconsulta(' + a.id + ')">🎥 Consulta</a>';
         }
@@ -304,8 +304,17 @@
       }
     }
 
+    function escapeHtml(str) {
+      if (str == null) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
     function abrirPaciente(id) {
-      alert('Abrir prontuário do paciente #' + id + ' (funcionalidade completa em breve)');
+      window.location.href = 'painel-anamnese.html?paciente_id=' + encodeURIComponent(id);
     }
 
     function iniciarTeleconsulta(id) {

@@ -16,6 +16,7 @@ function carregarCatalogoJson() {
 
 const catalogo = carregarCatalogoJson();
 const contagens = catalogo.contagens;
+const { normalizarPlano } = require('./planos');
 
 const LIMITES_BIBLIOTECAS_PLANO = {
   ...catalogo.limitesBibliotecasPlano,
@@ -36,7 +37,7 @@ const META_CATALOGO = {
 };
 
 function limiteBibliotecasPorPlano(plano) {
-  const chave = String(plano || 'freemium').trim();
+  const chave = normalizarPlano(String(plano || 'freemium').trim());
   return LIMITES_BIBLIOTECAS_PLANO[chave] ?? LIMITES_BIBLIOTECAS_PLANO.freemium;
 }
 

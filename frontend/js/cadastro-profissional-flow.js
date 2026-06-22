@@ -1,6 +1,6 @@
 (function (global) {
   const SESSION_KEY = 'integra_fluxo_profissional';
-  const PLANOS_VALIDOS = ['freemium', 'guardioes_floresta', 'pro', 'clinic', 'premium', 'enterprise'];
+  const PLANOS_VALIDOS = ['freemium', 'guardioes_floresta', 'pro', 'clinic', 'enterprise'];
 
   function fmtMoeda(v) {
     return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -10,9 +10,14 @@
     return Math.round(Number(valor || 0) * 100) / 100;
   }
 
+  function normalizarPlanoUrl(plano) {
+    if (plano === 'premium') return 'clinic';
+    return plano;
+  }
+
   function obterPlanoUrl() {
     const params = new URLSearchParams(window.location.search);
-    const plano = params.get('plano') || 'freemium';
+    const plano = normalizarPlanoUrl(params.get('plano') || 'freemium');
     return PLANOS_VALIDOS.includes(plano) ? plano : 'freemium';
   }
 
@@ -108,7 +113,7 @@
 
     let valor = arredondarMoeda(cfg.valor_mensal);
     const descontos = [];
-    const planosAbrath = ['pro', 'clinic', 'premium'];
+    const planosAbrath = ['pro', 'clinic'];
     if (opts.abrath && planosAbrath.includes(planoKey)) {
       valor = arredondarMoeda(valor * 0.92);
       descontos.push('ABRATH 8%');

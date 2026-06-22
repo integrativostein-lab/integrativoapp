@@ -2,15 +2,18 @@ require('dotenv').config();
 const dns = require('dns');
 const { Pool } = require('pg');
 const { modoTeste } = require('./config/ambiente');
+const { databaseUrlParaPooler } = require('./utils/supabase-pooler');
 
 // Render e outros hosts podem falhar com ENETUNREACH em IPv6 para Supabase.
 dns.setDefaultResultOrder('ipv4first');
 
 // PostgreSQL exclusivamente (Supabase/Render/local). Não há suporte a SQLite.
 
-const connectionString = modoTeste && process.env.TESTE_DATABASE_URL
+const rawConnectionString = modoTeste && process.env.TESTE_DATABASE_URL
   ? process.env.TESTE_DATABASE_URL
   : process.env.DATABASE_URL;
+
+const connectionString = databaseUrlParaPooler(rawConnectionString);
 
 if (!connectionString) {
   console.error('[FATAL] DATABASE_URL não configurada. Defina em .env antes de iniciar.');

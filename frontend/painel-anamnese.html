@@ -145,6 +145,12 @@
         selPac.appendChild(opt);
       });
 
+      var pacienteUrl = new URLSearchParams(window.location.search).get('paciente_id');
+      if (pacienteUrl) {
+        selPac.value = pacienteUrl;
+        await carregarAnamnesePaciente();
+      }
+
       await carregarConfig();
       renderFormulario();
     }

@@ -41,7 +41,7 @@ function montarJson(config, anterior) {
       freemium: 1,
       guardioes_floresta: 5,
       pro: 10,
-      premium: 20
+      clinic: 67
     },
     aliasesBibliotecas: {
       ...(anterior?.aliasesBibliotecas || {}),

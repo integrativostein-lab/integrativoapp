@@ -1,15 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+
 const db = require('../database');
 const evolution = require('../servicos/evolution-api');
-
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
-  catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
+const { autenticar } = require('../middlewares/autenticar');
 
 router.get('/', autenticar, async (req, res) => {
   const r = await db.query('SELECT * FROM templates_mensagens WHERE usuario_id = $1 ORDER BY criado_em DESC', [req.usuario.id]);

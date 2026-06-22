@@ -294,7 +294,7 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     const registroAbrath = abrath_registro || registroAbrathUsuario;
 
     // Cupom vitalício especial (single-use)
-    if (codigo_cupom && codigo_cupom.toUpperCase() === 'PRESENTEDOMAU' && ['premium', 'clinic'].includes(plano)) {
+    if (codigo_cupom && codigo_cupom.toUpperCase() === 'PRESENTEDOMAU' && plano === 'clinic') {
       const cup = await db.query("SELECT valor FROM configuracoes WHERE chave = 'cupom_presentedomau_usado'").catch(() => ({ rows: [] }));
       if (cup.rows.length === 0 || cup.rows[0].valor !== 'true') {
         vitalicio = true;
@@ -306,11 +306,9 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
       }
     }
 
-    // Desconto ABRATH 8% — vale para Pro e Premium, independente da forma de pagamento.
+    // Desconto ABRATH 8% — vale para Pro e Clinic, independente da forma de pagamento.
     if (!vitalicio && registroAbrath && nomeAbrath && PLANOS_COM_DESCONTO_ABRATH.includes(plano)) {
-      const verificado = abrath_registro
-        ? await verificarRegistroABRATH(abrath_registro, abrath_nome)
-        : Boolean(registroAbrathUsuario);
+      const verificado = await verificarRegistroABRATH(registroAbrath, nomeAbrath);
       if (verificado) {
         descontoAplicado = Math.max(descontoAplicado, DESCONTO_ABRATH * 100);
         valor = aplicarDescontoPct(valorBase, DESCONTO_ABRATH);

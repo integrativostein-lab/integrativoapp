@@ -1,4 +1,5 @@
 const LIMITES_BIBLIOTECAS_PLANO = require('../config/limites-bibliotecas');
+const { normalizarPlano } = require('../config/planos');
 
 function normalizarBibliotecas(valor) {
   if (Array.isArray(valor)) {
@@ -19,7 +20,7 @@ function unicas(lista) {
 }
 
 function limiteBibliotecasPorPlano(plano) {
-  const chave = String(plano || 'freemium').trim();
+  const chave = normalizarPlano(String(plano || 'freemium').trim());
   return LIMITES_BIBLIOTECAS_PLANO[chave] ?? LIMITES_BIBLIOTECAS_PLANO.freemium;
 }
 

@@ -18,7 +18,7 @@ const CONTAS = [
     especialidades: JSON.stringify(['Fitoterapia', 'Ayurveda', 'Medicina Integrativa']),
     atende_online: 1,
     atende_presencial: 1,
-    plano: 'premium'
+    plano: 'clinic'
   },
   {
     nome: 'Maria Paciente',

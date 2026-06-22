@@ -12,6 +12,8 @@ const {
   montarBibliotecasCadastro
 } = require('../utils/bibliotecas');
 const { garantirValoresPadrao } = require('../utils/profissional-valores');
+const { normalizarPlano } = require('../config/planos');
+const { autenticar } = require('../middlewares/autenticar');
 
 const VERSAO_CONSENTIMENTO_PESQUISA = 'pesquisa-clinica-anonimizada-2026-06-13';
 const VERSAO_CONSENTIMENTO_LGPD = '2026-06-20';
@@ -259,17 +261,6 @@ async function salvarConsentimentoPesquisa({ usuarioId, consentiu, req, origem }
   }
 }
 
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try {
-    req.usuario = jwt.verify(token, process.env.JWT_SECRET);
-    return next();
-  } catch {
-    return res.status(401).json({ erro: 'Token inválido' });
-  }
-}
-
 router.post('/cadastro', async (req, res) => {
   try {
     const {
@@ -450,16 +441,6 @@ router.post('/login', async (req, res) => {
             }
           });
         }
-      }
-
-      const usuariosDemo = {
-        'profissional@demo.com': { id: 'demo-profissional', nome: 'Dr. João Integrativo', tipo: 'profissional', plano: 'pro' },
-        'paciente@demo.com': { id: 'demo-paciente', nome: 'Maria Paciente', tipo: 'paciente', plano: 'freemium' }
-      };
-      const demo = usuariosDemo[email];
-      if (demo) {
-        const token = jwt.sign({ id: demo.id, email, tipo: demo.tipo, demo: true }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        return res.json({ mensagem: 'Login demo realizado!', token, usuario: { ...demo, email } });
       }
     }
     
@@ -646,7 +627,7 @@ router.post('/consentimentos', autenticar, async (req, res) => {
 // CADASTRO ESPECÍFICO DE PROFISSIONAL
 // ============================================
 // Cria usuário tipo='profissional' e (opcional) já dispara validação no conselho
-const PLANOS_CADASTRO_PROF = ['freemium', 'guardioes_floresta', 'pro', 'clinic', 'premium'];
+const PLANOS_CADASTRO_PROF = ['freemium', 'guardioes_floresta', 'pro', 'clinic'];
 
 function validarSenhaCadastroProfissional(senha) {
   if (typeof senha !== 'string' || senha.length < 12) {
@@ -687,7 +668,8 @@ router.post('/cadastro-profissional', async (req, res) => {
       });
     }
 
-    const planoInicial = PLANOS_CADASTRO_PROF.includes(plano) ? plano : 'freemium';
+    const planoNorm = normalizarPlano(plano);
+    const planoInicial = PLANOS_CADASTRO_PROF.includes(planoNorm) ? planoNorm : 'freemium';
     const modalidade = modalidade_atendimento || 'ambos';
     const atendeOnline = modalidade === 'presencial' ? 0 : 1;
     const atendePresencial = modalidade === 'online' ? 0 : 1;

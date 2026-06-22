@@ -1,24 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
+const { autenticar } = require('../middlewares/autenticar');
 const {
   limiteBibliotecasPorPlano,
   normalizarBibliotecas,
   unicas
 } = require('../utils/bibliotecas');
 
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
-  catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
-
 router.get('/perfil', autenticar, async (req, res) => {
-  const r = await db.query('SELECT id, nome, email, telefone, cpf, tipo, registro_profissional, conselho_classe, uf_conselho, registro_abrath, cnpj, cidade, estado, especialidades, atende_online, atende_presencial, plano, certificado_digital_senha FROM usuarios WHERE id = $1', [req.usuario.id]);
+  const r = await db.query(
+    `SELECT id, nome, email, telefone, cpf, tipo, registro_profissional, conselho_classe, uf_conselho,
+            registro_abrath, cnpj, cidade, estado, especialidades, atende_online, atende_presencial, plano,
+            (certificado_digital_senha IS NOT NULL AND certificado_digital_senha <> '') AS certificado_digital_configurado
+     FROM usuarios WHERE id = $1`,
+    [req.usuario.id]
+  );
   if (r.rows.length === 0) return res.status(404).json({ erro: 'Não encontrado' });
   const u = r.rows[0];
   if (u.tipo === 'paciente') {
@@ -45,7 +45,7 @@ router.get('/perfil', autenticar, async (req, res) => {
 });
 
 router.put('/perfil', autenticar, async (req, res) => {
-  const campos = ['nome', 'telefone', 'registro_profissional', 'conselho_classe', 'uf_conselho', 'registro_abrath', 'cnpj', 'cidade', 'estado', 'atende_online', 'atende_presencial', 'certificado_digital_senha'];
+  const campos = ['nome', 'telefone', 'registro_profissional', 'conselho_classe', 'uf_conselho', 'registro_abrath', 'cnpj', 'cidade', 'estado', 'atende_online', 'atende_presencial'];
   const att = {};
   campos.forEach(c => { if (req.body[c] !== undefined) att[c] = req.body[c]; });
   if (Object.keys(att).length === 0) return res.status(400).json({ erro: 'Nada para atualizar' });

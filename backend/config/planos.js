@@ -6,11 +6,10 @@ const PLANOS_MENSAIS = {
   guardioes_floresta: 10,
   pro: 99.9,
   clinic: 799,
-  premium: 799,
   enterprise: null
 };
 
-const PLANOS_COM_DESCONTO_ABRATH = ['pro', 'clinic', 'premium'];
+const PLANOS_COM_DESCONTO_ABRATH = ['pro', 'clinic'];
 const PLANOS_SEM_DESCONTO_PIX = ['guardioes_floresta'];
 
 const PLANOS_RECURSOS = {
@@ -18,7 +17,6 @@ const PLANOS_RECURSOS = {
   guardioes_floresta: { comissao_consulta_pct: 0, prescricao: false, recomendacao: true },
   pro: { comissao_consulta_pct: 5, prescricao: true, recomendacao: true },
   clinic: { comissao_consulta_pct: 5, prescricao: true, recomendacao: true },
-  premium: { comissao_consulta_pct: 5, prescricao: true, recomendacao: true },
   enterprise: { comissao_consulta_pct: 5, prescricao: true, recomendacao: true }
 };
 
@@ -27,8 +25,9 @@ const DESCONTO_ABRATH = 0.08;
 const PRAZO_ARREPENDIMENTO_DIAS = 15;
 
 function valorMensalPlano(plano) {
-  if (!Object.prototype.hasOwnProperty.call(PLANOS_MENSAIS, plano)) return undefined;
-  return PLANOS_MENSAIS[plano];
+  const key = normalizarPlano(plano);
+  if (!Object.prototype.hasOwnProperty.call(PLANOS_MENSAIS, key)) return undefined;
+  return PLANOS_MENSAIS[key];
 }
 
 function planoCheckoutValido(plano) {
@@ -36,6 +35,7 @@ function planoCheckoutValido(plano) {
   return valor !== undefined && valor !== null;
 }
 
+/** Alias legado: premium → clinic (antigo nome do plano de clínica). */
 function normalizarPlano(plano) {
   if (plano === 'premium') return 'clinic';
   return plano;

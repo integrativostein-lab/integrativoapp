@@ -1,15 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+
 const db = require('../database');
 const { verificarDominio, registrarDominio, emitirCertificado } = require('../servicos/fornecedores');
-
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
-  catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
+const { autenticar } = require('../middlewares/autenticar');
 
 router.get('/catalogo', autenticar, async (req, res) => {
   const rCert = await db.query('SELECT * FROM revenda_certificados ORDER BY id DESC LIMIT 1');

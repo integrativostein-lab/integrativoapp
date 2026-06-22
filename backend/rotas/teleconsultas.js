@@ -1,22 +1,11 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const { AccessToken } = require('livekit-server-sdk');
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
 const { BASES_LEGAIS, TEXTO_CONSENTIMENTO, LIMITES_ATENDIMENTO } = require('../config/teleconsulta-normas');
+const { autenticar } = require('../middlewares/autenticar');
 
 const router = express.Router();
-
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try {
-    req.usuario = jwt.verify(token, process.env.JWT_SECRET);
-    next();
-  } catch {
-    res.status(401).json({ erro: 'Token inválido' });
-  }
-}
 
 function normalizarSala(agendamentoId) {
   return `teleconsulta-${agendamentoId}`;

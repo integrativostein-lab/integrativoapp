@@ -3,6 +3,7 @@
  * Conversão entre registros do Integrativo.App e recursos FHIR
  */
 const FHIR = require('../config/fhir');
+const { APP: VERSAO_APP } = require('../config/versao');
 
 const { PROFILES, NAMING_SYSTEMS, CODE_SYSTEMS } = FHIR;
 
@@ -461,7 +462,7 @@ function capabilityStatement() {
     status: 'active',
     date: new Date().toISOString(),
     kind: 'instance',
-    software: { name: 'Integrativo.App', version: '2.1.0' },
+    software: { name: 'Integrativo.App', version: VERSAO_APP },
     fhirVersion: '4.0.1',
     format: ['json'],
     rest: [{

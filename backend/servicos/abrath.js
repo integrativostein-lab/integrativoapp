@@ -1,23 +1,30 @@
 const axios = require('axios');
+const ambiente = require('../config/ambiente');
 
 async function verificarRegistroABRATH(registro, nome) {
+  if (!registro) return false;
+
   try {
-    // Tenta acessar o site da ABRATH para verificar o registro
-    const response = await axios.get(`https://abrath.org.br/consulta?registro=${registro}`, {
+    const response = await axios.get(`https://abrath.org.br/consulta?registro=${encodeURIComponent(registro)}`, {
       timeout: 10000
     });
 
-    if (response.data && response.data.includes(nome)) {
+    if (response.data && nome && String(response.data).includes(nome)) {
       return true;
     }
 
-    // Se a consulta automática falhar, considera válido (modo confiança)
-    // O profissional assume a responsabilidade pela veracidade
-    return true;
+    if (response.status === 200 && response.data) {
+      return String(response.data).toLowerCase().includes(String(registro).toLowerCase());
+    }
+
+    return false;
   } catch (erro) {
-    // Se o site estiver fora do ar, libera com aviso
-    console.log('⚠️ Não foi possível verificar o registro ABRATH online. Aceitando temporariamente.');
-    return true;
+    if (ambiente.modoTeste) {
+      console.log('⚠️ ABRATH indisponível em modo teste — validação dispensada.');
+      return true;
+    }
+    console.warn('⚠️ Não foi possível verificar o registro ABRATH online:', erro.message);
+    return false;
   }
 }
 

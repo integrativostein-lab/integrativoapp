@@ -1,14 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const db = require('../database');
 
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
-  catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
+const db = require('../database');
+const { autenticar } = require('../middlewares/autenticar');
 
 const GATEWAYS_DISPONIVEIS = [
   { id: 'pagseguro', nome: 'PagSeguro', taxa_cartao: '3,99%', taxa_pix: '1,99%' },

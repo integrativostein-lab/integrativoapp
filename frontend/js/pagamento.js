@@ -11,11 +11,15 @@ const CARTOES_TESTE = [
 // Função para processar pagamento (modo teste)
 async function processarPagamento(dados) {
     const { produto, valor, profissionalId } = dados;
-    const email = localStorage.getItem('user_email') || 'teste@demo.com';
+    const usuario = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
+    const email = localStorage.getItem('user_email') || usuario.email || 'teste@demo.com';
+    const token = localStorage.getItem('integra_token');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers.Authorization = 'Bearer ' + token;
 
     const response = await fetch('/api/pagamento/criar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
             produto,
             valor,

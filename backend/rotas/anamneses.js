@@ -1,23 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
+const { autenticar } = require('../middlewares/autenticar');
 const {
   VERSAO_SCHEMA,
   CAMPOS_ANAMNESE,
   idsPadraoAtivos,
   idsPadraoObrigatorios,
   campoPorId,
-  calcularCamposPendentes
+  calcularCamposPendentes,
+  camposFiltrados
 } = require('../config/anamnese-campos');
-
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
-  catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
 
 async function garantirTabelas() {
   await db.query(`
@@ -60,6 +55,24 @@ function sanitizarRespostas(respostas = {}) {
   });
   return limpo;
 }
+
+router.get('/schema-publico', (req, res) => {
+  const ativos = idsPadraoAtivos();
+  const campos = camposFiltrados({ parte: 1, idsAtivos: ativos });
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.json({
+    versao: VERSAO_SCHEMA,
+    finalidade: 'auto_diagnostico_orientativo',
+    aviso_legal:
+      'Formulário educativo. Não constitui diagnóstico médico nem substitui consulta profissional.',
+    total: campos.length,
+    campos,
+    padrao: {
+      ativos,
+      obrigatorios: idsPadraoObrigatorios().filter((id) => ativos.includes(id))
+    }
+  });
+});
 
 router.get('/schema', autenticar, (req, res) => {
   res.json({

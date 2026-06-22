@@ -6,8 +6,7 @@
     freemium: 1,
     guardioes_floresta: 3,
     pro: 10,
-    clinic: 67,
-    premium: 67
+    clinic: 67
   };
 
   function resolverCaminhoJson() {
@@ -225,7 +224,7 @@
       limiteFreemium: limites.freemium ?? 1,
       limiteGuardioes: limites.guardioes_floresta ?? 5,
       limitePro: limites.pro ?? 10,
-      limitePremium: limites.premium ?? 20,
+      limiteClinic: limites.clinic ?? limites.premium ?? 67,
       limiteEnterprise: limites.enterprise ?? bt.bibliotecas_por_pratica ?? 0
     };
   }
@@ -243,7 +242,8 @@
       .replace(/\{\{limite_freemium\}\}/g, m.limiteFreemium)
       .replace(/\{\{limite_guardioes\}\}/g, m.limiteGuardioes)
       .replace(/\{\{limite_pro\}\}/g, m.limitePro)
-      .replace(/\{\{limite_premium\}\}/g, m.limitePremium)
+      .replace(/\{\{limite_clinic\}\}/g, m.limiteClinic)
+      .replace(/\{\{limite_premium\}\}/g, m.limiteClinic)
       .replace(/\{\{limite_enterprise\}\}/g, m.limiteEnterprise)
       .replace(/\{\{limites_planos\}\}/g, textoLimitesPlanos(config));
   }
@@ -255,7 +255,7 @@
       `O plano Freemium inclui ${m.limiteFreemium} ${plural(m.limiteFreemium)}.`,
       `Guardiões da Floresta inclui ${m.limiteGuardioes},`,
       `Pro inclui ${m.limitePro},`,
-      `Premium inclui ${m.limitePremium}`,
+      `Clinic inclui ${m.limiteClinic}`,
       `e Enterprise inclui acesso às ${m.bibliotecas} bibliotecas (${m.porPratica} por prática + ${m.transversais} transversais).`
     ].join(' ');
   }

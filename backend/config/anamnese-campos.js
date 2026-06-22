@@ -1,10 +1,14 @@
 /**
- * Schema da anamnese integrativa — Integrativo.App v2.1
+ * Schema da anamnese integrativa — Integrativo.App (schema v2.1)
  * Preferência PICS (PNPIC/MS) + medicina ocidental completa.
  * Parte 1: paciente (pré-consulta) · Parte 2: profissional (consulta)
+ *
+ * SCHEMA_ANAMNESE em shared/versao.js — independente da versão semver da app.
  */
 
-const VERSAO_SCHEMA = '2.1';
+const { SCHEMA_ANAMNESE } = require('../../shared/versao');
+
+const VERSAO_SCHEMA = SCHEMA_ANAMNESE;
 
 function campo(id, nome, categoria, opts = {}) {
   return {

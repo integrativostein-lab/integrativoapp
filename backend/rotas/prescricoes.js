@@ -1,17 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
+
 const db = require('../database');
 const auditoria = require('../servicos/auditoria-lgpd');
 const { recursosPlano } = require('../config/planos');
 const modoLancamento = require('../config/modo-lancamento');
-
-function autenticar(req, res, next) {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ erro: 'Não autorizado' });
-  try { req.usuario = jwt.verify(token, process.env.JWT_SECRET); next(); }
-  catch { res.status(401).json({ erro: 'Token inválido' }); }
-}
+const { temVinculoClinico } = require('../utils/vinculo-clinico');
+const { autenticar } = require('../middlewares/autenticar');
 
 // Banco terapêutico — acesso limitado por sessão (apenas profissional logado)
 router.get('/banco-terapeutico', autenticar, async (req, res) => {
@@ -96,6 +91,14 @@ router.delete('/banco-terapeutico/:id', autenticar, async (req, res) => {
 // Recomendações / receituário orientativo (prescrição eletrônica só quando habilitada)
 router.post('/', autenticar, async (req, res) => {
   const { paciente_id, itens, exames_sugeridos, observacoes, tipo_controlado } = req.body;
+  if (!paciente_id) return res.status(400).json({ erro: 'paciente_id é obrigatório.' });
+  if (!['profissional', 'admin', 'super_admin'].includes(req.usuario.tipo)) {
+    return res.status(403).json({ erro: 'Apenas profissionais podem registrar recomendações ou prescrições.' });
+  }
+  const vinculo = await temVinculoClinico(req.usuario.id, paciente_id);
+  if (!vinculo && !['admin', 'super_admin'].includes(req.usuario.tipo)) {
+    return res.status(403).json({ erro: 'Sem vínculo clínico com este paciente (agendamento necessário).' });
+  }
   const prof = await db.query('SELECT conselho_classe, plano FROM usuarios WHERE id = $1', [req.usuario.id]);
   const planoRecursos = recursosPlano(prof.rows[0]?.plano);
   const somenteRecomendacao = modoLancamento.modoLancamento || !planoRecursos.prescricao;

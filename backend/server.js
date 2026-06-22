@@ -24,6 +24,7 @@ const cron = require('node-cron');
 const crypto = require('crypto');
 const ambiente = require('./config/ambiente');
 const modoLancamento = require('./config/modo-lancamento');
+const { APP: VERSAO_APP } = require('./config/versao');
 const { bloquearRecursosClinicos } = require('./middlewares/bloquear-recursos-clinicos');
 
 const db = require('./database');
@@ -79,7 +80,7 @@ app.use('/uploads', express.static(uploadsDir));
 app.get('/', (req, res) => {
   res.json({
     sistema: 'Integrativo.App - Saúde Integrativa',
-    versao: '2.1.0',
+    versao: VERSAO_APP,
     status: 'online',
     ambiente: process.env.NODE_ENV || 'development',
     modo_teste: ambiente.modoTeste,
@@ -98,7 +99,7 @@ app.get('/api/config/publica', (req, res) => {
     recursos_clinicos_ativos: modoLancamento.recursosClinicosAtivos,
     ambiente_teste: ambiente.modoTeste,
     ignorar_lgpd: ambiente.ignorarLgpd,
-    versao: '2.1.0'
+    versao: VERSAO_APP
   });
 });
 
@@ -157,6 +158,8 @@ app.use('/api/loja', lojaRoutes);
 app.use('/api/yoga', yogaRoutes);
 app.use('/api/prescricoes', prescricaoRoutes);
 app.use('/api/anamneses', anamneseRoutes);
+const autoDiagnosticoRoutes = require('./rotas/auto-diagnostico');
+app.use('/api/auto-diagnostico', autoDiagnosticoRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/revenda', revendaRoutes);
 app.use('/api/criador', criadorRoutes);
@@ -222,7 +225,7 @@ app.use('*', (req, res) => { res.status(404).json({ erro: 'Rota não encontrada'
 
 // Iniciar servidor (listen imediato — Render health check em /)
 app.listen(PORT, () => {
-  console.log('🌿 Integrativo.App v2.1 - Rodando na porta ' + PORT);
+  console.log(`🌿 Integrativo.App v${VERSAO_APP} - Rodando na porta ${PORT}`);
   console.log('🔐 FHIR Brasil: /api/fhir');
   console.log('✓ Validação de Conselhos: /api/validacao');
   console.log('✓ Auditoria LGPD: backend/logs/auditoria-lgpd/');

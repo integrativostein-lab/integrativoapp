@@ -11,9 +11,15 @@
  *   node scripts/sincronizar-render.js --prod-only --no-deploy
  */
 const path = require('path');
-const crypto = require('crypto');
 const { loadEnvFile, createRenderClient } = require('./lib/render-api');
-const { SITE_CANONICO, CORS_PRODUCAO, CORS_ALFA } = require('../backend/config/dominios');
+const { SITE_CANONICO, CORS_PRODUCAO } = require('../backend/config/dominios');
+const { databaseUrlParaPooler } = require('../backend/utils/supabase-pooler');
+const {
+  autoPreencherSupabase,
+  resolverDatabaseUrlRemoto,
+  persistirChaveEnv
+} = require('./lib/supabase-env');
+const { aplicarAlfaRender } = require('./lib/aplicar-alfa-render');
 
 const ROOT = path.join(__dirname, '..');
 const ENV_FILE = path.join(ROOT, '.env.alfa');
@@ -23,7 +29,8 @@ const FLAGS = {
   alfaOnly: process.argv.includes('--alfa-only'),
   prodOnly: process.argv.includes('--prod-only'),
   noDeploy: process.argv.includes('--no-deploy'),
-  skipRepo: process.argv.includes('--skip-repo')
+  skipRepo: process.argv.includes('--skip-repo'),
+  colar: process.argv.includes('--colar') || process.argv.includes('--clipboard')
 };
 
 const GITHUB_REPO = process.env.GITHUB_REPO || 'integrativostein-lab/integrativoapp';
@@ -35,49 +42,23 @@ async function configurarAlfa(render) {
   const svc = await render.findService(nome);
   console.log(`\n📡 Alfa — ${svc.name} (${svc.id})`);
 
-  if (!FLAGS.skipRepo) {
-    await render.updateRepo(svc.id, { repo: GITHUB_REPO, branch: GITHUB_BRANCH, rootDir: ROOT_DIR });
-  }
+  autoPreencherSupabase(ENV_FILE, { clipboard: FLAGS.colar, silencioso: true });
+  await resolverDatabaseUrlRemoto({ render, envFile: ENV_FILE, alfaServiceId: svc.id });
 
-  const apiRoot = (process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api').replace(/\/api\/?$/, '');
-  const cors = process.env.CORS_ORIGINS || process.env.ALFA_CORS_ORIGINS || CORS_ALFA;
-  let jwt = process.env.JWT_SECRET;
-  if (!jwt) {
-    try {
-      const envs = await render.api('GET', `/services/${svc.id}/env-vars?limit=100`);
-      const lista = Array.isArray(envs) ? envs : (envs?.items || []);
-      const row = lista.find((x) => (x.envVar || x).key === 'JWT_SECRET');
-      jwt = row?.envVar?.value || row?.value;
-      if (jwt) console.log('   ℹ️ JWT_SECRET preservado do Render (alfa)');
-    } catch { /* ignore */ }
-  }
-  if (!jwt) jwt = crypto.randomBytes(32).toString('hex');
-
-  if (!process.env.DATABASE_URL) {
-    console.log('   ⚠️ DATABASE_URL ausente no .env.alfa — pulando vars que dependem do banco');
-  }
-
-  await render.upsertEnvMap(svc.id, {
-    NODE_ENV: 'test',
-    PORT: '10000',
-    TEST_MODE: 'true',
-    SIMULAR_NF_SEM_CERTIFICADO: 'true',
-    RECURSOS_CLINICOS_ATIVOS: 'false',
-    CORS_ORIGINS: cors,
-    DATABASE_URL: process.env.DATABASE_URL,
-    JWT_SECRET: jwt,
-    EVOLUTION_SIMULATE: 'true',
-    RNDS_ENABLED: 'false',
-    AUDITORIA_LGPD_ATIVA: 'true',
-    AUDITORIA_LGPD_RETENCAO_DIAS: '365',
-    FHIR_BASE_URL: `${apiRoot}/api/fhir`,
-    TISS_BASE_URL: `${apiRoot}/api/tiss`,
-    LIVEKIT_URL: process.env.LIVEKIT_URL,
-    LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY,
-    LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET
+  const { jwt } = await aplicarAlfaRender(render, svc, {
+    dryRun: FLAGS.dryRun,
+    skipRepo: FLAGS.skipRepo,
+    noDeploy: FLAGS.noDeploy,
+    githubRepo: GITHUB_REPO,
+    githubBranch: GITHUB_BRANCH,
+    rootDir: ROOT_DIR,
+    envFile: ENV_FILE
   });
 
-  if (!FLAGS.noDeploy) await render.triggerDeploy(svc.id);
+  if (jwt && !process.env.JWT_SECRET && !FLAGS.dryRun) {
+    persistirChaveEnv(ENV_FILE, 'JWT_SECRET', jwt);
+  }
+
   return svc;
 }
 
@@ -106,6 +87,7 @@ async function configurarProducao(render) {
   const vars = {
     NODE_ENV: 'production',
     PORT: '10000',
+    NODE_OPTIONS: '--dns-result-order=ipv4first',
     TEST_MODE: 'false',
     RECURSOS_CLINICOS_ATIVOS: 'false',
     CORS_ORIGINS: cors,
@@ -118,7 +100,14 @@ async function configurarProducao(render) {
     TISS_BASE_URL: `${apiRoot}/api/tiss`
   };
 
-  if (process.env.PROD_DATABASE_URL) vars.DATABASE_URL = process.env.PROD_DATABASE_URL;
+  if (process.env.PROD_DATABASE_URL) {
+    const pooler = databaseUrlParaPooler(process.env.PROD_DATABASE_URL);
+    vars.DATABASE_URL = pooler;
+    if (pooler !== process.env.PROD_DATABASE_URL) {
+      console.log('   ℹ️ PROD_DATABASE_URL convertida para pooler Supabase');
+      persistirChaveEnv(ENV_FILE, 'PROD_DATABASE_URL', pooler);
+    }
+  }
   if (process.env.PROD_JWT_SECRET) vars.JWT_SECRET = process.env.PROD_JWT_SECRET;
 
   await render.upsertEnvMap(svc.id, vars);
@@ -133,6 +122,8 @@ async function main() {
     console.error('❌ Crie .env.alfa a partir de .env.alfa.example (precisa de RENDER_API_KEY).');
     process.exit(1);
   }
+
+  autoPreencherSupabase(ENV_FILE, { clipboard: FLAGS.colar });
 
   const render = createRenderClient({
     apiKey: process.env.RENDER_API_KEY,

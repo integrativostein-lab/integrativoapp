@@ -4,307 +4,45 @@
   <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Integrativo.App - Plataforma de saúde integrativa com profissionais, teleconsulta, {{bibliotecas}} bibliotecas terapêuticas e alinhamento aos ODS.">
+  <meta name="description" content="Integrativo.App — Novo modelo de bem-estar integrativo. Síntese orientativa de saúde, sem diagnóstico. Consulte sempre seu profissional.">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://integrativo.app/">
-  <title>Integrativo.App — Saúde Integrativa e Bem-Estar</title>
+  <title>Integrativo.App — Bem-estar integrativo</title>
   <link rel="stylesheet" href="css/estilo.css">
-  <style>
-    /* ============================================
-       ESTILOS DA HOME
-    ============================================ */
-    .hero {
-      background: linear-gradient(135deg, var(--azul-profundo) 0%, #1f3a5f 60%, var(--verde-destaque) 140%);
-      color: var(--branco);
-      padding: 100px 24px 80px;
-      text-align: center;
-    }
-    .hero h1 {
-      font-size: 48px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      margin-bottom: 16px;
-      color: #fff;
-    }
-    .hero p {
-      font-size: 18px;
-      opacity: 0.9;
-      max-width: 720px;
-      margin: 0 auto 32px;
-      line-height: 1.6;
-    }
-    .hero .btn-group {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .hero .btn-group .btn {
-      padding: 14px 32px;
-      font-size: 16px;
-      font-weight: 700;
-      border-radius: 999px;
-      text-decoration: none;
-      transition: var(--transicao);
-    }
-    .hero .btn-group .btn-primario {
-      background: var(--verde-destaque);
-      color: var(--branco);
-    }
-    .hero .btn-group .btn-primario:hover {
-      background: #0E9F6E;
-      transform: translateY(-2px);
-    }
-    .hero .btn-group .btn-outline {
-      background: transparent;
-      color: var(--branco);
-      border: 2px solid rgba(255,255,255,0.4);
-    }
-    .hero .btn-group .btn-outline:hover {
-      background: rgba(255,255,255,0.1);
-      border-color: var(--branco);
-      transform: translateY(-2px);
-    }
-
-    .secao {
-      padding: 60px 24px;
-      max-width: 1180px;
-      margin: 0 auto;
-    }
-    .secao h2 {
-      color: var(--azul-profundo);
-      font-size: 32px;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    .secao .sub {
-      text-align: center;
-      color: var(--texto-suave);
-      font-size: 16px;
-      margin-bottom: 40px;
-    }
-
-    /* CARDS DE DIFERENCIAIS */
-    .diferenciais-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 24px;
-    }
-    .diferencial-card {
-      background: var(--branco);
-      border: 1px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 28px 24px;
-      text-align: center;
-      transition: var(--transicao);
-      box-shadow: var(--sombra-suave);
-    }
-    .diferencial-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--sombra-elevada);
-      border-color: var(--verde-destaque);
-    }
-    .diferencial-card .icone {
-      font-size: 40px;
-      margin-bottom: 12px;
-    }
-    .diferencial-card h3 {
-      color: var(--azul-profundo);
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-    .diferencial-card p {
-      color: var(--texto-suave);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* ODS — grade 2 linhas centralizadas (estilos em css/estilo.css) */
-
-    /* BANNER DE PLANOS */
-    .banner-planos {
-      background: linear-gradient(135deg, #1A365D, #1f3a5f);
-      color: var(--branco);
-      border-radius: 20px;
-      padding: 40px;
-      text-align: center;
-      margin: 40px 0;
-    }
-    .banner-planos h2 {
-      color: var(--branco);
-      font-size: 28px;
-      margin-bottom: 8px;
-    }
-    .banner-planos p {
-      color: rgba(255,255,255,0.85);
-      font-size: 16px;
-      margin-bottom: 20px;
-    }
-    .banner-planos .btn {
-      padding: 12px 32px;
-      background: var(--verde-destaque);
-      color: var(--branco);
-      border-radius: 999px;
-      text-decoration: none;
-      font-weight: 700;
-      transition: var(--transicao);
-    }
-    .banner-planos .btn:hover {
-      background: #0E9F6E;
-      transform: translateY(-2px);
-    }
-
-    /* ESTATÍSTICAS */
-    .stats-home {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 16px;
-      margin: 32px 0;
-    }
-    .stat-item {
-      text-align: center;
-      padding: 20px;
-      background: var(--branco);
-      border-radius: 16px;
-      border: 1px solid #E2E8F0;
-    }
-    .stat-item .numero {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--azul-profundo);
-    }
-    .stat-item .rotulo {
-      font-size: 13px;
-      color: var(--texto-suave);
-      margin-top: 4px;
-    }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 32px; }
-      .hero p { font-size: 16px; }
-      .secao h2 { font-size: 26px; }
-      .banner-planos { padding: 24px; }
-      .stats-home { grid-template-columns: 1fr 1fr; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/bemestar-temporario.css">
 </head>
 <body>
-  <nav class="navbar" data-nav="publico" data-nav-ativo="inicio">
-    <a href="index.html" class="logo-container">
-      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
-      <span class="logo-texto">Integrativo.App</span>
-    </a>
-    <div class="menu" data-nav-menu></div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="hero">
-    <h1 data-i18n="hero.titulo">Encontre seu profissional integrativo</h1>
-    <p data-i18n="hero.subtitulo">{{especialidades}} especialidades. Agende online ou presencial.</p>
-    <div class="btn-group">
-      <a href="busca.html" class="btn btn-primario" data-i18n="hero.buscar">🔍 Encontrar Profissional</a>
-      <a href="profissionais" class="btn btn-outline" data-i18n="hero.profissional">📋 Sou Profissional</a>
-    </div>
-  </section>
-
-  <!-- DIFERENCIAIS -->
-  <section class="secao">
-    <h2>Por que escolher o Integrativo.App?</h2>
-    <p class="sub">Uma plataforma completa para profissionais e pacientes da saúde integrativa.</p>
-    <div class="diferenciais-grid">
-      <div class="diferencial-card">
-        <div class="icone">📚</div>
-        <h3 class="catalogo-token-html">{{bibliotecas}} Bibliotecas</h3>
-        <p>Acesso a fontes oficiais como PNPIC/MS, OMS/WHO, ANVISA, NCCIH e textos clássicos.</p>
-      </div>
-      <div class="diferencial-card">
-        <div class="icone">🩺</div>
-        <h3>Teleconsulta</h3>
-        <p>Sessões online seguras com registro e integração ao prontuário do paciente.</p>
-      </div>
-      <div class="diferencial-card" data-recurso-clinico="fhir">
-        <div class="icone">📋</div>
-        <h3>Prontuário FHIR</h3>
-        <p>Padrão HL7 FHIR e TISS para interoperabilidade e conformidade com a ANS.</p>
-      </div>
-      <div class="diferencial-card">
-        <div class="icone">🔒</div>
-        <h3>Segurança e LGPD</h3>
-        <p>Dados protegidos com consentimento informado e conformidade com a LGPD.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ESTATÍSTICAS -->
-  <section class="secao" style="padding-top: 0;">
-    <div class="stats-home">
-      <div class="stat-item">
-        <div class="numero" id="stat-especialidades">—</div>
-        <div class="rotulo">Especialidades de cadastro</div>
-      </div>
-      <div class="stat-item">
-        <div class="numero" id="stat-bibliotecas">—</div>
-        <div class="rotulo">Bibliotecas terapêuticas</div>
-      </div>
-      <div class="stat-item">
-        <div class="numero" id="stat-registros">—</div>
-        <div class="rotulo">Registros de Conhecimento</div>
-      </div>
-      <div class="stat-item">
-        <div class="numero" id="stat-fontes">—</div>
-        <div class="rotulo">Fontes Oficiais</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ODS - ALINHAMENTO -->
-  <section class="secao" style="padding-top: 0;">
-    <div class="ods-bloco">
-      <h3>🌍 Alinhamento com os Objetivos de Desenvolvimento Sustentável</h3>
-      <p>O Integrativo.App se alinha aos ODS 3, 4, 8, 9, 10, 13, 15, 16 e 17 ao fortalecer saúde integrativa, educação profissional, trabalho digno, inovação, redução de desigualdades, proteção ambiental, ética institucional e parcerias. Este alinhamento é institucional e não representa certificação ou endosso oficial da ONU.</p>
-      <div class="ods-grid">
-        <div class="ods-row ods-row-4">
-          <span class="ods-item"><img src="img/ods/3.png" alt="ODS 3 - Saúde e Bem-Estar" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/4.png" alt="ODS 4 - Educação de Qualidade" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/8.png" alt="ODS 8 - Trabalho Decente e Crescimento Econômico" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/9.png" alt="ODS 9 - Indústria, Inovação e Infraestrutura" loading="lazy"></span>
-        </div>
-        <div class="ods-row ods-row-5">
-          <span class="ods-item"><img src="img/ods/10.png" alt="ODS 10 - Redução das Desigualdades" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/13.png" alt="ODS 13 - Ação Contra a Mudança Global do Clima" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/15.png" alt="ODS 15 - Vida Terrestre" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/16.png" alt="ODS 16 - Paz, Justiça e Instituições Eficazes" loading="lazy"></span>
-          <span class="ods-item"><img src="img/ods/17.png" alt="ODS 17 - Parcerias e Meios de Implementação" loading="lazy"></span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BANNER PARA PROFISSIONAIS -->
-  <section class="secao">
-    <div class="banner-planos">
-      <h2>🚀 Para Profissionais de Saúde</h2>
-      <p class="catalogo-token">{{especialidades}} especialidades de cadastro e {{bibliotecas}} bibliotecas terapêuticas — <strong>5% de comissão, a menor do mercado</strong>. Planos a partir de R$ 0/mês.</p>
-      <a href="profissionais" class="btn">Quero me cadastrar</a>
-    </div>
-  </section>
-
-  <footer>
-    <div class="container">
-      <div style="margin-bottom: 40px;">
-        <a href="termos.html">Termos</a>
-        <a href="privacidade.html">Privacidade</a>
-        <a href="etica.html">Ética Profissional</a>
-        <a href="missao.html">Nossa Missão</a>
-        <a href="bibliotecas-especialidades.html">Bibliotecas</a>
-      </div>
-      <p style="font-weight: 700; color: var(--branco); font-size: 18px; margin-bottom: 8px;">Integrativo.App&reg;</p>
-      <p>&copy; 2026 Todos os direitos reservados.</p>
-    </div>
-  </footer>
-
-  <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
-  <script src="js/nav-publico.js"></script>
-  <script src="js/i18n.js"></script>
+  <script>
+    if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
+      window.location.replace('index2.html');
+    }
+  </script>
+  <main class="landing-bemestar">
+    <div class="conteudo">
+      <img src="img/logo.png" alt="Integrativo.App" class="logo-hero" width="280" height="auto">
+
+      <h1>Estamos desenvolvendo um novo modelo de bem-estar</h1>
+
+      <p class="lead">
+        Enquanto isso, você pode fazer uma pausa consciente e verificar como anda sua saúde neste momento —
+        com uma síntese orientativa, pensada para refletir, não para rotular.
+      </p>
+
+      <p class="aviso">
+        Este espaço <strong>não é um serviço de diagnóstico</strong>.
+        Apresentamos apenas leituras integrativas e recomendações gerais de autocuidado.
+        Qualquer decisão sobre sua saúde deve ser tomada com seu profissional de confiança.
+      </p>
+
+      <a href="auto-diagnostico.html" class="btn-cta">Auto diagnóstico orientativo</a>
+
+      <p class="rodape-min">
+        Integrativo.App &copy; 2026
+        &nbsp;&middot;&nbsp;
+        <a href="index2.html" title="Site completo (temporariamente secundário)">Versão anterior do site</a>
+      </p>
+    </div>
+  </main>
 </body>
 </html>

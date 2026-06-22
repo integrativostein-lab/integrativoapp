@@ -14,9 +14,12 @@
  */
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 const { spawnSync } = require('child_process');
 const { patchTemporario } = require('./lib/deploy-flag');
+const { loadEnvFile, createRenderClient } = require('./lib/render-api');
+const { prepararSupabaseLocal, autoPreencherSupabase, resolverDatabaseUrlRemoto, persistirChaveEnv } = require('./lib/supabase-env');
+const { aplicarAlfaRender } = require('./lib/aplicar-alfa-render');
+const { databaseUrlParaPooler } = require('../backend/utils/supabase-pooler');
 
 const ROOT = path.join(__dirname, '..');
 const ENV_FILE = path.join(ROOT, '.env.alfa');
@@ -37,164 +40,49 @@ const FLAGS = {
   skipRender: process.argv.includes('--skip-render'),
   skipVercel: process.argv.includes('--skip-vercel'),
   skipTest: process.argv.includes('--skip-test'),
-  dryRun: process.argv.includes('--dry-run')
+  dryRun: process.argv.includes('--dry-run'),
+  colar: process.argv.includes('--colar') || process.argv.includes('--clipboard')
 };
 
 function loadEnv() {
-  if (!fs.existsSync(ENV_FILE)) {
+  if (!loadEnvFile(ENV_FILE)) {
     console.error('❌ Arquivo .env.alfa não encontrado.');
     console.error('   Copie .env.alfa.example → .env.alfa e preencha os tokens.');
     process.exit(1);
   }
-  const lines = fs.readFileSync(ENV_FILE, 'utf8').split('\n');
-  lines.forEach((line) => {
-    const t = line.trim();
-    if (!t || t.startsWith('#')) return;
-    const i = t.indexOf('=');
-    if (i === -1) return;
-    const key = t.slice(0, i).trim();
-    let val = t.slice(i + 1).trim();
-    if (!val) return;
-    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
-      val = val.slice(1, -1);
-    }
-    if (!process.env[key]) process.env[key] = val;
-  });
+  autoPreencherSupabase(ENV_FILE, { clipboard: FLAGS.colar });
 }
 
 function step(n, titulo) {
   console.log(`\n${'═'.repeat(60)}\n  PASSO ${n}: ${titulo}\n${'═'.repeat(60)}`);
 }
 
-async function renderApi(method, endpoint, body) {
-  const key = process.env.RENDER_API_KEY;
-  if (!key) throw new Error('RENDER_API_KEY ausente no .env.alfa');
-  const r = await fetch(`https://api.render.com/v1${endpoint}`, {
-    method,
-    headers: {
-      Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-      Accept: 'application/json'
-    },
-    body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(120000)
-  });
-  const text = await r.text();
-  let json = null;
-  try { json = text ? JSON.parse(text) : null; } catch { json = { raw: text }; }
-  if (!r.ok) throw new Error(`Render API ${method} ${endpoint}: ${r.status} — ${text.slice(0, 300)}`);
-  return json;
-}
-
-async function descobrirServicoRender() {
-  if (process.env.RENDER_SERVICE_ID) return process.env.RENDER_SERVICE_ID;
-  const nome = process.env.RENDER_SERVICE_NAME || 'integrativoappespelho';
-  const data = await renderApi('GET', '/services?limit=50');
-  const lista = Array.isArray(data) ? data : (data?.items || data?.services || []);
-  const found = lista.find((item) => {
-    const svc = item.service || item;
-    return svc.name === nome || svc.slug === nome;
-  });
-  if (!found) throw new Error(`Serviço Render "${nome}" não encontrado. Crie manualmente ou ajuste RENDER_SERVICE_NAME.`);
-  const svc = found.service || found;
-  console.log(`   Serviço encontrado: ${svc.name} (${svc.id})`);
-  return svc.id;
-}
-
-async function upsertEnvRender(serviceId, key, value) {
-  if (FLAGS.dryRun) {
-    console.log(`   [dry-run] ${key}=${value.slice(0, 40)}${value.length > 40 ? '…' : ''}`);
-    return;
-  }
-  try {
-    await renderApi('PUT', `/services/${serviceId}/env-vars/${encodeURIComponent(key)}`, { value });
-    console.log(`   ✓ ${key}`);
-  } catch (e) {
-    if (String(e.message).includes('404')) {
-      await renderApi('POST', `/services/${serviceId}/env-vars`, { envVar: { key, value } });
-      console.log(`   ✓ ${key} (criado)`);
-    } else {
-      throw e;
-    }
-  }
-}
-
-async function listarEnvRender(serviceId) {
-  const data = await renderApi('GET', `/services/${serviceId}/env-vars?limit=100`);
-  return Array.isArray(data) ? data : (data?.items || data?.envVars || []);
-}
-
-async function obterEnvRender(serviceId, key) {
-  const lista = await listarEnvRender(serviceId);
-  const found = lista.find((item) => {
-    const ev = item.envVar || item;
-    return ev.key === key;
-  });
-  return found?.envVar?.value || found?.value || null;
-}
-
 async function configurarRender() {
-  const serviceId = await descobrirServicoRender();
-  let jwt = process.env.JWT_SECRET;
-  if (!jwt) {
-    jwt = await obterEnvRender(serviceId, 'JWT_SECRET');
-    if (jwt) console.log('   ℹ️ JWT_SECRET preservado do Render (sem rotação).');
-  }
-  if (!jwt) {
-    jwt = crypto.randomBytes(32).toString('hex');
-    console.log('   💡 JWT_SECRET novo — guarde em .env.alfa para não rotacionar nos próximos deploys.');
-  }
+  const render = createRenderClient({
+    apiKey: process.env.RENDER_API_KEY,
+    dryRun: FLAGS.dryRun
+  });
 
-  if (!process.env.JWT_SECRET && jwt && !FLAGS.dryRun) {
-    const linha = `JWT_SECRET=${jwt}`;
-    if (!fs.readFileSync(ENV_FILE, 'utf8').includes('JWT_SECRET=')) {
-      fs.appendFileSync(ENV_FILE, `\n${linha}\n`);
-      console.log('   ✓ JWT_SECRET salvo em .env.alfa');
-    }
-  }
-  const apiRoot = (process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api').replace(/\/api\/?$/, '');
-  const cors = process.env.CORS_ORIGINS || 'https://integrativoapp-alfa.vercel.app';
+  const nome = process.env.RENDER_SERVICE_NAME || 'integrativoappespelho';
+  const svc = await render.findService(nome);
+  console.log(`   Serviço encontrado: ${svc.name} (${svc.id})`);
 
-  const vars = {
-    NODE_ENV: 'test',
-    PORT: '10000',
-    TEST_MODE: 'true',
-    SIMULAR_NF_SEM_CERTIFICADO: 'true',
-    CORS_ORIGINS: cors,
-    DATABASE_URL: process.env.DATABASE_URL,
-    JWT_SECRET: jwt,
-    EVOLUTION_SIMULATE: 'true',
-    RNDS_ENABLED: 'false',
-    AUDITORIA_LGPD_ATIVA: 'true',
-    AUDITORIA_LGPD_RETENCAO_DIAS: '365',
-    FHIR_BASE_URL: `${apiRoot}/api/fhir`,
-    TISS_BASE_URL: `${apiRoot}/api/tiss`
-  };
+  await resolverDatabaseUrlRemoto({ render, envFile: ENV_FILE, alfaServiceId: svc.id });
+  if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL ausente — preencha .env.alfa ou configure Render produção');
 
-  if (process.env.LIVEKIT_URL) vars.LIVEKIT_URL = process.env.LIVEKIT_URL;
-  if (process.env.LIVEKIT_API_KEY) vars.LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY;
-  if (process.env.LIVEKIT_API_SECRET) vars.LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET;
+  const { jwt } = await aplicarAlfaRender(render, svc, {
+    dryRun: FLAGS.dryRun,
+    noDeploy: FLAGS.dryRun,
+    envFile: ENV_FILE
+  });
 
-  if (!vars.DATABASE_URL) throw new Error('DATABASE_URL ausente no .env.alfa');
-
-  console.log('   Atualizando variáveis de ambiente…');
-  for (const [k, v] of Object.entries(vars)) {
-    await upsertEnvRender(serviceId, k, String(v));
-  }
-
-  if (!process.env.JWT_SECRET && jwt && !FLAGS.dryRun) {
+  if (jwt && !process.env.JWT_SECRET && !FLAGS.dryRun) {
+    persistirChaveEnv(ENV_FILE, 'JWT_SECRET', jwt);
+    console.log('   ✓ JWT_SECRET salvo em .env.alfa');
     console.log(`\n   💡 JWT_SECRET ativo neste deploy (primeiros 8 chars): ${jwt.slice(0, 8)}…`);
   }
 
-  if (FLAGS.dryRun) {
-    console.log('   [dry-run] deploy Render não disparado');
-    return serviceId;
-  }
-
-  console.log('   Disparando redeploy…');
-  await renderApi('POST', `/services/${serviceId}/deploys`, { clearCache: 'clear' });
-  console.log('   ✓ Deploy iniciado no Render (aguarde 2–5 min até ficar Live).');
-  return serviceId;
+  return svc.id;
 }
 
 async function aguardarAuthDemo(maxSeg = 120) {
@@ -244,9 +132,12 @@ async function executarMigracao(pool, nome, sql) {
 async function rodarMigracoes() {
   if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL ausente no .env.alfa');
 
+  const urlPooler = databaseUrlParaPooler(process.env.DATABASE_URL);
+  process.env.DATABASE_URL = urlPooler;
+
   const { Pool } = require(path.join(ROOT, 'backend/node_modules/pg'));
   const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: urlPooler,
     ssl: process.env.PGSSL === 'false' ? false : { rejectUnauthorized: false }
   });
 
@@ -359,10 +250,10 @@ async function aguardarBackend(maxSeg = 240) {
 
 function rodarTestes() {
   if (FLAGS.dryRun) {
-    console.log('   [dry-run] node scripts/testar-alfa-remoto.js');
+    console.log('   [dry-run] node scripts/testar-alfa-remoto.js --todos');
     return;
   }
-  const r = spawnSync('node', [path.join(__dirname, 'testar-alfa-remoto.js')], {
+  const r = spawnSync('node', [path.join(__dirname, 'testar-alfa-remoto.js'), '--todos'], {
     cwd: ROOT,
     env: process.env,
     stdio: 'inherit',
