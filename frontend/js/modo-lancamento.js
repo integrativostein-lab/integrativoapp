@@ -16,8 +16,13 @@
   }
 
   function ehAlfa() {
-    const h = global.location?.hostname || '';
-    return h.includes('alfa') || h.includes('alpha');
+    const h = (global.location?.hostname || '').toLowerCase();
+    if (h.includes('alfa') || h.includes('alpha')) return true;
+    if (h.includes('integrativoapp-alfa')) return true;
+    try {
+      if (global.localStorage?.getItem('integra_forcar_banner_teste') === '1') return true;
+    } catch (_) { /* ignore */ }
+    return false;
   }
 
   function ehEspecialidadeIntegrativa(esp) {
@@ -36,13 +41,62 @@
     const link = document.createElement('link');
     link.id = 'modo-lancamento-css';
     link.rel = 'stylesheet';
-    link.href = 'css/modo-lancamento.css';
+    link.href = '/css/modo-lancamento.css';
     document.head.appendChild(link);
+  }
+
+  const FRASES_BANNER_TESTE = [
+    '⚠ MODO DE TESTE',
+    'Ambiente não comercial',
+    'Dados podem ser fictícios',
+    'Não use para atendimento real',
+    'Integrativo.App · Alfa'
+  ];
+
+  function montarTextoBannerRotativo() {
+    const bloco = FRASES_BANNER_TESTE.map((t) => `<span class="banner-modo-teste-item">${t}</span>`).join('<span class="banner-modo-teste-sep">·</span>');
+    return bloco + bloco;
+  }
+
+  function injetarBannerModoTeste() {
+    if (document.getElementById('banner-modo-teste')) return;
+    const banner = document.createElement('div');
+    banner.id = 'banner-modo-teste';
+    banner.className = 'banner-modo-teste';
+    banner.setAttribute('role', 'status');
+    banner.setAttribute('aria-live', 'polite');
+    banner.innerHTML = `
+      <div class="banner-modo-teste-inner">
+        <div class="banner-modo-teste-track">${montarTextoBannerRotativo()}</div>
+      </div>`;
+    document.body.prepend(banner);
+    document.body.classList.add('com-banner-teste', 'ambiente-alfa');
+  }
+
+  async function detectarAmbienteTeste() {
+    if (cfg().AMBIENTE_TESTE) return true;
+    if (ehAlfa()) return true;
+    const api = cfg().API_URL || '';
+    if (/espelho|integrativoappespelho/i.test(api)) return true;
+    try {
+      const base = api.replace(/\/api\/?$/, '');
+      if (!base) return false;
+      const r = await fetch(`${base}/api/config/publica`, { signal: AbortSignal.timeout(6000) });
+      if (r.ok) {
+        const d = await r.json();
+        return !!d.ambiente_teste;
+      }
+    } catch (_) { /* offline ou CORS */ }
+    return false;
+  }
+
+  async function aplicarBannerTeste() {
+    const isTest = await detectarAmbienteTeste();
+    if (isTest) injetarBannerModoTeste();
   }
 
   function aplicarClasses() {
     document.body.classList.toggle('modo-lancamento', ativo());
-    document.body.classList.toggle('ambiente-alfa', ehAlfa() && (cfg().MODO_LANCAMENTO?.marcaAguaAlfa !== false));
   }
 
   function ocultarRecursosClinicos() {
@@ -118,10 +172,11 @@
     inserirAvisoLancamento(alvo, `<strong>Modo lançamento — terapeutas integrativos.</strong> ${aviso}`);
   }
 
-  function aplicar() {
+  async function aplicar() {
     if (typeof document === 'undefined') return;
     injetarCss();
     aplicarClasses();
+    await aplicarBannerTeste();
     if (!ativo()) return;
     ocultarRecursosClinicos();
     bloquearPaginaPrescricao();

@@ -38,6 +38,13 @@ const CONFIG = {
   // ═══════════════════════════════════════════
   API_URL: resolverApiUrl(),
 
+  /** true no hostname alfa ou quando a API aponta para o espelho de testes */
+  AMBIENTE_TESTE:
+    HOSTNAME_ATUAL.includes('alfa') ||
+    HOSTNAME_ATUAL.includes('alpha') ||
+    HOSTNAME_ATUAL.includes('integrativoapp-alfa') ||
+    resolverApiUrl().includes('integrativoappespelho'),
+
   // ═══════════════════════════════════════════
   // MODO LANÇAMENTO — terapeutas integrativos (sem conselho regulado)
   // ═══════════════════════════════════════════
@@ -867,7 +874,7 @@ if (typeof window !== 'undefined' && CONFIG.Catalogo) {
 if (typeof window !== 'undefined' && !document.getElementById('modo-lancamento-js')) {
   const ml = document.createElement('script');
   ml.id = 'modo-lancamento-js';
-  ml.src = 'js/modo-lancamento.js';
+  ml.src = '/js/modo-lancamento.js';
   ml.defer = true;
   document.head.appendChild(ml);
 }
