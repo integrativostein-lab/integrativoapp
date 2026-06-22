@@ -106,6 +106,18 @@
     });
   }
 
+  function inserirAvisoGlobal() {
+    const aviso = cfg().MODO_LANCAMENTO?.aviso;
+    if (!aviso) return;
+    const alvo =
+      document.querySelector('.painel-conteudo') ||
+      document.querySelector('.page-container') ||
+      document.querySelector('main.fluxo-prof') ||
+      document.querySelector('.hero');
+    if (!alvo) return;
+    inserirAvisoLancamento(alvo, `<strong>Modo lançamento — terapeutas integrativos.</strong> ${aviso}`);
+  }
+
   function aplicar() {
     if (typeof document === 'undefined') return;
     injetarCss();
@@ -115,6 +127,7 @@
     bloquearPaginaPrescricao();
     ajustarCadastroProfissional();
     substituirTextosPlanos();
+    inserirAvisoGlobal();
   }
 
   global.ModoLancamento = {
