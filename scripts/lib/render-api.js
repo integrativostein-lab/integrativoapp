@@ -48,18 +48,30 @@ function createRenderClient({ apiKey, dryRun = false } = {}) {
   }
 
   async function findService(nomeOuId) {
-    if (nomeOuId && nomeOuId.startsWith('srv-')) return nomeOuId;
+    if (nomeOuId && nomeOuId.startsWith('srv-')) {
+      const svc = await getService(nomeOuId);
+      const s = svc.service || svc;
+      return { id: s.id, name: s.name, slug: s.slug };
+    }
     const alvo = String(nomeOuId || '').toLowerCase();
     const lista = await listServices(100);
-    const found = lista.find((item) => {
+    const normalized = lista.map((item) => {
       const svc = item.service || item;
-      const n = (svc.name || '').toLowerCase();
-      const s = (svc.slug || '').toLowerCase();
-      return n === alvo || s === alvo || n.includes(alvo) || s.includes(alvo);
+      return { id: svc.id, name: svc.name, slug: svc.slug };
     });
-    if (!found) throw new Error(`Serviço Render "${nomeOuId}" não encontrado`);
-    const svc = found.service || found;
-    return { id: svc.id, name: svc.name, slug: svc.slug };
+    const exact = normalized.find((s) => {
+      const n = (s.name || '').toLowerCase();
+      const slug = (s.slug || '').toLowerCase();
+      return n === alvo || slug === alvo;
+    });
+    if (exact) return exact;
+    const partial = normalized.find((s) => {
+      const n = (s.name || '').toLowerCase();
+      const slug = (s.slug || '').toLowerCase();
+      return n.includes(alvo) || slug.includes(alvo);
+    });
+    if (!partial) throw new Error(`Serviço Render "${nomeOuId}" não encontrado`);
+    return partial;
   }
 
   async function getService(serviceId) {
@@ -126,6 +138,22 @@ function createRenderClient({ apiKey, dryRun = false } = {}) {
     }
   }
 
+  async function updateBuildCommands(serviceId, { buildCommand = 'npm install', startCommand = 'npm start' } = {}) {
+    if (dryRun) {
+      console.log(`   [dry-run] build: ${buildCommand}, start: ${startCommand}`);
+      return;
+    }
+    await api('PATCH', `/services/${serviceId}`, {
+      serviceDetails: {
+        envSpecificDetails: {
+          buildCommand,
+          startCommand
+        }
+      }
+    });
+    console.log(`   ✓ Build/start → ${buildCommand} / ${startCommand}`);
+  }
+
   return {
     api,
     listServices,
@@ -134,7 +162,8 @@ function createRenderClient({ apiKey, dryRun = false } = {}) {
     upsertEnv,
     upsertEnvMap,
     triggerDeploy,
-    updateRepo
+    updateRepo,
+    updateBuildCommands
   };
 }
 

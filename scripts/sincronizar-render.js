@@ -95,6 +95,11 @@ async function configurarProducao(render) {
     await render.updateRepo(svc.id, { repo: GITHUB_REPO, branch: GITHUB_BRANCH, rootDir: ROOT_DIR });
   }
 
+  await render.updateBuildCommands(svc.id, {
+    buildCommand: 'npm install',
+    startCommand: 'npm start'
+  });
+
   const apiRoot = (process.env.PROD_API_URL || 'https://integra-backend-ynrd.onrender.com').replace(/\/api\/?$/, '');
   const cors = process.env.PROD_CORS_ORIGINS || CORS_PRODUCAO;
 
