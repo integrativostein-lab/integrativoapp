@@ -4,6 +4,28 @@
 
 const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname : '';
 
+/** Sobrescrito temporariamente pelo deploy Vercel (scripts/lib/deploy-flag.js). */
+const INTEGRATIVO_DEPLOY = 'producao';
+
+/** Hostnames que sempre usam backend alfa + banner de teste. */
+const HOSTNAMES_TESTE = [
+  'alfa.integrativoapp.com',
+  'www.alfa.integrativoapp.com',
+  'teste.integrativoapp.com',
+  'www.teste.integrativoapp.com',
+  'integrativoapp-alfa.vercel.app'
+];
+
+function hostEhAmbienteTeste(hostname) {
+  const h = (hostname || '').toLowerCase();
+  if (!h) return false;
+  if (INTEGRATIVO_DEPLOY === 'alfa') return true;
+  if (HOSTNAMES_TESTE.some((d) => h === d || h.endsWith('.' + d))) return true;
+  if (h.includes('integrativoapp-alfa')) return true;
+  if (h.includes('alfa') || h.includes('alpha')) return true;
+  return false;
+}
+
 /** URL canônica de produção — demais domínios redirecionam para ela na Vercel. */
 const SITE_CANONICO = 'https://integrativo.app';
 
@@ -14,7 +36,7 @@ function resolverApiUrl() {
   if (['localhost', '127.0.0.1'].includes(HOSTNAME_ATUAL)) {
     return 'http://localhost:3001/api';
   }
-  if (HOSTNAME_ATUAL.includes('alfa') || HOSTNAME_ATUAL.includes('alpha')) {
+  if (hostEhAmbienteTeste(HOSTNAME_ATUAL)) {
     return 'https://integrativoappespelho.onrender.com/api';
   }
   return 'https://integra-backend-ynrd.onrender.com/api';
@@ -38,12 +60,10 @@ const CONFIG = {
   // ═══════════════════════════════════════════
   API_URL: resolverApiUrl(),
 
-  /** true no hostname alfa ou quando a API aponta para o espelho de testes */
-  AMBIENTE_TESTE:
-    HOSTNAME_ATUAL.includes('alfa') ||
-    HOSTNAME_ATUAL.includes('alpha') ||
-    HOSTNAME_ATUAL.includes('integrativoapp-alfa') ||
-    resolverApiUrl().includes('integrativoappespelho'),
+  /** true no hostname/subdomínio de teste ou bundle deployado como alfa */
+  AMBIENTE_TESTE: hostEhAmbienteTeste(HOSTNAME_ATUAL),
+  INTEGRATIVO_DEPLOY,
+  HOSTNAMES_TESTE,
 
   // ═══════════════════════════════════════════
   // MODO LANÇAMENTO — terapeutas integrativos (sem conselho regulado)

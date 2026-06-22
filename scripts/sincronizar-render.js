@@ -13,7 +13,7 @@
 const path = require('path');
 const crypto = require('crypto');
 const { loadEnvFile, createRenderClient } = require('./lib/render-api');
-const { SITE_CANONICO, CORS_PRODUCAO } = require('../backend/config/dominios');
+const { SITE_CANONICO, CORS_PRODUCAO, CORS_ALFA } = require('../backend/config/dominios');
 
 const ROOT = path.join(__dirname, '..');
 const ENV_FILE = path.join(ROOT, '.env.alfa');
@@ -40,7 +40,7 @@ async function configurarAlfa(render) {
   }
 
   const apiRoot = (process.env.ALFA_API_URL || 'https://integrativoappespelho.onrender.com/api').replace(/\/api\/?$/, '');
-  const cors = process.env.CORS_ORIGINS || process.env.ALFA_FRONTEND_URL || 'https://integrativoapp-alfa.vercel.app';
+  const cors = process.env.CORS_ORIGINS || process.env.ALFA_CORS_ORIGINS || CORS_ALFA;
   let jwt = process.env.JWT_SECRET;
   if (!jwt) {
     try {

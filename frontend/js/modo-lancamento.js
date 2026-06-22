@@ -75,6 +75,7 @@
 
   async function detectarAmbienteTeste() {
     if (cfg().AMBIENTE_TESTE) return true;
+    if (cfg().INTEGRATIVO_DEPLOY === 'alfa') return true;
     if (ehAlfa()) return true;
     const api = cfg().API_URL || '';
     if (/espelho|integrativoappespelho/i.test(api)) return true;

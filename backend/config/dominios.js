@@ -17,10 +17,22 @@ const ORIGENS_PRODUCAO = [
   'https://integra-saude-psi-iota.vercel.app'
 ];
 
+/** Frontends do ambiente alfa / teste (banner + API espelho). */
+const ORIGENS_ALFA = [
+  'https://integrativoapp-alfa.vercel.app',
+  'https://alfa.integrativoapp.com',
+  'https://www.alfa.integrativoapp.com',
+  'https://teste.integrativoapp.com',
+  'https://www.teste.integrativoapp.com'
+];
+
 const CORS_PRODUCAO = ORIGENS_PRODUCAO.join(',');
+const CORS_ALFA = ORIGENS_ALFA.join(',');
 
 module.exports = {
   SITE_CANONICO,
   ORIGENS_PRODUCAO,
-  CORS_PRODUCAO
+  ORIGENS_ALFA,
+  CORS_PRODUCAO,
+  CORS_ALFA
 };

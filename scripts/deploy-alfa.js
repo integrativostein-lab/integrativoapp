@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { spawnSync } = require('child_process');
+const { patchTemporario } = require('./lib/deploy-flag');
 
 const ROOT = path.join(__dirname, '..');
 const ENV_FILE = path.join(ROOT, '.env.alfa');
@@ -290,43 +291,50 @@ function deployVercel() {
   const scope = process.env.VERCEL_SCOPE || '';
 
   if (FLAGS.dryRun) {
-    console.log(`   [dry-run] npx vercel --prod --scope ${scope || '(default)'}`);
+    console.log(`   [dry-run] npx vercel --prod --scope ${scope || '(default)'} (INTEGRATIVO_DEPLOY=alfa)`);
     return;
   }
 
   console.log(`   Publicando projeto "${project}"… (pode levar 1–3 min)`);
-  const env = { ...process.env };
-  const scopeArgs = scope ? ['--scope', scope] : [];
+  const restaurarFlag = patchTemporario('alfa');
+  try {
+    const env = { ...process.env };
+    const scopeArgs = scope ? ['--scope', scope] : [];
 
-  const link = spawnSync('npx', [
-    '--yes', 'vercel@latest', 'link', '--yes',
-    '--project', project,
-    '--token', token,
-    ...scopeArgs
-  ], {
-    cwd: ROOT,
-    env,
-    stdio: 'inherit',
-    shell: true
-  });
+    const link = spawnSync('npx', [
+      '--yes', 'vercel@latest', 'link', '--yes',
+      '--project', project,
+      '--token', token,
+      ...scopeArgs
+    ], {
+      cwd: ROOT,
+      env,
+      stdio: 'inherit',
+      shell: true
+    });
 
-  if (link.status !== 0) {
-    console.log('   ℹ️ link falhou — tentando deploy direto…');
+    if (link.status !== 0) {
+      console.log('   ℹ️ link falhou — tentando deploy direto…');
+    }
+
+    const deploy = spawnSync('npx', [
+      '--yes', 'vercel@latest', '--prod', '--yes',
+      '--token', token,
+      ...scopeArgs
+    ], {
+      cwd: ROOT,
+      env,
+      stdio: 'inherit',
+      shell: true
+    });
+
+    if (deploy.status !== 0) throw new Error('Deploy Vercel falhou. Verifique VERCEL_TOKEN e VERCEL_SCOPE.');
+    console.log(`   ✓ Site alfa: https://${project}.vercel.app`);
+    console.log('   ✓ INTEGRATIVO_DEPLOY=alfa embutido neste deploy (subdomínios alfa.* também reconhecidos).');
+  } finally {
+    restaurarFlag();
+    console.log('   ✓ config.js local restaurado para INTEGRATIVO_DEPLOY=producao');
   }
-
-  const deploy = spawnSync('npx', [
-    '--yes', 'vercel@latest', '--prod', '--yes',
-    '--token', token,
-    ...scopeArgs
-  ], {
-    cwd: ROOT,
-    env,
-    stdio: 'inherit',
-    shell: true
-  });
-
-  if (deploy.status !== 0) throw new Error('Deploy Vercel falhou. Verifique VERCEL_TOKEN e VERCEL_SCOPE.');
-  console.log(`   ✓ Site alfa: https://${project}.vercel.app`);
 }
 
 async function aguardarBackend(maxSeg = 240) {
