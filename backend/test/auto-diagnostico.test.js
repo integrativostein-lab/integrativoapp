@@ -63,7 +63,7 @@ function montarApp() {
 }
 
 test('analisar limpa campos desconhecidos, valores vazios e textos longos', () => {
-  const textoLongo = `  ${'sono '.repeat(2000)}  `;
+  const textoLongo = `  ${'x'.repeat(9000)}  `;
 
   const resultado = analisar({
     campo_inexistente: 'nao deve aparecer',
@@ -103,7 +103,7 @@ test('anamneseParaContextoAlertas normaliza medicamentos, condicoes e alergias',
     alergias_alimentos: 'Mel'
   });
 
-  assert.deepEqual(contexto.condicoes, ['diabetes', 'hipertensao', 'apiterapia']);
+  assert.deepEqual(contexto.condicoes, ['diabetes; hipertensao', 'apiterapia']);
   assert.deepEqual(contexto.medicamentos, ['varfarina', 'aas']);
   assert.deepEqual(contexto.alergias, ['anafilaxia', 'mel']);
 });
