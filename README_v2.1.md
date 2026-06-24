@@ -26,6 +26,7 @@
 
 #### Fase 4: Integrações Científicas
 - ✅ **FHIR Brasil (R4)** — Padrão internacional de saúde
+- ✅ **TISS Guia de Consulta** — XML e arquivo interno para saúde suplementar
 - ✅ **Fiocruz (ARCA)** — Protocolos científicos
 - ✅ **RedePICS Brasil** — Pesquisas clínicas
 - ✅ **BIREME/OPAS** — Artigos científicos
@@ -169,6 +170,16 @@ GET    /api/fhir/artigos-bireme          # Buscar artigos BIREME
 POST   /api/fhir/comparar-protocolos     # Comparar protocolos
 ```
 
+### TISS Guia de Consulta
+```
+GET    /api/tiss/metadata                # Metadados publicos da integracao
+POST   /api/tiss/guia-consulta           # Gerar Guia de Consulta a partir de agendamento
+GET    /api/tiss/guias/:id               # Consultar guia gerada pelo usuario autenticado
+GET    /api/tiss/guias/:id/xml           # Baixar XML da guia
+```
+
+Runbook e detalhes de campos: [`arquitecture today/tiss-guia-consulta.md`](./arquitecture%20today/tiss-guia-consulta.md).
+
 ### Validação de Conselhos
 ```
 POST   /api/validacao/validar-registro   # Validar registro profissional
@@ -249,6 +260,12 @@ JWT_SECRET=sua_chave_secreta_super_segura
 FIOCRUZ_API_KEY=seu_token
 REDEPICS_API_KEY=seu_token
 BIREME_API_KEY=seu_token
+
+# TISS
+TISS_BASE_URL=http://localhost:3000/api/tiss
+TISS_VERSAO=4.01.00
+TISS_REGISTRO_ANS=registro_ans_da_operadora
+TISS_CODIGO_PRESTADOR=codigo_prestador_na_operadora
 
 # Gateways de Pagamento
 PAGSEGURO_TOKEN=seu_token
