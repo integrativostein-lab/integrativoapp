@@ -1,7 +1,6 @@
 const motorAlertas = require('./alertas-seguranca');
 const motorVertentes = require('./orientacao-auto');
 const motorHipoteses = require('./hipoteses-provaveis');
-const { montarQuestionnaireResponse } = require('./fhir-questionnaire');
 const { campoPorId } = require('../config/anamnese-campos');
 
 function anamneseParaContextoAlertas(respostas = {}) {
@@ -83,7 +82,6 @@ function analisar(respostas = {}) {
     hipoteses: hipoteses.hipoteses,
     destino: hipoteses.destino,
     aviso_hipoteses: hipoteses.aviso_legal,
-    fhir_questionnaire_response: montarQuestionnaireResponse(limpo, { gerado_em: geradoEm }),
     gerado_em: geradoEm
   };
 }

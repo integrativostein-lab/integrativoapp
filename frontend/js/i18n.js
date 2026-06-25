@@ -47,11 +47,35 @@ const I18N = {
 
   translations: {
     'pt-BR': {
-      'hero.titulo': 'Encontre seu profissional integrativo',
-      'hero.subtitulo': '{{especialidades}} especialidades. Agende online ou presencial.',
-      'hero.buscar': '🔍 Encontrar Profissional',
-      'hero.profissional': '📋 Sou Profissional',
-      'hero.baixar_app': '📱 Baixe o App Grátis',
+      'hero.titulo': 'Saúde integrativa com quem entende do assunto',
+      'hero.subtitulo': '{{especialidades}} especialidades e {{bibliotecas}} bibliotecas terapêuticas — teleconsulta ou presencial, com respaldo de fontes oficiais.',
+      'hero.buscar': '🔍 Buscar profissional',
+      'hero.profissional': '📋 Sou profissional de saúde',
+      'hero.baixar_app': '📱 Instalar app grátis',
+      'hero.nota': 'Anamnese clínica integrativa (PICS + medicina ocidental), autocuidado orientado e profissionais em Ayurveda, fitoterapia, MTC, yoga e mais.',
+      'home.credito': '<strong>Conteúdo curado com referências reconhecidas em saúde</strong> — para apoiar decisão clínica responsável, nunca substituir avaliação profissional.',
+      'home.pwa.badge': 'Instalação direta pelo site',
+      'home.pwa.titulo': '📱 Leve o Integrativo.App no bolso',
+      'home.pwa.texto': 'Instale direto pelo site — <strong>sem Play Store ou App Store</strong> (PWA). O ícone fica na tela inicial e abre em tela cheia: busca de profissionais, conta e consultas na palma da mão.',
+      'home.diferenciais.titulo': 'O que você encontra no Integrativo.App',
+      'home.diferenciais.sub': 'Tecnologia para quem busca cuidado integrativo de qualidade — e para quem profissionalmente entrega esse cuidado.',
+      'home.card.bibliotecas': 'Protocolos, fitoterapia, PICS e bases clínicas com PNPIC/MS, OMS, ANVISA, NCCIH, Cochrane e textos clássicos.',
+      'home.card.tele.titulo': 'Teleconsulta segura',
+      'home.card.tele.texto': 'Atendimento online com registro no prontuário, anamnese prévia estruturada e continuidade entre consultas presenciais e remotas.',
+      'home.card.anamnese.titulo': 'Anamnese integrativa',
+      'home.card.anamnese.texto': 'Formulário clínico com queixa, hábitos, autocuidado, PICS e medicina ocidental — o paciente chega preparado; o profissional ganha tempo na consulta.',
+      'home.card.fhir.titulo': 'Prontuário interoperável',
+      'home.card.fhir.texto': 'Para profissionais: exportação HL7 FHIR, preparação TISS/ANS e histórico estruturado para redes de saúde e operadoras.',
+      'home.card.lgpd.titulo': 'Privacidade e LGPD',
+      'home.card.lgpd.texto': 'Dados sensíveis de saúde com consentimento informado, auditoria de acesso e transparência sobre cada finalidade de uso.',
+      'home.stat.especialidades': 'Especialidades para busca',
+      'home.stat.bibliotecas': 'Bibliotecas terapêuticas',
+      'home.stat.registros': 'Registros de conhecimento',
+      'home.stat.fontes': 'Fontes oficiais indexadas',
+      'home.ods.titulo': '🌍 Compromisso com saúde sustentável e equidade',
+      'home.ods.texto': 'Alinhamos nossa missão aos ODS 3 (saúde), 4 (educação), 8 (trabalho digno), 9 (inovação), 10 (redução de desigualdades), 13 (clima), 15 (vida terrestre), 16 (instituições) e 17 (parcerias). Referência institucional — não constitui certificação ou endosso oficial da ONU.',
+      'home.banner.titulo': '🚀 Você cuida de pessoas. A gente cuida da tecnologia.',
+      'home.banner.cta': 'Começar gratuitamente',
       'nav.inicio': 'Início',
       'nav.busca': 'Busca',
       'nav.profissionais': 'Sou Profissional',
@@ -70,6 +94,7 @@ const I18N = {
       'hero.buscar': '🔍 Find Professionals',
       'hero.profissional': '📋 I\'m a Professional',
       'hero.baixar_app': '📱 Download Free App',
+      'hero.nota': 'Integrative clinical intake (complementary practices + conventional medicine), guided self-care, and professionals in Ayurveda, herbal medicine, TCM, yoga, and more.',
       'nav.inicio': 'Home',
       'nav.busca': 'Search',
       'nav.profissionais': 'I\'m a Professional',
@@ -542,9 +567,12 @@ const I18N = {
     document.querySelectorAll('[data-i18n]').forEach((el) => {
       const key = el.getAttribute('data-i18n');
       const attr = el.getAttribute('data-i18n-attr');
+      const usarHtml = el.hasAttribute('data-i18n-html');
       const texto = this.t(key);
       if (attr) {
         el.setAttribute(attr, texto);
+      } else if (usarHtml) {
+        el.innerHTML = texto;
       } else {
         el.textContent = texto;
       }
@@ -593,6 +621,15 @@ const I18N = {
 
 function iniciarI18n() {
   if (window.CONFIG) I18N.syncFromConfig();
+  if (!window.__integraCatalogoI18nSync) {
+    window.__integraCatalogoI18nSync = true;
+    document.addEventListener('catalogo:atualizado', () => {
+      I18N.aplicarTraducoes();
+      if (window.CONFIG?.Catalogo?.aplicarTokensDocumento) {
+        window.CONFIG.Catalogo.aplicarTokensDocumento(window.CONFIG);
+      }
+    });
+  }
   I18N.init();
 }
 

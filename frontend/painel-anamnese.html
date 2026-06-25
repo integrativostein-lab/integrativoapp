@@ -33,6 +33,10 @@
     .status-rascunho { background: #F1F5F9; color: #475569; }
     .status-parte1_concluida { background: #DBEAFE; color: #1D4ED8; }
     .status-concluida { background: #D1FAE5; color: #065F46; }
+    .fhir-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+    .btn-fhir { border: 1px solid #0F172A; background: #F8FAFC; color: #0F172A; border-radius: 999px; padding: 8px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .btn-fhir:hover { background: #0F172A; color: #fff; }
+    .fhir-nota { font-size: 12px; color: var(--texto-medio); margin-top: 8px; line-height: 1.45; }
   </style>
 </head>
 <body>
@@ -77,6 +81,11 @@
           <form id="form-anamnese" onsubmit="salvarAnamnese(event)">
             <div id="form-campos"></div>
             <button type="submit" class="btn btn-primario" style="width:100%;margin-top:16px;">Salvar anamnese</button>
+            <div class="fhir-acoes" id="fhir-acoes" style="display:none;">
+              <button type="button" class="btn-fhir" onclick="exportarFhirAnamnese(false)">⬇️ FHIR (QuestionnaireResponse)</button>
+              <button type="button" class="btn-fhir" onclick="exportarFhirAnamnese(true)">⬇️ FHIR Bundle (Patient + Anamnese)</button>
+            </div>
+            <p class="fhir-nota" id="fhir-nota" style="display:none;">Exportação FHIR R4 para interoperabilidade — disponível apenas ao profissional responsável.</p>
             <p id="msg-anamnese" style="text-align:center;margin-top:12px;"></p>
           </form>
         </div>
@@ -91,6 +100,7 @@
 
   <script src="js/config.js"></script>
   <script src="js/anamnese-ui.js"></script>
+  <script src="js/fhir-export.js"></script>
   <script src="js/voz.js"></script>
   <script>
     var schema = [];
@@ -99,6 +109,31 @@
     var respostasP2 = {};
     var parteAtual = 1;
     var anamneseId = null;
+
+    function atualizarBotoesFhir() {
+      var visivel = !!anamneseId;
+      document.getElementById('fhir-acoes').style.display = visivel ? 'flex' : 'none';
+      document.getElementById('fhir-nota').style.display = visivel ? 'block' : 'none';
+    }
+
+    async function exportarFhirAnamnese(bundle) {
+      var msg = document.getElementById('msg-anamnese');
+      if (!anamneseId) {
+        msg.textContent = 'Salve a anamnese antes de exportar FHIR.';
+        msg.style.color = 'var(--vermelho)';
+        return;
+      }
+      try {
+        msg.textContent = 'Gerando exportação FHIR…';
+        msg.style.color = 'var(--texto-medio)';
+        await FhirExport.exportarAnamnese(anamneseId, !!bundle);
+        msg.textContent = '✅ Arquivo FHIR baixado.';
+        msg.style.color = 'var(--verde-suave)';
+      } catch (err) {
+        msg.textContent = '❌ ' + (err.message || 'Erro ao exportar FHIR.');
+        msg.style.color = 'var(--vermelho)';
+      }
+    }
 
     function logout() { localStorage.clear(); window.location.href = 'index.html'; }
 
@@ -175,6 +210,7 @@
         respostasP1 = {};
         respostasP2 = {};
         document.getElementById('anamnese-id').value = '';
+        atualizarBotoesFhir();
         renderFormulario();
         return;
       }
@@ -191,6 +227,7 @@
 
       await carregarConfig();
       mostrarPendentes(row.campos_pendentes);
+      atualizarBotoesFhir();
       renderFormulario();
     }
 
@@ -253,6 +290,7 @@
       var msg = document.getElementById('msg-anamnese');
       if (r.ok) {
         if (!anamneseId && d.id) { anamneseId = d.id; document.getElementById('anamnese-id').value = d.id; }
+        atualizarBotoesFhir();
         msg.textContent = '✅ ' + (d.mensagem || 'Salvo!');
         msg.style.color = 'var(--verde-suave)';
         mostrarPendentes(d.campos_pendentes);
@@ -276,8 +314,16 @@
           '<div><strong>' + AnamneseUI.escapeHtml(a.paciente_nome) + '</strong><br>' +
           '<span style="font-size:12px;color:var(--texto-medio)">' + (a.especialidade || 'Geral') + ' · ' + new Date(a.atualizado_em).toLocaleString('pt-BR') + '</span><br>' +
           '<span class="status-badge status-' + a.status + '">' + a.status.replace('_', ' ') + '</span></div>' +
-          '<button type="button" onclick="abrirAnamnese(' + a.id + ',' + a.paciente_id + ')">Abrir</button></div>';
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+          '<button type="button" onclick="abrirAnamnese(' + a.id + ',' + a.paciente_id + ')">Abrir</button>' +
+          '<button type="button" class="btn-fhir" onclick="exportarFhirHistorico(' + a.id + ',false)">FHIR</button>' +
+          '</div></div>';
       }).join('');
+    }
+
+    async function exportarFhirHistorico(id, bundle) {
+      anamneseId = id;
+      await exportarFhirAnamnese(!!bundle);
     }
 
     async function abrirAnamnese(id, pacienteId) {

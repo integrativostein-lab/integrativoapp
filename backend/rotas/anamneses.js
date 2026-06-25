@@ -14,6 +14,9 @@ const {
   camposFiltrados
 } = require('../config/anamnese-campos');
 const { montarSchemaPublico } = require('../config/auto-diagnostico-publico');
+const { montarQuestionnaireResponse } = require('../servicos/fhir-questionnaire');
+const { pacienteParaPatient, criarBundle, salvarExportacao } = require('../servicos/fhir-brasil');
+const { apenasProfissionalFhir } = require('../middlewares/fhir-profissional');
 
 async function garantirTabelas() {
   await db.query(`
@@ -329,6 +332,114 @@ router.put('/:id', autenticar, async (req, res) => {
   });
 
   res.json({ mensagem: 'Anamnese atualizada!', status, campos_pendentes: pendentes });
+});
+
+function mergeRespostasAnamnese(row) {
+  const p1 = typeof row.parte1_respostas === 'string'
+    ? JSON.parse(row.parte1_respostas)
+    : (row.parte1_respostas || {});
+  const p2 = typeof row.parte2_respostas === 'string'
+    ? JSON.parse(row.parte2_respostas)
+    : (row.parte2_respostas || {});
+  return { ...p1, ...p2 };
+}
+
+async function buscarAnamneseAutorizada(req, anamneseId) {
+  const r = await db.query(
+    `SELECT a.*, up.nome AS paciente_nome, uf.nome AS profissional_nome
+     FROM anamneses a
+     JOIN usuarios up ON up.id = a.paciente_id
+     JOIN usuarios uf ON uf.id = a.profissional_id
+     WHERE a.id = $1`,
+    [anamneseId]
+  );
+  if (r.rows.length === 0) return { erro: 404, mensagem: 'Anamnese não encontrada.' };
+  const row = r.rows[0];
+  const isProf = req.usuario.id === row.profissional_id
+    || req.usuario.tipo === 'admin'
+    || req.usuario.tipo === 'super_admin';
+  if (!isProf) return { erro: 403, mensagem: 'Exportação FHIR disponível apenas para o profissional responsável.' };
+  return { row };
+}
+
+function montarFhirAnamnese(row) {
+  const respostas = mergeRespostasAnamnese(row);
+  const geradoEm = row.atualizado_em || row.criado_em || new Date().toISOString();
+  const meta = {
+    id: row.id,
+    finalidade: 'anamnese-clinica',
+    gerado_em: typeof geradoEm === 'string' ? geradoEm : new Date(geradoEm).toISOString(),
+    status: row.status === 'concluida' ? 'completed' : 'in-progress',
+    subject: { reference: `Patient/${row.paciente_id}`, display: row.paciente_nome },
+    author: { reference: `Practitioner/${row.profissional_id}`, display: row.profissional_nome }
+  };
+  if (row.agendamento_id) {
+    meta.encounter = { reference: `Encounter/${row.agendamento_id}` };
+  }
+  return montarQuestionnaireResponse(respostas, meta);
+}
+
+router.get('/:id/fhir', autenticar, apenasProfissionalFhir, async (req, res) => {
+  await garantirTabelas();
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).json({ erro: 'ID inválido.' });
+    const auth = await buscarAnamneseAutorizada(req, id);
+    if (auth.erro) return res.status(auth.erro).json({ erro: auth.mensagem });
+
+    const fhir = montarFhirAnamnese(auth.row);
+    try {
+      await salvarExportacao(db, req.usuario.id, 'QuestionnaireResponse', id, fhir, null);
+    } catch (_) {}
+
+    auditoria.registrar({
+      categoria: auditoria.CATEGORIAS.DADOS_SENSIVEIS,
+      acao: 'exportacao_fhir_anamnese',
+      base_legal: auditoria.BASE_LEGAL.TUTELA_SAUDE,
+      finalidade: 'interoperabilidade clínica FHIR — anamnese integrativa',
+      usuario_id: req.usuario.id,
+      usuario_tipo: req.usuario.tipo,
+      email: req.usuario.email,
+      recurso: 'anamnese',
+      recurso_id: id,
+      rota: req.originalUrl,
+      metodo: req.method,
+      ip: req.ip,
+      user_agent: req.get('user-agent'),
+      detalhes: { paciente_id: auth.row.paciente_id }
+    });
+
+    res.json(fhir);
+  } catch (error) {
+    console.error('Erro ao exportar anamnese FHIR:', error);
+    res.status(500).json({ erro: 'Erro ao exportar anamnese em FHIR.' });
+  }
+});
+
+router.get('/:id/fhir-bundle', autenticar, apenasProfissionalFhir, async (req, res) => {
+  await garantirTabelas();
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).json({ erro: 'ID inválido.' });
+    const auth = await buscarAnamneseAutorizada(req, id);
+    if (auth.erro) return res.status(auth.erro).json({ erro: auth.mensagem });
+
+    const row = auth.row;
+    const paciente = await db.query(
+      `SELECT id, nome, email, telefone, cpf, cns, data_nascimento, genero, cidade, estado, ativo, tipo
+       FROM usuarios WHERE id = $1 AND tipo = 'paciente'`,
+      [row.paciente_id]
+    );
+    const recursos = [];
+    if (paciente.rows[0]) recursos.push(pacienteParaPatient(paciente.rows[0]));
+    recursos.push(montarFhirAnamnese(row));
+
+    const bundle = criarBundle('document', recursos, `anamnese-${id}`);
+    res.json(bundle);
+  } catch (error) {
+    console.error('Erro ao exportar bundle FHIR da anamnese:', error);
+    res.status(500).json({ erro: 'Erro ao exportar bundle FHIR.' });
+  }
 });
 
 router.get('/:id', autenticar, async (req, res) => {

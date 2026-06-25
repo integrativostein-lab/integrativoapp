@@ -718,7 +718,9 @@ const CONFIG = {
       exportEncounter: '/api/fhir/export-encounter',
       exportMedicationRequest: '/api/fhir/export-medication-request',
       exportBundle: '/api/fhir/export-bundle',
-      importPatient: '/api/fhir/import-patient'
+      importPatient: '/api/fhir/import-patient',
+      exportAnamnese: '/api/anamneses',
+      exportAnamneseBundle: '/api/anamneses'
     }
   },
 

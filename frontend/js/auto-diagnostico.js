@@ -178,7 +178,6 @@ window.AutoDiagnostico = (function () {
       seguranca: data.seguranca,
       aviso_legal: data.aviso_legal,
       aviso_hipoteses: data.aviso_hipoteses,
-      fhir: data.fhir_questionnaire_response,
       motor: data.motor
     };
   }

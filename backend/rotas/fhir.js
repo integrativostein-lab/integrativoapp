@@ -6,6 +6,7 @@ const router = express.Router();
 const axios = require('axios');
 const db = require('../database');
 const { autenticar } = require('../middlewares/autenticar');
+const { apenasProfissionalFhir } = require('../middlewares/fhir-profissional');
 const FHIR_CONFIG = require('../config/fhir');
 const {
   pacienteParaPatient,
@@ -81,7 +82,7 @@ router.get('/metadata', (req, res) => {
   res.json(capabilityStatement());
 });
 
-router.post('/export-patient', autenticar, async (req, res) => {
+router.post('/export-patient', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const pacienteId = req.body.pacienteId || req.body.patientId;
     if (!pacienteId) return res.status(400).json({ erro: 'pacienteId é obrigatório' });
@@ -98,7 +99,7 @@ router.post('/export-patient', autenticar, async (req, res) => {
   }
 });
 
-router.post('/export-practitioner', autenticar, async (req, res) => {
+router.post('/export-practitioner', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const profissionalId = req.body.profissionalId || req.body.practitionerId;
     if (!profissionalId) return res.status(400).json({ erro: 'profissionalId é obrigatório' });
@@ -115,7 +116,7 @@ router.post('/export-practitioner', autenticar, async (req, res) => {
   }
 });
 
-router.post('/export-organization', autenticar, async (req, res) => {
+router.post('/export-organization', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const usuarioId = req.body.usuarioId || req.usuario.id;
     const result = await db.query(
@@ -133,7 +134,7 @@ router.post('/export-organization', autenticar, async (req, res) => {
   }
 });
 
-router.post('/export-appointment', autenticar, async (req, res) => {
+router.post('/export-appointment', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const agendamentoId = req.body.agendamentoId || req.body.appointmentId;
     if (!agendamentoId) return res.status(400).json({ erro: 'agendamentoId é obrigatório' });
@@ -153,7 +154,7 @@ router.post('/export-appointment', autenticar, async (req, res) => {
   }
 });
 
-router.post('/export-encounter', autenticar, async (req, res) => {
+router.post('/export-encounter', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const agendamentoId = req.body.agendamentoId || req.body.encounterId;
     if (!agendamentoId) return res.status(400).json({ erro: 'agendamentoId é obrigatório' });
@@ -175,7 +176,7 @@ router.post('/export-encounter', autenticar, async (req, res) => {
   }
 });
 
-router.post('/export-medication-request', autenticar, async (req, res) => {
+router.post('/export-medication-request', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const prescricaoId = req.body.prescricaoId || req.body.medicationRequestId;
     if (!prescricaoId) return res.status(400).json({ erro: 'prescricaoId é obrigatório' });
@@ -195,7 +196,7 @@ router.post('/export-medication-request', autenticar, async (req, res) => {
   }
 });
 
-router.post('/export-bundle', autenticar, async (req, res) => {
+router.post('/export-bundle', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const { agendamentoId } = req.body;
     if (!agendamentoId) return res.status(400).json({ erro: 'agendamentoId é obrigatório' });
@@ -233,7 +234,7 @@ router.post('/export-bundle', autenticar, async (req, res) => {
   }
 });
 
-router.post('/import-patient', autenticar, async (req, res) => {
+router.post('/import-patient', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const { resource } = req.body;
     if (!resource || resource.resourceType !== 'Patient') {
@@ -254,7 +255,7 @@ router.post('/import-patient', autenticar, async (req, res) => {
   }
 });
 
-router.get('/exports/:tipo/:id', autenticar, async (req, res) => {
+router.get('/exports/:tipo/:id', autenticar, apenasProfissionalFhir, async (req, res) => {
   try {
     const { tipo, id } = req.params;
     const result = await db.query(

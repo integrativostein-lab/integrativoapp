@@ -102,13 +102,13 @@
       id: 'compartilhamento_fhir',
       obrigatorio: false,
       titulo: 'Compartilhamento interoperável (FHIR/RNDS)',
-      resumo: 'Autorizo exportação/compartilhamento dos meus dados clínicos em padrão FHIR quando eu solicitar ou quando houver base legal e integração habilitada.',
+      resumo: 'Autorizo exportação e interoperabilidade dos dados clínicos dos meus pacientes em padrão FHIR/RNDS, conforme minha responsabilidade profissional e base legal aplicável.',
       coleta: ['Dados clínicos estruturados', 'Identificadores de saúde autorizados'],
       finalidade: 'Continuidade do cuidado, interoperabilidade e integração com redes autorizadas de saúde.',
       baseLegal: 'Consentimento (Art. 7º, I) e tutela da saúde (Art. 11, II, f).',
       compartilhamento: 'Sistemas de saúde autorizados pelo titular ou por lei.',
       retencao: 'Conforme necessidade da interoperabilidade e registro de exportação.',
-      perfis: ['paciente', 'profissional']
+      perfis: ['profissional']
     },
     cobranca_assinatura: {
       id: 'cobranca_assinatura',

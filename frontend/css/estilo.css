@@ -308,7 +308,7 @@ h2 {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 40px;
-  padding: 12px 24px 28px;
+  padding: 0 24px 28px;
   background: var(--branco);
   border-radius: 12px;
   box-shadow: var(--sombra-suave);
@@ -341,9 +341,43 @@ h2 {
   color: var(--texto-suave);
 }
 
-/* Conteúdo com 2px abaixo do menu — anula margin-top local (ex.: margin: 40px auto) */
+/* Conteúdo com 2px abaixo do menu */
 body > nav.navbar + * {
   margin-top: var(--espaco-apos-nav) !important;
+  padding-top: 0 !important;
+}
+
+/* Primeiro bloco interno (hero, card, título) sem folga extra no topo */
+body > nav.navbar + * > :first-child {
+  margin-top: 0;
+}
+
+body > nav.navbar + * > :first-child:is(h1, h2, h3, p, .auto-card, .auto-etapas) {
+  margin-top: 0;
+}
+
+body > nav.navbar + * :is(h1, h2):first-child,
+body > nav.navbar + * > :first-child :is(h1, h2):first-child {
+  margin-top: 0;
+}
+
+/* Heros e cabeçalhos de página — compactos no topo */
+body > nav.navbar + .hero,
+body > nav.navbar + .hero-pro,
+body > nav.navbar + header.hero-pro {
+  padding-top: 8px !important;
+}
+
+body > nav.navbar + main > :first-child:is(.busca-hero, .bibliotecas-hero, .hero-bibliotecas, .page-header),
+body > nav.navbar + .bibliotecas-page > :first-child,
+body > nav.navbar + .busca-page > :first-child,
+body > nav.navbar + .consulta-wrap > :first-child,
+body > nav.navbar + .page-container > :first-child {
+  margin-top: 0;
+}
+
+body > nav.navbar + * > :first-child:is(.busca-hero, .bibliotecas-hero, .hero-bibliotecas, .page-header) {
+  padding-top: 12px !important;
 }
 
 /* Sem padding-top extra no wrapper logo abaixo do menu */
@@ -377,6 +411,78 @@ body > nav.navbar + .gateway-container,
 body > nav.navbar + .prescricao-container,
 body > nav.navbar + .wl-container {
   padding-top: 0;
+}
+
+/* Painéis internos (sidebar + conteúdo) */
+.painel {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) 1fr;
+  min-height: 100vh;
+  align-items: start;
+}
+
+.painel-sidebar {
+  background: var(--azul-profundo);
+  color: rgba(255, 255, 255, 0.92);
+  padding: 16px 14px 24px;
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+.painel-sidebar h3 {
+  color: var(--branco);
+  font-size: 18px;
+  margin: 0 0 16px;
+  padding: 0 8px;
+}
+
+.painel-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-sidebar nav a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transicao);
+}
+
+.painel-sidebar nav a:hover,
+.painel-sidebar nav a.ativo {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--branco);
+}
+
+.painel-conteudo {
+  padding: 12px 24px 40px;
+  min-width: 0;
+}
+
+.painel-conteudo > :first-child {
+  margin-top: 0;
+}
+
+.painel-conteudo h2:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .painel {
+    grid-template-columns: 1fr;
+  }
+
+  .painel-sidebar {
+    position: relative;
+    min-height: auto;
+  }
 }
 
 /* Cards com Design Moderno */
