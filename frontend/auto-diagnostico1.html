@@ -115,24 +115,24 @@
           <div class="campo-adicional">
             <label>Você fuma?</label>
             <select id="fuma" class="anamnese-input" onchange="toggleBox('fuma', 'box-cigarro')">
-              <option value="Não">Não</option>
-              <option value="Sim">Sim</option>
-              <option value="Ex-fumante">Ex-fumante</option>
+              <option value="Não">Nunca fumei</option>
+              <option value="Ex-fumante">Já fumei, mas parei</option>
+              <option value="Sim">Fumo atualmente</option>
             </select>
             <div id="box-cigarro" class="condicional">
-              <label>Quantos cigarros por dia?</label>
-              <input type="number" id="qtd-cigarro" class="anamnese-input">
+              <label>Quantos cigarros por dia, em média?</label>
+              <input type="number" id="qtd-cigarro" class="anamnese-input" min="0" placeholder="Ex: 10">
             </div>
           </div>
           <div class="campo-adicional">
             <label>Consome bebidas alcoólicas?</label>
             <select id="bebe" class="anamnese-input" onchange="toggleBox('bebe', 'box-bebida')">
-              <option value="Não">Não</option>
-              <option value="Sim">Sim</option>
+              <option value="Não">Não bebo álcool</option>
+              <option value="Sim">Bebo às vezes ou com frequência</option>
             </select>
             <div id="box-bebida" class="condicional">
-              <label>Frequência / Quantidade</label>
-              <input type="text" id="qtd-bebida" class="anamnese-input" placeholder="Ex: 2 doses no fim de semana">
+              <label>Com que frequência e quantas doses por vez?</label>
+              <input type="text" id="qtd-bebida" class="anamnese-input" placeholder="Ex: 2 vezes/semana, 2 doses de cerveja">
             </div>
           </div>
         </div>
@@ -184,11 +184,13 @@
     ];
 
     const dataMedicamentos = [
-      { cat: "Dor e Inflamação", subs: ["Paracetamol", "Dipirona", "Ibuprofeno", "Nimesulida", "Diclofenaco"] },
-      { cat: "Estômago e Digestão", subs: ["Omeprazol / Pantoprazol", "Antiácidos", "Domperidona"] },
-      { cat: "Pressão e Coração", subs: ["Enalapril / Losartana", "Atenolol / Propranolol", "Aspirina (AAS)"] },
-      { cat: "Diabetes / Açúcar", subs: ["Metformina", "Gliclazida", "Insulina"] },
-      { cat: "Controle Emocional", subs: ["Fluoxetina / Sertralina", "Clonazepam / Alprazolam", "Amitriptilina"] }
+      { cat: "Dor e Inflamação", subs: ["Paracetamol", "Dipirona", "Ibuprofeno", "Nimesulida", "Diclofenaco", "Naproxeno", "Tramadol"] },
+      { cat: "Estômago e Digestão", subs: ["Omeprazol", "Pantoprazol", "Antiácidos", "Domperidona", "Simeticona", "Lactulose"] },
+      { cat: "Pressão e Coração", subs: ["Enalapril", "Losartana", "Anlodipino", "Atenolol", "Aspirina (AAS)", "Sinvastatina", "Atorvastatina"] },
+      { cat: "Diabetes / Açúcar", subs: ["Metformina", "Gliclazida", "Insulina", "Sitagliptina"] },
+      { cat: "Humor, Ansiedade e Sono", subs: ["Fluoxetina", "Sertralina", "Clonazepam", "Alprazolam", "Zolpidem", "Melatonina"] },
+      { cat: "Alergia e Respiração", subs: ["Loratadina", "Salbutamol", "Budesonida inalatória"] },
+      { cat: "Vitaminas e Suplementos", subs: ["Vitamina D", "Ferro", "Ômega-3", "Magnésio", "Probióticos"] }
     ];
 
     function criarLista(containerId, data, namePrefix) {
@@ -220,7 +222,14 @@
 
     function toggleBox(sid, bid) {
       const v = document.getElementById(sid).value;
-      document.getElementById(bid).style.display = (v === 'Sim' || v === 'Ex-fumante') ? 'block' : 'none';
+      const box = document.getElementById(bid);
+      if (sid === 'fuma') {
+        box.style.display = v === 'Sim' ? 'block' : 'none';
+        if (v !== 'Sim') document.getElementById('qtd-cigarro').value = '';
+      } else {
+        box.style.display = v === 'Sim' ? 'block' : 'none';
+        if (v !== 'Sim') document.getElementById('qtd-bebida').value = '';
+      }
     }
 
     const pIn = document.getElementById('peso'), aIn = document.getElementById('altura');

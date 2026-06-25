@@ -17,10 +17,24 @@ window.AnamneseUI = (function () {
     return null;
   }
 
-  function badgeGrupo(grupo) {
-    if (grupo === 'pics') return '<span class="badge-grupo pics">PICS</span>';
-    if (grupo === 'ocidental') return '<span class="badge-grupo ocidental">Clínico</span>';
-    return '<span class="badge-grupo transversal">Transversal</span>';
+  function badgeGrupo(grupo, ocultar) {
+    if (ocultar) return '';
+    if (grupo === 'pics') return '<span class="badge-grupo pics">Integrativo</span>';
+    if (grupo === 'ocidental') return '<span class="badge-grupo ocidental">Saúde</span>';
+    return '<span class="badge-grupo transversal">Geral</span>';
+  }
+
+  function deveMostrarCampo(campo, respostas) {
+    if (!campo || !campo.mostrarSe) return true;
+    var regra = campo.mostrarSe;
+    var valor = String((respostas && respostas[regra.campo]) || '');
+    if (regra.valores && regra.valores.length) {
+      return regra.valores.indexOf(valor) >= 0;
+    }
+    if (regra.exceto && regra.exceto.length) {
+      return regra.exceto.indexOf(valor) < 0;
+    }
+    return true;
   }
 
   function renderOpcoesCards(campo, valor, opts) {
@@ -87,17 +101,35 @@ window.AnamneseUI = (function () {
 
   function renderCampo(campo, respostas, config) {
     config = config || {};
+    if (!deveMostrarCampo(campo, respostas)) return '';
     var valor = respostas ? respostas[campo.id] : '';
     var pendente = (config.pendentes || []).indexOf(campo.id) >= 0;
     var obr = (config.obrigatorios || []).indexOf(campo.id) >= 0;
     var sexoAttr = campo.sexoAplicavel ? ' data-sexo-aplicavel="' + campo.sexoAplicavel + '"' : '';
+    var ocultarBadge = !!config.modoPublico;
     var html = '<div class="campo-anamnese' + (pendente ? ' pendente' : '') + '" data-campo-id="' + campo.id + '"' + sexoAttr + '>';
-    html += '<label for="campo_' + campo.id + '">' + escapeHtml(campo.nome) + badgeGrupo(campo.grupo);
+    html += '<label for="campo_' + campo.id + '">' + escapeHtml(campo.nome) + badgeGrupo(campo.grupo, ocultarBadge);
     if (obr) html += ' <span class="obrigatorio">*</span>';
     html += '</label>';
     if (campo.dica) html += '<p class="campo-dica">' + escapeHtml(campo.dica) + '</p>';
     html += renderInput(campo, valor, { pendente: pendente, obrigatorio: obr });
     html += '</div>';
+    return html;
+  }
+
+  function renderMedicamentosChecklist(medicamentosChecklist, respostas) {
+    var marcados = String(respostas.medicamentos_marcados || '').split(/[;,]/).map(function (x) { return x.trim(); }).filter(Boolean);
+    var html = '<p class="campo-dica">Marque todos os remédios ou suplementos que você usa com frequência. Pode marcar mais de um.</p>';
+    (medicamentosChecklist || []).forEach(function (grupo) {
+      html += '<div class="checklist-sistema medicamentos-grupo"><h4>' + escapeHtml(grupo.categoria) + '</h4><div class="checklist-grid">';
+      (grupo.itens || []).forEach(function (item) {
+        var checked = marcados.indexOf(item) >= 0 ? ' checked' : '';
+        var cls = grupo.exclusivo ? ' medicamento-exclusivo' : '';
+        html += '<label class="check-item' + cls + '"><input type="checkbox" class="medicamento-check" value="' +
+          escapeHtml(item) + '"' + checked + '> ' + escapeHtml(item) + '</label>';
+      });
+      html += '</div></div>';
+    });
     return html;
   }
 
@@ -142,9 +174,14 @@ window.AnamneseUI = (function () {
   }
 
   function renderEtapa(etapa, schema, respostas, config) {
+    config = Object.assign({ modoPublico: !!schema.modo_publico }, config || {});
     if (etapa.tipo === 'checklist') {
-      return '<section class="secao-anamnese"><h3>Revisão por sistemas</h3>' +
+      return '<section class="secao-anamnese"><h3>O que você sente</h3>' +
         renderChecklist(schema.sintomas_checklist, respostas, respostas.sexo_biologico) + '</section>';
+    }
+    if (etapa.tipo === 'medicamentos') {
+      return '<section class="secao-anamnese"><h3>Remédios e suplementos</h3>' +
+        renderMedicamentosChecklist(schema.medicamentos_checklist, respostas) + '</section>';
     }
     if (etapa.tipo === 'sexo') {
       var camposSexo = filtrarCamposSexo(schema.campos, respostas.sexo_biologico);
@@ -176,6 +213,27 @@ window.AnamneseUI = (function () {
           card.classList.remove('selecionada');
         });
         if (input.checked) input.closest('.opcao-card').classList.add('selecionada');
+        if (window.onAnamneseCampoAlterado) window.onAnamneseCampoAlterado(input.name, input.value);
+      });
+    });
+    container.querySelectorAll('select.anamnese-input').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        if (window.onAnamneseCampoAlterado) window.onAnamneseCampoAlterado(sel.name, sel.value);
+      });
+    });
+    container.querySelectorAll('.medicamento-exclusivo input').forEach(function (input) {
+      input.addEventListener('change', function () {
+        if (!input.checked) return;
+        container.querySelectorAll('.medicamento-check').forEach(function (cb) {
+          if (!cb.closest('.medicamento-exclusivo')) cb.checked = false;
+        });
+      });
+    });
+    container.querySelectorAll('.medicamento-check').forEach(function (input) {
+      if (input.closest('.medicamento-exclusivo')) return;
+      input.addEventListener('change', function () {
+        if (!input.checked) return;
+        container.querySelectorAll('.medicamento-exclusivo input').forEach(function (cb) { cb.checked = false; });
       });
     });
     container.querySelectorAll('[data-escala]').forEach(function (row) {
@@ -203,6 +261,11 @@ window.AnamneseUI = (function () {
       sintomas.push(el.value);
     });
     if (sintomas.length) respostas.sintomas_relatados = sintomas.join('; ');
+    var medicamentos = [];
+    container.querySelectorAll('.medicamento-check:checked').forEach(function (el) {
+      medicamentos.push(el.value);
+    });
+    if (medicamentos.length) respostas.medicamentos_marcados = medicamentos.join('; ');
     return respostas;
   }
 
@@ -232,6 +295,8 @@ window.AnamneseUI = (function () {
     renderCampo: renderCampo,
     renderEtapa: renderEtapa,
     renderChecklist: renderChecklist,
+    renderMedicamentosChecklist: renderMedicamentosChecklist,
+    deveMostrarCampo: deveMostrarCampo,
     coletarRespostas: coletarRespostas,
     validarObrigatorios: validarObrigatorios,
     filtrarCampos: filtrarCampos,

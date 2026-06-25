@@ -27,7 +27,7 @@ const HIPOTESES = [
     id: 'H_CEFALEIA_TENSIONAL',
     nome: 'Cefaleia do tipo tensional',
     descricao: 'Dor de cabeça frequentemente associada a tensão muscular, estresse e postura.',
-    termos: ['cefaleia tensional', 'dor de cabeca', 'tensional', 'nuca', 'pressao nos olhos'],
+    termos: ['cefaleia tensional', 'dor de cabeca', 'dor de cabeça leve', 'tensional', 'nuca', 'pressao nos olhos'],
     sistemas: ['Neurológico'],
     confianca: 'moderada',
     cid_referencia: 'G44.2'
@@ -45,7 +45,7 @@ const HIPOTESES = [
     id: 'H_LOMBALGIA',
     nome: 'Lombalgia mecânica',
     descricao: 'Dor na região lombar, comum em sedentarismo e sobrecarga postural.',
-    termos: ['dor lombar', 'lombalgia', 'costas'],
+    termos: ['dor lombar', 'dor nas costas', 'lombalgia', 'costas'],
     sistemas: ['Musculoesquelético'],
     confianca: 'moderada',
     cid_referencia: 'M54.5'
@@ -72,7 +72,7 @@ const HIPOTESES = [
     id: 'H_ANSIEDADE',
     nome: 'Transtorno de ansiedade (hipótese)',
     descricao: 'Ansiedade persistente com impacto no sono, humor e qualidade de vida.',
-    termos: ['ansiedade', 'estresse cronico', 'palpitacoes', 'insomnia', 'insonia', 'irritabilidade'],
+    termos: ['ansiedade', 'estresse constante', 'estresse cronico', 'palpitacoes', 'coracao acelerado', 'insonia', 'dificuldade para dormir', 'irritabilidade'],
     sistemas: ['Emocional'],
     confianca: 'moderada',
     cid_referencia: 'F41'
@@ -90,7 +90,7 @@ const HIPOTESES = [
     id: 'H_INSONIA',
     nome: 'Insônia / distúrbio do sono',
     descricao: 'Dificuldade para iniciar ou manter o sono, com repercussão diurna.',
-    termos: ['insonia', 'disturbios do sono', 'sono ruim', 'despertares'],
+    termos: ['insonia', 'dificuldade para dormir', 'disturbios do sono', 'sono ruim', 'despertares'],
     sistemas: ['Sono'],
     confianca: 'moderada',
     cid_referencia: 'G47.0'
@@ -99,7 +99,7 @@ const HIPOTESES = [
     id: 'H_HAS_SUSPEITA',
     nome: 'Hipertensão arterial (suspeita clínica)',
     descricao: 'Palpitações, cefaleia matinal ou tontura podem sugerir elevação pressórica.',
-    termos: ['palpitacoes', 'pressao alta', 'hipertensao', 'cefaleia matinal'],
+    termos: ['palpitacoes', 'coracao acelerado', 'pressao alta', 'hipertensao', 'cefaleia matinal'],
     sistemas: ['Cardiovascular'],
     confianca: 'baixa',
     cid_referencia: 'I10'
@@ -108,7 +108,7 @@ const HIPOTESES = [
     id: 'H_DISMENORREIA',
     nome: 'Dismenorreia / alteração menstrual',
     descricao: 'Cólica menstrual intensa ou ciclo irregular merece avaliação ginecológica.',
-    termos: ['dismenorreia', 'irregularidade menstrual', 'tpm', 'ciclo menstrual'],
+    termos: ['colica menstrual', 'ciclo menstrual irregular', 'tpm', 'ciclo menstrual'],
     sexo: 'feminino',
     sistemas: ['Ginecológico'],
     confianca: 'moderada',
@@ -118,7 +118,7 @@ const HIPOTESES = [
     id: 'H_HP_BENIGNA',
     nome: 'Hiperplasia prostática benigna (hipótese)',
     descricao: 'Jato urinário fraco, noctúria ou hesitação miccional em homens.',
-    termos: ['jato urinario fraco', 'nocturia', 'prostata', 'hesitacao miccional'],
+    termos: ['jato fraco', 'jato urinario fraco', 'nocturia', 'prostata', 'acordar a noite para urinar'],
     sexo: 'masculino',
     sistemas: ['Urológico'],
     confianca: 'baixa',
@@ -128,7 +128,7 @@ const HIPOTESES = [
     id: 'H_ITU',
     nome: 'Infecção urinária (hipótese)',
     descricao: 'Disúria, urgência ou frequência urinária aumentada.',
-    termos: ['disuria', 'dor ao urinar', 'urgencia miccional', 'infeccao urinaria'],
+    termos: ['dor ao urinar', 'disuria', 'urgencia miccional', 'infeccao urinaria', 'vontade de urinar'],
     sistemas: ['Geniturinário'],
     confianca: 'moderada',
     cid_referencia: 'N39.0'
@@ -146,13 +146,13 @@ function pontuarHipoteses(respostas) {
     if (!hits.length) return;
     encontradas.push({
       hipotese_id: h.id,
-      nome: h.nome,
-      descricao: h.descricao,
+      nome: h.nome_publico || h.nome,
+      descricao: h.descricao_publica || h.descricao,
       confianca: h.confianca,
       cid_referencia: h.cid_referencia,
       sistemas: h.sistemas,
       termos_correspondentes: hits,
-      aviso: 'Hipótese orientativa — não constitui diagnóstico. Confirme com profissional habilitado.'
+      aviso: 'Possibilidade orientativa — confirme com profissional de saúde.'
     });
   });
 
@@ -172,10 +172,10 @@ function determinarDestino(respostas, hipoteses, alertas) {
   if (emergencia || alertaAlto) {
     return {
       tipo: 'emergencia',
-      titulo: 'Busque atendimento de urgência',
+      titulo: 'Procure atendimento de urgência',
       mensagem:
-        'Com base nos sinais relatados, procure pronto-socorro, SAMU (192) ou serviço de emergência. ' +
-        'Autoavaliação integrativa não substitui avaliação médica imediata.',
+        'Pelos sinais que você marcou, o mais seguro é ir a um pronto-socorro, ligar para o SAMU (192) ' +
+        'ou buscar emergência agora. Esta avaliação não substitui um médico na hora.',
       prioridade: 1
     };
   }
@@ -183,20 +183,20 @@ function determinarDestino(respostas, hipoteses, alertas) {
   if (hipoteses.length) {
     return {
       tipo: 'profissional',
-      titulo: 'Recomendamos consulta com profissional de confiança',
+      titulo: 'Vale marcar uma consulta',
       mensagem:
-        'As hipóteses abaixo são prováveis orientações clínicas para conversa com médico, ' +
-        'terapeuta integrativo ou especialista adequado. Leve este resumo à consulta.',
+        'O que você relatou combina com situações que um médico ou terapeuta pode avaliar melhor. ' +
+        'Leve este resumo na consulta.',
       prioridade: 2
     };
   }
 
   return {
     tipo: 'autocuidado',
-    titulo: 'Autocuidado orientado + acompanhamento se persistir',
+    titulo: 'Cuide de você e observe',
     mensagem:
-      'Mantenha hábitos saudáveis e monitore evolução. Se sintomas persistirem ou piorarem, ' +
-      'agende consulta com profissional de sua confiança.',
+      'Por enquanto, mantenha hábitos saudáveis e fique atento. Se piorar ou não melhorar em alguns dias, ' +
+      'marque consulta com um profissional.',
     prioridade: 3
   };
 }

@@ -47,7 +47,7 @@
 }
 
 .anamnese-clinica .cabecalho-clinico {
-  background: linear-gradient(135deg, #1e3a5f 0%, #0f4c5c 100%);
+  background: linear-gradient(135deg, #0f766e 0%, #1e3a5f 100%);
   color: #fff;
   border-radius: 12px 12px 0 0;
   margin: -20px -18px 18px;
@@ -78,11 +78,11 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--anam-azul);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   border-bottom: 2px solid var(--anam-verde);
   padding-bottom: 8px;
   margin: 0 0 16px;
+  text-transform: none;
 }
 
 .campo-anamnese {
@@ -215,6 +215,17 @@
 .check-item:has(input:checked) {
   border-color: var(--anam-verde);
   background: #f0fdfa;
+}
+
+.auto-aviso-acolhedor {
+  background: #f0fdfa;
+  border-left: 4px solid var(--anam-verde);
+  color: #134e4a;
+  line-height: 1.55;
+}
+
+.medicamentos-grupo h4 {
+  color: #0f766e;
 }
 
 .check-item input { margin-top: 2px; flex-shrink: 0; }

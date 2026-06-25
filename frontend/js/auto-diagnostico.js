@@ -37,19 +37,45 @@ window.AutoDiagnostico = (function () {
       var imc = (peso / ((alt / 100) * (alt / 100))).toFixed(1);
       r.hda_resumo = [
         r.idade_anos ? 'Idade ' + r.idade_anos + ' anos' : null,
-        r.sexo_biologico ? 'Sexo biológico: ' + r.sexo_biologico : null,
+        r.sexo_biologico ? 'Sexo: ' + r.sexo_biologico : null,
         'IMC ' + imc
       ].filter(Boolean).join(' · ');
+    }
+    if (r.tabagismo) {
+      var tab = r.tabagismo;
+      if (r.tabagismo_cigarros_dia && tab.indexOf('Fumo') >= 0) {
+        tab += ' (' + r.tabagismo_cigarros_dia + ' cigarros/dia)';
+      }
+      if (r.tabagismo_tempo_sem_fumar && tab.indexOf('parei') >= 0) {
+        tab += ' (parou há ' + r.tabagismo_tempo_sem_fumar + ')';
+      }
+      r.tabagismo = tab;
+    }
+    if (r.etilismo && r.etilismo !== 'Não bebo álcool') {
+      var beb = r.etilismo;
+      if (r.etilismo_frequencia) beb += ' · ' + r.etilismo_frequencia;
+      if (r.etilismo_doses_por_vez) beb += ' · ' + r.etilismo_doses_por_vez + ' por vez';
+      r.etilismo = beb;
+    }
+    var meds = [];
+    if (r.medicamentos_marcados) {
+      meds = String(r.medicamentos_marcados).split(/[;,]/).map(function (x) { return x.trim(); }).filter(Boolean);
+    }
+    if (r.medicamentos_uso) meds.push(String(r.medicamentos_uso).trim());
+    if (meds.length) {
+      r.medicamentos_uso = meds.filter(function (v, i, a) { return a.indexOf(v) === i; }).join('; ');
     }
     if (r.sintomas_relatados && r.queixa_principal) {
       r.queixa_principal = r.queixa_principal + '. Sintomas: ' + r.sintomas_relatados;
     } else if (r.sintomas_relatados && !r.queixa_principal) {
       r.queixa_principal = r.sintomas_relatados;
     }
-    if (!r.alergias_medicamentos) r.alergias_medicamentos = 'NKDA';
+    if (!r.alergias_medicamentos) r.alergias_medicamentos = 'Nenhuma informada';
     if (!r.medicamentos_uso) r.medicamentos_uso = 'Nenhum informado';
     return r;
   }
+
+  var ROTULO_CONFIANCA = { alta: 'muito provável', moderada: 'possível', baixa: 'menos provável' };
 
   function normalizarVertentes(lista) {
     return (lista || []).map(function (v) {
@@ -73,18 +99,18 @@ window.AutoDiagnostico = (function () {
 
   function renderHipoteses(hipoteses, aviso) {
     if (!hipoteses || !hipoteses.length) {
-      return '<p class="campo-dica">Nenhuma hipótese específica identificada. Consulte profissional se sintomas persistirem.</p>';
+      return '<p class="campo-dica">Não identificamos um padrão específico. Se os sintomas continuarem, converse com um profissional de saúde.</p>';
     }
     var html = '<div class="auto-aviso" style="background:#fffbeb;border-left-color:#f59e0b;color:#78350f;margin-bottom:14px;">' +
-      '<strong>Hipóteses prováveis — não é diagnóstico.</strong> ' + escapeHtml(aviso || '') + '</div>';
+      '<strong>Isso não é diagnóstico.</strong> São possibilidades para você levar na consulta. ' + escapeHtml(aviso || '') + '</div>';
     html += '<div class="hipoteses-lista">';
     hipoteses.forEach(function (h) {
+      var conf = ROTULO_CONFIANCA[h.confianca] || h.confianca;
       html += '<div class="hipotese-card">' +
         '<div class="nome">' + escapeHtml(h.nome) + '</div>' +
-        '<div class="meta">Confiança: ' + escapeHtml(h.confianca) +
-        (h.cid_referencia ? ' · Ref. CID-10: ' + escapeHtml(h.cid_referencia) : '') + '</div>' +
+        '<div class="meta">Compatível com o que você relatou (' + escapeHtml(conf) + ')</div>' +
         '<div class="desc">' + escapeHtml(h.descricao) + '</div>' +
-        '<div class="aviso-mini">' + escapeHtml(h.aviso) + '</div></div>';
+        '<div class="aviso-mini">Confirme sempre com médico ou terapeuta.</div></div>';
     });
     html += '</div>';
     return html;
@@ -116,15 +142,15 @@ window.AutoDiagnostico = (function () {
 
     return (
       '<div class="pdf-header">' +
-      '<h2 style="margin:0;color:#1e3a8a;">Anamnese integrativa — síntese orientativa</h2>' +
+      '<h2 style="margin:0;color:#1e3a8a;">Seu resumo de bem-estar</h2>' +
       '<p style="margin:5px 0 0;font-size:12px;color:#64748b;">Integrativo.App · ' +
       new Date().toLocaleString('pt-BR') + '</p></div>' +
-      '<p style="font-size:11px;color:#b45309;font-weight:600;">NÃO É DIAGNÓSTICO. Objetivo: orientar busca por profissional de confiança ou emergência.</p>' +
+      '<p style="font-size:11px;color:#b45309;font-weight:600;">NÃO É DIAGNÓSTICO. Use para conversar com um profissional ou buscar urgência se necessário.</p>' +
       renderDestino(sintese.destino) +
-      '<h4 style="color:#1e3a8a;">Hipóteses prováveis (orientativas)</h4>' +
+      '<h4 style="color:#1e3a8a;">O que pode estar relacionado ao que você sente</h4>' +
       renderHipoteses(sintese.hipoteses, sintese.aviso_hipoteses) +
-      '<h4 style="color:#1e3a8a;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">Resumo da anamnese</h4>' + resumoHtml +
-      '<h4 style="color:#1e3a8a;margin-top:16px;">Recomendações integrativas</h4>' + vertHtml + alertasHtml +
+      '<h4 style="color:#1e3a8a;border-bottom:1px solid #e2e8f0;padding-bottom:4px;">O que você nos contou</h4>' + resumoHtml +
+      '<h4 style="color:#1e3a8a;margin-top:16px;">Dicas de cuidado integrativo</h4>' + vertHtml + alertasHtml +
       '<p style="font-size:10px;color:#94a3b8;margin-top:20px;">' + escapeHtml(sintese.aviso_legal || '') + '</p>'
     );
   }
@@ -206,19 +232,30 @@ window.AutoDiagnostico = (function () {
 
   function validarEtapaAtual() {
     mesclarRespostasParciais();
-    var ids = schema.campos_por_etapa[schema.etapas[etapaAtual].id] || [];
     var etapa = schema.etapas[etapaAtual];
-    if (etapa.tipo === 'checklist') return [];
+    if (etapa.tipo === 'checklist' || etapa.tipo === 'medicamentos') return [];
     if (etapa.tipo === 'sexo') {
       return AnamneseUI.validarObrigatorios(respostasGlobais, schema.obrigatorios, []);
     }
-    return AnamneseUI.validarObrigatorios(respostasGlobais, schema.obrigatorios, ids);
+    var ids = schema.campos_por_etapa[etapa.id] || [];
+    var camposVisiveis = ids.filter(function (id) {
+      var c = (schema.campos || []).find(function (x) { return x.id === id; });
+      return c && AnamneseUI.deveMostrarCampo(c, respostasGlobais);
+    });
+    return AnamneseUI.validarObrigatorios(respostasGlobais, schema.obrigatorios, camposVisiveis);
   }
+
+  var CAMPOS_CONDICIONAIS = ['tabagismo', 'etilismo'];
 
   async function initWizard() {
     await carregarSchema();
     etapaAtual = 0;
     respostasGlobais = {};
+    window.onAnamneseCampoAlterado = function (nome) {
+      if (CAMPOS_CONDICIONAIS.indexOf(nome) < 0) return;
+      mesclarRespostasParciais();
+      renderEtapaAtual();
+    };
     renderEtapaAtual();
 
     document.getElementById('btn-anterior').onclick = function () {

@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Anamnese integrativa orientativa — Integrativo.App</title>
+  <title>Avaliação de bem-estar — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="css/bemestar-temporario.css">
   <link rel="stylesheet" href="css/anamnese-clinica.css">
@@ -24,12 +24,13 @@
     <div class="auto-etapas" id="wizard-etapas-labels" aria-hidden="true"></div>
 
     <section class="auto-card painel-etapa ativa" id="etapa-form">
-      <div class="auto-aviso" style="margin-bottom:14px;">
-        <strong>Objetivo:</strong> orientar busca por <strong>profissional de confiança</strong> ou <strong>emergência</strong> quando indicado. Não é diagnóstico.
+      <div class="auto-aviso auto-aviso-acolhedor" style="margin-bottom:14px;">
+        <strong>Como funciona:</strong> você responde em linguagem simples. No final, recebe um resumo para conversar com um
+        <strong>profissional de saúde</strong> ou ir à <strong>emergência</strong>, se for o caso. <em>Não é diagnóstico.</em>
       </div>
 
       <div id="wizard-conteudo">
-        <p class="campo-dica">Carregando formulário clínico…</p>
+        <p class="campo-dica">Carregando perguntas…</p>
       </div>
 
       <div class="wizard-nav">
@@ -40,10 +41,10 @@
     </section>
 
     <section class="auto-card painel-etapa" id="etapa-resultado">
-      <h2>Síntese da sua anamnese</h2>
+      <h2>Seu resumo</h2>
       <div class="auto-aviso auto-aviso-privacidade">
-        <strong>Não é diagnóstico.</strong> As hipóteses abaixo são prováveis orientações clínicas para conversa
-        com seu médico ou terapeuta. Em caso de emergência, procure pronto-socorro ou SAMU (192).
+        <strong>Não é diagnóstico.</strong> As sugestões abaixo ajudam na conversa com seu médico ou terapeuta.
+        Em emergência, ligue <strong>192 (SAMU)</strong> ou vá ao pronto-socorro.
       </div>
       <div id="aviso-legal-api" class="auto-aviso" style="display:none;"></div>
       <div id="pdf-area"></div>
@@ -54,7 +55,7 @@
       </div>
       <p id="msg-feedback" style="text-align:center;margin-top:10px;font-size:0.88rem;color:var(--texto-suave);"></p>
       <p style="margin-top:16px;font-size:0.82rem;color:var(--texto-suave);">
-        <strong>Privacidade:</strong> dados não são armazenados no servidor. Estrutura compatível com FHIR QuestionnaireResponse para integração futura ao prontuário.
+        <strong>Privacidade:</strong> suas respostas não ficam salvas no servidor nesta avaliação.
       </p>
     </section>
   </div>

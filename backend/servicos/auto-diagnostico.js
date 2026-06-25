@@ -35,17 +35,18 @@ function anamneseParaContextoAlertas(respostas = {}) {
 function montarResumo(respostas = {}) {
   const linhas = [];
   const destaques = [
-    ['sexo_biologico', 'Sexo biológico'],
+    ['sexo_biologico', 'Sexo'],
     ['idade_anos', 'Idade'],
-    ['queixa_principal', 'Queixa principal'],
-    ['sintomas_relatados', 'Sintomas relatados'],
-    ['hda_resumo', 'História resumida'],
-    ['medicamentos_uso', 'Medicamentos'],
-    ['alergias_medicamentos', 'Alergias medicamentosas'],
+    ['queixa_principal', 'Principal queixa'],
+    ['sintomas_relatados', 'Sintomas marcados'],
+    ['tabagismo', 'Cigarro'],
+    ['etilismo', 'Álcool'],
+    ['medicamentos_uso', 'Remédios'],
+    ['alergias_medicamentos', 'Alergias a remédios'],
     ['qualidade_sono', 'Sono'],
     ['nivel_energia', 'Energia (0–10)'],
     ['tipo_dieta', 'Alimentação'],
-    ['objetivos_paciente', 'Objetivos']
+    ['objetivos_paciente', 'O que quer melhorar']
   ];
   destaques.forEach(([id, rotulo]) => {
     if (respostas[id]) linhas.push({ id, rotulo, valor: String(respostas[id]).trim() });

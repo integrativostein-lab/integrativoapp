@@ -23,7 +23,12 @@ function campo(id, nome, categoria, opts = {}) {
     ativoPadrao: opts.ativoPadrao !== false,
     obrigatorioPadrao: !!opts.obrigatorioPadrao,
     dica: opts.dica || '',
-    sexoAplicavel: opts.sexoAplicavel || null
+    sexoAplicavel: opts.sexoAplicavel || null,
+    mostrarSe: opts.mostrarSe || null,
+    nomePublico: opts.nomePublico || null,
+    dicaPublica: opts.dicaPublica || null,
+    placeholderPublico: opts.placeholderPublico || null,
+    categoriaPublica: opts.categoriaPublica || null
   };
 }
 
@@ -63,16 +68,60 @@ const CAMPOS_ANAMNESE = [
   campo('familiar_pics', 'Histórico familiar de práticas integrativas / fitoterapia', 'Antecedentes familiares', { grupo: 'pics', parte: 1 }),
 
   // —— Medicações, alergias e farmacovigilância ——
-  campo('medicamentos_uso', 'Medicamentos em uso (nome, dose, horário)', 'Medicações, alergias e farmacovigilância', { grupo: 'ocidental', parte: 1, obrigatorioPadrao: true }),
+  campo('medicamentos_uso', 'Medicamentos em uso (nome, dose, horário)', 'Medicações, alergias e farmacovigilância', {
+    grupo: 'ocidental', parte: 1,
+    nomePublico: 'Outros remédios ou suplementos (opcional)',
+    placeholderPublico: 'Escreva aqui remédios que não estavam na lista anterior, com dose se souber',
+    dicaPublica: 'Marque na etapa anterior os que você usa. Use este campo para completar.'
+  }),
   campo('adesao_medicamentos', 'Adesão ao tratamento medicamentoso', 'Medicações, alergias e farmacovigilância', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Boa', 'Regular', 'Baixa', 'Não usa medicamentos contínuos'] }),
-  campo('alergias_medicamentos', 'Alergias e intolerâncias medicamentosas', 'Medicações, alergias e farmacovigilância', { grupo: 'ocidental', parte: 1, obrigatorioPadrao: true, placeholder: 'NKDA ou descrever reações' }),
+  campo('alergias_medicamentos', 'Alergias e intolerâncias medicamentosas', 'Medicações, alergias e farmacovigilância', {
+    grupo: 'ocidental', parte: 1, obrigatorioPadrao: true,
+    nomePublico: 'Tem alergia a algum remédio?',
+    placeholder: 'NKDA ou descrever reações',
+    placeholderPublico: 'Ex: Nenhuma · ou descreva o remédio e a reação'
+  }),
   campo('alergias_alimentos', 'Alergias alimentares', 'Medicações, alergias e farmacovigilância', { grupo: 'ocidental', parte: 1 }),
   campo('alergias_ambientais', 'Alergias ambientais (pólen, látex, etc.)', 'Medicações, alergias e farmacovigilância', { grupo: 'ocidental', parte: 1 }),
   campo('reacoes_adversas', 'Reações adversas prévias (medicamentos, plantas, suplementos)', 'Medicações, alergias e farmacovigilância', { grupo: 'transversal', parte: 1 }),
 
   // —— Hábitos de vida ——
-  campo('tabagismo', 'Tabagismo', 'Hábitos de vida e autocuidado', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Nunca fumou', 'Ex-fumante', 'Fumante atual — quantidade/dia'] }),
-  campo('etilismo', 'Consumo de álcool', 'Hábitos de vida e autocuidado', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Não consome', 'Social / eventual', 'Regular — frequência e quantidade', 'Dependência / risco'] }),
+  campo('tabagismo', 'Tabagismo', 'Hábitos de vida e autocuidado', {
+    grupo: 'ocidental', parte: 1, tipo: 'select',
+    nomePublico: 'Você fuma cigarro?',
+    opcoes: ['Nunca fumei', 'Já fumei, mas parei', 'Fumo atualmente']
+  }),
+  campo('tabagismo_cigarros_dia', 'Cigarros por dia (média)', 'Hábitos de vida e autocuidado', {
+    grupo: 'ocidental', parte: 1, tipo: 'number',
+    nomePublico: 'Quantos cigarros por dia, em média?',
+    placeholder: 'Ex: 10',
+    placeholderPublico: 'Ex: 10 cigarros por dia',
+    mostrarSe: { campo: 'tabagismo', valores: ['Fumo atualmente'] }
+  }),
+  campo('tabagismo_tempo_sem_fumar', 'Tempo desde parou de fumar', 'Hábitos de vida e autocuidado', {
+    grupo: 'ocidental', parte: 1, tipo: 'text',
+    nomePublico: 'Há quanto tempo você parou de fumar?',
+    placeholder: 'Ex: 2 anos',
+    mostrarSe: { campo: 'tabagismo', valores: ['Já fumei, mas parei'] }
+  }),
+  campo('etilismo', 'Consumo de álcool', 'Hábitos de vida e autocuidado', {
+    grupo: 'ocidental', parte: 1, tipo: 'select',
+    nomePublico: 'Você bebe bebida alcoólica?',
+    opcoes: ['Não bebo álcool', 'Só em festas ou ocasiões especiais', 'Bebo algumas vezes na semana', 'Bebo quase todos os dias', 'Acho que bebo demais']
+  }),
+  campo('etilismo_frequencia', 'Frequência de consumo de álcool', 'Hábitos de vida e autocuidado', {
+    grupo: 'ocidental', parte: 1, tipo: 'select',
+    nomePublico: 'Com que frequência costuma beber?',
+    opcoes: ['1 vez por mês ou menos', '2 a 4 vezes por mês', '1 a 2 vezes por semana', '3 a 5 vezes por semana', 'Quase todo dia'],
+    mostrarSe: { campo: 'etilismo', exceto: ['Não bebo álcool'] }
+  }),
+  campo('etilismo_doses_por_vez', 'Doses de álcool por ocasião', 'Hábitos de vida e autocuidado', {
+    grupo: 'ocidental', parte: 1, tipo: 'select',
+    nomePublico: 'Quantas doses costuma tomar por vez?',
+    dicaPublica: '1 dose = 1 lata de cerveja, 1 taça de vinho ou 1 dose de destilado.',
+    opcoes: ['1 a 2 doses', '3 a 4 doses', '5 ou mais doses', 'Não tenho certeza'],
+    mostrarSe: { campo: 'etilismo', exceto: ['Não bebo álcool'] }
+  }),
   campo('outras_substancias', 'Outras substâncias (caféina, tabaco ritual, entorpecentes)', 'Hábitos de vida e autocuidado', { grupo: 'transversal', parte: 1 }),
   campo('atividade_fisica', 'Atividade física', 'Hábitos de vida e autocuidado', { grupo: 'transversal', parte: 1, placeholder: 'Tipo, frequência, duração' }),
   campo('tipo_dieta', 'Padrão alimentar', 'Hábitos de vida e autocuidado', { grupo: 'transversal', parte: 1, tipo: 'select', opcoes: ['Onívora', 'Vegetariana', 'Vegana', 'Mediterrânea', 'Low carb / cetogênica', 'Ayurvédica / macrobiótica', 'Jejum intermitente', 'Outro / misto'] }),
