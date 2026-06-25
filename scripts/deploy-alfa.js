@@ -30,7 +30,8 @@ const MIGRACOES_ALFA = [
   'migracao-auditoria-lgpd.sql',
   'migracao-consentimentos-lgpd.sql',
   'migracao-anamnese.sql',
-  'migracao-teleconsulta.sql'
+  'migracao-teleconsulta.sql',
+  'migracao-banco-terapeutico.sql'
 ];
 
 const ERROS_MIGRACAO_IDEMPOTENTE = /already exists|duplicate key|duplicate_object/i;
@@ -172,6 +173,20 @@ async function semearDemo() {
     console.log('   ✓ Contas demo criadas (profissional@demo.com / paciente@demo.com).');
   } else {
     console.log('   ⚠️ Seed demo:', (r.stderr || r.stdout || '').trim().slice(0, 200));
+  }
+
+  console.log('   → protocolos das bibliotecas …');
+  const proto = spawnSync('node', [path.join(ROOT, 'backend/populate-protocolos-especialidades.js')], {
+    cwd: path.join(ROOT, 'backend'),
+    env: process.env,
+    stdio: 'pipe',
+    shell: true,
+    encoding: 'utf8'
+  });
+  if (proto.status === 0) {
+    console.log('   ✓ Protocolos terapêuticos semeados.');
+  } else {
+    console.log('   ⚠️ Seed protocolos:', (proto.stderr || proto.stdout || '').trim().slice(0, 240));
   }
 }
 

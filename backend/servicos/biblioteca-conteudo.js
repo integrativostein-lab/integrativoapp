@@ -45,7 +45,7 @@ async function resolverEspecialidades(nomeBiblioteca) {
   });
 
   const r = await db.query(
-    `SELECT DISTINCT e.id, e.nome
+    `SELECT e.id, e.nome
      FROM especialidades e
      WHERE ${condicoes.join(' OR ')}
      ORDER BY LENGTH(e.nome) DESC
@@ -71,6 +71,73 @@ function agruparPorSecao(registros) {
     mapa[chave].itens.push(item);
   });
   return Object.values(mapa).sort((a, b) => a.ordem - b.ordem);
+}
+
+function carregarMatrizCatalogo() {
+  try {
+    const CONFIG = require('../../frontend/js/config.js');
+    return CONFIG.BIBLIOTECAS_TERAPEUTICAS?.matriz || [];
+  } catch {
+    return [];
+  }
+}
+
+function localizarItemCatalogo(nomeBiblioteca) {
+  const chave = normalizarTexto(nomeBiblioteca);
+  if (!chave) return null;
+  const matriz = carregarMatrizCatalogo();
+  return matriz.find((item) => {
+    const esp = normalizarTexto(item.especialidade);
+    return esp === chave || esp.includes(chave) || chave.includes(esp);
+  }) || null;
+}
+
+function fallbackCatalogo(nomeBiblioteca, especialidades) {
+  const item = localizarItemCatalogo(nomeBiblioteca);
+  if (!item) return [];
+
+  const espNome = item.especialidade;
+  const registros = [
+    {
+      id: null,
+      tipo: 'protocolo',
+      nome: 'Visão geral da biblioteca',
+      descricao: item.base,
+      contraindicacoes: null,
+      referencia: null,
+      especialidade_id: especialidades[0]?.id || null,
+      especialidade_nome: espNome
+    },
+    {
+      id: null,
+      tipo: 'fonte',
+      nome: 'Fontes curadas',
+      descricao: 'Referências oficiais e clássicas vinculadas a esta biblioteca terapêutica.',
+      contraindicacoes: null,
+      referencia: item.fontes,
+      especialidade_id: especialidades[0]?.id || null,
+      especialidade_nome: espNome
+    }
+  ];
+
+  String(item.fontes || '')
+    .split(';')
+    .map((f) => f.trim())
+    .filter(Boolean)
+    .forEach((fonte) => {
+      registros.push({
+        id: null,
+        tipo: 'biblioteca',
+        nome: fonte,
+        descricao: 'Fonte de apoio para estudo e prática profissional.',
+        contraindicacoes: null,
+        referencia: item.base,
+        especialidade_id: especialidades[0]?.id || null,
+        especialidade_nome: espNome
+      });
+    });
+
+  return registros;
 }
 
 async function buscarConteudo({ nomeBiblioteca, busca, tipo, limite = 80, offset = 0 }) {
@@ -124,17 +191,27 @@ async function buscarConteudo({ nomeBiblioteca, busca, tipo, limite = 80, offset
     LIMIT $${i} OFFSET $${i + 1}`;
   params.push(Math.min(Number(limite) || 80, 200), Math.max(Number(offset) || 0, 0));
 
-  const r = await db.query(q, params);
-  const registros = r.rows.map((row) => ({
-    id: row.id,
-    tipo: row.tipo,
-    nome: row.nome,
-    descricao: row.descricao,
-    contraindicacoes: row.contraindicacoes,
-    referencia: row.dosagem_padrao,
-    especialidade_id: row.especialidade_id,
-    especialidade_nome: row.especialidade_nome
-  }));
+  let registros = [];
+  try {
+    const r = await db.query(q, params);
+    registros = r.rows.map((row) => ({
+      id: row.id,
+      tipo: row.tipo,
+      nome: row.nome,
+      descricao: row.descricao,
+      contraindicacoes: row.contraindicacoes,
+      referencia: row.dosagem_padrao,
+      especialidade_id: row.especialidade_id,
+      especialidade_nome: row.especialidade_nome
+    }));
+  } catch (err) {
+    if (!/banco_terapeutico/i.test(err.message)) throw err;
+    registros = fallbackCatalogo(nomeBiblioteca, especialidades);
+  }
+
+  if (!registros.length) {
+    registros = fallbackCatalogo(nomeBiblioteca, especialidades);
+  }
 
   return {
     biblioteca: nomeBiblioteca,
@@ -179,7 +256,26 @@ async function pesquisarGlobal({ termo, bibliotecasPermitidas, limite = 40 }) {
      ORDER BY bt.nome ASC
      LIMIT ${Math.min(Number(limite) || 40, 100)}`,
     params
-  );
+  ).catch((err) => {
+    if (!/banco_terapeutico/i.test(err.message)) throw err;
+    const likeNorm = normalizarTexto(String(termo).trim());
+    const matriz = carregarMatrizCatalogo();
+    const resultados = [];
+    matriz.forEach((item) => {
+      const texto = normalizarTexto(`${item.especialidade} ${item.categoria} ${item.base} ${item.fontes}`);
+      if (!texto.includes(likeNorm)) return;
+      resultados.push({
+        id: null,
+        tipo: 'protocolo',
+        nome: item.especialidade,
+        descricao: item.base,
+        contraindicacoes: null,
+        dosagem_padrao: item.fontes,
+        especialidade_nome: item.especialidade
+      });
+    });
+    return { rows: resultados.slice(0, Math.min(Number(limite) || 40, 100)) };
+  });
 
   return {
     termo: String(termo).trim(),

@@ -26,8 +26,8 @@
   --raio-padrao: 16px;
   --transicao: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Sem faixa vazia entre menu e conteúdo */
-  --espaco-apos-nav: 0;
+  /* 2px abaixo do menu */
+  --espaco-apos-nav: 2px;
   --secao-padding-y: 32px;
   --secao-padding-x: 24px;
 }
@@ -341,7 +341,7 @@ h2 {
   color: var(--texto-suave);
 }
 
-/* Conteúdo colado ao menu — anula margin-top local (ex.: margin: 40px auto) */
+/* Conteúdo com 2px abaixo do menu — anula margin-top local (ex.: margin: 40px auto) */
 body > nav.navbar + * {
   margin-top: var(--espaco-apos-nav) !important;
 }
