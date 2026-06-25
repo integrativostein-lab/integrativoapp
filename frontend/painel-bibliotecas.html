@@ -18,7 +18,7 @@
       border-radius: 28px;
       box-shadow: var(--sombra-elevada);
       color: var(--branco);
-      padding: 38px;
+      padding: 24px 28px;
     }
 
     .hero-bibliotecas h1 {
@@ -260,9 +260,10 @@
       <h2>Estudar, revisar e consultar</h2>
       <p>Use a busca para encontrar por especialidade, protocolo, fonte, diagnóstico, tratamento ou segurança clínica. Clique em uma biblioteca para consultar o conteúdo.</p>
       <div class="campo-busca">
-        <input type="search" id="busca" placeholder="Ex.: Ayurveda, dor, consentimento, nadi, sinais de alarme...">
+        <input type="search" id="busca" placeholder="Ex.: contraindicação gestação, protocolo avaliação, fitoterapia interação…">
         <a href="#" id="acaoPlano">Consultar</a>
       </div>
+      <div id="resultadosConteudo" style="margin-top:16px;"></div>
     </section>
 
     <section class="alertas-card" id="alertasSeguranca">
@@ -287,6 +288,7 @@
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/bibliotecas-ui.js"></script>
   <script>
     const token = localStorage.getItem('integra_token');
     if (!token) window.location.href = 'login.html';
@@ -300,6 +302,7 @@
     };
     let termo = '';
     let timerAlertasSeguranca = null;
+    let timerConteudoGlobal = null;
 
     function normalizar(texto) {
       return Catalogo.normalizarTexto(texto);
@@ -321,12 +324,14 @@
       return Catalogo.resolverNomesBibliotecas(estado.bibliotecas);
     }
 
-    function urlConsultaBiblioteca(nome) {
-      return `consulta-biblioteca.html?nome=${encodeURIComponent(nome)}`;
+    function urlConsultaBiblioteca(nome, busca) {
+      let url = `consulta-biblioteca.html?nome=${encodeURIComponent(nome)}`;
+      if (busca) url += `&busca=${encodeURIComponent(busca)}`;
+      return url;
     }
 
-    function abrirBiblioteca(nome) {
-      window.location.href = urlConsultaBiblioteca(nome);
+    function abrirBiblioteca(nome, busca) {
+      window.location.href = urlConsultaBiblioteca(nome, busca || termo.trim());
     }
 
     function consultarBusca() {
@@ -474,6 +479,46 @@
       timerAlertasSeguranca = setTimeout(verificarAlertasSeguranca, 450);
     }
 
+    async function pesquisarConteudoGlobal() {
+      const alvo = document.getElementById('resultadosConteudo');
+      const busca = termo.trim();
+      if (busca.length < 3) {
+        alvo.innerHTML = '';
+        return;
+      }
+      alvo.innerHTML = '<p style="color:var(--texto-suave);font-size:13px;">Buscando nos conteúdos clínicos…</p>';
+      try {
+        const dados = await BibliotecasUI.pesquisarGlobal(CONFIG.API_URL, token, busca);
+        if (!dados.resultados || !dados.resultados.length) {
+          alvo.innerHTML = '<p style="color:var(--texto-suave);font-size:13px;">Nenhum protocolo ou conduta encontrado neste termo. Tente abrir uma biblioteca específica.</p>';
+          return;
+        }
+        alvo.innerHTML = '<h3 style="color:var(--azul-profundo);font-size:15px;margin:0 0 10px;">Resultados nos conteúdos (' + dados.total + ')</h3>';
+        dados.resultados.slice(0, 8).forEach(function (item) {
+          const bloco = document.createElement('div');
+          bloco.style.cssText = 'border:1px solid #E2E8F0;border-radius:12px;margin-bottom:8px;padding:12px;cursor:pointer;';
+          bloco.innerHTML =
+            '<strong style="color:var(--azul-profundo);">' + BibliotecasUI.escapeHtml(item.nome) + '</strong>' +
+            '<small style="display:block;color:var(--texto-suave);">' +
+            BibliotecasUI.escapeHtml(BibliotecasUI.rotuloTipo(item.tipo)) + ' · ' +
+            BibliotecasUI.escapeHtml(item.especialidade_nome || '') + '</small>' +
+            (item.descricao ? '<small style="display:block;margin-top:4px;">' +
+              BibliotecasUI.escapeHtml(item.descricao.slice(0, 160)) + (item.descricao.length > 160 ? '…' : '') + '</small>' : '');
+          bloco.onclick = function () {
+            abrirBiblioteca(item.especialidade_nome || item.nome, busca);
+          };
+          alvo.appendChild(bloco);
+        });
+      } catch (_) {
+        alvo.innerHTML = '';
+      }
+    }
+
+    function agendarPesquisaConteudo() {
+      clearTimeout(timerConteudoGlobal);
+      timerConteudoGlobal = setTimeout(pesquisarConteudoGlobal, 500);
+    }
+
     async function carregarBibliotecas() {
       try {
         const resposta = await fetch(`${CONFIG.API_URL}/usuarios/bibliotecas`, {
@@ -492,6 +537,7 @@
       termo = event.target.value;
       renderizar();
       agendarAlertasSeguranca();
+      agendarPesquisaConteudo();
     });
 
     document.getElementById('busca').addEventListener('keydown', (event) => {

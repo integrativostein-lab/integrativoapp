@@ -18,7 +18,16 @@ router.get('/banco-terapeutico', autenticar, async (req, res) => {
 
   if (especialidade_id) { q += ` AND bt.especialidade_id = $${i}`; params.push(especialidade_id); i++; }
   if (tipo) { q += ` AND bt.tipo = $${i}`; params.push(tipo); i++; }
-  if (busca) { q += ` AND bt.nome ILIKE $${i}`; params.push(`%${busca}%`); i++; }
+  if (busca) {
+    q += ` AND (
+      bt.nome ILIKE $${i}
+      OR COALESCE(bt.descricao, '') ILIKE $${i}
+      OR COALESCE(bt.contraindicacoes, '') ILIKE $${i}
+      OR COALESCE(bt.dosagem_padrao, '') ILIKE $${i}
+    )`;
+    params.push(`%${busca}%`);
+    i++;
+  }
 
   q += ' LIMIT 50';
 

@@ -26,9 +26,9 @@
   --raio-padrao: 16px;
   --transicao: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Espaçamento compacto entre menu e conteúdo */
-  --espaco-apos-nav: 16px;
-  --secao-padding-y: 40px;
+  /* Sem faixa vazia entre menu e conteúdo */
+  --espaco-apos-nav: 0;
+  --secao-padding-y: 32px;
   --secao-padding-x: 24px;
 }
 
@@ -55,7 +55,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var(--sombra-suave); 
-  padding: 10px 40px; 
+  padding: 8px 32px; 
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center; 
@@ -77,7 +77,7 @@ body {
 .logo-container:hover { transform: scale(1.02); }
 
 .logo-img {
-  height: 56px;
+  height: 50px;
   width: auto;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
 }
@@ -308,7 +308,7 @@ h2 {
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 40px;
-  padding: 28px 32px;
+  padding: 12px 24px 28px;
   background: var(--branco);
   border-radius: 12px;
   box-shadow: var(--sombra-suave);
@@ -341,14 +341,42 @@ h2 {
   color: var(--texto-suave);
 }
 
-/* Um único espaço após o menu: só o irmão direto do nav */
+/* Conteúdo colado ao menu — anula margin-top local (ex.: margin: 40px auto) */
 body > nav.navbar + * {
-  margin-top: var(--espaco-apos-nav);
+  margin-top: var(--espaco-apos-nav) !important;
 }
 
-body > nav.navbar + header.hero-pro,
-body > nav.navbar + section.hero {
-  margin-top: 0;
+/* Sem padding-top extra no wrapper logo abaixo do menu */
+body > nav.navbar + main,
+body > nav.navbar + .container,
+body > nav.navbar + .busca-page,
+body > nav.navbar + .consulta-wrap,
+body > nav.navbar + .bibliotecas-profissional,
+body > nav.navbar + .bibliotecas-page,
+body > nav.navbar + .page-container,
+body > nav.navbar + .pagina-institucional,
+body > nav.navbar + .mv-container,
+body > nav.navbar + .etica-container,
+body > nav.navbar + .manual,
+body > nav.navbar + .form-cadastro,
+body > nav.navbar + .form-login,
+body > nav.navbar + .form-agendamento,
+body > nav.navbar + .ativacao-container,
+body > nav.navbar + .boas-vindas,
+body > nav.navbar + .entidade-container,
+body > nav.navbar + .blog-container,
+body > nav.navbar + .blog-editor,
+body > nav.navbar + .chat-container,
+body > nav.navbar + .config-wrap,
+body > nav.navbar + .wrap,
+body > nav.navbar + .reuniao-container,
+body > nav.navbar + .auto-wrap,
+body > nav.navbar + .fluxo-prof,
+body > nav.navbar + .checkout-container,
+body > nav.navbar + .gateway-container,
+body > nav.navbar + .prescricao-container,
+body > nav.navbar + .wl-container {
+  padding-top: 0;
 }
 
 /* Cards com Design Moderno */

@@ -7,12 +7,12 @@
   <title>Consulta de biblioteca — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <style>
-    .consulta-wrap { max-width: 960px; margin: 0 auto 72px; padding: 0 24px; }
+    .consulta-wrap { max-width: 1040px; margin: 0 auto 72px; padding: 0 24px; }
     .consulta-hero {
       background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f 65%, var(--verde-destaque));
-      border-radius: 24px; color: #fff; padding: 32px; margin-bottom: 20px;
+      border-radius: 24px; color: #fff; padding: 24px 28px; margin-bottom: 20px;
     }
-    .consulta-hero h1 { color: #fff; font-size: 30px; margin: 10px 0; }
+    .consulta-hero h1 { color: #fff; font-size: 28px; margin: 10px 0; line-height: 1.25; }
     .consulta-hero .badge {
       background: rgba(255,255,255,0.15); border-radius: 999px; display: inline-block;
       font-size: 12px; font-weight: 800; padding: 5px 12px;
@@ -22,23 +22,62 @@
       box-shadow: var(--sombra-suave); margin-bottom: 18px; padding: 22px;
     }
     .consulta-card h2 { color: var(--azul-profundo); font-size: 18px; margin-bottom: 10px; }
-    .consulta-card p, .consulta-card li { color: var(--texto-principal); line-height: 1.7; }
     .fontes-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
     .fonte-chip {
       background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 999px;
       color: #065F46; font-size: 13px; padding: 6px 14px;
     }
-    .registro-item {
-      border: 1px solid #E2E8F0; border-radius: 12px; margin-top: 10px; padding: 14px;
-    }
-    .registro-item strong { color: var(--azul-profundo); display: block; margin-bottom: 4px; }
-    .registro-item small { color: var(--texto-suave); display: block; line-height: 1.5; }
     .acoes-topo { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
     .acoes-topo a {
       background: #fff; border: 1px solid #CBD5E1; border-radius: 999px;
       color: var(--azul-profundo); font-weight: 700; padding: 8px 16px; text-decoration: none;
     }
-    .aviso { background: #F8FAFC; border-left: 4px solid var(--verde-destaque); border-radius: 12px; font-size: 14px; padding: 14px 16px; }
+    .aviso {
+      background: #F8FAFC; border-left: 4px solid var(--verde-destaque);
+      border-radius: 12px; font-size: 14px; padding: 14px 16px; margin-bottom: 18px;
+    }
+    .busca-biblioteca {
+      display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 14px;
+    }
+    .busca-biblioteca input {
+      border: 1px solid #CBD5E1; border-radius: 999px; font-size: 15px;
+      padding: 12px 18px; width: 100%;
+    }
+    .busca-biblioteca button {
+      background: var(--verde-destaque); border: none; border-radius: 999px;
+      color: #fff; cursor: pointer; font-weight: 700; padding: 12px 22px;
+    }
+    .filtros-tipo { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .filtro-tipo {
+      background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 999px;
+      color: var(--azul-profundo); cursor: pointer; font-size: 13px; font-weight: 600;
+      padding: 7px 14px;
+    }
+    .filtro-tipo.ativo { background: var(--azul-profundo); border-color: var(--azul-profundo); color: #fff; }
+    .conteudo-secao { margin-top: 22px; padding-top: 8px; border-top: 1px dashed #E2E8F0; }
+    .conteudo-secao-titulo {
+      color: var(--azul-profundo); font-size: 17px; margin-bottom: 12px;
+    }
+    .conteudo-contagem { color: var(--texto-suave); font-size: 13px; font-weight: 600; }
+    .conteudo-item {
+      border: 1px solid #E2E8F0; border-left: 4px solid var(--verde-destaque);
+      border-radius: 12px; margin-bottom: 12px; padding: 16px;
+    }
+    .conteudo-item-topo h3 { color: var(--azul-profundo); font-size: 16px; margin: 6px 0 0; }
+    .conteudo-tipo-badge {
+      background: #EFF6FF; border-radius: 999px; color: #1D4ED8;
+      display: inline-block; font-size: 11px; font-weight: 800; padding: 4px 10px;
+      text-transform: uppercase;
+    }
+    .conteudo-desc { color: var(--texto-principal); font-size: 14px; line-height: 1.65; margin: 10px 0 0; }
+    .conteudo-alerta {
+      background: #FEF2F2; border-radius: 8px; color: #991B1B;
+      font-size: 13px; line-height: 1.55; margin-top: 10px; padding: 10px 12px;
+    }
+    .conteudo-ref, .conteudo-meta { color: var(--texto-suave); font-size: 12px; margin: 8px 0 0; }
+    .conteudo-vazio { color: var(--texto-suave); font-size: 14px; padding: 12px 0; }
+    .conteudo-stats { color: var(--texto-suave); font-size: 13px; margin-bottom: 8px; }
+    .loading { color: var(--texto-suave); font-size: 14px; padding: 16px 0; text-align: center; }
   </style>
 </head>
 <body>
@@ -57,7 +96,6 @@
   <main class="consulta-wrap">
     <div class="acoes-topo">
       <a href="painel-bibliotecas.html">← Voltar às bibliotecas</a>
-      <a href="lista-especialidades.html" id="linkEspecialidade" style="display:none;">Ver conteúdo por especialidade</a>
     </div>
 
     <section class="consulta-hero" id="hero" style="display:none;">
@@ -67,31 +105,40 @@
     </section>
 
     <div class="aviso">
-      <strong>Apoio profissional.</strong> Referências e protocolos para estudo e suporte à decisão. A conduta clínica permanece sob responsabilidade do profissional habilitado.
+      <strong>Apoio profissional.</strong> Protocolos, condutas, encaminhamentos e contraindicações para estudo e suporte à decisão. A conduta clínica permanece sob sua responsabilidade.
     </div>
 
     <section class="consulta-card" id="cardBase" style="display:none;">
       <h2>Base de conhecimento</h2>
       <p id="textoBase"></p>
-      <h2 style="margin-top:18px;">Fontes</h2>
+      <h2 style="margin-top:18px;">Fontes curadas</h2>
       <div class="fontes-lista" id="listaFontes"></div>
     </section>
 
-    <section class="consulta-card" id="cardRegistros" style="display:none;">
-      <h2>Registros terapêuticos relacionados</h2>
-      <p style="color:var(--texto-suave);font-size:14px;">Itens do banco terapêutico vinculados a esta biblioteca (até 30 resultados).</p>
-      <div id="registros"></div>
+    <section class="consulta-card" id="cardConteudo" style="display:none;">
+      <h2>Conteúdo clínico</h2>
+      <p style="color:var(--texto-suave);font-size:14px;margin-bottom:14px;">
+        Pesquise protocolos, condutas, diagnósticos, encaminhamentos e contraindicações desta biblioteca.
+      </p>
+      <div class="busca-biblioteca">
+        <input type="search" id="inputBusca" placeholder="Ex: contraindicação, gestação, avaliação, encaminhamento…" autocomplete="off">
+        <button type="button" id="btnBusca">Buscar</button>
+      </div>
+      <div class="filtros-tipo" id="filtrosTipo"></div>
+      <p class="conteudo-stats" id="statsConteudo"></p>
+      <div id="areaConteudo"><p class="loading">Carregando conteúdo…</p></div>
     </section>
 
     <section class="consulta-card" id="cardVazio" style="display:none;">
       <h2>Biblioteca não encontrada</h2>
-      <p>Não localizamos esta biblioteca no catálogo. Volte ao painel e escolha outra, ou abra o <a href="bibliotecas-especialidades.html">mapa completo</a>.</p>
+      <p>Volte ao <a href="painel-bibliotecas.html">painel de bibliotecas</a> ou abra o <a href="bibliotecas-especialidades.html">mapa completo</a>.</p>
     </section>
   </main>
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
   <script src="js/auth-sessao.js"></script>
+  <script src="js/bibliotecas-ui.js"></script>
   <script>
     const token = AuthSessao.obterToken();
     if (!token) window.location.href = 'login.html';
@@ -99,14 +146,11 @@
     const Catalogo = CONFIG.Catalogo || CatalogoTerapeutico;
     const params = new URLSearchParams(window.location.search);
     const nomeBusca = (params.get('nome') || params.get('biblioteca') || '').trim();
+    const buscaInicial = (params.get('busca') || '').trim();
 
-    function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
+    let bibliotecaAtual = null;
+    let tipoFiltro = '';
+    let debounceTimer = null;
 
     function localizarBiblioteca(nome) {
       const matriz = CONFIG.BIBLIOTECAS_TERAPEUTICAS?.matriz || [];
@@ -121,16 +165,11 @@
       return filtrados[0] || null;
     }
 
-    function especialidadeRelacionada(nomeBiblioteca) {
-      const esp = CONFIG.ESPECIALIDADES || [];
-      return esp.find((e) => Catalogo.bibliotecaCorresponde({ especialidade: nomeBiblioteca }, [e.nome]))
-        || esp.find((e) => Catalogo.normalizarTexto(e.nome).includes(Catalogo.normalizarTexto(nomeBiblioteca).split(' ')[0]));
-    }
-
-    function renderizar(item) {
+    function renderizarHero(item) {
       document.title = `${item.especialidade} — Integrativo.App`;
       document.getElementById('hero').style.display = 'block';
       document.getElementById('cardBase').style.display = 'block';
+      document.getElementById('cardConteudo').style.display = 'block';
       document.getElementById('heroCategoria').textContent = item.categoria;
       document.getElementById('heroTitulo').textContent = item.especialidade;
       document.getElementById('heroResumo').textContent = item.base;
@@ -138,44 +177,63 @@
 
       const fontes = String(item.fontes || '').split(';').map((f) => f.trim()).filter(Boolean);
       document.getElementById('listaFontes').innerHTML = fontes.length
-        ? fontes.map((f) => `<span class="fonte-chip">${escapeHtml(f)}</span>`).join('')
+        ? fontes.map((f) => `<span class="fonte-chip">${BibliotecasUI.escapeHtml(f)}</span>`).join('')
         : '<span class="fonte-chip">Fontes em curadoria</span>';
+    }
 
-      const rel = especialidadeRelacionada(item.especialidade);
-      if (rel) {
-        const link = document.getElementById('linkEspecialidade');
-        link.style.display = 'inline-flex';
-        link.href = `lista-especialidades.html?especialidade=${encodeURIComponent(rel.nome)}`;
+    async function carregarConteudo() {
+      if (!bibliotecaAtual) return;
+      const busca = document.getElementById('inputBusca').value.trim();
+      const area = document.getElementById('areaConteudo');
+      area.innerHTML = '<p class="loading">Buscando…</p>';
+
+      try {
+        const dados = await BibliotecasUI.carregarConteudo(
+          CONFIG.API_URL, token, bibliotecaAtual.especialidade,
+          { busca: busca, tipo: tipoFiltro }
+        );
+
+        document.getElementById('filtrosTipo').innerHTML =
+          BibliotecasUI.renderFiltrosTipos(dados.tipos_disponiveis, tipoFiltro);
+
+        document.getElementById('filtrosTipo').querySelectorAll('.filtro-tipo').forEach((btn) => {
+          btn.onclick = function () {
+            tipoFiltro = btn.getAttribute('data-tipo') || '';
+            document.getElementById('filtrosTipo').querySelectorAll('.filtro-tipo').forEach((b) => {
+              b.classList.toggle('ativo', b === btn);
+            });
+            carregarConteudo();
+          };
+        });
+
+        const vinc = (dados.especialidades_vinculadas || []).map((e) => e.nome).join(', ');
+        document.getElementById('statsConteudo').textContent =
+          `${dados.total} registro(s) encontrado(s)` +
+          (vinc ? ` · Especialidades: ${vinc}` : '') +
+          (busca ? ` · Busca: “${busca}”` : '');
+
+        area.innerHTML = BibliotecasUI.renderSecoes(dados.secoes);
+      } catch (err) {
+        area.innerHTML = `<p class="conteudo-vazio">${BibliotecasUI.escapeHtml(err.message)}</p>`;
       }
     }
 
-    async function carregarRegistros(termo) {
-      try {
-        const r = await fetch(
-          `${CONFIG.API_URL}/prescricoes/banco-terapeutico?busca=${encodeURIComponent(termo)}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        if (!r.ok) return;
-        const itens = await r.json();
-        if (!Array.isArray(itens) || !itens.length) return;
-        document.getElementById('cardRegistros').style.display = 'block';
-        document.getElementById('registros').innerHTML = itens.map((item) => `
-          <div class="registro-item">
-            <strong>${escapeHtml(item.nome)}</strong>
-            <small>${escapeHtml(item.especialidade_nome || '')} · ${escapeHtml(item.tipo || 'registro')}</small>
-            ${item.descricao ? `<small>${escapeHtml(item.descricao)}</small>` : ''}
-            ${item.contraindicacoes ? `<small><b>Atenção:</b> ${escapeHtml(item.contraindicacoes)}</small>` : ''}
-          </div>
-        `).join('');
-      } catch (_) { /* banco opcional */ }
-    }
+    document.getElementById('btnBusca').onclick = carregarConteudo;
+    document.getElementById('inputBusca').addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(carregarConteudo, 400);
+    });
+    document.getElementById('inputBusca').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); carregarConteudo(); }
+    });
 
-    const biblioteca = localizarBiblioteca(nomeBusca);
-    if (!biblioteca) {
+    bibliotecaAtual = localizarBiblioteca(nomeBusca);
+    if (!bibliotecaAtual) {
       document.getElementById('cardVazio').style.display = 'block';
     } else {
-      renderizar(biblioteca);
-      carregarRegistros(biblioteca.especialidade.split(' ')[0]);
+      renderizarHero(bibliotecaAtual);
+      if (buscaInicial) document.getElementById('inputBusca').value = buscaInicial;
+      carregarConteudo();
     }
   </script>
 </body>
