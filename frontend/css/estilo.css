@@ -10,12 +10,26 @@
   --texto-suave: #64748B;
   --branco: #FFFFFF;
   --laranja-premium: #F59E0B;
+
+  /* Aliases legados (páginas institucionais e painéis antigos) */
+  --azul-escuro: var(--azul-profundo);
+  --azul-claro: var(--verde-menta);
+  --texto-medio: var(--texto-suave);
+  --laranja: var(--laranja-premium);
+  --laranja-claro: #FEF3C7;
+  --raio-borda: var(--raio-padrao);
+  --sombra: var(--sombra-suave);
   
   /* Efeitos e Bordas */
   --sombra-suave: 0 4px 20px rgba(0, 0, 0, 0.03);
   --sombra-elevada: 0 10px 30px rgba(0, 0, 0, 0.06);
   --raio-padrao: 16px;
   --transicao: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Espaçamento compacto entre menu e conteúdo */
+  --espaco-apos-nav: 16px;
+  --secao-padding-y: 40px;
+  --secao-padding-x: 24px;
 }
 
 * { 
@@ -255,7 +269,7 @@ html.i18n-traduzindo body {
 }
 
 /* Seções */
-.secao { padding: 100px 60px; }
+.secao { padding: var(--secao-padding-y) var(--secao-padding-x); }
 .secao-branca { background: var(--branco); }
 .secao-menta { background: var(--verde-menta); }
 .container { max-width: 1200px; margin: 0 auto; }
@@ -284,8 +298,57 @@ h2 {
 .subtitulo { 
   font-size: 18px; 
   color: var(--texto-suave); 
-  margin-bottom: 60px; 
+  margin-bottom: 32px; 
   max-width: 700px;
+}
+
+/* Páginas institucionais logo abaixo do menu */
+.pagina-institucional {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 40px;
+  padding: 28px 32px;
+  background: var(--branco);
+  border-radius: 12px;
+  box-shadow: var(--sombra-suave);
+}
+
+.pagina-institucional-wide {
+  max-width: 900px;
+}
+
+.pagina-institucional h1,
+.pagina-institucional h2 {
+  color: var(--azul-profundo);
+}
+
+.pagina-institucional h1 {
+  margin-bottom: 8px;
+}
+
+.pagina-institucional h2 {
+  margin-top: 1.4em;
+}
+
+.pagina-institucional .meta {
+  color: var(--texto-suave);
+  margin-bottom: 30px;
+}
+
+.pagina-institucional .rodape-pagina {
+  margin-top: 30px;
+  color: var(--texto-suave);
+}
+
+/* Um único espaço após o menu: só o irmão direto do nav */
+body > nav.navbar + * {
+  margin-top: var(--espaco-apos-nav);
+}
+
+body > nav.navbar + header.hero-pro,
+body > nav.navbar + section.hero {
+  margin-top: 0;
 }
 
 /* Cards com Design Moderno */
@@ -311,7 +374,7 @@ h2 {
 
 /* Vitrine de bibliotecas terapêuticas */
 .bibliotecas-secao {
-  padding: 90px 24px;
+  padding: 32px 24px 48px;
   background:
     radial-gradient(circle at top left, rgba(16, 185, 129, 0.10), transparent 34%),
     linear-gradient(135deg, #0F172A 0%, #123B54 56%, #0E9F6E 130%);
@@ -606,7 +669,7 @@ footer a:hover { color: var(--verde-destaque); }
   .nav-lang { max-width: 100%; justify-content: center; }
   .navbar .menu a,
   .navbar .nav-links a { margin: 5px 8px; }
-  .secao { padding: 60px 24px; }
+  .secao { padding: 36px 20px; }
   h2 { font-size: 28px; }
   .bibliotecas-head { grid-template-columns: 1fr; }
   .bibliotecas-metricas { min-width: 0; width: 100%; max-width: 360px; grid-template-columns: repeat(2, 1fr); }

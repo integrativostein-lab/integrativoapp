@@ -54,13 +54,7 @@
     if (!actions) return;
 
     const entrar = actions.querySelector('.nav-entrar');
-    if (entrar) {
-      entrar.href = urlPainelNav(usuario);
-      entrar.textContent = usuario.tipo === 'paciente' ? 'Meu painel' : 'Painel';
-      entrar.classList.remove('btn-primario');
-      entrar.classList.add('btn-secundario');
-      entrar.removeAttribute('data-i18n');
-    }
+    if (entrar) entrar.remove();
 
     if (!actions.querySelector('.nav-sair')) {
       const sair = document.createElement('button');

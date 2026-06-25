@@ -3,7 +3,7 @@
  */
 const PLANOS_MENSAIS = {
   freemium: 0,
-  guardioes_floresta: 10,
+  guardioes_floresta: 0,
   pro: 99.9,
   clinic: 799,
   enterprise: null

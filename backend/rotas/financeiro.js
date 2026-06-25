@@ -7,6 +7,7 @@ const { verificarRegistroABRATH } = require('../servicos/abrath');
 const { estornarPagamento } = require('../config/stripe');
 const notificacoes = require('../servicos/notificacoes');
 const planosConfig = require('../config/planos');
+const { promoverAssinanteComoAdmin } = require('../utils/acesso-roles');
 
 // ============================================
 // CONSTANTES DE NEGÓCIO (planos mensais — ver backend/config/planos.js)
@@ -271,19 +272,22 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
           : 'Plano inválido'
       });
     }
-    if (!cartao_obrigatorio_confirmado || !cartao_final4) {
-      return res.status(400).json({ erro: 'Cartão de crédito obrigatório para cobrança automática de teleconsultas.' });
-    }
-    await db.query(
-      'UPDATE usuarios SET cartao_final4 = $1, cartao_obrigatorio_confirmado = true, cartao_atualizado_em = NOW() WHERE id = $2',
-      [String(cartao_final4).slice(-4), req.usuario.id]
-    ).catch(() => {});
-
     const valorBase = arredondarMoeda(valorMensalPlano(plano));
+    const planoGratuito = valorBase === 0;
     let valor = valorBase;
     let vitalicio = false;
     let descontoAplicado = 0;
     const tipoCiclo = 'mensal';
+
+    if (!planoGratuito) {
+      if (!cartao_obrigatorio_confirmado || !cartao_final4) {
+        return res.status(400).json({ erro: 'Cartão de crédito obrigatório para ativar planos pagos.' });
+      }
+      await db.query(
+        'UPDATE usuarios SET cartao_final4 = $1, cartao_obrigatorio_confirmado = true, cartao_atualizado_em = NOW() WHERE id = $2',
+        [String(cartao_final4).slice(-4), req.usuario.id]
+      ).catch(() => {});
+    }
 
     const perfil = await db.query(
       'SELECT nome, registro_abrath FROM usuarios WHERE id = $1',
@@ -316,7 +320,7 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     }
 
     const aplicarDescontoPix = !PLANOS_SEM_DESCONTO_PIX.includes(plano);
-    const calc = plano === 'freemium'
+    const calc = planoGratuito
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
       : vitalicio
       ? { parcelas: 1, valorParcela: 0, valorTotal: 0, juros: 0, desconto_pix: 0 }
@@ -325,8 +329,8 @@ router.post('/renovar-assinatura', autenticar, async (req, res) => {
     const dataExpiracao = calcularDataExpiracao({ vitalicio, tipoCiclo });
 
     const gatewayResposta = {
-      cartao_final4: cartao_final4 || null,
-      cartao_obrigatorio_confirmado: !!cartao_obrigatorio_confirmado,
+      cartao_final4: planoGratuito ? null : (cartao_final4 || null),
+      cartao_obrigatorio_confirmado: planoGratuito ? false : !!cartao_obrigatorio_confirmado,
       observacao: gateway_id ? 'Pagamento vinculado ao gateway.' : 'Pagamento registrado sem identificador de gateway; estorno automático depende da administradora configurada.'
     };
 
@@ -397,13 +401,25 @@ router.post('/validar-assinatura-codigo', autenticar, async (req, res) => {
       [ass.plano, assinaturaAtiva, ass.data_expiracao, req.usuario.id]
     );
 
+    const promovido = await promoverAssinanteComoAdmin(db, req.usuario.id, ass.plano);
+    const perfilAtual = await db.query('SELECT id, nome, email, tipo, plano FROM usuarios WHERE id = $1', [req.usuario.id]);
+    const usuarioAtual = perfilAtual.rows[0] || null;
+
     const usuario = await buscarUsuarioContato(req.usuario.id);
     await notificacoes.enviarBoasVindasAssinatura({ usuario });
 
     res.json({
       mensagem: 'Assinatura validada. Seja bem-vindo(a) ao Integrativo.App!',
       plano: ass.plano,
-      assinatura_ativa: !!assinaturaAtiva
+      assinatura_ativa: !!assinaturaAtiva,
+      usuario: usuarioAtual ? {
+        id: usuarioAtual.id,
+        nome: usuarioAtual.nome,
+        email: usuarioAtual.email,
+        tipo: usuarioAtual.tipo,
+        plano: usuarioAtual.plano
+      } : undefined,
+      promovido_admin: !!promovido
     });
   } catch (e) {
     console.error('[financeiro/validar-assinatura-codigo]', e.message);

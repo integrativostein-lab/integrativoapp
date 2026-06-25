@@ -14,7 +14,7 @@
   <style>
     .checkout-container {
       max-width: 1000px;
-      margin: 60px auto;
+      margin: 0 auto 48px;
       padding: 0 20px;
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -342,8 +342,8 @@
         </div>
 
         <div class="desconto-pix" id="descricaoPix">
-          <strong>Plano Freemium sem cobrança de assinatura.</strong><br>
-          O cartão é usado apenas para cobrança automática de teleconsultas e serviços utilizados.
+          <strong>Plano sem cobrança de assinatura.</strong><br>
+          Ative com seus dados básicos — cartão de crédito não é necessário.
         </div>
 
         <div class="garantia">
@@ -354,7 +354,7 @@
 
       <!-- FORMULÁRIO DE PAGAMENTO -->
       <div class="checkout-formulario">
-        <h2>Informações de Pagamento</h2>
+        <h2 id="tituloCheckout">Informações de Pagamento</h2>
 
         <form id="formCheckout">
           <!-- SELEÇÃO DE PLANO -->
@@ -366,7 +366,7 @@
           </div>
 
           <!-- OPÇÕES DE PAGAMENTO -->
-          <div class="form-group">
+          <div class="form-group" id="grupoFormaPagamento">
             <label>Forma de Pagamento</label>
             <div class="opcoes-pagamento">
               <label class="opcao-pagamento selecionado">
@@ -384,9 +384,9 @@
             </div>
           </div>
 
-          <div class="cartao-obrigatorio-info">
-            <strong>Cartão de crédito obrigatório para ativação profissional.</strong><br>
-            Mesmo no Freemium ou em assinatura paga por PIX, o cartão fica vinculado para cobrança automática das teleconsultas, consultas, multas de cancelamento/reagendamento e serviços efetivamente utilizados. A assinatura Freemium não gera cobrança mensal. Pagamento com cartão é sempre em <strong>uma única parcela</strong>.
+          <div class="cartao-obrigatorio-info" id="avisoCartaoObrigatorio" style="display:none;">
+            <strong>Cartão de crédito para planos pagos.</strong><br>
+            Nos planos Pro, Clinic e Enterprise, o cartão fica vinculado para renovação da assinatura e cobranças acordadas. Pagamento com cartão é sempre em <strong>uma única parcela</strong>.
           </div>
 
           <!-- DADOS DO PAGADOR -->
@@ -453,6 +453,7 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/auth-sessao.js"></script>
   <script src="js/i18n.js"></script>
   <script>
     const PLANOS_CHECKOUT = ['freemium', 'guardioes_floresta', 'pro', 'clinic', 'enterprise'];
@@ -490,6 +491,17 @@
     const JUROS_CARTAO = 1.0199; // legado — assinatura não parcela
     let assinaturaPendenteId = null;
     let planoPendente = null;
+
+    function redirecionarPainelPosCheckout(resposta, planoFallback) {
+      const patch = { plano: (resposta && resposta.plano) || planoFallback };
+      if (resposta && resposta.usuario) {
+        AuthSessao.atualizarUsuarioLocal(resposta.usuario);
+        window.location.href = AuthSessao.urlPainel(resposta.usuario);
+        return;
+      }
+      const usuario = AuthSessao.atualizarUsuarioLocal(patch);
+      window.location.href = AuthSessao.urlPainel(usuario);
+    }
 
     function arredondarMoeda(valor) {
       return Math.round(Number(valor || 0) * 100) / 100;
@@ -544,6 +556,26 @@
       atualizarPagamento();
     }
 
+    function planoSemCobranca(planoKey) {
+      const cfg = CONFIG.PLANOS[planoKey];
+      if (!cfg || cfg.sob_consulta) return false;
+      return !valorPlano(planoKey);
+    }
+
+    function alternarCamposPagamento(semCobranca) {
+      const display = semCobranca ? 'none' : '';
+      document.getElementById('grupoFormaPagamento').style.display = display;
+      document.getElementById('avisoCartaoObrigatorio').style.display = semCobranca ? 'none' : 'block';
+      document.getElementById('dadosCartao').style.display = display;
+      document.getElementById('tituloCheckout').textContent = semCobranca
+        ? 'Ativação do plano'
+        : 'Informações de Pagamento';
+      ['numeroCartao', 'validade', 'cvv'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.required = !semCobranca;
+      });
+    }
+
     function atualizarPagamento() {
       const plano = document.getElementById('selectPlano').value;
       const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
@@ -554,25 +586,27 @@
       const planoConfig = CONFIG.PLANOS[plano];
       const calc = calcularValorComDescontos(valor, plano, pagamento, planoConfig);
 
-      document.getElementById('linhaDescontoAbrath').style.display = calc.descontoAbrath > 0 ? 'flex' : 'none';
-      document.getElementById('valorDescontoAbrath').textContent = `-R$ ${fmtBRL(calc.descontoAbrath)}`;
-
-      if (valor === 0) {
+      if (planoSemCobranca(plano)) {
+        alternarCamposPagamento(true);
         document.getElementById('linhaDesconto').style.display = 'none';
+        document.getElementById('linhaDescontoAbrath').style.display = 'none';
         document.getElementById('descricaoPix').style.display = 'block';
-        document.getElementById('descricaoPix').innerHTML = `<strong>Plano Freemium sem cobrança de assinatura.</strong><br>O cartão é obrigatório apenas para cobrança automática de teleconsultas e serviços utilizados.`;
+        document.getElementById('descricaoPix').innerHTML = `<strong>${planoConfig.nome} — sem cobrança de assinatura.</strong><br>Ative com seus dados básicos. Cartão de crédito não é necessário.`;
         document.getElementById('valorTotal').textContent = 'R$ 0,00';
-        document.getElementById('btnPagar').textContent = 'Ativar Freemium — R$ 0,00';
+        document.getElementById('btnPagar').textContent = `Ativar ${planoConfig.nome} — R$ 0,00`;
         return;
       }
+
+      alternarCamposPagamento(false);
+
+      document.getElementById('linhaDescontoAbrath').style.display = calc.descontoAbrath > 0 ? 'flex' : 'none';
+      document.getElementById('valorDescontoAbrath').textContent = `-R$ ${fmtBRL(calc.descontoAbrath)}`;
 
       if (pagamento === 'pix') {
         document.getElementById('linhaDesconto').style.display = calc.descontoPix > 0 ? 'flex' : 'none';
         document.getElementById('valorDesconto').textContent = `-R$ ${fmtBRL(calc.descontoPix)}`;
         document.getElementById('descricaoPix').style.display = 'block';
-        document.getElementById('descricaoPix').innerHTML = planoConfig?.plano_social
-          ? `<strong>Condição social Guardiões da Floresta</strong><br>Plano mensal por R$ ${fmtBRL(valor)}: anamnese, prontuário, recomendações clínicas auxiliares, sem prescrição eletrônica e <strong>sem comissão</strong> sobre consultas. ${planoConfig.teleconsultas_mes} teleconsultas/mês · ${planoConfig.max_pacientes} pacientes · ${planoConfig.especialidades_inclusas} especialidades.`
-          : `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${fmtBRL(calc.valorFinal)}${calc.temAbrath ? ' (já inclui desconto ABRATH de 8%)' : ''}`;
+        document.getElementById('descricaoPix').innerHTML = `<strong>💰 Economize 5% pagando com PIX!</strong><br>Pagamento à vista: R$ ${fmtBRL(calc.valorFinal)}${calc.temAbrath ? ' (já inclui desconto ABRATH de 8%)' : ''}`;
       } else {
         document.getElementById('linhaDesconto').style.display = 'none';
         document.getElementById('descricaoPix').style.display = 'block';
@@ -609,21 +643,22 @@
       }
 
       const plano = document.getElementById('selectPlano').value;
-      const pagamento = document.querySelector('input[name="pagamento"]:checked').value;
+      const pagamento = document.querySelector('input[name="pagamento"]:checked')?.value || 'pix';
+      const semCobranca = planoSemCobranca(plano);
       const numeroCartao = document.getElementById('numeroCartao').value.replace(/\D/g, '');
       const validade = document.getElementById('validade').value.trim();
       const cvv = document.getElementById('cvv').value.trim();
-      if (!numeroCartao || numeroCartao.length < 13 || !validade || !cvv) {
-        alert('Informe os dados do cartão de crédito obrigatório para cobrança das teleconsultas.');
+      if (!semCobranca && (!numeroCartao || numeroCartao.length < 13 || !validade || !cvv)) {
+        alert('Informe os dados do cartão de crédito para ativar o plano pago.');
         return;
       }
 
       const dados = {
         plano,
-        forma_pagamento: valorPlano(plano) === 0 ? 'cartao_cadastro' : pagamento,
+        forma_pagamento: semCobranca ? 'gratuito' : pagamento,
         parcelas: 1,
-        cartao_obrigatorio_confirmado: true,
-        cartao_final4: numeroCartao.slice(-4),
+        cartao_obrigatorio_confirmado: !semCobranca,
+        cartao_final4: semCobranca ? null : numeroCartao.slice(-4),
         nome_titular: document.getElementById('nomeCompleto').value,
         email: document.getElementById('emailPagador').value,
         cpf: document.getElementById('cpf').value
@@ -651,10 +686,7 @@
           return;
         }
 
-        const usuarioAtual = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
-        localStorage.setItem('integra_usuario', JSON.stringify({ ...usuarioAtual, plano: resposta.plano || plano }));
-        alert(resposta.mensagem || 'Plano atualizado com sucesso!');
-        window.location.href = 'painel-terapeuta.html';
+        redirecionarPainelPosCheckout(resposta, plano);
       } catch (error) {
         console.error('Erro:', error);
         alert(error.message || 'Erro ao conectar com o servidor.');
@@ -679,10 +711,8 @@
         const resposta = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(resposta.erro || 'Erro ao validar código');
 
-        const usuarioAtual = JSON.parse(localStorage.getItem('integra_usuario') || '{}');
-        localStorage.setItem('integra_usuario', JSON.stringify({ ...usuarioAtual, plano: resposta.plano || planoPendente }));
         alert(resposta.mensagem || 'Assinatura ativada com sucesso!');
-        window.location.href = 'painel-terapeuta.html';
+        redirecionarPainelPosCheckout(resposta, planoPendente);
       } catch (error) {
         console.error('Erro:', error);
         alert(error.message || 'Erro ao validar código.');

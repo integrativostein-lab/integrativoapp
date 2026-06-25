@@ -8,6 +8,7 @@
   <title>Cadastro profissional | Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="css/cadastro-profissional.css">
+  <link rel="stylesheet" href="css/login-social.css">
 </head>
 <body>
   <nav class="navbar" data-nav="publico" data-nav-ativo="profissionais">
@@ -35,6 +36,8 @@
       </div>
 
       <div id="msg-fluxo" class="msg-fluxo" role="alert"></div>
+
+      <div id="login-social-prof" style="margin-bottom:8px;"></div>
 
       <!-- Dados pessoais -->
       <div class="form-secao">
@@ -184,8 +187,8 @@
         </div>
       </div>
 
-      <!-- Cobrança -->
-      <div class="form-secao">
+      <!-- Cobrança (apenas planos pagos) -->
+      <div class="form-secao" id="secaoCobranca">
         <h2>Cobrança e assinatura</h2>
         <label class="checkbox-row">
           <input type="checkbox" id="renovacaoAutomatica" checked>
@@ -235,13 +238,18 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/auth-sessao.js"></script>
   <script src="js/nav-publico.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/login-social.js"></script>
   <script src="js/cadastro-profissional-flow.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const plano = CadastroProfissionalFlow.obterPlanoUrl();
       document.getElementById('linkVoltarLgpd').href = `lgpd-profissional.html?plano=${encodeURIComponent(plano)}`;
+      if (window.LoginSocial) {
+        LoginSocial.renderizar('#login-social-prof', { acao: 'cadastro', tipo: 'profissional', plano });
+      }
       CadastroProfissionalFlow.initCadastroProfissional();
     });
   </script>

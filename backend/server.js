@@ -110,6 +110,7 @@ app.get('/api/config/publica', (req, res) => {
 // ============================================
 
 const authRoutes = require('./rotas/auth');
+const oauthSocialRoutes = require('./rotas/oauth-social');
 const usuarioRoutes = require('./rotas/usuarios');
 const agendamentoRoutes = require('./rotas/agendamentos');
 const profissionalRoutes = require('./rotas/profissionais');
@@ -150,6 +151,7 @@ const { processarAssinaturasExpiradas } = require('./servicos/assinaturas-ciclo'
 // ATIVAÇÃO DAS ROTAS
 // ============================================
 
+app.use('/api/auth/oauth', oauthSocialRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/formularios', formulariosRoutes);
 app.use('/api/usuarios', usuarioRoutes);

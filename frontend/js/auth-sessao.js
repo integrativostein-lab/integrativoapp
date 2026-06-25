@@ -34,6 +34,13 @@
     return mapa[u.tipo] || 'painel-terapeuta.html';
   }
 
+  function atualizarUsuarioLocal(patch) {
+    const atual = obterUsuario() || {};
+    const merged = { ...atual, ...patch };
+    localStorage.setItem(USER_KEY, JSON.stringify(merged));
+    return merged;
+  }
+
   function limparSessaoLocal() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -96,13 +103,7 @@
 
     const usuario = obterUsuario();
     const entrar = actions.querySelector('.nav-entrar');
-    if (entrar) {
-      entrar.href = urlPainel(usuario);
-      entrar.textContent = rotuloPainel(usuario);
-      entrar.classList.remove('btn-primario');
-      entrar.classList.add('btn-secundario');
-      entrar.removeAttribute('data-i18n');
-    }
+    if (entrar) entrar.remove();
 
     let sair = actions.querySelector('.nav-sair');
     if (!sair) {
@@ -132,6 +133,7 @@
     validarTokenRemoto,
     redirecionarSeLogado,
     rotuloPainel,
-    aplicarNavAutenticado
+    aplicarNavAutenticado,
+    atualizarUsuarioLocal
   };
 })(window);

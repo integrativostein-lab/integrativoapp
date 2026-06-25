@@ -107,8 +107,8 @@
   border-radius: 28px;
   box-shadow: var(--sombra-elevada);
   color: #fff;
-  margin-top: 28px;
-  padding: 42px;
+  margin-top: 0;
+  padding: 32px;
 }
 
 .fluxo-hero .tag {

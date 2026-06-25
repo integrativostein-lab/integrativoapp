@@ -11,8 +11,9 @@
   <meta property="og:type" content="website">
   <title>Login — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/login-social.css">
   <style>
-    .form-login { max-width: 420px; margin: 24px auto 48px; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
+    .form-login { max-width: 420px; margin: 0 auto 48px; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
     .form-login h2 { text-align: center; margin-bottom: 24px; }
     .msg { padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; display: none; }
     .msg.sucesso { background: #C6F6D5; color: #22543D; display: block; }
@@ -46,6 +47,8 @@
     </div>
 
     <div id="msg" class="msg"></div>
+
+    <div id="login-social"></div>
     
     <div class="form-grupo">
       <label>Email</label>
@@ -90,10 +93,15 @@
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
   <script src="js/auth-sessao.js"></script>
+  <script src="js/login-social.js"></script>
   <script src="js/nav-publico.js"></script>
   <script src="js/i18n.js"></script>
   <script>
     AuthSessao.redirecionarSeLogado();
+
+    if (window.LoginSocial) {
+      LoginSocial.renderizar('#login-social', { acao: 'login', tipo: 'paciente' });
+    }
 
     if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
       document.getElementById('modo-teste').style.display = 'block';
@@ -222,14 +230,7 @@
           msg.textContent = '✅ Login realizado! Redirecionando...';
           
           setTimeout(function() {
-            if (d.usuario.tipo === 'paciente') window.location.href = 'painel-paciente.html';
-            else if (d.usuario.tipo === 'super_admin') window.location.href = 'painel-criador.html';
-            else if (d.usuario.tipo === 'admin') window.location.href = 'painel-admin.html';
-            else if (d.usuario.tipo === 'rh') window.location.href = 'painel-rh.html';
-            else if (d.usuario.tipo === 'recepcionista') window.location.href = 'painel-recepcao.html';
-            else if (d.usuario.tipo === 'financeiro') window.location.href = 'painel-financeiro.html';
-            else if (d.usuario.tipo === 'contador') window.location.href = 'painel-contador.html';
-            else window.location.href = 'painel-terapeuta.html';
+            window.location.href = AuthSessao.urlPainel(d.usuario);
           }, 800);
         } else {
           msg.className = 'msg erro';

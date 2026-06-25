@@ -97,7 +97,8 @@ async function configurarProducao(render) {
     AUDITORIA_LGPD_ATIVA: 'true',
     AUDITORIA_LGPD_RETENCAO_DIAS: '365',
     FHIR_BASE_URL: `${apiRoot}/api/fhir`,
-    TISS_BASE_URL: `${apiRoot}/api/tiss`
+    TISS_BASE_URL: `${apiRoot}/api/tiss`,
+    RENDER_URL: apiRoot
   };
 
   if (process.env.PROD_DATABASE_URL) {

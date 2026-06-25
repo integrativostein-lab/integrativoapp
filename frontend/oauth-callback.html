@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrando… — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .oauth-callback { max-width: 420px; margin: 48px auto; padding: 32px; text-align: center; background: var(--branco); border-radius: var(--raio-padrao); box-shadow: var(--sombra-suave); }
+  </style>
+</head>
+<body>
+  <div class="oauth-callback">
+    <h2>Conectando…</h2>
+    <p id="status" style="color:var(--texto-suave);">Aguarde um instante.</p>
+  </div>
+  <script src="js/config.js"></script>
+  <script src="js/auth-sessao.js"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var status = document.getElementById('status');
+
+      if (params.get('erro')) {
+        status.textContent = params.get('erro');
+        setTimeout(function () { window.location.href = 'login.html'; }, 3500);
+        return;
+      }
+
+      var token = params.get('token');
+      var usuarioB64 = params.get('usuario');
+      if (!token || !usuarioB64) {
+        status.textContent = 'Resposta de login incompleta.';
+        setTimeout(function () { window.location.href = 'login.html'; }, 2500);
+        return;
+      }
+
+      try {
+        var usuario = JSON.parse(atob(usuarioB64));
+        localStorage.setItem('integra_token', token);
+        localStorage.setItem('integra_usuario', JSON.stringify(usuario));
+        status.textContent = 'Login realizado! Redirecionando…';
+
+        if (params.get('completar_prof') === '1') {
+          var plano = params.get('plano') || 'freemium';
+          setTimeout(function () {
+            window.location.href = 'cadastro-profissional.html?plano=' + encodeURIComponent(plano) + '&oauth=1';
+          }, 600);
+          return;
+        }
+
+        setTimeout(function () {
+          window.location.href = AuthSessao.urlPainel(usuario);
+        }, 600);
+      } catch (e) {
+        status.textContent = 'Não foi possível concluir o login.';
+        setTimeout(function () { window.location.href = 'login.html'; }, 2500);
+      }
+    })();
+  </script>
+</body>
+</html>

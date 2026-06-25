@@ -115,8 +115,8 @@ const CONFIG = {
     },
     guardioes_floresta: {
       nome: 'Guardiões da Floresta',
-      valor_mensal: 10,
-      valor_anual: 120,
+      valor_mensal: 0,
+      valor_anual: 0,
       descricao: 'Reconhecimento público · condição social',
       max_profissionais: 1,
       teleconsultas_mes: 30,
@@ -141,6 +141,7 @@ const CONFIG = {
         '3 especialidades',
         'Anamnese e prontuário',
         'Recomendações clínicas auxiliares (bibliotecas terapêuticas)',
+        'Sem cobrança de assinatura',
         'Sem comissão sobre consultas',
         'Sem prescrição eletrônica',
         'Mediante reconhecimento público Guardiões da Floresta'

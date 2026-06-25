@@ -12,6 +12,7 @@
   <title>Cadastro — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="css/consentimento-lgpd.css">
+  <link rel="stylesheet" href="css/login-social.css">
   <style>
     .form-cadastro { max-width: 500px; margin: 40px auto; background: var(--branco); padding: 36px; border-radius: var(--raio-borda); box-shadow: var(--sombra); }
     .form-cadastro h2 { text-align: center; margin-bottom: 24px; }
@@ -37,6 +38,8 @@
   <div class="form-cadastro">
     <h2>Criar Conta</h2>
     <div id="msg" class="msg"></div>
+
+    <div id="login-social"></div>
     
     <div class="form-grupo">
       <label>Nome Completo *</label>
@@ -91,6 +94,7 @@
   <script src="js/nav-publico.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/consentimento-lgpd.js"></script>
+  <script src="js/login-social.js"></script>
   <script>
     (function redirecionarProfissionalParaLgpd() {
       if (CONFIG.AMBIENTE_TESTE) return;
@@ -106,6 +110,12 @@
       var btn = document.querySelector('.olhinho');
       if (s.type === 'password') { s.type = 'text'; btn.textContent = '🙈'; }
       else { s.type = 'password'; btn.textContent = '👁️'; }
+    }
+
+    function renderSocialCadastro() {
+      if (!window.LoginSocial) return;
+      const tipo = document.getElementById('tipo').value || 'paciente';
+      LoginSocial.renderizar('#login-social', { acao: 'cadastro', tipo });
     }
 
     document.getElementById('tipo').addEventListener('change', function() {
@@ -139,6 +149,7 @@
     }
 
     renderConsentimentos();
+    renderSocialCadastro();
 
     async function cadastrar() {
       var msg = document.getElementById('msg');

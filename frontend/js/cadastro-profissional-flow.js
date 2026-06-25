@@ -106,10 +106,16 @@
     return base.split('').sort(() => Math.random() - 0.5).join('');
   }
 
+  function planoSemCobranca(planoKey) {
+    const cfg = obterPlanoConfig(planoKey);
+    if (!cfg || cfg.sob_consulta) return false;
+    return !cfg.valor_mensal;
+  }
+
   function calcularPrecoExibicao(planoKey, opts) {
     const cfg = obterPlanoConfig(planoKey);
     if (!cfg || cfg.sob_consulta) return { texto: 'Sob consulta', descontos: [] };
-    if (!cfg.valor_mensal) return { texto: 'Grátis', descontos: ['Sem comissão sobre consultas'] };
+    if (!cfg.valor_mensal) return { texto: 'Grátis', descontos: ['Sem cobrança de assinatura', 'Sem comissão sobre consultas'] };
 
     let valor = arredondarMoeda(cfg.valor_mensal);
     const descontos = [];
@@ -219,6 +225,8 @@
     }
     const linkLgpd = document.getElementById('linkVoltarLgpd');
     if (linkLgpd) linkLgpd.style.display = lgpdIgnorado() ? 'none' : '';
+    const secCobranca = document.getElementById('secaoCobranca');
+    if (secCobranca) secCobranca.style.display = planoSemCobranca(plano) ? 'none' : '';
     atualizarResumoPreco();
 
     const senhaEl = document.getElementById('senha');
@@ -367,7 +375,9 @@
       }
 
       const modalidade = document.querySelector('input[name="modalidadeAtendimento"]:checked')?.value || 'ambos';
-      const renovacaoAutomatica = document.getElementById('renovacaoAutomatica').checked;
+      const renovacaoAutomatica = planoSemCobranca(plano)
+        ? false
+        : document.getElementById('renovacaoAutomatica').checked;
       const lgpd = sessao.lgpd || global.ConsentimentoLGPD.payloadCadastroAlfa('profissional');
 
       btn.disabled = true;
@@ -417,8 +427,11 @@
         localStorage.setItem('integra_usuario', JSON.stringify(d.usuario));
         limparSessao();
 
-        if (plano === 'freemium') {
-          window.location.href = 'painel-terapeuta.html';
+        if (planoSemCobranca(plano)) {
+          const destino = global.AuthSessao?.urlPainel
+            ? global.AuthSessao.urlPainel(d.usuario)
+            : (d.usuario?.tipo === 'admin' ? 'painel-admin.html' : 'painel-terapeuta.html');
+          window.location.href = destino;
         } else {
           window.location.href = `checkout.html?plano=${encodeURIComponent(plano)}&cadastro=1`;
         }

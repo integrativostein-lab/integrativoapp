@@ -14,6 +14,7 @@ const {
 const { garantirValoresPadrao } = require('../utils/profissional-valores');
 const { normalizarPlano } = require('../config/planos');
 const { autenticar } = require('../middlewares/autenticar');
+const { tipoInicialProfissional } = require('../utils/acesso-roles');
 
 const VERSAO_CONSENTIMENTO_PESQUISA = 'pesquisa-clinica-anonimizada-2026-06-13';
 const VERSAO_CONSENTIMENTO_LGPD = '2026-06-20';
@@ -713,10 +714,12 @@ router.post('/cadastro-profissional', async (req, res) => {
     const especialidadesJson = JSON.stringify(bibliotecasAutorizadas);
     const adicionaisAutorizadasJson = JSON.stringify(adicionais);
 
+    const tipoConta = tipoInicialProfissional(planoInicial);
+
     const ins = await db.query(
       `INSERT INTO usuarios (nome, email, senha, tipo, telefone, especialidades, atende_online, atende_presencial, lgpd_consentimento, lgpd_data_consentimento, plano)
-       VALUES ($1, $2, $3, 'profissional', $4, $5, $6, $7, $8, NOW(), $9) RETURNING id`,
-      [nome, email, hash, telefone || null, especialidadesJson, atendeOnline, atendePresencial, (mapaConsentimentos.termos_privacidade ? 1 : 0), planoInicial]
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9) RETURNING id`,
+      [nome, email, hash, tipoConta, telefone || null, especialidadesJson, atendeOnline, atendePresencial, (mapaConsentimentos.termos_privacidade ? 1 : 0), planoInicial]
     );
     const userId = ins.rows[0].id;
 
@@ -789,14 +792,14 @@ router.post('/cadastro-profissional', async (req, res) => {
       console.warn('[cadastro-profissional] profissionais_dados não persistido:', errDados.message);
     }
 
-    const token = jwt.sign({ id: userId, email, tipo: 'profissional' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: userId, email, tipo: tipoConta }, process.env.JWT_SECRET, { expiresIn: '7d' });
     auditoria.registrar({
       categoria: auditoria.CATEGORIAS.AUTENTICACAO,
       acao: 'cadastro_profissional',
       base_legal: lgpd_consentimento ? auditoria.BASE_LEGAL.CONSENTIMENTO : auditoria.BASE_LEGAL.EXECUCAO_CONTRATO,
       finalidade: 'cadastro profissional e habilitação de bibliotecas',
       usuario_id: userId,
-      usuario_tipo: 'profissional',
+      usuario_tipo: tipoConta,
       email,
       recurso: 'usuario',
       recurso_id: userId,
@@ -821,7 +824,7 @@ router.post('/cadastro-profissional', async (req, res) => {
         id: userId,
         nome,
         email,
-        tipo: 'profissional',
+        tipo: tipoConta,
         plano: planoInicial,
         especialidade: bibliotecaPrincipal,
         especialidades: bibliotecasAutorizadas,
