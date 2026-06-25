@@ -1,5 +1,6 @@
-const CACHE_NAME = 'integrativo-pwa-v2';
+const CACHE_NAME = 'integrativo-pwa-v3';
 const CACHE_FILES = [
+  '/index.html',
   '/index2.html',
   '/css/estilo.css',
   '/css/home.css',
@@ -43,7 +44,7 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => response)
-        .catch(() => caches.match('/index2.html'))
+        .catch(() => caches.match('/index.html').then((r) => r || caches.match('/index2.html')))
     );
     return;
   }
