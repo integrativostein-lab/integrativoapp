@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /**
- * Deploy do frontend de produção na Vercel (integra-saude-psi).
+ * Deploy do frontend de produção na Vercel (integrativo.app).
  * Garante INTEGRATIVO_DEPLOY=producao no bundle publicado.
+ *
+ * Projeto Vercel: integrativoapp (domínio integrativo.app).
+ * O projeto integra-saude-psi é espelho legado — não use para o canônico.
  *
  * Pré-requisito: .env.alfa com VERCEL_TOKEN (mesmo token serve).
  *
@@ -19,7 +22,7 @@ const ENV_FILE = path.join(ROOT, '.env.alfa');
 function deployVercelProducao() {
   const token = process.env.VERCEL_TOKEN;
   if (!token) throw new Error('VERCEL_TOKEN ausente no .env.alfa');
-  const project = process.env.VERCEL_PROD_PROJECT_NAME || 'integra-saude-psi';
+  const project = process.env.VERCEL_PROD_PROJECT_NAME || 'integrativoapp';
   const scope = process.env.VERCEL_SCOPE || '';
   const scopeArgs = scope ? ['--scope', scope] : [];
 
