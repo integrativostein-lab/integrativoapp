@@ -1,0 +1,306 @@
+/* Anamnese clínica — auto-diagnóstico orientativo */
+.anamnese-clinica {
+  --anam-borda: #d1d9e6;
+  --anam-fundo-secao: #f8fafc;
+  --anam-azul: #1e3a5f;
+  --anam-verde: #0d9488;
+}
+
+.anamnese-clinica .navbar {
+  padding: 8px 24px;
+}
+
+.anamnese-clinica .navbar .logo-img {
+  height: 48px;
+}
+
+.anamnese-clinica .auto-wrap {
+  padding: 12px 16px 48px;
+}
+
+.anamnese-clinica .auto-etapas {
+  margin-bottom: 14px;
+  gap: 6px;
+}
+
+.anamnese-clinica .auto-etapa {
+  min-width: 0;
+  flex: 1 1 120px;
+  padding: 8px 6px;
+  font-size: 0.72rem;
+}
+
+.anamnese-clinica .auto-intro {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.anamnese-clinica .auto-aviso {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+}
+
+.anamnese-clinica .auto-card {
+  padding: 20px 18px;
+  border: 1px solid var(--anam-borda);
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+}
+
+.anamnese-clinica .cabecalho-clinico {
+  background: linear-gradient(135deg, #1e3a5f 0%, #0f4c5c 100%);
+  color: #fff;
+  border-radius: 12px 12px 0 0;
+  margin: -20px -18px 18px;
+  padding: 16px 18px;
+}
+
+.anamnese-clinica .cabecalho-clinico h2 {
+  color: #fff;
+  font-size: 1.25rem;
+  margin: 0 0 6px;
+}
+
+.anamnese-clinica .cabecalho-clinico p {
+  margin: 0;
+  font-size: 0.88rem;
+  opacity: 0.9;
+}
+
+.secao-anamnese {
+  background: var(--anam-fundo-secao);
+  border: 1px solid var(--anam-borda);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
+.secao-anamnese h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--anam-azul);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--anam-verde);
+  padding-bottom: 8px;
+  margin: 0 0 16px;
+}
+
+.campo-anamnese {
+  margin-bottom: 14px;
+}
+
+.campo-anamnese label {
+  display: block;
+  font-weight: 600;
+  color: #334155;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.campo-dica {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: -2px 0 8px;
+  line-height: 1.45;
+}
+
+.anamnese-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.anamnese-input:focus {
+  outline: none;
+  border-color: var(--anam-verde);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+.badge-grupo {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.badge-grupo.ocidental { background: #dbeafe; color: #1e40af; }
+.badge-grupo.pics { background: #d1fae5; color: #065f46; }
+.badge-grupo.transversal { background: #f3e8ff; color: #6b21a8; }
+
+.grid-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+/* Caixas de escolha (radio cards) */
+.opcoes-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.opcao-card {
+  position: relative;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.opcao-card:hover { border-color: #94a3b8; }
+
+.opcao-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opcao-card.selecionada {
+  border-color: var(--anam-verde);
+  background: #f0fdfa;
+  color: #0f766e;
+}
+
+/* Checklist clínico */
+.checklist-sistema {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.checklist-sistema:last-child { border-bottom: none; }
+
+.checklist-sistema h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #475569;
+  margin: 0 0 10px;
+}
+
+.checklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  line-height: 1.35;
+}
+
+.check-item:has(input:checked) {
+  border-color: var(--anam-verde);
+  background: #f0fdfa;
+}
+
+.check-item input { margin-top: 2px; flex-shrink: 0; }
+
+/* Escala 0-10 */
+.escala-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.escala-btn {
+  min-width: 36px;
+  height: 36px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #475569;
+}
+
+.escala-btn.ativo {
+  background: var(--anam-azul);
+  border-color: var(--anam-azul);
+  color: #fff;
+}
+
+/* Resultados */
+.destino-box {
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.destino-box.emergencia {
+  background: #fef2f2;
+  border: 2px solid #dc2626;
+  color: #7f1d1d;
+}
+
+.destino-box.profissional {
+  background: #eff6ff;
+  border: 2px solid #2563eb;
+  color: #1e3a8a;
+}
+
+.destino-box.autocuidado {
+  background: #f0fdf4;
+  border: 2px solid #16a34a;
+  color: #14532d;
+}
+
+.destino-box h3 { margin: 0 0 8px; font-size: 1.05rem; }
+.destino-box p { margin: 0; font-size: 0.9rem; line-height: 1.55; }
+
+.hipoteses-lista { margin: 16px 0; }
+
+.hipotese-card {
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--anam-azul);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.hipotese-card .nome { font-weight: 700; color: var(--anam-azul); font-size: 0.95rem; }
+.hipotese-card .meta { font-size: 0.75rem; color: #64748b; margin-top: 4px; }
+.hipotese-card .desc { font-size: 0.88rem; color: #334155; margin-top: 8px; line-height: 1.5; }
+.hipotese-card .aviso-mini { font-size: 0.78rem; color: #b45309; margin-top: 8px; font-style: italic; }
+
+.wizard-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.wizard-nav .btn { min-width: 120px; padding: 12px 20px; }
+
+.secao-oculta-sexo { display: none; }
+
+@media (max-width: 640px) {
+  .anamnese-clinica .cabecalho-clinico { margin: -20px -16px 20px; padding: 16px; }
+  .opcoes-cards { grid-template-columns: 1fr 1fr; }
+}

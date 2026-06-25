@@ -5,37 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Avaliação de bem-estar integrativo — Integrativo.App</title>
+  <title>Anamnese integrativa orientativa — Integrativo.App</title>
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="css/bemestar-temporario.css">
+  <link rel="stylesheet" href="css/anamnese-clinica.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    .secao-anamnese h3 { font-size: 16px; color: var(--azul-escuro); border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin: 24px 0 14px; }
-    .grid-campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-    .campo-adicional label { display: block; font-weight: 600; color: var(--azul-escuro); margin-bottom: 6px; font-size: 14px; }
-    .anamnese-input { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
-    .obrigatorio { color: #dc2626; }
-    .imc-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 15px; margin-top: 10px; display: none; }
-    .imc-flex { display: flex; justify-content: space-between; align-items: center; }
-    .imc-valor { font-size: 24px; font-weight: 800; color: var(--azul-escuro); }
-    .imc-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
-    .status-normal { background: #dcfce7; color: #166534; }
-    .status-alerta { background: #fef9c3; color: #854d0e; }
-    .status-perigo { background: #fee2e2; color: #991b1b; }
-    .condicional { display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid var(--azul-primario, #2563eb); margin-top: 10px; }
-    .lista-opcoes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-    .categoria-item { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: #fff; }
-    .categoria-header { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; color: #334155; }
-    .categoria-item.ativa { border-color: var(--azul-primario, #2563eb); background: #f8fafc; }
-    .sub-opcoes { margin-top: 8px; padding-left: 20px; display: none; }
-    .sub-item { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 5px; color: #475569; }
-    .btn-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-    .btn-acoes .btn { flex: 1; min-width: 140px; padding: 14px; }
-    #pdf-area { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
-    .pdf-header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 16px; }
-  </style>
 </head>
-<body>
+<body class="anamnese-clinica">
   <nav class="navbar">
     <a href="index.html" class="logo-container">
       <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
@@ -45,138 +21,46 @@
   </nav>
 
   <div class="auto-wrap">
-    <div class="auto-etapas" aria-hidden="true">
-      <div class="auto-etapa ativa" id="etapa-label-1">1 · Avaliação</div>
-      <div class="auto-etapa" id="etapa-label-2">2 · Síntese e PDF</div>
-    </div>
+    <div class="auto-etapas" id="wizard-etapas-labels" aria-hidden="true"></div>
 
-    <section class="auto-card painel-etapa ativa" id="etapa-1">
-      <h2>Avaliação de bem-estar integrativo</h2>
-      <p class="auto-intro">
-        Preencha medidas, hábitos, sintomas e medicamentos. Geramos uma
-        <strong>síntese orientativa</strong> com recomendações em
-        <strong>Ayurveda, Naturopatia, Aromaterapia, MTC e Yoga</strong>, além de alertas de segurança —
-        para salvar em PDF, sem cadastro.
-      </p>
-      <div class="auto-aviso">
-        <strong>Não é diagnóstico.</strong> Material educativo para reflexão e autocuidado.
-        Consulte sempre um profissional de saúde antes de mudar tratamentos.
+    <section class="auto-card painel-etapa ativa" id="etapa-form">
+      <div class="auto-aviso" style="margin-bottom:14px;">
+        <strong>Objetivo:</strong> orientar busca por <strong>profissional de confiança</strong> ou <strong>emergência</strong> quando indicado. Não é diagnóstico.
       </div>
 
-      <form id="form-avaliacao">
-        <div class="secao-anamnese">
-          <h3>1. Medidas e dados básicos</h3>
-          <div class="grid-campos">
-            <div class="campo-adicional">
-              <label for="idade">Idade <span class="obrigatorio">*</span></label>
-              <input type="number" id="idade" class="anamnese-input" required min="1" max="120">
-            </div>
-            <div class="campo-adicional">
-              <label for="genero">Gênero <span class="obrigatorio">*</span></label>
-              <select id="genero" class="anamnese-input" required>
-                <option value="">Selecione</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Outro">Outro</option>
-              </select>
-            </div>
-            <div class="campo-adicional">
-              <label for="peso">Peso (kg) <span class="obrigatorio">*</span></label>
-              <input type="number" id="peso" class="anamnese-input" step="0.1" required>
-            </div>
-            <div class="campo-adicional">
-              <label for="altura">Altura (cm) <span class="obrigatorio">*</span></label>
-              <input type="number" id="altura" class="anamnese-input" required>
-            </div>
-          </div>
-          <div id="imc-box" class="imc-box">
-            <div class="imc-flex">
-              <div><span style="font-size:12px;color:var(--texto-suave);">IMC calculado</span><br><span id="imc-valor" class="imc-valor">—</span></div>
-              <span id="imc-status" class="imc-status">—</span>
-            </div>
-          </div>
-        </div>
+      <div id="wizard-conteudo">
+        <p class="campo-dica">Carregando formulário clínico…</p>
+      </div>
 
-        <div class="secao-anamnese">
-          <h3>2. Hábitos diários</h3>
-          <div class="grid-campos">
-            <div class="campo-adicional">
-              <label for="agua">Água (copos/dia) <span class="obrigatorio">*</span></label>
-              <input type="number" id="agua" class="anamnese-input" required min="0">
-            </div>
-            <div class="campo-adicional">
-              <label for="sono">Sono (horas/dia) <span class="obrigatorio">*</span></label>
-              <input type="number" id="sono" class="anamnese-input" step="0.5" required min="0" max="24">
-            </div>
-          </div>
-          <div class="campo-adicional">
-            <label for="fuma">Você fuma?</label>
-            <select id="fuma" class="anamnese-input">
-              <option value="Não">Não</option>
-              <option value="Sim">Sim</option>
-              <option value="Ex-fumante">Ex-fumante</option>
-            </select>
-            <div id="box-cigarro" class="condicional">
-              <label for="qtd-cigarro">Quantos cigarros por dia?</label>
-              <input type="number" id="qtd-cigarro" class="anamnese-input" min="0">
-            </div>
-          </div>
-          <div class="campo-adicional">
-            <label for="bebe">Consome bebidas alcoólicas?</label>
-            <select id="bebe" class="anamnese-input">
-              <option value="Não">Não</option>
-              <option value="Sim">Sim</option>
-            </select>
-            <div id="box-bebida" class="condicional">
-              <label for="qtd-bebida">Frequência / quantidade</label>
-              <input type="text" id="qtd-bebida" class="anamnese-input" placeholder="Ex.: 2 doses no fim de semana">
-            </div>
-          </div>
-        </div>
-
-        <div class="secao-anamnese">
-          <h3>3. Desconfortos comuns</h3>
-          <div class="lista-opcoes" id="lista-sintomas"></div>
-        </div>
-
-        <div class="secao-anamnese">
-          <h3>4. Medicamentos e suplementos</h3>
-          <div class="lista-opcoes" id="lista-medicamentos"></div>
-          <div class="campo-adicional" style="margin-top:15px;">
-            <label for="outros-meds">Outros (suplementos, fitoterápicos, etc.)</label>
-            <textarea id="outros-meds" class="anamnese-input" rows="2"></textarea>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-primario" style="width:100%;margin-top:28px;padding:14px;">
-          Gerar síntese orientativa
-        </button>
-        <p id="msg-validacao" style="color:#dc2626;text-align:center;margin-top:12px;font-size:0.9rem;"></p>
-      </form>
+      <div class="wizard-nav">
+        <button type="button" class="btn" id="btn-anterior" style="background:#f1f5f9;color:var(--azul-profundo);">Anterior</button>
+        <button type="button" class="btn btn-primario" id="btn-proximo">Próximo</button>
+      </div>
+      <p id="msg-validacao" style="color:#dc2626;text-align:center;margin-top:12px;font-size:0.9rem;"></p>
     </section>
 
-    <section class="auto-card painel-etapa" id="etapa-2">
-      <h2>Sua síntese orientativa</h2>
-      <div class="auto-aviso">
-        Os eixos abaixo são <strong>pontos de conversa</strong>, não diagnósticos. Leve o PDF a um profissional de confiança.
+    <section class="auto-card painel-etapa" id="etapa-resultado">
+      <h2>Síntese da sua anamnese</h2>
+      <div class="auto-aviso auto-aviso-privacidade">
+        <strong>Não é diagnóstico.</strong> As hipóteses abaixo são prováveis orientações clínicas para conversa
+        com seu médico ou terapeuta. Em caso de emergência, procure pronto-socorro ou SAMU (192).
       </div>
       <div id="aviso-legal-api" class="auto-aviso" style="display:none;"></div>
-
       <div id="pdf-area"></div>
-
       <div class="btn-acoes">
         <button type="button" class="btn btn-primario" id="btn-pdf">Salvar PDF</button>
         <button type="button" class="btn" id="btn-copiar" style="background:#f1f5f9;color:var(--azul-profundo);">Copiar texto</button>
         <button type="button" class="btn" id="btn-nova" style="background:#f1f5f9;color:var(--azul-profundo);">Nova avaliação</button>
       </div>
       <p id="msg-feedback" style="text-align:center;margin-top:10px;font-size:0.88rem;color:var(--texto-suave);"></p>
-      <p style="margin-top:20px;font-size:0.85rem;color:var(--texto-suave);">
-        <strong>Privacidade:</strong> nada é armazenado em nossos servidores. O PDF é gerado no seu dispositivo.
+      <p style="margin-top:16px;font-size:0.82rem;color:var(--texto-suave);">
+        <strong>Privacidade:</strong> dados não são armazenados no servidor. Estrutura compatível com FHIR QuestionnaireResponse para integração futura ao prontuário.
       </p>
     </section>
   </div>
 
   <script src="js/config.js"></script>
+  <script src="js/anamnese-ui.js"></script>
   <script src="js/auto-diagnostico.js"></script>
   <script>
     if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
@@ -185,49 +69,26 @@
 
     var sinteseAtual = null;
 
-    function irEtapa(n) {
-      [1, 2].forEach(function (i) {
-        document.getElementById('etapa-' + i).classList.toggle('ativa', i === n);
-        var lbl = document.getElementById('etapa-label-' + i);
-        lbl.classList.remove('ativa', 'concluida');
-        if (i < n) lbl.classList.add('concluida');
-        if (i === n) lbl.classList.add('ativa');
-      });
+    function irResultado() {
+      document.getElementById('etapa-form').classList.remove('ativa');
+      document.getElementById('etapa-resultado').classList.add('ativa');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function renderTela(sintese) {
+    window.onSintesePronta = function (sintese) {
+      sinteseAtual = sintese;
       var avisoEl = document.getElementById('aviso-legal-api');
       if (sintese.aviso_legal) {
         avisoEl.textContent = sintese.aviso_legal;
         avisoEl.style.display = 'block';
-      } else {
-        avisoEl.style.display = 'none';
       }
-      document.getElementById('pdf-area').innerHTML = AutoDiagnostico.montarHtmlPdf(sintese.formData, sintese);
-    }
+      document.getElementById('pdf-area').innerHTML = AutoDiagnostico.montarHtmlPdf(sintese);
+      irResultado();
+    };
 
-    AutoDiagnostico.initFormulario();
-
-    document.getElementById('form-avaliacao').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      var fd = AutoDiagnostico.coletarFormulario();
-      var faltando = AutoDiagnostico.validarFormulario(fd);
-      if (faltando.length) {
-        document.getElementById('msg-validacao').textContent =
-          'Preencha os campos obrigatórios (' + faltando.length + ' pendente(s)).';
-        return;
-      }
-      document.getElementById('msg-validacao').textContent = 'Gerando síntese…';
-      try {
-        sinteseAtual = await AutoDiagnostico.gerarSintese(fd, CONFIG.API_URL);
-        sinteseAtual.formData = fd;
-        renderTela(sinteseAtual);
-        document.getElementById('msg-validacao').textContent = '';
-        irEtapa(2);
-      } catch (err) {
-        document.getElementById('msg-validacao').textContent = err.message || 'Erro ao gerar síntese.';
-      }
+    AutoDiagnostico.initWizard().catch(function (err) {
+      document.getElementById('wizard-conteudo').innerHTML =
+        '<p class="campo-dica" style="color:#dc2626;">' + (err.message || 'Erro ao carregar.') + '</p>';
     });
 
     document.getElementById('btn-pdf').onclick = function () {
@@ -241,11 +102,8 @@
 
     document.getElementById('btn-copiar').onclick = function () {
       if (!sinteseAtual) return;
-      var texto = document.getElementById('pdf-area').innerText;
-      navigator.clipboard.writeText(texto).then(function () {
+      navigator.clipboard.writeText(document.getElementById('pdf-area').innerText).then(function () {
         document.getElementById('msg-feedback').textContent = 'Texto copiado.';
-      }).catch(function () {
-        document.getElementById('msg-feedback').textContent = 'Não foi possível copiar.';
       });
     };
 

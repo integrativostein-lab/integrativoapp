@@ -41,7 +41,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: var(--sombra-suave); 
-  padding: 12px 60px; 
+  padding: 10px 40px; 
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center; 
@@ -63,7 +63,7 @@ body {
 .logo-container:hover { transform: scale(1.02); }
 
 .logo-img {
-  height: 97px;
+  height: 56px;
   width: auto;
   filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
 }
@@ -599,7 +599,7 @@ footer a:hover { color: var(--verde-destaque); }
 @media (max-width: 768px) {
   .navbar { display: flex; padding: 15px 24px; flex-direction: column; gap: 20px; }
   .logo-texto { font-size: 24px; }
-  .logo-img { height: 62px; }
+  .logo-img { height: 48px; }
   .menu { flex-wrap: wrap; justify-content: center; gap: 10px; }
   .nav-links { justify-content: center; }
   .nav-actions { justify-content: center; }

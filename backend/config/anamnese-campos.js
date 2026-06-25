@@ -22,7 +22,8 @@ function campo(id, nome, categoria, opts = {}) {
     placeholder: opts.placeholder || '',
     ativoPadrao: opts.ativoPadrao !== false,
     obrigatorioPadrao: !!opts.obrigatorioPadrao,
-    dica: opts.dica || ''
+    dica: opts.dica || '',
+    sexoAplicavel: opts.sexoAplicavel || null
   };
 }
 
@@ -34,9 +35,17 @@ const CAMPOS_ANAMNESE = [
   campo('evolucao_sintomas', 'Evolução', 'Identificação e queixa', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Aguda', 'Subaguda', 'Crônica', 'Flutuante / intermitente'] }),
   campo('fatores_melhora', 'Fatores de melhora', 'Identificação e queixa', { grupo: 'transversal', parte: 1, tipo: 'text' }),
   campo('fatores_piora', 'Fatores de piora', 'Identificação e queixa', { grupo: 'transversal', parte: 1, tipo: 'text' }),
-  campo('tratamentos_tentados_queixa', 'Tratamentos já tentados para a queixa', 'Identificação e queixa', { grupo: 'transversal', parte: 1 }),
+  campo('sintomas_relatados', 'Sintomas relatados (revisão por sistemas)', 'Identificação e queixa', {
+    grupo: 'ocidental', parte: 1, placeholder: 'Marcados no checklist ou descritos pelo paciente'
+  }),
 
   // —— Dados antropométricos ——
+  campo('sexo_biologico', 'Sexo biológico (para perguntas clínicas específicas)', 'Dados antropométricos', {
+    grupo: 'ocidental', parte: 1, tipo: 'select', obrigatorioPadrao: true,
+    opcoes: ['Feminino', 'Masculino', 'Intersexo / outro', 'Prefiro não informar'],
+    dica: 'Usado apenas para exibir perguntas clínicas pertinentes. Não constitui identidade de gênero.'
+  }),
+  campo('idade_anos', 'Idade (anos)', 'Dados antropométricos', { grupo: 'ocidental', parte: 1, tipo: 'number', obrigatorioPadrao: true, placeholder: '35' }),
   campo('altura_cm', 'Altura (cm)', 'Dados antropométricos', { grupo: 'ocidental', parte: 1, tipo: 'number', placeholder: '170' }),
   campo('peso_kg', 'Peso (kg)', 'Dados antropométricos', { grupo: 'ocidental', parte: 1, tipo: 'number', placeholder: '70' }),
   campo('tipo_sanguineo', 'Tipo sanguíneo', 'Dados antropométricos', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Não informado', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] }),
@@ -142,15 +151,15 @@ const CAMPOS_ANAMNESE = [
   campo('poluicao_ocupacional', 'Riscos ocupacionais e ambientais do trabalho', 'Exposições ambientais', { grupo: 'transversal', parte: 1 }),
 
   // —— Saúde da mulher ——
-  campo('menstruacao', 'Ciclos menstruais (DUM, regularidade, fluxo, dismenorreia)', 'Saúde da mulher', { grupo: 'ocidental', parte: 1 }),
-  campo('gestacao_atual', 'Gestação atual', 'Saúde da mulher', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Não gestante', 'Gestante', 'Não se aplica'] }),
-  campo('historico_gestacional', 'Gestações, partos, abortos, complicações', 'Saúde da mulher', { grupo: 'ocidental', parte: 1 }),
-  campo('contraceptivos', 'Anticoncepcionais / hormônios', 'Saúde da mulher', { grupo: 'ocidental', parte: 1 }),
-  campo('menopausa_climaterio', 'Menopausa / climatério', 'Saúde da mulher', { grupo: 'ocidental', parte: 1 }),
+  campo('menstruacao', 'Ciclos menstruais (DUM, regularidade, fluxo, dismenorreia)', 'Saúde da mulher', { grupo: 'ocidental', parte: 1, sexoAplicavel: 'feminino' }),
+  campo('gestacao_atual', 'Gestação atual', 'Saúde da mulher', { grupo: 'ocidental', parte: 1, tipo: 'select', opcoes: ['Não gestante', 'Gestante', 'Não se aplica'], sexoAplicavel: 'feminino' }),
+  campo('historico_gestacional', 'Gestações, partos, abortos, complicações', 'Saúde da mulher', { grupo: 'ocidental', parte: 1, sexoAplicavel: 'feminino' }),
+  campo('contraceptivos', 'Anticoncepcionais / hormônios', 'Saúde da mulher', { grupo: 'ocidental', parte: 1, sexoAplicavel: 'feminino' }),
+  campo('menopausa_climaterio', 'Menopausa / climatério', 'Saúde da mulher', { grupo: 'ocidental', parte: 1, sexoAplicavel: 'feminino' }),
 
   // —— Saúde do homem ——
-  campo('saude_prostata', 'Saúde prostática / urológica', 'Saúde do homem', { grupo: 'ocidental', parte: 1 }),
-  campo('saude_reprodutiva_masculina', 'Saúde reprodutiva masculina / hormônios', 'Saúde do homem', { grupo: 'ocidental', parte: 1 }),
+  campo('saude_prostata', 'Saúde prostática / urológica', 'Saúde do homem', { grupo: 'ocidental', parte: 1, sexoAplicavel: 'masculino' }),
+  campo('saude_reprodutiva_masculina', 'Saúde reprodutiva masculina / hormônios', 'Saúde do homem', { grupo: 'ocidental', parte: 1, sexoAplicavel: 'masculino' }),
 
   // —— Revisão por sistemas (medicina ocidental) ——
   campo('sistema_cardiovascular', 'Cardiovascular (dor torácica, palpitações, edema, dispneia)', 'Revisão por sistemas — medicina ocidental', { grupo: 'ocidental', parte: 2 }),

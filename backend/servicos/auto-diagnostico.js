@@ -1,5 +1,7 @@
 const motorAlertas = require('./alertas-seguranca');
 const motorVertentes = require('./orientacao-auto');
+const motorHipoteses = require('./hipoteses-provaveis');
+const { montarQuestionnaireResponse } = require('./fhir-questionnaire');
 const { campoPorId } = require('../config/anamnese-campos');
 
 function anamneseParaContextoAlertas(respostas = {}) {
@@ -33,7 +35,10 @@ function anamneseParaContextoAlertas(respostas = {}) {
 function montarResumo(respostas = {}) {
   const linhas = [];
   const destaques = [
+    ['sexo_biologico', 'Sexo biológico'],
+    ['idade_anos', 'Idade'],
     ['queixa_principal', 'Queixa principal'],
+    ['sintomas_relatados', 'Sintomas relatados'],
     ['hda_resumo', 'História resumida'],
     ['medicamentos_uso', 'Medicamentos'],
     ['alergias_medicamentos', 'Alergias medicamentosas'],
@@ -59,20 +64,26 @@ function analisar(respostas = {}) {
 
   const alertas = motorAlertas.verificar(anamneseParaContextoAlertas(limpo));
   const vertentes = motorVertentes.analisar(limpo);
+  const hipoteses = motorHipoteses.analisar(limpo, alertas);
   const resumo = montarResumo(limpo);
+  const geradoEm = new Date().toISOString();
 
   return {
     motor: 'deterministico_if_then',
     usa_ia: false,
     aviso_legal:
       'Esta síntese é orientativa e educativa. Não constitui diagnóstico, prescrição ou laudo médico. ' +
-      'Consulte sempre um profissional de saúde habilitado para decisões clínicas.',
+      'O objetivo é orientar sua busca por um profissional de saúde de confiança — ou emergência, quando indicado.',
     privacidade:
       'Nenhum dado é armazenado em nossos servidores neste fluxo. O Integrativo.App não comercializa dados de visitantes.',
     resumo,
     seguranca: alertas,
     vertentes: vertentes.vertentes,
-    gerado_em: new Date().toISOString()
+    hipoteses: hipoteses.hipoteses,
+    destino: hipoteses.destino,
+    aviso_hipoteses: hipoteses.aviso_legal,
+    fhir_questionnaire_response: montarQuestionnaireResponse(limpo, { gerado_em: geradoEm }),
+    gerado_em: geradoEm
   };
 }
 

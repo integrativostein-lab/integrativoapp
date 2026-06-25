@@ -19,3 +19,4 @@ controle interno do mau/link supabase.txt
 *.sqlite
 database.sqlite
 .vercel
+.env*

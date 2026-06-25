@@ -13,6 +13,7 @@ const {
   calcularCamposPendentes,
   camposFiltrados
 } = require('../config/anamnese-campos');
+const { montarSchemaPublico } = require('../config/auto-diagnostico-publico');
 
 async function garantirTabelas() {
   await db.query(`
@@ -57,6 +58,22 @@ function sanitizarRespostas(respostas = {}) {
 }
 
 router.get('/schema-publico', (req, res) => {
+  const perfil = req.query.perfil || 'auto_diagnostico';
+  if (perfil === 'auto_diagnostico') {
+    const schema = montarSchemaPublico();
+    res.set('Cache-Control', 'public, max-age=3600');
+    return res.json({
+      versao: VERSAO_SCHEMA,
+      finalidade: 'auto_diagnostico_orientativo',
+      ...schema,
+      total: schema.campos.length,
+      padrao: {
+        ativos: schema.campos.map((c) => c.id),
+        obrigatorios: schema.obrigatorios
+      }
+    });
+  }
+
   const ativos = idsPadraoAtivos();
   const campos = camposFiltrados({ parte: 1, idsAtivos: ativos });
   res.set('Cache-Control', 'public, max-age=3600');
