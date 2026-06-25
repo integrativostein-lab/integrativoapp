@@ -19,9 +19,15 @@
 <body>
   <script src="js/config.js"></script>
   <script>
-    if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
-      window.location.replace('index2.html');
-    }
+    (function () {
+      var h = location.hostname.toLowerCase();
+      var producao = ['integrativo.app', 'www.integrativo.app', 'integrativo.app.br', 'www.integrativo.app.br',
+        'integrativoapp.com', 'www.integrativoapp.com', 'integrativoapp.com.br', 'www.integrativoapp.com.br'];
+      if (producao.indexOf(h) >= 0) return;
+      if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
+        window.location.replace('index2.html');
+      }
+    })();
   </script>
   <main class="landing-bemestar">
     <div class="conteudo">

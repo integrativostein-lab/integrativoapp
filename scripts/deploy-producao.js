@@ -14,7 +14,7 @@
 const path = require('path');
 const { spawnSync } = require('child_process');
 const { loadEnvFile } = require('./lib/render-api');
-const { patchTemporario } = require('./lib/deploy-flag');
+const { patchTemporario, lerFlagAtual } = require('./lib/deploy-flag');
 
 const ROOT = path.join(__dirname, '..');
 const ENV_FILE = path.join(ROOT, '.env.alfa');
@@ -28,6 +28,9 @@ function deployVercelProducao() {
 
   console.log(`\n🌿 Deploy produção — Vercel "${project}"\n`);
   const restaurarFlag = patchTemporario('producao');
+  if (lerFlagAtual() !== 'producao') {
+    throw new Error('Falha ao marcar INTEGRATIVO_DEPLOY=producao antes do deploy.');
+  }
   try {
     const env = { ...process.env };
     const deploy = spawnSync('npx', [

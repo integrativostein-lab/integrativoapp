@@ -10,6 +10,20 @@ const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname 
 /** Sobrescrito temporariamente pelo deploy Vercel (scripts/lib/deploy-flag.js). */
 const INTEGRATIVO_DEPLOY = 'producao';
 
+/** Hostnames de produção — nunca tratados como ambiente de teste. */
+const HOSTNAMES_PRODUCAO = [
+  'integrativo.app',
+  'www.integrativo.app',
+  'integrativo.app.br',
+  'www.integrativo.app.br',
+  'integrativoapp.com',
+  'www.integrativoapp.com',
+  'integrativoapp.com.br',
+  'www.integrativoapp.com.br',
+  'integra-saude-psi.vercel.app',
+  'integra-saude-psi-iota.vercel.app'
+];
+
 /** Hostnames que sempre usam backend alfa + banner de teste. */
 const HOSTNAMES_TESTE = [
   'alfa.integrativoapp.com',
@@ -19,13 +33,19 @@ const HOSTNAMES_TESTE = [
   'integrativoapp-alfa.vercel.app'
 ];
 
+function hostEhProducao(hostname) {
+  const h = (hostname || '').toLowerCase();
+  if (!h) return false;
+  return HOSTNAMES_PRODUCAO.some((d) => h === d);
+}
+
 function hostEhAmbienteTeste(hostname) {
   const h = (hostname || '').toLowerCase();
   if (!h) return false;
+  if (hostEhProducao(h)) return false;
   if (INTEGRATIVO_DEPLOY === 'alfa') return true;
   if (HOSTNAMES_TESTE.some((d) => h === d || h.endsWith('.' + d))) return true;
   if (h.includes('integrativoapp-alfa')) return true;
-  if (h.includes('alfa') || h.includes('alpha')) return true;
   return false;
 }
 
@@ -67,6 +87,7 @@ const CONFIG = {
   /** true no hostname/subdomínio de teste ou bundle deployado como alfa */
   AMBIENTE_TESTE: hostEhAmbienteTeste(HOSTNAME_ATUAL),
   INTEGRATIVO_DEPLOY,
+  HOSTNAMES_PRODUCAO,
   HOSTNAMES_TESTE,
 
   // ═══════════════════════════════════════════
