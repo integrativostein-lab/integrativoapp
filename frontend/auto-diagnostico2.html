@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Auto diagnóstico orientativo — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/bemestar-temporario.css">
+  <style>
+    .secao-anamnese h3 { font-size: 16px; color: var(--azul-escuro); border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin: 24px 0 14px; }
+    .grid-campos { display: grid; gap: 16px; }
+    .campo-anamnese label { display: block; font-weight: 600; color: var(--azul-escuro); margin-bottom: 6px; font-size: 14px; }
+    .anamnese-input { width: 100%; padding: 10px 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 14px; font-family: inherit; }
+    .badge-grupo { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; margin-left: 6px; text-transform: uppercase; vertical-align: middle; }
+    .badge-grupo.pics { background: #D1FAE5; color: #065F46; }
+    .badge-grupo.ocidental { background: #DBEAFE; color: #1E40AF; }
+    .badge-grupo.transversal { background: #FEF3C7; color: #92400E; }
+    .obrigatorio { color: #dc2626; }
+    .campo-dica { font-size: 12px; color: var(--texto-suave); margin: -2px 0 8px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu"><a href="index.html">Início</a></div>
+  </nav>
+
+  <div class="auto-wrap">
+    <div class="auto-etapas" aria-hidden="true">
+      <div class="auto-etapa ativa" id="etapa-label-1">1 · Anamnese</div>
+      <div class="auto-etapa" id="etapa-label-2">2 · Síntese</div>
+      <div class="auto-etapa" id="etapa-label-3">3 · E-mail</div>
+    </div>
+
+    <!-- Etapa 1: formulário -->
+    <section class="auto-card painel-etapa ativa" id="etapa-1">
+      <h2>Auto diagnóstico orientativo</h2>
+      <p class="auto-intro">
+        Preencha sua anamnese integrativa no seu ritmo. Ao final, geramos uma
+        <strong>síntese orientativa</strong> com eixos de reflexão e autocuidado
+        (estilo de vida, tradições integrativas e alertas de segurança), conforme o que você relatar.
+      </p>
+      <div class="auto-aviso">
+        <strong>Não é diagnóstico.</strong> Trata-se de material educativo e recomendações gerais de reflexão e autocuidado.
+        Sempre consulte seu médico, nutricionista, psicólogo ou terapeuta antes de decidir tratamentos.
+      </div>
+      <form id="form-anamnese">
+        <div id="form-campos"><p style="color:var(--texto-suave);">Carregando formulário…</p></div>
+        <button type="submit" class="btn btn-primario" style="width:100%;margin-top:28px;padding:14px;">
+          Gerar síntese orientativa
+        </button>
+        <p id="msg-validacao" style="color:#dc2626;text-align:center;margin-top:12px;font-size:0.9rem;"></p>
+      </form>
+    </section>
+
+    <!-- Etapa 2: resultados -->
+    <section class="auto-card painel-etapa" id="etapa-2">
+      <h2>Sua síntese orientativa</h2>
+      <div class="auto-aviso">
+        Lembrete: os eixos abaixo são <strong>pontos de conversa</strong>, não diagnósticos fechados.
+        Leve este resumo a um profissional de confiança.
+      </div>
+      <div id="aviso-legal-api" class="auto-aviso" style="display:none;"></div>
+
+      <h3 style="font-size:1rem;color:var(--azul-profundo);margin:20px 0 12px;">Resumo da anamnese</h3>
+      <div id="resumo-anamnese"></div>
+
+      <h3 style="font-size:1rem;color:var(--azul-profundo);margin:28px 0 12px;">Leituras por vertente</h3>
+      <div id="vertentes"></div>
+
+      <button type="button" class="btn btn-primario" id="btn-ir-email" style="margin-top:24px;width:100%;padding:14px;">
+        Receber cópia por e-mail
+      </button>
+      <button type="button" class="btn" id="btn-voltar-form" style="margin-top:10px;width:100%;background:#f1f5f9;color:var(--azul-profundo);">
+        Revisar anamnese
+      </button>
+    </section>
+
+    <!-- Etapa 3: e-mail -->
+    <section class="auto-card painel-etapa" id="etapa-3">
+      <h2>Enviar cópia para seu e-mail</h2>
+      <div class="auto-aviso auto-aviso-privacidade">
+        <strong>Privacidade:</strong> não armazenamos sua anamnese nem seu e-mail em nossos servidores.
+        O Integrativo.App não comercializa dados de visitantes nem vende produtos ao público paciente.
+        O envio abre <em>seu</em> aplicativo de e-mail com o texto da síntese — você decide se envia ou guarda.
+      </div>
+      <div class="form-email">
+        <label for="email-usuario">Seu e-mail</label>
+        <input type="email" id="email-usuario" placeholder="voce@exemplo.com" autocomplete="email" required>
+        <button type="button" class="btn btn-primario" id="btn-enviar-email" style="padding:14px;">
+          Abrir e-mail com a síntese
+        </button>
+        <button type="button" class="btn" id="btn-copiar" style="padding:12px;background:#f1f5f9;color:var(--azul-profundo);">
+          Copiar texto da síntese
+        </button>
+        <p id="msg-email" style="font-size:0.88rem;color:var(--texto-suave);"></p>
+        <p style="font-size:0.82rem;color:var(--texto-suave);margin-top:8px;">
+          Se o e-mail não abrir (texto muito longo), use <strong>Copiar texto</strong> e cole manualmente.
+        </p>
+      </div>
+      <p style="margin-top:24px;font-size:0.85rem;color:var(--texto-suave);">
+        <a href="index.html">&larr; Voltar ao início</a>
+      </p>
+    </section>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/anamnese-ui.js"></script>
+  <script src="js/auto-diagnostico.js"></script>
+  <script>
+    if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
+      window.location.replace('index2.html');
+    }
+
+    var sinteseAtual = null;
+    var respostasAtual = null;
+
+    function irEtapa(n) {
+      [1, 2, 3].forEach(function (i) {
+        document.getElementById('etapa-' + i).classList.toggle('ativa', i === n);
+        var lbl = document.getElementById('etapa-label-' + i);
+        lbl.classList.remove('ativa', 'concluida');
+        if (i < n) lbl.classList.add('concluida');
+        if (i === n) lbl.classList.add('ativa');
+      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderFormulario() {
+      var cfg = AutoDiagnostico.getConfig();
+      var campos = AnamneseUI.filtrarCampos(window._schemaAuto || [], {
+        idsAtivos: cfg.campos_ativos,
+        parte: 1
+      });
+      document.getElementById('form-campos').innerHTML = AnamneseUI.renderFormulario(campos, {}, {
+        obrigatorios: cfg.campos_obrigatorios
+      });
+    }
+
+    function renderResultado(sintese) {
+      var resHtml = '';
+      sintese.resumo.forEach(function (item) {
+        resHtml += '<div class="resumo-campo"><strong>' + AutoDiagnostico.escapeHtml(item.nome) +
+          '</strong><span>' + AutoDiagnostico.escapeHtml(item.valor) + '</span></div>';
+      });
+      if (!resHtml) resHtml = '<p style="color:var(--texto-suave);">Nenhum campo preenchido.</p>';
+      document.getElementById('resumo-anamnese').innerHTML = resHtml;
+
+      var vHtml = '';
+      sintese.vertentes.forEach(function (v) {
+        vHtml += '<div class="vertente"><h4>' + AutoDiagnostico.escapeHtml(v.titulo || v.vertente) + '</h4>';
+      if (v.eixo) vHtml += '<p style="font-size:0.82rem;color:var(--texto-suave);margin-bottom:8px;">' + AutoDiagnostico.escapeHtml(v.eixo) + '</p>';
+      vHtml += '<ul>';
+      if (v.itens) {
+        v.itens.forEach(function (item) {
+          vHtml += '<li>' + AutoDiagnostico.escapeHtml(item) + '</li>';
+        });
+      } else {
+        if (v.orientacao) vHtml += '<li>' + AutoDiagnostico.escapeHtml(v.orientacao) + '</li>';
+        if (v.conduta) vHtml += '<li><em>' + AutoDiagnostico.escapeHtml(v.conduta) + '</em></li>';
+      }
+      vHtml += '</ul></div>';
+      });
+      document.getElementById('vertentes').innerHTML = vHtml;
+
+      var avisoEl = document.getElementById('aviso-legal-api');
+      if (sintese.aviso_legal) {
+        avisoEl.textContent = sintese.aviso_legal;
+        avisoEl.style.display = 'block';
+      } else {
+        avisoEl.style.display = 'none';
+      }
+
+      if (sintese.seguranca && sintese.seguranca.alertas && sintese.seguranca.alertas.length) {
+        var aHtml = '<div class="auto-aviso" style="margin-top:20px;"><strong>Alertas de segurança</strong><ul style="margin:10px 0 0 18px;">';
+        sintese.seguranca.alertas.forEach(function (a) {
+          aHtml += '<li>' + AutoDiagnostico.escapeHtml(a.mensagem || a.titulo || '') + '</li>';
+        });
+        aHtml += '</ul></div>';
+        document.getElementById('vertentes').insertAdjacentHTML('beforeend', aHtml);
+      }
+    }
+
+    async function init() {
+      try {
+        window._schemaAuto = await AutoDiagnostico.carregarSchema(CONFIG.API_URL);
+      } catch (err) {
+        document.getElementById('form-campos').innerHTML =
+          '<p style="color:#dc2626;">' + AutoDiagnostico.escapeHtml(err.message || 'Formulário indisponível.') + '</p>';
+        return;
+      }
+      renderFormulario();
+
+      document.getElementById('form-anamnese').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var container = document.getElementById('form-campos');
+        respostasAtual = AnamneseUI.coletarRespostas(container);
+        var faltando = AutoDiagnostico.validarObrigatorios(respostasAtual);
+        if (faltando.length) {
+          document.getElementById('msg-validacao').textContent =
+            'Preencha os campos obrigatórios (' + faltando.length + ' pendente(s)).';
+          return;
+        }
+        document.getElementById('msg-validacao').textContent = 'Gerando síntese…';
+        try {
+          sinteseAtual = await AutoDiagnostico.gerarSintese(respostasAtual, CONFIG.API_URL);
+        } catch (err) {
+          document.getElementById('msg-validacao').textContent = err.message || 'Erro ao gerar síntese.';
+          return;
+        }
+        document.getElementById('msg-validacao').textContent = '';
+        renderResultado(sinteseAtual);
+        irEtapa(2);
+      });
+
+      document.getElementById('btn-ir-email').onclick = function () { irEtapa(3); };
+      document.getElementById('btn-voltar-form').onclick = function () { irEtapa(1); };
+
+      document.getElementById('btn-enviar-email').onclick = function () {
+        var email = document.getElementById('email-usuario').value.trim();
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          document.getElementById('msg-email').textContent = 'Informe um e-mail válido.';
+          return;
+        }
+        if (!sinteseAtual) return;
+        var assunto = encodeURIComponent('Integrativo.App — Minha síntese orientativa');
+        var corpo = encodeURIComponent(sinteseAtual.textoCompleto);
+        window.location.href = 'mailto:' + encodeURIComponent(email) + '?subject=' + assunto + '&body=' + corpo;
+        document.getElementById('msg-email').textContent =
+          'Seu app de e-mail deve abrir com a síntese. Nada foi salvo em nossos servidores.';
+      };
+
+      document.getElementById('btn-copiar').onclick = function () {
+        if (!sinteseAtual) return;
+        navigator.clipboard.writeText(sinteseAtual.textoCompleto).then(function () {
+          document.getElementById('msg-email').textContent = 'Texto copiado para a área de transferência.';
+        }).catch(function () {
+          document.getElementById('msg-email').textContent = 'Não foi possível copiar automaticamente.';
+        });
+      };
+    }
+
+    init();
+  </script>
+</body>
+</html>

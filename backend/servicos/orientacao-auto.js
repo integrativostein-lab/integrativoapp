@@ -81,6 +81,46 @@ const REGRAS_VERTENTES = [
     conduta: 'Acupuntura, fitoterapia chinesa e dietoterapia exigem diagnóstico diferencial clínico — não se automedique com fórmulas.'
   },
   {
+    id: 'AYURVEDA_RECOM_001',
+    vertente: 'Ayurveda (recomendações orientativas)',
+    eixo: 'Dinacharya e equilíbrio do agni',
+    condicao: (r) => !!semAcentos(r.queixa_principal),
+    orientacao: 'Priorize horários regulares para refeições, mastigação lenta e pausas de descanso. Observe como sono, digestão e humor respondem à rotina — eixos centrais na Ayurveda.',
+    conduta: 'Evite automedicação com fórmulas ayurvédicas sem orientação. Consulte terapeuta ayurvédico para personalizar ahara (alimentação) e dinacharya conforme sua constituição.'
+  },
+  {
+    id: 'NATURO_RECOM_001',
+    vertente: 'Naturopatia (recomendações orientativas)',
+    eixo: 'Terreno, hábitos e autocuidado',
+    condicao: (r) => !!semAcentos(r.queixa_principal),
+    orientacao: 'A naturopatia enfatiza hidratação adequada, alimentação in natura, exposição solar moderada e redução de ultraprocessados como base de reequilíbrio do terreno.',
+    conduta: 'Registre sono, energia e digestão por alguns dias antes de mudanças intensas. Suplementos e desintoxicações exigem avaliação profissional individualizada.'
+  },
+  {
+    id: 'AROMA_RECOM_001',
+    vertente: 'Aromaterapia (recomendações orientativas)',
+    eixo: 'Bem-estar olfativo e regulação',
+    condicao: (r) => !!semAcentos(r.queixa_principal),
+    orientacao: 'Inalação ou difusão suave de óleos essenciais (ex.: lavanda para relaxamento, limão-siciliano para ambiente energizante) pode complementar rotinas de descanso — sempre diluídos e com ventilação.',
+    conduta: 'Não ingira óleos essenciais sem prescrição. Evite uso tópico ou inalatório em gestantes, lactantes, crianças e alérgicos sem orientação especializada.'
+  },
+  {
+    id: 'MTC_RECOM_001',
+    vertente: 'Medicina tradicional chinesa (recomendações orientativas)',
+    eixo: 'Ritmo, alimentação térmica e repouso',
+    condicao: (r) => !!semAcentos(r.queixa_principal),
+    orientacao: 'Na MTC, regularidade de horários, proteção contra frio/calor extremos e alimentação adequada ao padrão energético percebido favorecem o equilíbrio de Qi, Yin e Yang.',
+    conduta: 'Acupuntura, moxabustão e fitoterapia chinesa requerem diagnóstico diferencial por profissional habilitado — não substituem avaliação médica convencional.'
+  },
+  {
+    id: 'YOGA_RECOM_001',
+    vertente: 'Yoga (recomendações orientativas)',
+    eixo: 'Movimento consciente e respiração',
+    condicao: (r) => !!semAcentos(r.queixa_principal),
+    orientacao: 'Práticas suaves de ásana, alongamento e pranayama (respiração) podem apoiar flexibilidade, sono e regulação do estresse quando adaptadas ao seu nível atual.',
+    conduta: 'Evite inversões ou retenções intensas se houver hipertensão, glaucoma, gestação ou dor aguda sem liberação. Prefira aulas ou orientação de instrutor qualificado.'
+  },
+  {
     id: 'INTEGRATIVA_HABITOS_001',
     vertente: 'Visão integrativa transversal',
     eixo: 'Hábitos e continuidade do cuidado',

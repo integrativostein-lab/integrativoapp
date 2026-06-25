@@ -35,11 +35,12 @@
   <div class="form-login" id="form-login">
     <h2>Entrar</h2>
     
-    <!-- MODO TESTE (visível apenas em localhost) -->
+    <!-- MODO TESTE (alfa / localhost) -->
     <div class="modo-teste" id="modo-teste" style="display:none;">
       🧪 <strong>MODO TESTE</strong><br>
       Profissional: <strong>profissional@demo.com</strong> / demo123<br>
-      Paciente: <strong>paciente@demo.com</strong> / demo123
+      Paciente: <strong>paciente@demo.com</strong> / demo123<br>
+      Admin: <strong>admin@integra.com</strong> / admin123
     </div>
 
     <div id="msg" class="msg"></div>
@@ -89,9 +90,28 @@
   <script src="js/nav-publico.js"></script>
   <script src="js/i18n.js"></script>
   <script>
-    // Mostrar modo teste em localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
       document.getElementById('modo-teste').style.display = 'block';
+    }
+
+    /** Acorda backend Render (cold start) antes do login. */
+    function aquecerApi() {
+      if (typeof CONFIG === 'undefined' || !CONFIG.API_URL) return;
+      var base = CONFIG.API_URL.replace(/\/api\/?$/, '');
+      fetch(base + '/api/config/publica', { cache: 'no-store' }).catch(function () {});
+    }
+    aquecerApi();
+
+    function mensagemErroLogin(err, r) {
+      if (err && err.name === 'AbortError') {
+        return 'A API demorou para responder (servidor acordando). Aguarde ~1 minuto e tente de novo.';
+      }
+      if (r && r.status === 429) return 'Muitas tentativas. Aguarde alguns minutos.';
+      if (err && /failed to fetch|network|load/i.test(String(err.message || err))) {
+        return 'Sem conexão com a API (' + (CONFIG && CONFIG.API_URL ? CONFIG.API_URL : 'URL não definida') +
+          '). Se o ambiente alfa estiver parado, aguarde 1–2 min e tente novamente.';
+      }
+      return 'Erro de conexão. Tente novamente.';
     }
 
     function toggleSenha() {
@@ -101,11 +121,18 @@
       else { s.type = 'password'; btn.textContent = '👁️'; }
     }
 
-    async function login() {
+    async function login(tentativa) {
+      tentativa = tentativa || 0;
       var msg = document.getElementById('msg');
       msg.style.display = 'block';
       msg.className = 'msg';
-      msg.textContent = 'Entrando...';
+      msg.textContent = tentativa > 0 ? 'Reconectando…' : 'Entrando...';
+
+      if (typeof CONFIG === 'undefined' || !CONFIG.API_URL) {
+        msg.className = 'msg erro';
+        msg.textContent = 'Configuração da API não carregou. Recarregue a página.';
+        return;
+      }
 
       var email = document.getElementById('email').value.trim();
       var senha = document.getElementById('senha').value.trim();
@@ -116,13 +143,30 @@
         return;
       }
 
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function () { controller.abort(); }, 90000) : null;
+
       try {
-        var r = await fetch(`${CONFIG.API_URL}/auth/login`, {
+        var r = await fetch(CONFIG.API_URL + '/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: email, senha: senha })
+          body: JSON.stringify({ email: email, senha: senha }),
+          signal: controller ? controller.signal : undefined
         });
-        var d = await r.json();
+        if (timer) clearTimeout(timer);
+
+        var d;
+        try {
+          d = await r.json();
+        } catch (parseErr) {
+          if (tentativa < 1) {
+            aquecerApi();
+            return login(tentativa + 1);
+          }
+          msg.className = 'msg erro';
+          msg.textContent = 'Resposta inválida da API. O servidor pode estar reiniciando — tente em 1 minuto.';
+          return;
+        }
 
         if (r.ok) {
           localStorage.setItem('integra_token', d.token);
@@ -130,7 +174,6 @@
           msg.className = 'msg sucesso';
           msg.textContent = '✅ Login realizado! Redirecionando...';
           
-          // Redirecionar baseado no tipo
           setTimeout(function() {
             if (d.usuario.tipo === 'paciente') window.location.href = 'painel-paciente.html';
             else if (d.usuario.tipo === 'super_admin') window.location.href = 'painel-criador.html';
@@ -146,8 +189,13 @@
           msg.textContent = d.erro || 'Email ou senha incorretos.';
         }
       } catch(e) {
+        if (timer) clearTimeout(timer);
+        if (tentativa < 1) {
+          aquecerApi();
+          return login(tentativa + 1);
+        }
         msg.className = 'msg erro';
-        msg.textContent = 'Erro de conexão. Tente novamente.';
+        msg.textContent = mensagemErroLogin(e);
       }
     }
 

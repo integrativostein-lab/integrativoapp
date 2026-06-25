@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Avaliação de Bem-Estar Integrativo — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <link rel="stylesheet" href="css/bemestar-temporario.css">
+  <!-- Biblioteca para gerar PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root { --azul-primario: #2563eb; --azul-escuro: #1e3a8a; --texto-suave: #64748b; }
+    .secao-anamnese h3 { font-size: 18px; color: var(--azul-escuro); border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin: 30px 0 15px; }
+    .grid-campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .campo-adicional { margin-bottom: 16px; }
+    .campo-adicional label { font-weight: 600; color: var(--azul-escuro); margin-bottom: 6px; display: block; font-size: 14px; }
+    .anamnese-input { width: 100%; padding: 12px; border: 1px solid #CBD5E1; border-radius: 10px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+    
+    /* IMC Style */
+    .imc-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 12px; padding: 15px; margin-top: 10px; display: none; }
+    .imc-flex { display: flex; justify-content: space-between; align-items: center; }
+    .imc-valor { font-size: 24px; font-weight: 800; color: var(--azul-escuro); }
+    .imc-status { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+    
+    /* Condicionais e Sub-opções */
+    .condicional { display: none; background: #f8fafc; padding: 15px; border-radius: 10px; border-left: 4px solid var(--azul-primario); margin-top: 10px; }
+    .sub-opcoes { margin-top: 8px; padding-left: 20px; display: none; }
+    .sub-item { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 5px; color: #475569; }
+
+    /* Listas de Seleção */
+    .lista-opcoes { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    .categoria-item { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; background: #fff; transition: 0.2s; }
+    .categoria-header { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 600; color: #334155; }
+    .categoria-item.ativa { border-color: var(--azul-primario); background: #f8fafc; }
+
+    .btn-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+    .btn-container .btn { flex: 1; min-width: 140px; padding: 14px; font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .btn-primario { background: var(--azul-primario); color: white; border: none; }
+    .btn-secundario { background: #f1f5f9; color: var(--azul-escuro); border: 1px solid #e2e8f0; }
+    .btn:hover { opacity: 0.9; }
+    
+    .status-normal { background: #dcfce7; color: #166534; }
+    .status-alerta { background: #fef9c3; color: #854d0e; }
+    .status-perigo { background: #fee2e2; color: #991b1b; }
+    .obrigatorio { color: #ef4444; }
+
+    /* Estilo para o PDF */
+    #pdf-content { padding: 20px; color: #1e293b; font-family: sans-serif; }
+    .pdf-header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px; }
+    .pdf-section { margin-bottom: 15px; }
+    .pdf-section strong { color: #1e3a8a; display: block; margin-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+  </nav>
+
+  <div class="auto-wrap">
+    <section class="auto-card painel-etapa ativa" id="etapa-1">
+      <h2>Avaliação de Saúde e Bem-Estar</h2>
+      <form id="form-avaliacao">
+        <!-- 1. Medidas -->
+        <div class="secao-anamnese">
+          <h3>1. Medidas e Dados Básicos</h3>
+          <div class="grid-campos">
+            <div class="campo-adicional">
+              <label for="idade">Idade <span class="obrigatorio">*</span></label>
+              <input type="number" id="idade" class="anamnese-input" required>
+            </div>
+            <div class="campo-adicional">
+              <label for="genero">Gênero <span class="obrigatorio">*</span></label>
+              <select id="genero" class="anamnese-input" required>
+                <option value="">Selecione</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="campo-adicional">
+              <label for="peso">Peso (kg) <span class="obrigatorio">*</span></label>
+              <input type="number" id="peso" class="anamnese-input" step="0.1" required>
+            </div>
+            <div class="campo-adicional">
+              <label for="altura">Altura (cm) <span class="obrigatorio">*</span></label>
+              <input type="number" id="altura" class="anamnese-input" required>
+            </div>
+          </div>
+          <div id="imc-box" class="imc-box">
+            <div class="imc-flex">
+              <div><span style="font-size:12px;color:var(--texto-suave);">IMC Calculado</span><br><span id="imc-valor" class="imc-valor">--</span></div>
+              <span id="imc-status" class="imc-status">--</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Hábitos -->
+        <div class="secao-anamnese">
+          <h3>2. Hábitos Diários</h3>
+          <div class="grid-campos">
+            <div class="campo-adicional">
+              <label for="agua">Consumo de Água (Copos/dia) <span class="obrigatorio">*</span></label>
+              <input type="number" id="agua" class="anamnese-input" required>
+            </div>
+            <div class="campo-adicional">
+              <label for="sono">Horas de Sono <span class="obrigatorio">*</span></label>
+              <input type="number" id="sono" class="anamnese-input" step="0.5" required>
+            </div>
+          </div>
+          <div class="campo-adicional">
+            <label>Você fuma?</label>
+            <select id="fuma" class="anamnese-input" onchange="toggleBox('fuma', 'box-cigarro')">
+              <option value="Não">Não</option>
+              <option value="Sim">Sim</option>
+              <option value="Ex-fumante">Ex-fumante</option>
+            </select>
+            <div id="box-cigarro" class="condicional">
+              <label>Quantos cigarros por dia?</label>
+              <input type="number" id="qtd-cigarro" class="anamnese-input">
+            </div>
+          </div>
+          <div class="campo-adicional">
+            <label>Consome bebidas alcoólicas?</label>
+            <select id="bebe" class="anamnese-input" onchange="toggleBox('bebe', 'box-bebida')">
+              <option value="Não">Não</option>
+              <option value="Sim">Sim</option>
+            </select>
+            <div id="box-bebida" class="condicional">
+              <label>Frequência / Quantidade</label>
+              <input type="text" id="qtd-bebida" class="anamnese-input" placeholder="Ex: 2 doses no fim de semana">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Sintomas -->
+        <div class="secao-anamnese">
+          <h3>3. Desconfortos Comuns (Sintomas)</h3>
+          <div class="lista-opcoes" id="lista-sintomas"></div>
+        </div>
+
+        <!-- 4. Medicamentos -->
+        <div class="secao-anamnese">
+          <h3>4. Uso de Medicamentos</h3>
+          <div class="lista-opcoes" id="lista-medicamentos"></div>
+          <div class="campo-adicional" style="margin-top:15px;">
+            <label>Outros (Suplementos, etc):</label>
+            <textarea id="outros-meds" class="anamnese-input" rows="2"></textarea>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primario" style="width:100%;margin-top:20px;">Gerar Resumo</button>
+      </form>
+    </section>
+
+    <section class="auto-card painel-etapa" id="etapa-2" style="display:none;">
+      <h2>Resumo da Avaliação</h2>
+      
+      <!-- Container que será convertido em PDF -->
+      <div id="pdf-area" style="background:#fff;padding:20px;border-radius:12px;border:1px solid #e2e8f0;">
+        <div id="resultado-final" style="line-height:1.6;"></div>
+      </div>
+
+      <div class="btn-container">
+        <button class="btn btn-primario" onclick="salvarPDF()">Salvar em PDF</button>
+        <button class="btn btn-secundario" onclick="copiarResumo()">Copiar Texto</button>
+        <button class="btn btn-secundario" onclick="location.reload()" style="background:#f8fafc;">Nova Avaliação</button>
+      </div>
+      <p id="msg-feedback" style="text-align:center;margin-top:10px;font-size:14px;color:var(--azul-primario);"></p>
+    </section>
+  </div>
+
+  <script>
+    const dataSintomas = [
+      { cat: "Dores de Cabeça", subs: ["Enxaqueca", "Cefaleia tensional", "Dor na nuca", "Pressão nos olhos"] },
+      { cat: "Dores no Corpo", subs: ["Lombar (costas)", "Pescoço/Cervical", "Articulações (Juntas)", "Muscular geral"] },
+      { cat: "Digestão / Estômago", subs: ["Azia (Queimação)", "Refluxo", "Gastrite / Dor estomacal", "Estufamento / Gases"] },
+      { cat: "Intestino", subs: ["Prisão de ventre", "Diarreia frequente", "Síndrome do intestino irritável"] },
+      { cat: "Emocional / Mental", subs: ["Ansiedade", "Insônia / Dificuldade para dormir", "Estresse crônico", "Desânimo / Tristeza"] }
+    ];
+
+    const dataMedicamentos = [
+      { cat: "Dor e Inflamação", subs: ["Paracetamol", "Dipirona", "Ibuprofeno", "Nimesulida", "Diclofenaco"] },
+      { cat: "Estômago e Digestão", subs: ["Omeprazol / Pantoprazol", "Antiácidos", "Domperidona"] },
+      { cat: "Pressão e Coração", subs: ["Enalapril / Losartana", "Atenolol / Propranolol", "Aspirina (AAS)"] },
+      { cat: "Diabetes / Açúcar", subs: ["Metformina", "Gliclazida", "Insulina"] },
+      { cat: "Controle Emocional", subs: ["Fluoxetina / Sertralina", "Clonazepam / Alprazolam", "Amitriptilina"] }
+    ];
+
+    function criarLista(containerId, data, namePrefix) {
+      const container = document.getElementById(containerId);
+      data.forEach((item, idx) => {
+        const id = `${namePrefix}-${idx}`;
+        container.innerHTML += `
+          <div class="categoria-item" id="item-${id}">
+            <div class="categoria-header" onclick="toggleSub('${id}')">
+              <input type="checkbox" id="check-${id}" name="${namePrefix}" value="${item.cat}" onclick="event.stopPropagation(); toggleSub('${id}')">
+              <span>${item.cat}</span>
+            </div>
+            <div class="sub-opcoes" id="sub-${id}">
+              ${item.subs.map(sub => `<label class="sub-item"><input type="checkbox" name="${namePrefix}-sub" value="${sub}"> ${sub}</label>`).join('')}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function toggleSub(id) {
+      const check = document.getElementById('check-' + id);
+      const sub = document.getElementById('sub-' + id);
+      const item = document.getElementById('item-' + id);
+      if (event.target.type !== 'checkbox') check.checked = !check.checked;
+      if (check.checked) { sub.style.display = 'block'; item.classList.add('ativa'); }
+      else { sub.style.display = 'none'; item.classList.remove('ativa'); sub.querySelectorAll('input').forEach(i => i.checked = false); }
+    }
+
+    function toggleBox(sid, bid) {
+      const v = document.getElementById(sid).value;
+      document.getElementById(bid).style.display = (v === 'Sim' || v === 'Ex-fumante') ? 'block' : 'none';
+    }
+
+    const pIn = document.getElementById('peso'), aIn = document.getElementById('altura');
+    function calcIMC() {
+      const p = parseFloat(pIn.value), a = parseFloat(aIn.value)/100;
+      if (p>0 && a>0) {
+        const imc = (p/(a*a)).toFixed(1);
+        document.getElementById('imc-valor').textContent = imc;
+        let s='', c='';
+        if(imc<18.5){s='Abaixo do peso'; c='status-alerta';}
+        else if(imc<25){s='Peso normal'; c='status-normal';}
+        else if(imc<30){s='Sobrepeso'; c='status-alerta';}
+        else {s='Obesidade'; c='status-perigo';}
+        const el = document.getElementById('imc-status');
+        el.textContent = s; el.className = 'imc-status ' + c;
+        document.getElementById('imc-box').style.display = 'block';
+        return {v: imc, s: s};
+      }
+      return null;
+    }
+    pIn.oninput = calcIMC; aIn.oninput = calcIMC;
+
+    document.getElementById('form-avaliacao').onsubmit = function(e) {
+      e.preventDefault();
+      const imc = calcIMC();
+      const getChecked = (name) => {
+        let res = [];
+        document.querySelectorAll(`.categoria-item.ativa`).forEach(item => {
+          const cat = item.querySelector(`input[name="${name}"]`).value;
+          const subs = Array.from(item.querySelectorAll(`input[name="${name}-sub"]:checked`)).map(i => i.value);
+          res.push(`• <strong>${cat}</strong>${subs.length ? ': ' + subs.join(', ') : ''}`);
+        });
+        return res;
+      };
+
+      const sints = getChecked('sintoma'), meds = getChecked('medicamento');
+
+      let resHtml = `
+        <div class="pdf-header">
+          <h2 style="margin:0;color:#1e3a8a;">Resumo de Bem-Estar Integrativo</h2>
+          <p style="margin:5px 0 0;font-size:12px;color:#64748b;">Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+        </div>
+        <div class="pdf-section">
+          <strong>DADOS BÁSICOS E MEDIDAS</strong>
+          Idade: ${document.getElementById('idade').value} anos | Gênero: ${document.getElementById('genero').value}<br>
+          Peso: ${document.getElementById('peso').value}kg | Altura: ${document.getElementById('altura').value}cm<br>
+          IMC: ${imc ? imc.v + ' (' + imc.s + ')' : '--'}
+        </div>
+        <div class="pdf-section">
+          <strong>HÁBITOS DIÁRIOS</strong>
+          Água: ${document.getElementById('agua').value} copos/dia | Sono: ${document.getElementById('sono').value}h/dia<br>
+          Fuma: ${document.getElementById('fuma').value} ${document.getElementById('qtd-cigarro').value ? '(' + document.getElementById('qtd-cigarro').value + ' cig/dia)' : ''}<br>
+          Álcool: ${document.getElementById('bebe').value} ${document.getElementById('qtd-bebida').value ? '(' + document.getElementById('qtd-bebida').value + ')' : ''}
+        </div>
+        <div class="pdf-section">
+          <strong>SINTOMAS E DESCONFORTOS</strong>
+          ${sints.length ? sints.join('<br>') : 'Nenhum relatado.'}
+        </div>
+        <div class="pdf-section">
+          <strong>MEDICAMENTOS E SUPLEMENTOS</strong>
+          ${meds.length ? meds.join('<br>') : 'Nenhum relatado.'}<br>
+          <span style="font-size:13px;">${document.getElementById('outros-meds').value}</span>
+        </div>
+        <p style="font-size:10px;color:#94a3b8;margin-top:20px;border-top:1px solid #e2e8f0;padding-top:10px;">
+          Este documento é para fins informativos e não substitui uma consulta médica.
+        </p>
+      `;
+
+      document.getElementById('resultado-final').innerHTML = resHtml;
+      document.getElementById('etapa-1').style.display = 'none';
+      document.getElementById('etapa-2').style.display = 'block';
+      window.scrollTo(0,0);
+    };
+
+    function salvarPDF() {
+      const element = document.getElementById('pdf-area');
+      const opt = {
+        margin: 10,
+        filename: 'meu-bem-estar-integrativo.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
+
+    function copiarResumo() {
+      const t = document.getElementById('resultado-final').innerText;
+      navigator.clipboard.writeText(t).then(() => {
+        document.getElementById('msg-feedback').textContent = "Copiado!";
+        setTimeout(() => document.getElementById('msg-feedback').textContent = "", 2000);
+      });
+    }
+
+    criarLista('lista-sintomas', dataSintomas, 'sintoma');
+    criarLista('lista-medicamentos', dataMedicamentos, 'medicamento');
+  </script>
+</body>
+</html>
