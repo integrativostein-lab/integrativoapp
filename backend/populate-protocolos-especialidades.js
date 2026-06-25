@@ -581,10 +581,10 @@ async function popular() {
         const [, tipo, nome, descricao, fonte] = item;
         const result = await client.query(
           `INSERT INTO banco_terapeutico (especialidade_id, tipo, nome, descricao, dosagem_padrao, criado_por)
-           SELECT $1, $2, $3, $4, $5, NULL
+           SELECT $1::int, $2::varchar, $3::varchar, $4::text, $5::text, NULL::int
            WHERE NOT EXISTS (
              SELECT 1 FROM banco_terapeutico
-             WHERE especialidade_id = $1 AND tipo = $2 AND nome = $3
+             WHERE especialidade_id = $1 AND tipo = $2::varchar AND nome = $3::varchar
            )`,
           [especialidadeId, tipo, nome, descricao, fonte]
         );
