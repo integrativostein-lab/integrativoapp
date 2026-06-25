@@ -29,10 +29,34 @@ const ORIGENS_ALFA = [
 const CORS_PRODUCAO = ORIGENS_PRODUCAO.join(',');
 const CORS_ALFA = ORIGENS_ALFA.join(',');
 
+/** Preview Vercel do projeto alfa (ex.: integrativoapp-alfa-xxx.vercel.app). */
+function ehPreviewVercelAlfa(hostname) {
+  const h = (hostname || '').toLowerCase();
+  return h.endsWith('.vercel.app') && h.includes('integrativoapp-alfa');
+}
+
+/**
+ * Valida origem CORS — lista fixa + previews Vercel alfa em modo teste.
+ */
+function origemPermitida(origin, { modoTeste = false } = {}) {
+  if (!origin) return true;
+  const permitidas = modoTeste ? [...ORIGENS_ALFA, ...ORIGENS_PRODUCAO] : ORIGENS_PRODUCAO;
+  if (permitidas.includes(origin)) return true;
+  if (!modoTeste) return false;
+  try {
+    const u = new URL(origin);
+    if (ehPreviewVercelAlfa(u.hostname)) return true;
+    if (u.hostname === 'localhost' || u.hostname === '127.0.0.1') return true;
+  } catch (_) { /* ignore */ }
+  return false;
+}
+
 module.exports = {
   SITE_CANONICO,
   ORIGENS_PRODUCAO,
   ORIGENS_ALFA,
   CORS_PRODUCAO,
-  CORS_ALFA
+  CORS_ALFA,
+  ehPreviewVercelAlfa,
+  origemPermitida
 };

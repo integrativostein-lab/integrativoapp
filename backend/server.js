@@ -24,6 +24,7 @@ const cron = require('node-cron');
 const crypto = require('crypto');
 const ambiente = require('./config/ambiente');
 const modoLancamento = require('./config/modo-lancamento');
+const { origemPermitida } = require('./config/dominios');
 const { APP: VERSAO_APP } = require('./config/versao');
 const { bloquearRecursosClinicos } = require('./middlewares/bloquear-recursos-clinicos');
 
@@ -42,9 +43,10 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:8000,http:
   .split(',').map(s => s.trim()).filter(Boolean);
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // server-to-server / curl
+    if (!origin) return cb(null, true);
     if (allowedOrigins.includes('*')) return cb(null, true);
     if (allowedOrigins.includes(origin)) return cb(null, true);
+    if (origemPermitida(origin, { modoTeste: ambiente.modoTeste })) return cb(null, true);
     return cb(new Error('Origem não permitida pelo CORS'));
   },
   credentials: true,

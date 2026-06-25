@@ -41,6 +41,9 @@
       Profissional: <strong>profissional@demo.com</strong> / demo123<br>
       Paciente: <strong>paciente@demo.com</strong> / demo123
     </div>
+    <div class="modo-teste" id="api-status" style="display:none;background:#EFF6FF;border-color:#3B82F6;color:#1E40AF;">
+      Conectando ao servidor alfa…
+    </div>
 
     <div id="msg" class="msg"></div>
     
@@ -97,9 +100,50 @@
     function aquecerApi() {
       if (typeof CONFIG === 'undefined' || !CONFIG.API_URL) return;
       var base = CONFIG.API_URL.replace(/\/api\/?$/, '');
+      fetch(base + '/', { cache: 'no-store' }).catch(function () {});
       fetch(base + '/api/config/publica', { cache: 'no-store' }).catch(function () {});
     }
+
+    function esperar(ms) {
+      return new Promise(function (resolve) { setTimeout(resolve, ms); });
+    }
+
+    async function aguardarApiOnline(maxTentativas) {
+      if (typeof CONFIG === 'undefined' || !CONFIG.API_URL) return false;
+      var base = CONFIG.API_URL.replace(/\/api\/?$/, '');
+      var status = document.getElementById('api-status');
+      var tentativas = maxTentativas || 10;
+      for (var i = 0; i < tentativas; i++) {
+        try {
+          var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+          var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 90000) : null;
+          var r = await fetch(base + '/api/config/publica', {
+            cache: 'no-store',
+            signal: ctrl ? ctrl.signal : undefined
+          });
+          if (timer) clearTimeout(timer);
+          if (r.ok) {
+            if (status) status.style.display = 'none';
+            return true;
+          }
+        } catch (_) { /* retry */ }
+        if (status) {
+          status.style.display = 'block';
+          status.textContent = 'Conectando ao servidor alfa… (' + (i + 1) + '/' + tentativas + '). Se estiver parado, aguarde até 2 min.';
+        }
+        aquecerApi();
+        await esperar(12000);
+      }
+      if (status) {
+        status.textContent = 'Servidor ainda acordando. Você pode tentar entrar — faremos novas tentativas automáticas.';
+      }
+      return false;
+    }
+
     aquecerApi();
+    if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
+      aguardarApiOnline();
+    }
 
     function mensagemErroLogin(err, r) {
       if (err && err.name === 'AbortError') {
@@ -158,8 +202,9 @@
         try {
           d = await r.json();
         } catch (parseErr) {
-          if (tentativa < 1) {
+          if (tentativa < 2) {
             aquecerApi();
+            await esperar(8000);
             return login(tentativa + 1);
           }
           msg.className = 'msg erro';
@@ -189,8 +234,9 @@
         }
       } catch(e) {
         if (timer) clearTimeout(timer);
-        if (tentativa < 1) {
+        if (tentativa < 2) {
           aquecerApi();
+          await esperar(8000);
           return login(tentativa + 1);
         }
         msg.className = 'msg erro';
