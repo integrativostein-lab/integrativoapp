@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="icon" type="image/x-icon" href="img/favicons/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta de biblioteca — Integrativo.App</title>
+  <link rel="stylesheet" href="css/estilo.css">
+  <style>
+    .consulta-wrap { max-width: 960px; margin: 32px auto 72px; padding: 0 24px; }
+    .consulta-hero {
+      background: linear-gradient(135deg, var(--azul-profundo), #1f3a5f 65%, var(--verde-destaque));
+      border-radius: 24px; color: #fff; padding: 32px; margin-bottom: 20px;
+    }
+    .consulta-hero h1 { color: #fff; font-size: 30px; margin: 10px 0; }
+    .consulta-hero .badge {
+      background: rgba(255,255,255,0.15); border-radius: 999px; display: inline-block;
+      font-size: 12px; font-weight: 800; padding: 5px 12px;
+    }
+    .consulta-card {
+      background: #fff; border: 1px solid #E2E8F0; border-radius: 18px;
+      box-shadow: var(--sombra-suave); margin-bottom: 18px; padding: 22px;
+    }
+    .consulta-card h2 { color: var(--azul-profundo); font-size: 18px; margin-bottom: 10px; }
+    .consulta-card p, .consulta-card li { color: var(--texto-principal); line-height: 1.7; }
+    .fontes-lista { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .fonte-chip {
+      background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 999px;
+      color: #065F46; font-size: 13px; padding: 6px 14px;
+    }
+    .registro-item {
+      border: 1px solid #E2E8F0; border-radius: 12px; margin-top: 10px; padding: 14px;
+    }
+    .registro-item strong { color: var(--azul-profundo); display: block; margin-bottom: 4px; }
+    .registro-item small { color: var(--texto-suave); display: block; line-height: 1.5; }
+    .acoes-topo { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+    .acoes-topo a {
+      background: #fff; border: 1px solid #CBD5E1; border-radius: 999px;
+      color: var(--azul-profundo); font-weight: 700; padding: 8px 16px; text-decoration: none;
+    }
+    .aviso { background: #F8FAFC; border-left: 4px solid var(--verde-destaque); border-radius: 12px; font-size: 14px; padding: 14px 16px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="painel-terapeuta.html" class="logo-container">
+      <img src="img/logo.png" alt="Logo Integrativo.App" class="logo-img">
+      <span class="logo-texto">Integrativo.App</span>
+    </a>
+    <div class="menu">
+      <a href="painel-bibliotecas.html">← Bibliotecas</a>
+      <a href="painel-terapeuta.html">Painel</a>
+      <a href="#" onclick="AuthSessao.encerrarSessao(); return false;">Sair</a>
+    </div>
+  </nav>
+
+  <main class="consulta-wrap">
+    <div class="acoes-topo">
+      <a href="painel-bibliotecas.html">← Voltar às bibliotecas</a>
+      <a href="lista-especialidades.html" id="linkEspecialidade" style="display:none;">Ver conteúdo por especialidade</a>
+    </div>
+
+    <section class="consulta-hero" id="hero" style="display:none;">
+      <span class="badge" id="heroCategoria"></span>
+      <h1 id="heroTitulo"></h1>
+      <p id="heroResumo" style="color:rgba(255,255,255,0.9);"></p>
+    </section>
+
+    <div class="aviso">
+      <strong>Apoio profissional.</strong> Referências e protocolos para estudo e suporte à decisão. A conduta clínica permanece sob responsabilidade do profissional habilitado.
+    </div>
+
+    <section class="consulta-card" id="cardBase" style="display:none;">
+      <h2>Base de conhecimento</h2>
+      <p id="textoBase"></p>
+      <h2 style="margin-top:18px;">Fontes</h2>
+      <div class="fontes-lista" id="listaFontes"></div>
+    </section>
+
+    <section class="consulta-card" id="cardRegistros" style="display:none;">
+      <h2>Registros terapêuticos relacionados</h2>
+      <p style="color:var(--texto-suave);font-size:14px;">Itens do banco terapêutico vinculados a esta biblioteca (até 30 resultados).</p>
+      <div id="registros"></div>
+    </section>
+
+    <section class="consulta-card" id="cardVazio" style="display:none;">
+      <h2>Biblioteca não encontrada</h2>
+      <p>Não localizamos esta biblioteca no catálogo. Volte ao painel e escolha outra, ou abra o <a href="bibliotecas-especialidades.html">mapa completo</a>.</p>
+    </section>
+  </main>
+
+  <script src="js/catalogo-terapeutico.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth-sessao.js"></script>
+  <script>
+    const token = AuthSessao.obterToken();
+    if (!token) window.location.href = 'login.html';
+
+    const Catalogo = CONFIG.Catalogo || CatalogoTerapeutico;
+    const params = new URLSearchParams(window.location.search);
+    const nomeBusca = (params.get('nome') || params.get('biblioteca') || '').trim();
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function localizarBiblioteca(nome) {
+      const matriz = CONFIG.BIBLIOTECAS_TERAPEUTICAS?.matriz || [];
+      if (!nome) return null;
+      const direto = matriz.find((item) => Catalogo.bibliotecaCorresponde(item, [nome]));
+      if (direto) return direto;
+      const filtrados = Catalogo.filtrarPorTermo(
+        matriz,
+        nome,
+        (item) => `${item.especialidade} ${item.categoria} ${item.base}`
+      );
+      return filtrados[0] || null;
+    }
+
+    function especialidadeRelacionada(nomeBiblioteca) {
+      const esp = CONFIG.ESPECIALIDADES || [];
+      return esp.find((e) => Catalogo.bibliotecaCorresponde({ especialidade: nomeBiblioteca }, [e.nome]))
+        || esp.find((e) => Catalogo.normalizarTexto(e.nome).includes(Catalogo.normalizarTexto(nomeBiblioteca).split(' ')[0]));
+    }
+
+    function renderizar(item) {
+      document.title = `${item.especialidade} — Integrativo.App`;
+      document.getElementById('hero').style.display = 'block';
+      document.getElementById('cardBase').style.display = 'block';
+      document.getElementById('heroCategoria').textContent = item.categoria;
+      document.getElementById('heroTitulo').textContent = item.especialidade;
+      document.getElementById('heroResumo').textContent = item.base;
+      document.getElementById('textoBase').textContent = item.base;
+
+      const fontes = String(item.fontes || '').split(';').map((f) => f.trim()).filter(Boolean);
+      document.getElementById('listaFontes').innerHTML = fontes.length
+        ? fontes.map((f) => `<span class="fonte-chip">${escapeHtml(f)}</span>`).join('')
+        : '<span class="fonte-chip">Fontes em curadoria</span>';
+
+      const rel = especialidadeRelacionada(item.especialidade);
+      if (rel) {
+        const link = document.getElementById('linkEspecialidade');
+        link.style.display = 'inline-flex';
+        link.href = `lista-especialidades.html?especialidade=${encodeURIComponent(rel.nome)}`;
+      }
+    }
+
+    async function carregarRegistros(termo) {
+      try {
+        const r = await fetch(
+          `${CONFIG.API_URL}/prescricoes/banco-terapeutico?busca=${encodeURIComponent(termo)}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!r.ok) return;
+        const itens = await r.json();
+        if (!Array.isArray(itens) || !itens.length) return;
+        document.getElementById('cardRegistros').style.display = 'block';
+        document.getElementById('registros').innerHTML = itens.map((item) => `
+          <div class="registro-item">
+            <strong>${escapeHtml(item.nome)}</strong>
+            <small>${escapeHtml(item.especialidade_nome || '')} · ${escapeHtml(item.tipo || 'registro')}</small>
+            ${item.descricao ? `<small>${escapeHtml(item.descricao)}</small>` : ''}
+            ${item.contraindicacoes ? `<small><b>Atenção:</b> ${escapeHtml(item.contraindicacoes)}</small>` : ''}
+          </div>
+        `).join('');
+      } catch (_) { /* banco opcional */ }
+    }
+
+    const biblioteca = localizarBiblioteca(nomeBusca);
+    if (!biblioteca) {
+      document.getElementById('cardVazio').style.display = 'block';
+    } else {
+      renderizar(biblioteca);
+      carregarRegistros(biblioteca.especialidade.split(' ')[0]);
+    }
+  </script>
+</body>
+</html>

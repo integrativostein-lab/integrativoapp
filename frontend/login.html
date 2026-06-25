@@ -89,9 +89,12 @@
 
   <script src="js/catalogo-terapeutico.js"></script>
   <script src="js/config.js"></script>
+  <script src="js/auth-sessao.js"></script>
   <script src="js/nav-publico.js"></script>
   <script src="js/i18n.js"></script>
   <script>
+    AuthSessao.redirecionarSeLogado();
+
     if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
       document.getElementById('modo-teste').style.display = 'block';
     }

@@ -1,4 +1,7 @@
 (function (global) {
+  const TOKEN_KEY = 'integra_token';
+  const USER_KEY = 'integra_usuario';
+
   const ITENS_BASE = [
     { id: 'inicio', href: 'index.html', i18n: 'nav.inicio' },
     { id: 'busca', href: 'busca.html', i18n: 'nav.busca' },
@@ -19,6 +22,64 @@
       console.warn('[NavPublico] data-nav-extras inválido:', e.message);
       return [];
     }
+  }
+
+  function obterUsuarioNav() {
+    try {
+      return JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+    } catch {
+      return null;
+    }
+  }
+
+  function urlPainelNav(usuario) {
+    const mapa = {
+      paciente: 'painel-paciente.html',
+      super_admin: 'painel-criador.html',
+      admin: 'painel-admin.html',
+      rh: 'painel-rh.html',
+      recepcionista: 'painel-recepcao.html',
+      financeiro: 'painel-financeiro.html',
+      contador: 'painel-contador.html'
+    };
+    return mapa[usuario?.tipo] || 'painel-terapeuta.html';
+  }
+
+  function aplicarNavAutenticado(nav) {
+    const token = localStorage.getItem(TOKEN_KEY);
+    const usuario = obterUsuarioNav();
+    if (!token || !usuario?.tipo) return;
+
+    const actions = nav.querySelector('.nav-actions');
+    if (!actions) return;
+
+    const entrar = actions.querySelector('.nav-entrar');
+    if (entrar) {
+      entrar.href = urlPainelNav(usuario);
+      entrar.textContent = usuario.tipo === 'paciente' ? 'Meu painel' : 'Painel';
+      entrar.classList.remove('btn-primario');
+      entrar.classList.add('btn-secundario');
+      entrar.removeAttribute('data-i18n');
+    }
+
+    if (!actions.querySelector('.nav-sair')) {
+      const sair = document.createElement('button');
+      sair.type = 'button';
+      sair.className = 'nav-sair btn btn-texto';
+      sair.style.marginLeft = '8px';
+      sair.addEventListener('click', function () {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        try { sessionStorage.removeItem('integrativo_arquivo_profissional_sessao_ok'); } catch (_) {}
+        window.location.href = 'index.html';
+      });
+      const lang = actions.querySelector('#nav-lang-selector');
+      if (lang) actions.insertBefore(sair, lang);
+      else actions.appendChild(sair);
+    }
+
+    const primeiro = (usuario.nome || '').split(' ')[0];
+    actions.querySelector('.nav-sair').textContent = primeiro ? `Sair (${primeiro})` : 'Sair';
   }
 
   function render(nav) {
@@ -45,6 +106,12 @@
         <div id="nav-lang-selector" class="nav-lang-select-container" data-i18n-no-translate aria-label="${t('lang.seletor', 'Idioma')}"></div>
       </div>
     `;
+
+    if (global.AuthSessao?.aplicarNavAutenticado) {
+      global.AuthSessao.aplicarNavAutenticado(nav);
+    } else {
+      aplicarNavAutenticado(nav);
+    }
   }
 
   function init() {

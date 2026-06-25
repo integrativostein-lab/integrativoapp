@@ -134,6 +134,27 @@
 
     .biblioteca-card {
       padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+
+    .biblioteca-card:hover,
+    .biblioteca-card:focus-visible {
+      border-color: var(--verde-destaque);
+      box-shadow: var(--sombra);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    .acao-consulta {
+      color: var(--verde-destaque);
+      font-size: 13px;
+      font-weight: 800;
+      margin-top: 12px;
+    }
+
+    .campo-busca a.secundario {
+      background: var(--verde-destaque);
     }
 
     .biblioteca-card h3 {
@@ -237,10 +258,10 @@
 
     <section class="painel-leitura">
       <h2>Estudar, revisar e consultar</h2>
-      <p>Use a busca para encontrar por especialidade, protocolo, fonte, diagnóstico, tratamento ou segurança clínica. Para liberar mais bibliotecas, faça upgrade do plano ou ajuste suas escolhas.</p>
+      <p>Use a busca para encontrar por especialidade, protocolo, fonte, diagnóstico, tratamento ou segurança clínica. Clique em uma biblioteca para consultar o conteúdo.</p>
       <div class="campo-busca">
         <input type="search" id="busca" placeholder="Ex.: Ayurveda, dor, consentimento, nadi, sinais de alarme...">
-        <a href="checkout.html?plano=pro">Ajustar plano</a>
+        <a href="#" id="acaoPlano">Consultar</a>
       </div>
     </section>
 
@@ -284,8 +305,94 @@
       return Catalogo.normalizarTexto(texto);
     }
 
+    function planoTemAcessoCompleto() {
+      const porPratica = CONFIG.BIBLIOTECAS_TERAPEUTICAS?.bibliotecas_por_pratica || 67;
+      if (['enterprise', 'clinic', 'premium'].includes(estado.plano)) return true;
+      if (typeof estado.limite === 'number' && estado.limite >= porPratica) return true;
+      return (estado.bibliotecas?.length || 0) >= porPratica;
+    }
+
     function nomesLiberados() {
+      if (planoTemAcessoCompleto()) {
+        return CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz
+          .filter((item) => !Catalogo.isTransversal(item))
+          .map((item) => item.especialidade);
+      }
       return Catalogo.resolverNomesBibliotecas(estado.bibliotecas);
+    }
+
+    function urlConsultaBiblioteca(nome) {
+      return `consulta-biblioteca.html?nome=${encodeURIComponent(nome)}`;
+    }
+
+    function abrirBiblioteca(nome) {
+      window.location.href = urlConsultaBiblioteca(nome);
+    }
+
+    function consultarBusca() {
+      const busca = termo.trim();
+      if (busca.length < 2) {
+        document.getElementById('busca').focus();
+        return;
+      }
+      const matriz = CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz;
+      const nomes = nomesLiberados();
+      const liberadas = matriz.filter((item) => Catalogo.isTransversal(item) || bibliotecaCorresponde(item, nomes));
+      const match = Catalogo.filtrarPorTermo(
+        liberadas,
+        busca,
+        (item) => `${item.especialidade} ${item.categoria} ${item.base} ${item.fontes}`
+      )[0];
+      if (match) {
+        abrirBiblioteca(match.especialidade);
+        return;
+      }
+      if (planoTemAcessoCompleto()) {
+        const qualquer = Catalogo.filtrarPorTermo(
+          matriz,
+          busca,
+          (item) => `${item.especialidade} ${item.categoria} ${item.base}`
+        )[0];
+        if (qualquer) {
+          abrirBiblioteca(qualquer.especialidade);
+          return;
+        }
+      }
+      alert('Nenhuma biblioteca liberada encontrada para este termo. Tente outra palavra-chave ou ajuste seu plano.');
+    }
+
+    function atualizarAcaoPlano() {
+      const btn = document.getElementById('acaoPlano');
+      if (!btn) return;
+      if (planoTemAcessoCompleto()) {
+        btn.textContent = 'Consultar';
+        btn.href = '#';
+        btn.classList.add('secundario');
+        btn.onclick = function (event) {
+          event.preventDefault();
+          consultarBusca();
+        };
+      } else {
+        btn.textContent = 'Ajustar plano';
+        btn.href = 'checkout.html?plano=pro';
+        btn.classList.remove('secundario');
+        btn.onclick = null;
+      }
+    }
+
+    function card(item) {
+      const nomeEnc = encodeURIComponent(item.especialidade);
+      return `
+        <article class="biblioteca-card" role="button" tabindex="0"
+          onclick="abrirBiblioteca(decodeURIComponent('${nomeEnc}'))"
+          onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();abrirBiblioteca(decodeURIComponent('${nomeEnc}'));}">
+          <span class="badge">${item.categoria}</span>
+          <h3>${item.especialidade}</h3>
+          <p>${item.base}</p>
+          <div class="fontes"><strong>Fontes:</strong> ${item.fontes}</div>
+          <div class="acao-consulta">Consultar biblioteca →</div>
+        </article>
+      `;
     }
 
     function bibliotecaCorresponde(item, nomes) {
@@ -300,17 +407,6 @@
       );
     }
 
-    function card(item) {
-      return `
-        <article class="biblioteca-card">
-          <span class="badge">${item.categoria}</span>
-          <h3>${item.especialidade}</h3>
-          <p>${item.base}</p>
-          <div class="fontes"><strong>Fontes:</strong> ${item.fontes}</div>
-        </article>
-      `;
-    }
-
     function renderizar() {
       const nomes = nomesLiberados();
       const todas = CONFIG.BIBLIOTECAS_TERAPEUTICAS.matriz;
@@ -318,21 +414,24 @@
       const doPlano = todas.filter((item) => !Catalogo.isTransversal(item) && bibliotecaCorresponde(item, nomes));
       const planoFiltrado = filtrar(doPlano);
       const transversaisFiltradas = filtrar(transversais);
+      const totalLiberadas = planoTemAcessoCompleto() ? doPlano.length : estado.bibliotecas.length;
 
       document.getElementById('metricas').innerHTML = `
         <div class="metrica"><strong>${estado.plano}</strong><span>Plano atual</span></div>
-        <div class="metrica"><strong>${estado.limite}</strong><span>Limite do plano</span></div>
-        <div class="metrica"><strong>${estado.bibliotecas.length}</strong><span>Bibliotecas escolhidas</span></div>
+        <div class="metrica"><strong>${planoTemAcessoCompleto() ? 'Todas' : estado.limite}</strong><span>Limite do plano</span></div>
+        <div class="metrica"><strong>${totalLiberadas}</strong><span>Bibliotecas liberadas</span></div>
         <div class="metrica"><strong>${transversais.length}</strong><span>Apoios transversais</span></div>
       `;
 
       document.getElementById('bibliotecasPlano').innerHTML = planoFiltrado.length
         ? planoFiltrado.map(card).join('')
-        : `<div class="vazio">Nenhuma biblioteca do plano encontrada para o filtro atual. Se você acabou de se cadastrar, confira suas bibliotecas escolhidas no perfil ou ajuste o plano.</div>`;
+        : `<div class="vazio">Nenhuma biblioteca do plano encontrada para o filtro atual. Use a busca e clique em Consultar, ou ajuste suas bibliotecas no perfil.</div>`;
 
       document.getElementById('bibliotecasTransversais').innerHTML = transversaisFiltradas.length
         ? transversaisFiltradas.map(card).join('')
         : `<div class="vazio">Nenhuma biblioteca transversal encontrada para o filtro atual.</div>`;
+
+      atualizarAcaoPlano();
     }
 
     async function verificarAlertasSeguranca() {
@@ -393,6 +492,13 @@
       termo = event.target.value;
       renderizar();
       agendarAlertasSeguranca();
+    });
+
+    document.getElementById('busca').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        consultarBusca();
+      }
     });
 
     carregarBibliotecas();

@@ -727,6 +727,18 @@
     // ============================================
     renderizarStats(especialidades);
     popularSelect(especialidades);
+
+    var paramEsp = new URLSearchParams(window.location.search).get('especialidade');
+    if (paramEsp) {
+      var select = document.getElementById('selectEspecialidade');
+      var opcao = Array.from(select.options).find(function (opt) {
+        return opt.value === paramEsp || opt.textContent === paramEsp;
+      });
+      if (opcao) {
+        select.value = opcao.value;
+        mostrarEspecialidade();
+      }
+    }
   </script>
 </body>
 </html>
