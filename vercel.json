@@ -12,6 +12,54 @@
       "permanent": false
     },
     {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "integrativo.app" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "www.integrativo.app" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "integrativoapp.com" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "www.integrativoapp.com" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "integrativo.app.br" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "www.integrativo.app.br" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "integrativoapp.com.br" }]
+    },
+    {
+      "source": "/index2",
+      "destination": "/",
+      "permanent": false,
+      "has": [{ "type": "host", "value": "www.integrativoapp.com.br" }]
+    },
+    {
       "source": "/(.*).html",
       "destination": "/$1",
       "permanent": false

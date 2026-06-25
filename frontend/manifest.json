@@ -2,7 +2,7 @@
   "name": "Integrativo.App — Saúde Integrativa",
   "short_name": "Integrativo",
   "description": "Profissionais integrativos, teleconsulta, bibliotecas terapêuticas e agendamento.",
-  "start_url": "/index2.html",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#F8FAFC",

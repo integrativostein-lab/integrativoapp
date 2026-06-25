@@ -15,20 +15,18 @@
   <title>Integrativo.App — Plataforma em construção (jun. 2026) | Autocuidado, bem-estar e autoavaliação</title>
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="css/bemestar-temporario.css">
-</head>
-<body>
+  <script src="js/site-ambiente.js"></script>
   <script src="js/config.js"></script>
   <script>
     (function () {
-      var h = location.hostname.toLowerCase();
-      var producao = ['integrativo.app', 'www.integrativo.app', 'integrativo.app.br', 'www.integrativo.app.br',
-        'integrativoapp.com', 'www.integrativoapp.com', 'integrativoapp.com.br', 'www.integrativoapp.com.br'];
-      if (producao.indexOf(h) >= 0) return;
+      if (typeof SiteAmbiente !== 'undefined' && SiteAmbiente.ehProducao(location.hostname)) return;
       if (typeof CONFIG !== 'undefined' && CONFIG.AMBIENTE_TESTE) {
         window.location.replace('index2.html');
       }
     })();
   </script>
+</head>
+<body>
   <main class="landing-bemestar">
     <div class="conteudo">
       <img src="img/logo.png" alt="Integrativo.App — plataforma de saúde integrativa" class="logo-hero" width="280" height="auto">
@@ -58,13 +56,10 @@
 
       <div class="landing-acoes">
         <a href="auto-diagnostico.html" class="btn-cta">Fazer minha autoavaliação de bem-estar</a>
-        <a href="index2.html" class="btn-secundario">Conhecer a plataforma</a>
       </div>
 
       <p class="rodape-min">
         Integrativo.App &copy; 2026
-        &nbsp;&middot;&nbsp;
-        <a href="index2.html" title="Visão completa da plataforma">Explorar recursos</a>
         &nbsp;&middot;&nbsp;
         <a href="login.html">Entrar na minha conta</a>
       </p>

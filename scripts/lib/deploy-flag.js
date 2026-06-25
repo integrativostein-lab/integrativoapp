@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CONFIG_JS = path.join(__dirname, '../../frontend/js/config.js');
+const MANIFEST_JSON = path.join(__dirname, '../../frontend/manifest.json');
 const FLAG_RE = /const INTEGRATIVO_DEPLOY = '[^']*';/;
 
 function lerFlagAtual() {
@@ -29,10 +30,25 @@ function definirFlag(modo) {
 }
 
 /** Patch temporário — restaura o valor anterior ao chamar restore(). */
+function patchManifestStartUrl(startUrl) {
+  const raw = fs.readFileSync(MANIFEST_JSON, 'utf8');
+  const anterior = raw;
+  const json = JSON.parse(raw);
+  json.start_url = startUrl;
+  fs.writeFileSync(MANIFEST_JSON, `${JSON.stringify(json, null, 2)}\n`, 'utf8');
+  return () => fs.writeFileSync(MANIFEST_JSON, anterior, 'utf8');
+}
+
 function patchTemporario(modo) {
   const anterior = lerFlagAtual();
   definirFlag(modo);
-  return () => definirFlag(anterior);
+  const startUrl = modo === 'alfa' ? '/index2.html' : '/index.html';
+  const restaurarManifest = patchManifestStartUrl(startUrl);
+  const restaurarFlag = () => definirFlag(anterior);
+  return () => {
+    restaurarManifest();
+    restaurarFlag();
+  };
 }
 
 module.exports = {

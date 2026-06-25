@@ -11,18 +11,20 @@ const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname 
 const INTEGRATIVO_DEPLOY = 'producao';
 
 /** Hostnames de produção — nunca tratados como ambiente de teste. */
-const HOSTNAMES_PRODUCAO = [
-  'integrativo.app',
-  'www.integrativo.app',
-  'integrativo.app.br',
-  'www.integrativo.app.br',
-  'integrativoapp.com',
-  'www.integrativoapp.com',
-  'integrativoapp.com.br',
-  'www.integrativoapp.com.br',
-  'integra-saude-psi.vercel.app',
-  'integra-saude-psi-iota.vercel.app'
-];
+const HOSTNAMES_PRODUCAO = (typeof SiteAmbiente !== 'undefined' && SiteAmbiente.HOSTNAMES_PRODUCAO)
+  ? SiteAmbiente.HOSTNAMES_PRODUCAO.slice()
+  : [
+    'integrativo.app',
+    'www.integrativo.app',
+    'integrativo.app.br',
+    'www.integrativo.app.br',
+    'integrativoapp.com',
+    'www.integrativoapp.com',
+    'integrativoapp.com.br',
+    'www.integrativoapp.com.br',
+    'integra-saude-psi.vercel.app',
+    'integra-saude-psi-iota.vercel.app'
+  ];
 
 /** Hostnames que sempre usam backend alfa + banner de teste. */
 const HOSTNAMES_TESTE = [
@@ -34,6 +36,9 @@ const HOSTNAMES_TESTE = [
 ];
 
 function hostEhProducao(hostname) {
+  if (typeof SiteAmbiente !== 'undefined' && SiteAmbiente.ehProducao) {
+    return SiteAmbiente.ehProducao(hostname);
+  }
   const h = (hostname || '').toLowerCase();
   if (!h) return false;
   return HOSTNAMES_PRODUCAO.some((d) => h === d);
@@ -89,6 +94,7 @@ const CONFIG = {
   INTEGRATIVO_DEPLOY,
   HOSTNAMES_PRODUCAO,
   HOSTNAMES_TESTE,
+  ehProducaoOficial: () => hostEhProducao(HOSTNAME_ATUAL),
 
   // ═══════════════════════════════════════════
   // MODO LANÇAMENTO — terapeutas integrativos (sem conselho regulado)
@@ -891,9 +897,14 @@ if (typeof window !== 'undefined' && CONFIG.Catalogo) {
 }
 
 if (typeof window !== 'undefined' && !document.getElementById('modo-lancamento-js')) {
-  const ml = document.createElement('script');
-  ml.id = 'modo-lancamento-js';
-  ml.src = '/js/modo-lancamento.js';
-  ml.defer = true;
-  document.head.appendChild(ml);
+  const pathPagina = (window.location.pathname || '/').replace(/\/$/, '') || '/';
+  const landingProducao = hostEhProducao(HOSTNAME_ATUAL)
+    && (pathPagina === '/' || pathPagina === '/index' || pathPagina.endsWith('/index.html'));
+  if (!landingProducao) {
+    const ml = document.createElement('script');
+    ml.id = 'modo-lancamento-js';
+    ml.src = '/js/modo-lancamento.js';
+    ml.defer = true;
+    document.head.appendChild(ml);
+  }
 }

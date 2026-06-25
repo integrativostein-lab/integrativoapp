@@ -15,10 +15,19 @@
     return cfg().MODO_LANCAMENTO?.ativo !== false;
   }
 
-  function ehAlfa() {
+  function ehProducaoOficial() {
+    if (cfg().ehProducaoOficial) return cfg().ehProducaoOficial();
+    const lista = cfg().HOSTNAMES_PRODUCAO || [];
     const h = (global.location?.hostname || '').toLowerCase();
-    if (h.includes('alfa') || h.includes('alpha')) return true;
+    return lista.some((d) => h === d);
+  }
+
+  function ehAlfa() {
+    if (ehProducaoOficial()) return false;
+    const h = (global.location?.hostname || '').toLowerCase();
     if (h.includes('integrativoapp-alfa')) return true;
+    const hosts = cfg().HOSTNAMES_TESTE || [];
+    if (hosts.some((d) => h === d || h.endsWith('.' + d))) return true;
     try {
       if (global.localStorage?.getItem('integra_forcar_banner_teste') === '1') return true;
     } catch (_) { /* ignore */ }
@@ -74,6 +83,7 @@
   }
 
   async function detectarAmbienteTeste() {
+    if (ehProducaoOficial()) return false;
     if (cfg().AMBIENTE_TESTE) return true;
     if (cfg().INTEGRATIVO_DEPLOY === 'alfa') return true;
     if (ehAlfa()) return true;
@@ -85,10 +95,12 @@
       const r = await fetch(`${base}/api/config/publica`, { signal: AbortSignal.timeout(6000) });
       if (r.ok) {
         const d = await r.json();
-        if (d.ignorar_lgpd) {
-          try { global.CONFIG.AMBIENTE_TESTE = true; } catch (_) { /* ignore */ }
+        if (d.ambiente_teste) {
+          if (d.ignorar_lgpd) {
+            try { global.CONFIG.AMBIENTE_TESTE = true; } catch (_) { /* ignore */ }
+          }
+          return true;
         }
-        return !!d.ambiente_teste;
       }
     } catch (_) { /* offline ou CORS */ }
     return false;

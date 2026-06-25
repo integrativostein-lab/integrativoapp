@@ -1,8 +1,10 @@
-const CACHE_NAME = 'integrativo-pwa-v3';
+const CACHE_NAME = 'integrativo-pwa-v4';
 const CACHE_FILES = [
   '/index.html',
   '/index2.html',
   '/css/estilo.css',
+  '/js/site-ambiente.js',
+  '/css/bemestar-temporario.css',
   '/css/home.css',
   '/css/pwa-install.css',
   '/js/config.js',
