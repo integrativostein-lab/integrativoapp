@@ -4,17 +4,24 @@
 
 const HOSTNAME_ATUAL = typeof window !== 'undefined' ? window.location.hostname : '';
 
+// Endpoints de API por ambiente, centralizados para facilitar manutencao.
+const API_ENDPOINTS = {
+  local: 'http://localhost:3001/api',
+  alfa: 'https://integrativoappespelho.onrender.com/api',
+  producao: 'https://integra-backend-ynrd.onrender.com/api'
+};
+
 function resolverApiUrl() {
   if (typeof window !== 'undefined' && window.INTEGRATIVO_API_URL) {
     return window.INTEGRATIVO_API_URL;
   }
   if (['localhost', '127.0.0.1'].includes(HOSTNAME_ATUAL)) {
-    return 'http://localhost:3001/api';
+    return API_ENDPOINTS.local;
   }
   if (HOSTNAME_ATUAL.includes('alfa') || HOSTNAME_ATUAL.includes('alpha')) {
-    return 'https://integrativoappespelho.onrender.com/api';
+    return API_ENDPOINTS.alfa;
   }
-  return 'https://integra-backend-ynrd.onrender.com/api';
+  return API_ENDPOINTS.producao;
 }
 
 const CONFIG = {
