@@ -6,7 +6,7 @@ module.exports = {
   FIOCRUZ_API: process.env.FIOCRUZ_API_URL || 'https://arca.fiocruz.br/api',
   REDEPICS_API: process.env.REDEPICS_API_URL || 'https://redepicsbrasil.org.br/api',
   BIREME_API: process.env.BIREME_API_URL || 'https://www.bireme.org.br/api',
-  BASE_URL: process.env.FHIR_BASE_URL || 'http://localhost:3000/api/fhir',
+  BASE_URL: process.env.FHIR_BASE_URL || 'http://localhost:3001/api/fhir',
   RNDS_ENABLED: process.env.RNDS_ENABLED === 'true',
   RNDS_AUTH_URL: process.env.RNDS_AUTH_URL || 'https://ehr-services.saude.gov.br/api/auth/token',
 

@@ -100,7 +100,7 @@ python3 -m http.server 8000
 
 ### 7. Acessar
 - **Frontend:** http://localhost:8000
-- **Backend:** http://localhost:3000
+- **Backend:** http://localhost:3001
 - **Supabase Studio:** http://localhost:54323
 
 ---
@@ -259,13 +259,13 @@ ASAAS_API_KEY=sua_chave
 
 ### Teste FHIR
 ```bash
-curl -X GET http://localhost:3000/api/fhir/protocolos-fiocruz \
+curl -X GET http://localhost:3001/api/fhir/protocolos-fiocruz \
   -H "Authorization: Bearer seu_token_jwt"
 ```
 
 ### Teste de Validação
 ```bash
-curl -X POST http://localhost:3000/api/validacao/validar-registro \
+curl -X POST http://localhost:3001/api/validacao/validar-registro \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer seu_token_jwt" \
   -d '{

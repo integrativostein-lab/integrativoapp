@@ -8,7 +8,7 @@
 module.exports = {
   VERSAO: process.env.TISS_VERSAO || '4.01.00',
   NAMESPACE: process.env.TISS_NAMESPACE || 'http://www.ans.gov.br/padroes/tiss/schemas',
-  BASE_URL: process.env.TISS_BASE_URL || 'http://localhost:3000/api/tiss',
+  BASE_URL: process.env.TISS_BASE_URL || 'http://localhost:3001/api/tiss',
 
   OPERADORA: {
     registroANS: process.env.TISS_REGISTRO_ANS || null,
