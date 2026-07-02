@@ -26,7 +26,12 @@ The repo does **not** contain the full base schema. `migracao-v2.1.sql` is *incr
 To exercise DB-backed flows locally (e.g. real patient/professional registration and login) you must provide a Postgres with those tables. Options:
 
 - Point `DATABASE_URL` at a Supabase/Postgres that already has the schema, **or**
-- Create a local Postgres and bootstrap the core tables yourself, then apply `migracao-v2.1.sql` on top. A minimal bootstrap covering `usuarios` + `pacientes` (+ stub `agendamentos`/`pagamentos` for the migration's FKs) is enough for the auth/registration hello-world.
+- Use the committed local dev bootstrap (minimal, **not** the production schema) against a local Postgres:
+  ```
+  psql "$DATABASE_URL" -f backend/schema-dev-bootstrap.sql
+  psql "$DATABASE_URL" -f migracao-v2.1.sql
+  ```
+  This covers `usuarios` + `pacientes` (+ stub `agendamentos`/`pagamentos` for the migration's FKs), enough for the auth/registration hello-world.
 
 Postgres is a system dependency (not installed by the update script). Install it once (`apt-get install postgresql`) and start the cluster (`sudo pg_ctlcluster 16 main start`) before running DB-backed flows.
 
