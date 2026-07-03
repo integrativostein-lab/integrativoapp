@@ -27,6 +27,46 @@ function inclui(respostas, id, termos) {
 
 const REGRAS_VERTENTES = [
   {
+    id: 'AUTOCUIDADO_CHAS_001',
+    vertente: 'Práticas saudáveis e seguras (autocuidado)',
+    eixo: 'Chás e plantas seguras',
+    condicao: () => true,
+    orientacao: 'Chás calmantes e digestivos de uso tradicional (camomila, erva-cidreira, hortelã, melissa) podem apoiar relaxamento e digestão no dia a dia.',
+    conduta: 'Use com moderação e observe reações. Plantas podem interagir com remédios — confirme com farmacêutico, médico ou fitoterapeuta, principalmente em gestação, amamentação ou doenças crônicas.'
+  },
+  {
+    id: 'AUTOCUIDADO_MENTE_001',
+    vertente: 'Práticas saudáveis e seguras (autocuidado)',
+    eixo: 'Meditação, oração e respiração',
+    condicao: () => true,
+    orientacao: 'Meditação, oração e práticas contemplativas, com respiração lenta por alguns minutos ao dia, ajudam a reduzir o estresse e a melhorar o sono e o bem-estar.',
+    conduta: 'São práticas seguras para a maioria das pessoas. Se houver sofrimento emocional intenso ou persistente, procure apoio de um profissional de saúde mental.'
+  },
+  {
+    id: 'AUTOCUIDADO_MOVIMENTO_001',
+    vertente: 'Práticas saudáveis e seguras (autocuidado)',
+    eixo: 'Yoga e movimento consciente',
+    condicao: () => true,
+    orientacao: 'Yoga suave, alongamento e caminhadas regulares apoiam flexibilidade, humor, sono e energia quando feitos no seu ritmo.',
+    conduta: 'Comece devagar e respeite seus limites. Em caso de hipertensão, gestação, dor aguda ou doença cardiovascular, peça orientação profissional antes de intensificar.'
+  },
+  {
+    id: 'AUTOCUIDADO_ALIMENTACAO_001',
+    vertente: 'Práticas saudáveis e seguras (autocuidado)',
+    eixo: 'Rotina alimentar e hidratação',
+    condicao: () => true,
+    orientacao: 'Refeições em horários regulares, comida de verdade (in natura), boa hidratação e menos ultraprocessados favorecem energia, digestão e disposição.',
+    conduta: 'Mudanças alimentares intensas, jejuns ou suplementos devem ser individualizados por nutricionista ou médico, principalmente com doenças crônicas.'
+  },
+  {
+    id: 'AUTOCUIDADO_SONO_001',
+    vertente: 'Práticas saudáveis e seguras (autocuidado)',
+    eixo: 'Rotina de sono',
+    condicao: () => true,
+    orientacao: 'Horários regulares para dormir e acordar, reduzir telas e cafeína à noite e um ambiente escuro e tranquilo ajudam a dormir melhor.',
+    conduta: 'Se a dificuldade para dormir persistir por semanas ou afetar o seu dia, converse com um profissional antes de usar medicamentos ou suplementos para dormir.'
+  },
+  {
     id: 'OCIDENTAL_SONO_001',
     vertente: 'Medicina ocidental (estilo de vida)',
     eixo: 'Sono e recuperação',

@@ -36,6 +36,9 @@ function montarResumo(respostas = {}) {
   const destaques = [
     ['sexo_biologico', 'Sexo'],
     ['idade_anos', 'Idade'],
+    ['pressao_arterial', 'Pressão arterial'],
+    ['frequencia_cardiaca', 'Batimentos (bpm)'],
+    ['respiracao_percebida', 'Respiração'],
     ['queixa_principal', 'Principal queixa'],
     ['sintomas_relatados', 'Sintomas marcados'],
     ['tabagismo', 'Cigarro'],
