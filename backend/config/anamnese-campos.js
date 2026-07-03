@@ -222,9 +222,34 @@ const CAMPOS_ANAMNESE = [
   campo('sistema_hematologico', 'Hematológico (sangramentos, equimoses, linfonodos)', 'Revisão por sistemas — medicina ocidental', { grupo: 'ocidental', parte: 2 }),
 
   // —— Exame físico e sinais vitais (profissional) ——
-  campo('pressao_arterial', 'Pressão arterial (mmHg)', 'Exame físico e sinais vitais', { grupo: 'ocidental', parte: 2, tipo: 'text', placeholder: '120/80' }),
-  campo('frequencia_cardiaca', 'Frequência cardíaca (bpm)', 'Exame físico e sinais vitais', { grupo: 'ocidental', parte: 2, tipo: 'number' }),
+  campo('pressao_arterial', 'Pressão arterial (mmHg)', 'Exame físico e sinais vitais', {
+    grupo: 'ocidental', parte: 2, tipo: 'text', placeholder: '120/80',
+    nomePublico: 'Pressão arterial (se você souber)',
+    placeholderPublico: 'Ex: 120/80',
+    dicaPublica: 'Se mediu recentemente, informe no formato 120/80. Se não souber, pode deixar em branco.',
+    categoriaPublica: 'Sinais vitais (opcional)'
+  }),
+  campo('frequencia_cardiaca', 'Frequência cardíaca (bpm)', 'Exame físico e sinais vitais', {
+    grupo: 'ocidental', parte: 2, tipo: 'number',
+    nomePublico: 'Batimentos do coração (bpm, se você souber)',
+    placeholderPublico: 'Ex: 72',
+    dicaPublica: 'Batimentos por minuto. Se não souber, pode deixar em branco.',
+    categoriaPublica: 'Sinais vitais (opcional)'
+  }),
   campo('frequencia_respiratoria', 'Frequência respiratória (irpm)', 'Exame físico e sinais vitais', { grupo: 'ocidental', parte: 2, tipo: 'number' }),
+  campo('respiracao_percebida', 'Como está sua respiração?', 'Exame físico e sinais vitais', {
+    grupo: 'ocidental', parte: 1, tipo: 'select',
+    opcoes: [
+      'Normal, sem esforço',
+      'Um pouco ofegante aos esforços',
+      'Falta de ar ao caminhar ou subir escadas',
+      'Falta de ar mesmo em repouso',
+      'Chiado ou aperto no peito'
+    ],
+    nomePublico: 'Como está sua respiração?',
+    dicaPublica: 'Escolha a opção que mais combina com você nos últimos dias.',
+    categoriaPublica: 'Sinais vitais (opcional)'
+  }),
   campo('temperatura', 'Temperatura (°C)', 'Exame físico e sinais vitais', { grupo: 'ocidental', parte: 2, tipo: 'text' }),
   campo('saturacao_o2', 'SatO₂ (%)', 'Exame físico e sinais vitais', { grupo: 'ocidental', parte: 2, tipo: 'text' }),
   campo('exame_fisico_geral', 'Exame físico geral (inspeção, palpação, ausculta)', 'Exame físico e sinais vitais', { grupo: 'ocidental', parte: 2 }),

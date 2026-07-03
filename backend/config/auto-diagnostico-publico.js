@@ -14,6 +14,11 @@ const ETAPAS = [
     categorias: ['Dados antropométricos', 'Identificação e queixa']
   },
   {
+    id: 'sinais_vitais',
+    titulo: 'Sinais vitais',
+    subtitulo: 'Se você souber, informe. Se não souber, pode deixar em branco.'
+  },
+  {
     id: 'habitos',
     titulo: 'Hábitos e histórico',
     subtitulo: 'Como é seu dia a dia, doenças que já teve e histórico da família',
@@ -55,6 +60,7 @@ const ETAPAS = [
 
 const CAMPOS_ETAPA_EXTRA = {
   identificacao: ['sexo_biologico', 'idade_anos', 'peso_kg', 'altura_cm', 'queixa_principal', 'inicio_sintomas', 'evolucao_sintomas', 'nivel_dor'],
+  sinais_vitais: ['pressao_arterial', 'frequencia_cardiaca', 'respiracao_percebida'],
   habitos: [
     'tabagismo', 'tabagismo_cigarros_dia', 'tabagismo_tempo_sem_fumar',
     'etilismo', 'etilismo_frequencia', 'etilismo_doses_por_vez',
