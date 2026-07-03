@@ -185,13 +185,37 @@ window.AutoDiagnostico = (function () {
   function salvarPdf(elementId) {
     var el = document.getElementById(elementId || 'pdf-area');
     if (!el || typeof html2pdf === 'undefined') throw new Error('Gerador de PDF indisponível.');
+
+    // Captura a partir de um clone limpo posicionado no topo da página.
+    // Capturar o elemento original (que fica no meio de uma página rolada) fazia
+    // o html2canvas incluir o deslocamento de rolagem e gerar uma primeira página em branco.
+    var wrapper = document.createElement('div');
+    wrapper.setAttribute('aria-hidden', 'true');
+    wrapper.style.position = 'absolute';
+    wrapper.style.top = '0';
+    wrapper.style.left = '-10000px';
+    wrapper.style.width = '760px';
+    wrapper.style.padding = '24px';
+    wrapper.style.background = '#ffffff';
+    wrapper.style.color = '#0f172a';
+    wrapper.innerHTML = el.innerHTML;
+    document.body.appendChild(wrapper);
+
+    function limpar() {
+      if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+    }
+
     return html2pdf().set({
       margin: 10,
       filename: 'integrativo-anamnese-' + new Date().toISOString().slice(0, 10) + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(el).save();
+      html2canvas: { scale: 2, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0, windowWidth: 760 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    }).from(wrapper).save().then(limpar).catch(function (err) {
+      limpar();
+      throw err;
+    });
   }
 
   function atualizarEtapasUi() {
