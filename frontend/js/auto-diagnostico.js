@@ -186,34 +186,25 @@ window.AutoDiagnostico = (function () {
     var el = document.getElementById(elementId || 'pdf-area');
     if (!el || typeof html2pdf === 'undefined') throw new Error('Gerador de PDF indisponível.');
 
-    // Captura a partir de um clone limpo posicionado no topo da página.
-    // Capturar o elemento original (que fica no meio de uma página rolada) fazia
-    // o html2canvas incluir o deslocamento de rolagem e gerar uma primeira página em branco.
-    var wrapper = document.createElement('div');
-    wrapper.setAttribute('aria-hidden', 'true');
-    wrapper.style.position = 'absolute';
-    wrapper.style.top = '0';
-    wrapper.style.left = '-10000px';
-    wrapper.style.width = '760px';
-    wrapper.style.padding = '24px';
-    wrapper.style.background = '#ffffff';
-    wrapper.style.color = '#0f172a';
-    wrapper.innerHTML = el.innerHTML;
-    document.body.appendChild(wrapper);
+    // A primeira página saía em branco porque o html2canvas usa o deslocamento de
+    // rolagem da página no momento da captura (o usuário rola até o botão "Salvar PDF").
+    // Rolamos ao topo e informamos scrollX/scrollY = 0 para alinhar a captura.
+    var scrollAnterior = window.pageYOffset || document.documentElement.scrollTop || 0;
+    window.scrollTo(0, 0);
 
-    function limpar() {
-      if (wrapper.parentNode) wrapper.parentNode.removeChild(wrapper);
+    function restaurar() {
+      window.scrollTo(0, scrollAnterior);
     }
 
     return html2pdf().set({
       margin: 10,
       filename: 'integrativo-anamnese-' + new Date().toISOString().slice(0, 10) + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0, windowWidth: 760 },
+      html2canvas: { scale: 2, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'] }
-    }).from(wrapper).save().then(limpar).catch(function (err) {
-      limpar();
+    }).from(el).save().then(restaurar).catch(function (err) {
+      restaurar();
       throw err;
     });
   }
